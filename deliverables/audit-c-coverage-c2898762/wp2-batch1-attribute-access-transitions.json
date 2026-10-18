@@ -1,0 +1,1321 @@
+[
+  {
+    "identifier": "gwexpy.fields.base.FieldBase/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-001",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.fields.base.FieldBase/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-002",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.fields.base.FieldBase/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-003",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.fields.scalar.ScalarField/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-004",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.fields.scalar.ScalarField/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-005",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.fields.scalar.ScalarField/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-006",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-007",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-008",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-009",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-010",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-011",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/add_segments_bar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-012",
+    "checks": [
+      "segment_axes_added"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_axes_added"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/close",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-013",
+    "checks": [
+      "figure_closed"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/colorbar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-014",
+    "checks": [
+      "colorbar_attached"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/get_axes",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-015",
+    "checks": [
+      "axes_list_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: axes_list_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/refresh",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-016",
+    "checks": [
+      "canvas_drawn"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+  },
+  {
+    "identifier": "gwexpy.plot.field.FieldPlot/save",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-017",
+    "checks": [
+      "image_file_written"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: image_file_written"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/add_segments_bar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-018",
+    "checks": [
+      "segment_axes_added"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_axes_added"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/close",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-019",
+    "checks": [
+      "figure_closed"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/colorbar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-020",
+    "checks": [
+      "colorbar_attached"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/get_axes",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-021",
+    "checks": [
+      "axes_list_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: axes_list_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/refresh",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-022",
+    "checks": [
+      "canvas_drawn"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.Plot/save",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-023",
+    "checks": [
+      "image_file_written"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: image_file_written"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/add_segments_bar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-024",
+    "checks": [
+      "segment_axes_added"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_axes_added"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/close",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-025",
+    "checks": [
+      "figure_closed"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/colorbar",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-026",
+    "checks": [
+      "colorbar_attached"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/get_axes",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-027",
+    "checks": [
+      "axes_list_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: axes_list_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/refresh",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-028",
+    "checks": [
+      "canvas_drawn"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+  },
+  {
+    "identifier": "gwexpy.plot.skymap.SkyMap/save",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-029",
+    "checks": [
+      "image_file_written"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: image_file_written"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/T",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-030",
+    "checks": [
+      "transposed_shape"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: transposed_shape"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/band",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-031",
+    "checks": [
+      "segment_returned",
+      "band_span_matched"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_returned, band_span_matched"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-032",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-033",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/from_spectra",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-034",
+    "checks": [
+      "spectrogram_constructed"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectrogram_constructed"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/median",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-035",
+    "checks": [
+      "median_series_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: median_series_returned"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-036",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/variance",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-037",
+    "checks": [
+      "spectral_variance_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectral_variance_returned"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-038",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesDict/EntryClass",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-039",
+    "checks": [
+      "entry_class_reference"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesDict/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-040",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/EntryClass",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-041",
+    "checks": [
+      "entry_class_reference"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/__init__",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-042",
+    "checks": [
+      "list_initialized"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: list_initialized"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/coalesce",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "collection_elementwise_numeric",
+    "comparison_mode": "collection_elementwise_numeric",
+    "trial_id": "WP2-B1-043",
+    "checks": [
+      "coalesced_contiguous"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: coalesced_contiguous"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/join",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-044",
+    "checks": [
+      "joined_timeseries"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: joined_timeseries"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/segments",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-045",
+    "checks": [
+      "segmentlist_returned"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segmentlist_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/DictClass",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-046",
+    "checks": [
+      "dict_class_reference"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: dict_class_reference"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-047",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/duration",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-048",
+    "checks": [
+      "quantity_unit_s",
+      "duration_value_matched"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_s, duration_value_matched"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-049",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-050",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/sample_rate",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-051",
+    "checks": [
+      "quantity_unit_hz",
+      "rate_value_matched"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_hz, rate_value_matched"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-052",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-053",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.array.Array/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-054",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array.Array/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-055",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array.Array/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-056",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-057",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-058",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-059",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/plot",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-060",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-061",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.array3d.Array3D/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-062",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array3d.Array3D/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-063",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array3d.Array3D/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-064",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array4d.Array4D/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-065",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array4d.Array4D/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-066",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.array4d.Array4D/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-067",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-068",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-069",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-070",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/plot",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-071",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-072",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-073",
+    "checks": [
+      "channel_value_matched",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-074",
+    "checks": [
+      "epoch_value_matched",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B1-075",
+    "checks": [
+      "name_value_matched",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/plot",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-076",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "visual_comparison_pending",
+    "comparison_mode": "visual_artist_data",
+    "trial_id": "WP2-B1-077",
+    "checks": [
+      "returns_plot",
+      "axes_count_valid"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: returns_plot, axes_count_valid"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B1-078",
+    "checks": [
+      "zip_iterable",
+      "coordinate_pairs_valid",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: zip_iterable, coordinate_pairs_valid, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.utils.logger.get_logger",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "attribute_access",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "attribute_accessed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B1-079",
+    "checks": [
+      "logger_instance",
+      "logger_name_matched"
+    ],
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: logger_instance, logger_name_matched"
+  }
+]
