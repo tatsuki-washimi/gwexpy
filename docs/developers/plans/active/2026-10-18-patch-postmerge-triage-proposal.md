@@ -6,7 +6,7 @@
 >
 > **Source snapshot:** [`10311d8dcebd8938522a4e07d78fb8dfa73b3145`](https://github.com/tatsuki-washimi/gwexpy/commit/10311d8dcebd8938522a4e07d78fb8dfa73b3145) on `main`, after PRs #793, #794, and #795.
 >
-> **Authority:** [`RELEASING.md`](../../../RELEASING.md), [`scripts/ci/release_contracts.json`](../../../scripts/ci/release_contracts.json), and the existing [audit evidence crosswalk](../../reports/2026-10-18-error-audit-issue-pr-work-crosswalk.md). Neither this proposal nor a passing CI run assigns a milestone, approves a safety exception, or authorizes a tag/publish.
+> **Authority:** [`RELEASING.md`](../../../../RELEASING.md), [`scripts/ci/release_contracts.json`](../../../../scripts/ci/release_contracts.json), and the existing [audit evidence crosswalk](../../reports/2026-10-18-error-audit-issue-pr-work-crosswalk.md). Neither this proposal nor a passing CI run assigns a milestone, approves a safety exception, or authorizes a tag/publish.
 
 ## 1. Verified post-merge state (not release qualification)
 
@@ -59,10 +59,10 @@ The [2026-10-18 audit crosswalk](../../reports/2026-10-18-error-audit-issue-pr-w
 ## 4. Decision and qualification gates (all presently unapproved)
 
 1. **Scope and ownership:** maintainer/release owner explicitly decides whether a maintenance release is needed, which issues and known limitations are selected, review lanes/owners, risk dispositions, and version label; until then `v0.2.6` is a proposed label only. Align ROADMAP/milestone only **after** that decision.
-2. **Release contract:** add a new, version-specific entry to [`scripts/ci/release_contracts.json`](../../../scripts/ci/release_contracts.json) with the approved schema and qualification profile. Its current entries end at **v0.2.5**. Do not copy historical contracts as if they auto-authorized another version; the future build-once promotion path applies only if opted into by a new contract.
+2. **Release contract:** add a new, version-specific entry to [`scripts/ci/release_contracts.json`](../../../../scripts/ci/release_contracts.json) with the approved schema and qualification profile. Its current entries end at **v0.2.5**. Do not copy historical contracts as if they auto-authorized another version; the future build-once promotion path applies only if opted into by a new contract.
 3. **Reviewed source `S`:** freeze the selected source revision; obtain configured independent scientific/data-model, documentation, and release-security review for the exact source and scope, plus human approval bound to `S`. Proportionally test the selected behavior, units, axes, metadata, GWpy parity and optional environments. No production default behavior divergence without a separately authorized GWexpy-only opt-in or formally gated safety exception.
 4. **Release source `R` and candidate:** make only the exact contract-permitted evidence/approval and existing-plan checkbox changes between `S` and `R`; freeze source and committed release notes; dispatch the configured candidate from `main` at exact `R`. Require same-build distribution smoke, integration and version-specific qualification, complete immutable artifacts and the configured promotion manifest.
-5. **Publication authorization:** candidate completion and artifact checks precede an immutable release-owner GO tied to `R`, candidate run ID, manifest and distribution digests. Only then may an annotated tag and promotion be contemplated. Accept publication only after exact GitHub Release assets/bytes and both wheel+sdist PyPI hash readbacks succeed, per [`RELEASING.md`](../../../RELEASING.md).
+5. **Publication authorization:** candidate completion and artifact checks precede an immutable release-owner GO tied to `R`, candidate run ID, manifest and distribution digests. Only then may an annotated tag and promotion be contemplated. Accept publication only after exact GitHub Release assets/bytes and both wheel+sdist PyPI hash readbacks succeed, per [`RELEASING.md`](../../../../RELEASING.md).
 
 **Not done here:** release contract/plan creation, milestone changes, Issue closures, product fixes, post-merge Docs Pages acceptance, approval token, candidate workflow dispatch, annotated tag, GitHub Release, or PyPI upload.
 
