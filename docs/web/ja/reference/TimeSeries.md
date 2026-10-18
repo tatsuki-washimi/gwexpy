@@ -69,6 +69,13 @@ psd = ts.psd(fftlength=1.0)
 - 短いバーストや chirp を追いたいなら `spectrogram()` / `q_transform()` を使う
 - 振幅規約や transient mode の扱いは [FFT_Conventions](FFT_Conventions.md) と検証済みアルゴリズム側の根拠を参照する
 
+`TimeSeries.spectrogram2(fftlength, overlap=..., window=...)` は periodogram を使う
+**非平均化**スペクトログラムです。`spectrogram()` と異なり、FFT の平均化方式を選ぶ
+`method` 引数には対応しません。追加キーワード引数は `scipy.signal.periodogram` に
+渡されるため、現行の GWpy 経路では `method='mean'` や `method='welch'` を指定すると
+内部の `TypeError` が発生します。平均化方式を選びたい場合は、
+`spectrogram(stride=..., method='welch')`（または `'median'`）を使ってください。
+
 ### 前処理の意味
 
 `detrend()`, `highpass()`, `whiten()`, `standardize()`, `impute()` は、単に見た目を整える操作ではなく、**どの物理成分を保持し、どの系統誤差を落とすか**を決める操作です。
