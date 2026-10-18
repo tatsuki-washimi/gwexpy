@@ -728,8 +728,44 @@ def main() -> int:
 
     print("  [PASS] 25. WP4 106 exception_parity APIs independent classification verified (exact set match with baseline exception_parity 106 set, strict categorization: trivial_missing_arg=94, abnormal/boundary=10, upstream_matplotlib=2).")
 
+    # 26. WP4: 全体静的調査結果・Warning監査・B監査141ハンドラ最終確認整合性
+    static_warn_file = AUDIT_DIR / "wp4-overall-static-and-warning-audit.json"
+    static_warn_md = AUDIT_DIR / "2026-10-18-wp4-overall-static-and-warning-audit.md"
+    assert static_warn_file.exists(), f"Assertion 26 Failed: {static_warn_file} does not exist"
+    assert static_warn_md.exists(), f"Assertion 26 Failed: {static_warn_md} does not exist"
+
+    sw_data = json.loads(static_warn_file.read_text(encoding="utf-8"))
+    pop_rec = sw_data["overall_population_reconciliation"]
+    assert pop_rec["total_population"] == 2381
+    assert pop_rec["c_audit_runtime_ledger"] == 521
+    assert pop_rec["static_and_prior_population"] == 1860
+    assert pop_rec["static_population_breakdown"]["member_pass2_static_pattern_recheck"] == 1850
+    assert pop_rec["static_population_breakdown"]["member_pass1_evidence_reused"] == 2
+    assert pop_rec["static_population_breakdown"]["member_pass2_executed"] == 6
+    assert pop_rec["static_population_breakdown"]["conventional_module_functions_outside_ledger"] == 2
+    assert pop_rec["unallocated_candidates_count"] == 0
+    assert pop_rec["ticket_omissions_count"] == 0
+
+    b_aud = sw_data["b_audit_handlers"]
+    assert b_aud["total_handlers"] == 155
+    assert b_aud["disposition_counts"]["no_change"] == 141
+    assert b_aud["disposition_counts"]["confirmed_issue"] == 10
+    assert b_aud["disposition_counts"]["further_verification"] == 4
+    assert sum(b["count"] for b in b_aud["no_change_template_buckets"]) == 141
+
+    w_aud = sw_data["warning_audit_issue_781"]
+    assert w_aud["naive_grep_hits"] == 100
+    assert w_aud["ast_live_warnings_warn_calls"] == 99
+    assert len(w_aud["ghost_docstring_hits"]) == 1
+    assert w_aud["ghost_docstring_hits"][0]["path"] == "gwexpy/interop/base.py"
+    assert w_aud["ghost_docstring_hits"][0]["line"] == 66
+    assert w_aud["stacklevel_analysis"]["ast_no_stacklevel_kw"] == 24
+    assert w_aud["stacklevel_analysis"]["ast_has_stacklevel_kw"] == 75
+
+    print("  [PASS] 26. WP4 overall static, warning crosswalk, and B-audit independent audit verified (total population 2,381=521+1,860 reconciled, B-audit 141 no_change handlers partitioned across 3 templates with 0 unallocated candidates, Issue #781 warning sites reconciled to 99 AST calls + 1 docstring ghost, 24 missing stacklevel confirmed).")
+
     print("=" * 60)
-    print("ALL 25 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 26 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 

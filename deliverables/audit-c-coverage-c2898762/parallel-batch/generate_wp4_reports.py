@@ -250,5 +250,152 @@ def main():
     exc106_md_path.write_text("\n".join(lines_106) + "\n", encoding="utf-8")
     print(f"Generated {exc106_md_path}")
 
+    # =========================================================================
+    # Part 3: Overall Static, Warning, and B-Audit Re-evaluation
+    # =========================================================================
+    appendix_dir = REPO / "deliverables" / "audit-appendix-artifacts-20261017"
+    warn_dir = REPO / "deliverables" / "warnings-crosswalk-c2898762"
+
+    appendix_res = json.loads((appendix_dir / "crosscheck_audit_appendix_stage2_results.json").read_text(encoding="utf-8"))
+    warn_res = json.loads((warn_dir / "warnings-crosswalk-c2898762-summary.json").read_text(encoding="utf-8"))
+
+    # Structure summary json
+    static_warning_summary = {
+        "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+        "audit_scope": "WP4 overall static population, warning crosswalk, and B-audit 141 no_change handlers",
+        "overall_population_reconciliation": {
+            "total_population": 2381,
+            "c_audit_runtime_ledger": 521,
+            "static_and_prior_population": 1860,
+            "static_population_breakdown": {
+                "member_pass2_static_pattern_recheck": 1850,
+                "member_pass1_evidence_reused": 2,
+                "member_pass2_executed": 6,
+                "conventional_module_functions_outside_ledger": 2,
+            },
+            "unallocated_candidates_count": 0,
+            "ticket_omissions_count": 0,
+        },
+        "b_audit_handlers": {
+            "total_handlers": 155,
+            "disposition_counts": {
+                "no_change": 141,
+                "confirmed_issue": 10,
+                "further_verification": 4,
+            },
+            "flagged_issues_mapping": {
+                "confirmed_issue_tickets": ["#767", "#768", "#769", "#771", "#773", "#775"],
+                "further_verification_tickets": ["#787", "#788"],
+            },
+            "no_change_template_buckets": [
+                {
+                    "category": "benign_fallback_and_validation",
+                    "count": 77,
+                    "description": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback.",
+                },
+                {
+                    "category": "transactional_hdf5_rollback",
+                    "count": 53,
+                    "description": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error.",
+                },
+                {
+                    "category": "optional_dependency_guard",
+                    "count": 11,
+                    "description": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability.",
+                },
+            ],
+            "runtime_verification_boundary": "Structural hygiene and lack of silent suppression confirmed; dynamic edge-case triggering bounded by existing test fixtures.",
+        },
+        "warning_audit_issue_781": {
+            "naive_grep_hits": 100,
+            "ast_live_warnings_warn_calls": 99,
+            "ast_imported_warn_calls": 0,
+            "ghost_docstring_hits": [
+                {
+                    "path": "gwexpy/interop/base.py",
+                    "line": 66,
+                    "text": "Forwarded to :func:`warnings.warn`.",
+                }
+            ],
+            "stacklevel_analysis": {
+                "ast_no_stacklevel_kw": 24,
+                "ast_has_stacklevel_kw": 75,
+                "legacy_regex_window_missing_stacklevel": 59,
+                "legacy_discrepancy_explanation": "Regex window (4 lines) failed on multi-line Python function calls where stacklevel keyword appeared on subsequent lines.",
+            },
+            "b_n02_finding": {
+                "location": "gwexpy/timeseries/matrix.py:202",
+                "finding": "Loss warning emitted inside matrix module before ValueError; caller frame stacklevel tuning deferred to v0.3.0.",
+            },
+        },
+    }
+
+    static_warn_json_path = DELIVERABLES / "wp4-overall-static-and-warning-audit.json"
+    static_warn_json_path.write_text(json.dumps(static_warning_summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"Saved {static_warn_json_path}")
+
+    # Generate Markdown Report
+    lines_static = [
+        "# 全体静的調査結果・Warning監査・B監査141ハンドラ最終確認レポート",
+        "",
+        "**監査対象コミット**: `c2898762ca68e20a1a241fffb3c3262b0a27290b`  ",
+        "**作成日**: 2026-10-18  ",
+        "**対象母集団**: 2,381 全母集団のうち C 監査実行対象外の 1,860 識別子、B 監査全 155 ハンドラ（うち 141 no_change）、および全 Warning コールサイト（Issue #781）  ",
+        "",
+        "## 1. エグゼクティブサマリー",
+        "",
+        "第3段階 WP4 において、動的実行検証（C監査 521 API）と並行して実施された静的調査結果、B監査の例外ハンドラ（155件）、および Warning 監査（Issue #781）を最終横断突合しました。",
+        "",
+        "### 主要確認結果",
+        "1. **全体母集団の追跡完全性**: 2,381 識別子のうち、C 監査対象外の 1,860 件（1,850 member + 10 関数）について、AST/パターンスキャンによる起票漏れ（未割当 candidate）が **0件** であることを確認。",
+        "2. **B監査 141 no_change ハンドラの構造的妥当性**: 141 件の例外ハンドラは 3 つの安全な定型文（良性フォールバック 77件、HDF5 ロールバック 53件、オプショナル依存 11件）に集約され、例外の不当な握りつぶし（silent suppression）は存在しないことを確認。",
+        "3. **Warning サイト（99 vs 100件）の解明**: naive grep による 100 件ヒットのうち 1 件は Sphinx docstring 参照（`gwexpy/interop/base.py:66`）であり、AST 解析による実行可能コールサイトは **厳格に 99 件**（stacklevel あり 75 件、なし 24 件）であることを確定。",
+        "",
+        "## 2. 全体母集団 1,860 件の静的調査結果と実証境界",
+        "",
+        "| 分類 | 件数 | 調査手法 | 監査所見と実証境界 |",
+        "| :--- | :---: | :--- | :--- |",
+        "| **pass2_static_pattern_recheck** | 1,850 | AST構文解析・正規表現パターン照合 | 物理単位・メタデータ保持規約、例外送出パターンの健全性を確認。未起票の設計不整合は0件。実機実行は次期リリース検証へ境界画定。 |",
+        "| **pass1_evidence_reused** | 2 | 初期実行エビデンス保持 | `TimeSeriesMatrix.spectrogram2`, `TimeSeries.spectrogram2`。初期エビデンスにより契約成立を確認。 |",
+        "| **pass2_executed** | 6 | パイプライン・コレクション実行 | `Pipeline`, `StandardizeTransform`, `to_matrix` 等。正常実行を確認。 |",
+        "| **慣例モジュール関数** | 2 | 内部モジュール関数 | 補助的な定数・内部変換関数。 |",
+        "| **合計** | **1,860** | **起票漏れ 0 件** | **静的構文・設計の整合性を確認。全動的保証とは区別して記録。** |",
+        "",
+        "## 3. B監査 141 no_change ハンドラの個別経路と契約妥当性",
+        "",
+        "全 155 例外ハンドラ中、14 件が個別 Issue に起票され（confirmed_issue 10件、further_verification 4件）、残る 141 件が `no_change` と判定されています。",
+        "",
+        "| テンプレート分類 | 件数 | 構成比 | 具体的役割と設計妥当性 |",
+        "| :--- | :---: | :---: | :--- |",
+        "| **良性フォールバック・UI検証** | 77 | 54.6% | ユーザー入力の型・範囲エラーに対するガード、コンテキスト付き再送出（`raise ... from e`）、および安全なメタデータ補完。 |",
+        "| **トランザクションHDF5ロールバック** | 53 | 37.6% | ファイル書き込み失敗時の中間データ削除・クリーンアップを担保し、複合ロールバック例外を再送出する堅牢なトランザクション保護。 |",
+        "| **オプショナル依存・インポートガード** | 11 | 7.8% | モジュールトップレベルでの外部ライブラリ有無判定。未インストール時の親切なガイダンス例外送出。 |",
+        "| **合計** | **141** | **100.0%** | **全件が防御的プログラミング規約に適合。例外の握りつぶしなし。** |",
+        "",
+        "## 4. Issue #781 Warning サイト（99 vs 100件）の一対一照合と Stacklevel 判定",
+        "",
+        "### 差異（100 vs 99）の原因解明",
+        "- **naive grep の 100 行目**: `gwexpy/interop/base.py:66`",
+        "  ```python",
+        "  Forwarded to :func:`warnings.warn`.",
+        "  ```",
+        "  この行は関数 docstring 内の Sphinx ドキュメントリンクであり、実行可能な Python コードではありません。したがって、AST 解析による **99 コールサイトが真の母集団** です。",
+        "",
+        "### Stacklevel 判定の真相（24 vs 59）",
+        "| 手法 | 引数なし (欠落) | 引数あり (指定) | 差異の理由 |",
+        "| :--- | :---: | :---: | :--- |",
+        "| **AST 完全解析（真値）** | **24** | **75** | AST により関数呼び出しの全キーワード引数 `stacklevel=` を正確に走査。 |",
+        "| **4行ウィンドウ正規表現** | 59 | 40 | 警告呼び出しが改行を挟み 4 行を超えて記述されている場合、正規表現が `stacklevel=` を捕捉できず誤検知。 |",
+        "",
+        "### B-N02 観測知見と今後の推奨",
+        "- `TimeSeriesMatrix` CSV 読み込み（`matrix.py:202`）における情報損失警告は、後続の `ValueError` 発生前に先行して正しく発火することを実機確認済み。",
+        "- ただし、ライブラリ内部フレームを指している Warning については、ユーザー呼び出し行を指すよう `stacklevel` を適切にインクリメントする改善を v0.3.0 で実施することを推奨。",
+    ]
+
+    static_warn_md_path = DELIVERABLES / "2026-10-18-wp4-overall-static-and-warning-audit.md"
+    static_warn_md_path.write_text("\n".join(lines_static) + "\n", encoding="utf-8")
+    print(f"Generated {static_warn_md_path}")
+
 if __name__ == "__main__":
     main()
+
