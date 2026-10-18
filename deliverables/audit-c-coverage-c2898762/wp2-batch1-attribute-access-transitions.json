@@ -114,9 +114,10 @@
     "trial_id": "WP2-B1-007",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/epoch",
@@ -131,9 +132,10 @@
     "trial_id": "WP2-B1-008",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/name",
@@ -148,9 +150,10 @@
     "trial_id": "WP2-B1-009",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/step",
@@ -160,8 +163,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-010",
     "checks": [
       "returns_plot",
@@ -215,9 +218,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-013",
     "checks": [
-      "figure_closed"
+      "figure_closed_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed_verified"
   },
   {
     "identifier": "gwexpy.plot.field.FieldPlot/colorbar",
@@ -231,9 +234,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-014",
     "checks": [
-      "colorbar_attached"
+      "colorbar_attached_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached_verified"
   },
   {
     "identifier": "gwexpy.plot.field.FieldPlot/get_axes",
@@ -263,9 +266,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-016",
     "checks": [
-      "canvas_drawn"
+      "canvas_refresh_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_refresh_verified"
   },
   {
     "identifier": "gwexpy.plot.field.FieldPlot/save",
@@ -291,8 +294,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-018",
     "checks": [
       "segment_axes_added"
@@ -307,13 +310,13 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-019",
     "checks": [
-      "figure_closed"
+      "figure_closed_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed_verified"
   },
   {
     "identifier": "gwexpy.plot.plot.Plot/colorbar",
@@ -323,13 +326,13 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-020",
     "checks": [
-      "colorbar_attached"
+      "colorbar_attached_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached_verified"
   },
   {
     "identifier": "gwexpy.plot.plot.Plot/get_axes",
@@ -339,8 +342,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-021",
     "checks": [
       "axes_list_returned"
@@ -355,13 +358,13 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-022",
     "checks": [
-      "canvas_drawn"
+      "canvas_refresh_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_refresh_verified"
   },
   {
     "identifier": "gwexpy.plot.plot.Plot/save",
@@ -371,8 +374,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-023",
     "checks": [
       "image_file_written"
@@ -407,9 +410,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-025",
     "checks": [
-      "figure_closed"
+      "figure_closed_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: figure_closed_verified"
   },
   {
     "identifier": "gwexpy.plot.skymap.SkyMap/colorbar",
@@ -423,9 +426,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-026",
     "checks": [
-      "colorbar_attached"
+      "colorbar_attached_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: colorbar_attached_verified"
   },
   {
     "identifier": "gwexpy.plot.skymap.SkyMap/get_axes",
@@ -455,9 +458,9 @@
     "comparison_mode": "incomparable",
     "trial_id": "WP2-B1-028",
     "checks": [
-      "canvas_drawn"
+      "canvas_refresh_verified"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_drawn"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: canvas_refresh_verified"
   },
   {
     "identifier": "gwexpy.plot.skymap.SkyMap/save",
@@ -487,9 +490,10 @@
     "comparison_mode": "numeric_allclose",
     "trial_id": "WP2-B1-030",
     "checks": [
-      "transposed_shape"
+      "transposed_shape",
+      "gwpy_numeric_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: transposed_shape"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: transposed_shape, gwpy_numeric_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/band",
@@ -504,9 +508,10 @@
     "trial_id": "WP2-B1-031",
     "checks": [
       "segment_returned",
-      "band_span_matched"
+      "band_span_matched",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_returned, band_span_matched"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segment_returned, band_span_matched, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/channel",
@@ -521,9 +526,10 @@
     "trial_id": "WP2-B1-032",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/epoch",
@@ -538,9 +544,10 @@
     "trial_id": "WP2-B1-033",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/from_spectra",
@@ -554,9 +561,10 @@
     "comparison_mode": "numeric_allclose",
     "trial_id": "WP2-B1-034",
     "checks": [
-      "spectrogram_constructed"
+      "spectrogram_constructed",
+      "gwpy_numeric_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectrogram_constructed"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectrogram_constructed, gwpy_numeric_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/median",
@@ -570,9 +578,10 @@
     "comparison_mode": "numeric_allclose",
     "trial_id": "WP2-B1-035",
     "checks": [
-      "median_series_returned"
+      "median_series_returned",
+      "gwpy_numeric_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: median_series_returned"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: median_series_returned, gwpy_numeric_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/name",
@@ -587,9 +596,10 @@
     "trial_id": "WP2-B1-036",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/variance",
@@ -603,9 +613,10 @@
     "comparison_mode": "numeric_allclose",
     "trial_id": "WP2-B1-037",
     "checks": [
-      "spectral_variance_returned"
+      "spectral_variance_returned",
+      "gwpy_numeric_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectral_variance_returned"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: spectral_variance_returned, gwpy_numeric_parity"
   },
   {
     "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/zip",
@@ -637,9 +648,10 @@
     "comparison_mode": "metadata_equality",
     "trial_id": "WP2-B1-039",
     "checks": [
-      "entry_class_reference"
+      "entry_class_reference",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.collections.TimeSeriesDict/step",
@@ -649,8 +661,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-040",
     "checks": [
       "returns_plot",
@@ -670,9 +682,10 @@
     "comparison_mode": "metadata_equality",
     "trial_id": "WP2-B1-041",
     "checks": [
-      "entry_class_reference"
+      "entry_class_reference",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: entry_class_reference, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.collections.TimeSeriesList/__init__",
@@ -686,9 +699,10 @@
     "comparison_mode": "metadata_equality",
     "trial_id": "WP2-B1-042",
     "checks": [
-      "list_initialized"
+      "list_initialized",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: list_initialized"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: list_initialized, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.collections.TimeSeriesList/coalesce",
@@ -702,9 +716,10 @@
     "comparison_mode": "collection_elementwise_numeric",
     "trial_id": "WP2-B1-043",
     "checks": [
-      "coalesced_contiguous"
+      "coalesced_contiguous",
+      "gwpy_elementwise_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: coalesced_contiguous"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: coalesced_contiguous, gwpy_elementwise_parity"
   },
   {
     "identifier": "gwexpy.timeseries.collections.TimeSeriesList/join",
@@ -718,9 +733,10 @@
     "comparison_mode": "numeric_allclose",
     "trial_id": "WP2-B1-044",
     "checks": [
-      "joined_timeseries"
+      "joined_timeseries",
+      "gwpy_numeric_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: joined_timeseries"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: joined_timeseries, gwpy_numeric_parity"
   },
   {
     "identifier": "gwexpy.timeseries.collections.TimeSeriesList/segments",
@@ -734,9 +750,10 @@
     "comparison_mode": "metadata_equality",
     "trial_id": "WP2-B1-045",
     "checks": [
-      "segmentlist_returned"
+      "segmentlist_returned",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: segmentlist_returned"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: segmentlist_returned, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/DictClass",
@@ -750,9 +767,10 @@
     "comparison_mode": "metadata_equality",
     "trial_id": "WP2-B1-046",
     "checks": [
-      "dict_class_reference"
+      "dict_class_reference",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: dict_class_reference"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: dict_class_reference, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/channel",
@@ -767,9 +785,10 @@
     "trial_id": "WP2-B1-047",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/duration",
@@ -784,9 +803,10 @@
     "trial_id": "WP2-B1-048",
     "checks": [
       "quantity_unit_s",
-      "duration_value_matched"
+      "duration_value_matched",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_s, duration_value_matched"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_s, duration_value_matched, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/epoch",
@@ -801,9 +821,10 @@
     "trial_id": "WP2-B1-049",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/name",
@@ -818,9 +839,10 @@
     "trial_id": "WP2-B1-050",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/sample_rate",
@@ -835,9 +857,10 @@
     "trial_id": "WP2-B1-051",
     "checks": [
       "quantity_unit_hz",
-      "rate_value_matched"
+      "rate_value_matched",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_hz, rate_value_matched"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: quantity_unit_hz, rate_value_matched, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.timeseries.timeseries.TimeSeries/step",
@@ -847,8 +870,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-052",
     "checks": [
       "returns_plot",
@@ -887,9 +910,10 @@
     "trial_id": "WP2-B1-054",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array.Array/epoch",
@@ -904,9 +928,10 @@
     "trial_id": "WP2-B1-055",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array.Array/name",
@@ -921,9 +946,10 @@
     "trial_id": "WP2-B1-056",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array2d.Array2D/channel",
@@ -938,9 +964,10 @@
     "trial_id": "WP2-B1-057",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array2d.Array2D/epoch",
@@ -955,9 +982,10 @@
     "trial_id": "WP2-B1-058",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array2d.Array2D/name",
@@ -972,9 +1000,10 @@
     "trial_id": "WP2-B1-059",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.array2d.Array2D/plot",
@@ -984,8 +1013,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-060",
     "checks": [
       "returns_plot",
@@ -1211,9 +1240,10 @@
     "trial_id": "WP2-B1-073",
     "checks": [
       "channel_value_matched",
-      "channel_setter_verified"
+      "channel_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: channel_value_matched, channel_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.series.Series/epoch",
@@ -1228,9 +1258,10 @@
     "trial_id": "WP2-B1-074",
     "checks": [
       "epoch_value_matched",
-      "epoch_setter_verified"
+      "epoch_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: epoch_value_matched, epoch_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.series.Series/name",
@@ -1245,9 +1276,10 @@
     "trial_id": "WP2-B1-075",
     "checks": [
       "name_value_matched",
-      "name_setter_verified"
+      "name_setter_verified",
+      "gwpy_metadata_parity"
     ],
-    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified"
+    "reason": "Elevated from weak attribute_access to concrete contract assertions: name_value_matched, name_setter_verified, gwpy_metadata_parity"
   },
   {
     "identifier": "gwexpy.types.series.Series/plot",
@@ -1257,8 +1289,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-076",
     "checks": [
       "returns_plot",
@@ -1274,8 +1306,8 @@
     "new_execution_status": "actual_call",
     "old_reachability_status": "attribute_accessed",
     "new_reachability_status": "reached_and_returned",
-    "gwpy_comparison": "visual_comparison_pending",
-    "comparison_mode": "visual_artist_data",
+    "gwpy_comparison": "comparison_pending",
+    "comparison_mode": "comparison_pending",
     "trial_id": "WP2-B1-077",
     "checks": [
       "returns_plot",

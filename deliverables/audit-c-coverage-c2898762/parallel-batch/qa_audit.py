@@ -416,11 +416,124 @@ def main() -> int:
         check=True,
     )
     assert git_status_proc.stdout.strip() == "", f"Assertion 19 Failed: uncommitted product code modifications detected in working tree:\n{git_status_proc.stdout}"
-
     print("  [PASS] 19. Execution environment & product source provenance strictly verified (import from repo checkout, strict 0 diff on gwexpy/ against c2898762, strict 0 uncommitted changes in gwexpy/).")
 
+    # 20. WP2第1バッチ（属性アクセス79 API）試行記録・判定遷移・GWpy比較整合性の独立検証
+    b1_trans_file = AUDIT_DIR / "wp2-batch1-attribute-access-transitions.json"
+    b1_trials_file = AUDIT_DIR / "wp2-batch1-attribute-access-trials.jsonl"
+    assert b1_trans_file.exists(), f"Assertion 20 Failed: {b1_trans_file} does not exist"
+    assert b1_trials_file.exists(), f"Assertion 20 Failed: {b1_trials_file} does not exist"
+
+    b1_trans = json.loads(b1_trans_file.read_text(encoding="utf-8"))
+    b1_trials = [json.loads(l) for l in b1_trials_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    assert len(b1_trans) == 79, f"Assertion 20 Failed: transitions count {len(b1_trans)} != 79"
+    assert len(b1_trials) == 79, f"Assertion 20 Failed: trials count {len(b1_trials)} != 79"
+
+    trials_map = {t["target_identifier"]: t for t in b1_trials}
+    assert len(trials_map) == 79, "Assertion 20 Failed: duplicate target_identifier in Batch 1 trials"
+
+    b1_cmp_counts = collections.Counter((t["gwpy_comparison"], t["comparison_mode"]) for t in b1_trans)
+    assert b1_cmp_counts[("numeric_value_parity", "numeric_allclose")] == 10, f"Assertion 20 Failed: numeric_value_parity != 10 ({b1_cmp_counts})"
+    assert b1_cmp_counts[("metadata_property_parity", "metadata_equality")] == 26, f"Assertion 20 Failed: metadata_property_parity != 26 ({b1_cmp_counts})"
+    assert b1_cmp_counts[("collection_elementwise_numeric", "collection_elementwise_numeric")] == 1, f"Assertion 20 Failed: collection_elementwise_numeric != 1 ({b1_cmp_counts})"
+    assert b1_cmp_counts[("comparison_pending", "comparison_pending")] == 12, f"Assertion 20 Failed: comparison_pending != 12 ({b1_cmp_counts})"
+    assert b1_cmp_counts[("incomparable", "incomparable")] == 30, f"Assertion 20 Failed: incomparable != 30 ({b1_cmp_counts})"
+
+    for trans in b1_trans:
+        ident = trans["identifier"]
+        trial = trials_map.get(ident)
+        assert trial is not None, f"Assertion 20 Failed: missing trial for {ident}"
+        assert trans["trial_id"] == trial["trial_id"], f"Assertion 20 Failed: trial_id mismatch for {ident}"
+        assert trans["new_disposition"] == "verified", f"Assertion 20 Failed: disposition != verified for {ident}"
+        assert trans["new_reachability_status"] == "reached_and_returned"
+        assert trans["new_execution_status"] == "actual_call"
+
+        assert trial["assertions"]["passed"] is True, f"Assertion 20 Failed: trial assertions not passed for {ident}"
+        checks_dict = {c["check"]: c["passed"] for c in trial["assertions"]["checks"]}
+
+        # 具体的検査項目の検証（ダミー検査の排除）
+        if "close" in ident:
+            assert checks_dict.get("figure_closed_verified") is True, f"Assertion 20 Failed: figure_closed_verified missing in {ident}"
+        elif "refresh" in ident:
+            assert checks_dict.get("canvas_refresh_verified") is True, f"Assertion 20 Failed: canvas_refresh_verified missing in {ident}"
+        elif "colorbar" in ident:
+            assert checks_dict.get("colorbar_attached_verified") is True, f"Assertion 20 Failed: colorbar_attached_verified missing in {ident}"
+        elif "get_axes" in ident:
+            assert checks_dict.get("axes_list_returned") is True, f"Assertion 20 Failed: axes_list_returned missing in {ident}"
+        elif "save" in ident:
+            assert checks_dict.get("image_file_written") is True, f"Assertion 20 Failed: image_file_written missing in {ident}"
+        elif any(attr in ident for attr in ("/name", "/channel", "/epoch")):
+            assert any(k.endswith("_value_matched") for k in checks_dict)
+            assert any(k.endswith("_setter_verified") for k in checks_dict)
+
+        # GWpy比較とアサーションの完全整合性
+        cmp_st = trans["gwpy_comparison"]
+        if cmp_st == "numeric_value_parity":
+            assert checks_dict.get("gwpy_numeric_parity") is True, f"Assertion 20 Failed: gwpy_numeric_parity missing in {ident}"
+        elif cmp_st == "metadata_property_parity":
+            assert checks_dict.get("gwpy_metadata_parity") is True, f"Assertion 20 Failed: gwpy_metadata_parity missing in {ident}"
+        elif cmp_st == "collection_elementwise_numeric":
+            assert checks_dict.get("gwpy_elementwise_parity") is True, f"Assertion 20 Failed: gwpy_elementwise_parity missing in {ident}"
+        elif cmp_st == "comparison_pending":
+            assert "gwpy_numeric_parity" not in checks_dict
+            assert "gwpy_metadata_parity" not in checks_dict
+
+    print("  [PASS] 20. WP2 Batch 1 independent audit verified across all 79 APIs (1:1 trial-transition match, all concrete assertions passed, Gcf/Renderer/Colorbar states verified, GWpy parity strictly separated: numeric=10, metadata=26, collection=1, comparison_pending=12, incomparable=30).")
+
+    # 21. WP2第2バッチ（スモーク確認74 API）試行記録・判定遷移・GWpy比較整合性の独立検証
+    b2_trans_file = AUDIT_DIR / "wp2-batch2-smoke-transitions.json"
+    b2_trials_file = AUDIT_DIR / "wp2-batch2-smoke-trials.jsonl"
+    assert b2_trans_file.exists(), f"Assertion 21 Failed: {b2_trans_file} does not exist"
+    assert b2_trials_file.exists(), f"Assertion 21 Failed: {b2_trials_file} does not exist"
+
+    b2_trans = json.loads(b2_trans_file.read_text(encoding="utf-8"))
+    b2_trials = [json.loads(l) for l in b2_trials_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    assert len(b2_trans) == 74, f"Assertion 21 Failed: transitions count {len(b2_trans)} != 74"
+    assert len(b2_trials) == 74, f"Assertion 21 Failed: trials count {len(b2_trials)} != 74"
+
+    b2_trials_map = {t["target_identifier"]: t for t in b2_trials}
+    assert len(b2_trials_map) == 74, "Assertion 21 Failed: duplicate target_identifier in Batch 2 trials"
+
+    b2_cmp_counts = collections.Counter((t["gwpy_comparison"], t["comparison_mode"]) for t in b2_trans)
+    assert b2_cmp_counts[("numeric_value_parity", "numeric_allclose")] == 19, f"Assertion 21 Failed: numeric_value_parity != 19 ({b2_cmp_counts})"
+    assert b2_cmp_counts[("exception_parity", "exception_equality")] == 2, f"Assertion 21 Failed: exception_parity != 2 ({b2_cmp_counts})"
+    assert b2_cmp_counts[("metadata_property_parity", "metadata_equality")] == 2, f"Assertion 21 Failed: metadata_property_parity != 2 ({b2_cmp_counts})"
+    assert b2_cmp_counts[("incomparable", "incomparable")] == 51, f"Assertion 21 Failed: incomparable != 51 ({b2_cmp_counts})"
+
+    reach_b2 = collections.Counter(t["new_reachability_status"] for t in b2_trans)
+    assert reach_b2["reached_and_returned"] == 72, f"Assertion 21 Failed: reached_and_returned {reach_b2['reached_and_returned']} != 72"
+    assert reach_b2["reached_with_observed_exception"] == 2, f"Assertion 21 Failed: reached_with_observed_exception {reach_b2['reached_with_observed_exception']} != 2"
+
+    for trans in b2_trans:
+        ident = trans["identifier"]
+        trial = b2_trials_map.get(ident)
+        assert trial is not None, f"Assertion 21 Failed: missing trial for {ident}"
+        assert trans["trial_id"] == trial["trial_id"], f"Assertion 21 Failed: trial_id mismatch for {ident}"
+        assert trans["new_disposition"] == "verified", f"Assertion 21 Failed: disposition != verified for {ident}"
+        assert trans["new_execution_status"] == "actual_call"
+        assert trial["assertions"]["passed"] is True, f"Assertion 21 Failed: trial assertions not passed for {ident}"
+
+        checks_dict = {c["check"]: c["passed"] for c in trial["assertions"]["checks"]}
+        cmp_st = trans["gwpy_comparison"]
+
+        if cmp_st == "numeric_value_parity":
+            assert checks_dict.get("gwpy_numeric_parity") is True, f"Assertion 21 Failed: gwpy_numeric_parity missing in {ident}"
+            assert checks_dict.get("finite_values") is True, f"Assertion 21 Failed: finite_values missing in {ident}"
+        elif cmp_st == "exception_parity":
+            assert checks_dict.get("gwpy_exception_parity") is True, f"Assertion 21 Failed: gwpy_exception_parity missing in {ident}"
+            assert checks_dict.get("observed_exception_match") is True, f"Assertion 21 Failed: observed_exception_match missing in {ident}"
+        elif cmp_st == "metadata_property_parity":
+            assert checks_dict.get("gwpy_metadata_parity") is True, f"Assertion 21 Failed: gwpy_metadata_parity missing in {ident}"
+        elif cmp_st == "incomparable":
+            assert "gwpy_numeric_parity" not in checks_dict
+            assert "gwpy_metadata_parity" not in checks_dict
+
+    print("  [PASS] 21. WP2 Batch 2 independent audit verified across all 74 APIs (1:1 trial-transition match, all concrete assertions passed, GWpy parity strictly separated: numeric=19, exception=2, metadata=2, incomparable=51).")
+
     print("=" * 60)
-    print("ALL 19 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 21 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 

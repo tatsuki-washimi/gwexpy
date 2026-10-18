@@ -1,0 +1,1259 @@
+[
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-001",
+    "checks": [
+      "injected_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/interpolate",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-002",
+    "checks": [
+      "interpolated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: interpolated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-003",
+    "checks": [
+      "updated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-004",
+    "checks": [
+      "injected_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/percentile",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-005",
+    "checks": [
+      "percentile_series_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: percentile_series_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/ratio",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-006",
+    "checks": [
+      "ratio_spectrogram_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: ratio_spectrogram_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-007",
+    "checks": [
+      "updated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesDict/get",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_with_observed_exception",
+    "gwpy_comparison": "exception_parity",
+    "comparison_mode": "exception_equality",
+    "trial_id": "WP2-B2-008",
+    "checks": [
+      "observed_exception_match",
+      "gwpy_exception_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: observed_exception_match, gwpy_exception_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/extend",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B2-009",
+    "checks": [
+      "extended_length",
+      "gwpy_metadata_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: extended_length, gwpy_metadata_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/auto_coherence",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-010",
+    "checks": [
+      "frequencyseries_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: frequencyseries_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/coherence_spectrogram",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-011",
+    "checks": [
+      "spectrogram_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: spectrogram_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/convolve",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-012",
+    "checks": [
+      "convolved_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: convolved_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/correlate",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-013",
+    "checks": [
+      "correlated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: correlated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/csd_spectrogram",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-014",
+    "checks": [
+      "spectrogram_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: spectrogram_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/get",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_with_observed_exception",
+    "gwpy_comparison": "exception_parity",
+    "comparison_mode": "exception_equality",
+    "trial_id": "WP2-B2-015",
+    "checks": [
+      "observed_exception_match",
+      "gwpy_exception_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: observed_exception_match, gwpy_exception_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-016",
+    "checks": [
+      "injected_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/spectral_variance",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-017",
+    "checks": [
+      "spectral_variance_returned",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: spectral_variance_returned, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-018",
+    "checks": [
+      "updated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-019",
+    "checks": [
+      "injected_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.array2d.Array2D/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-020",
+    "checks": [
+      "updated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-021",
+    "checks": [
+      "injected_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-022",
+    "checks": [
+      "updated_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-023",
+    "checks": [
+      "injected_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: injected_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.types.series.Series/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B2-024",
+    "checks": [
+      "updated_shape",
+      "finite_values",
+      "gwpy_numeric_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: updated_shape, finite_values, gwpy_numeric_parity"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.as_series_dict_class",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B2-025",
+    "checks": [
+      "callable_decorator_returned",
+      "gwpy_metadata_parity"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: callable_decorator_returned, gwpy_metadata_parity"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.io.dttxml.read_frequencyseriesdict_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-026",
+    "checks": [
+      "dict_returned",
+      "series_length"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned, series_length"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.io.dttxml.read_frequencyseriesmatrix_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-027",
+    "checks": [
+      "matrix_shape"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.io.dttxml.read_frequencyseries_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-028",
+    "checks": [
+      "series_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.gui.loaders.loaders.load_products",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-029",
+    "checks": [
+      "products_dict_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: products_dict_returned"
+  },
+  {
+    "identifier": "gwexpy.gui.ui.tabs.create_input_tab",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-030",
+    "checks": [
+      "widget_created",
+      "controls_dict_populated"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: widget_created, controls_dict_populated"
+  },
+  {
+    "identifier": "gwexpy.gui.ui.tabs.create_measurement_tab",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-031",
+    "checks": [
+      "widget_created",
+      "controls_dict_populated"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: widget_created, controls_dict_populated"
+  },
+  {
+    "identifier": "gwexpy.gui.ui.tabs.create_excitation_tab",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-032",
+    "checks": [
+      "widget_created",
+      "controls_dict_populated"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: widget_created, controls_dict_populated"
+  },
+  {
+    "identifier": "gwexpy.gui.ui.tabs.create_result_tab",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-033",
+    "checks": [
+      "widget_created",
+      "controls_dict_populated"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: widget_created, controls_dict_populated"
+  },
+  {
+    "identifier": "gwexpy.io.dttxml_common.extract_xml_channels",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-034",
+    "checks": [
+      "channels_extracted"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: channels_extracted"
+  },
+  {
+    "identifier": "gwexpy.io.dttxml_common.load_dttxml_products",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-035",
+    "checks": [
+      "products_loaded"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: products_loaded"
+  },
+  {
+    "identifier": "gwexpy.io.utils.extract_audio_metadata",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-036",
+    "checks": [
+      "metadata_extracted"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: metadata_extracted"
+  },
+  {
+    "identifier": "gwexpy.noise.field.gaussian",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-037",
+    "checks": [
+      "scalarfield_returned",
+      "shape_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: scalarfield_returned, shape_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.noise.field.plane_wave",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-038",
+    "checks": [
+      "scalarfield_returned",
+      "shape_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: scalarfield_returned, shape_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.calculate_default_figsize",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-039",
+    "checks": [
+      "tuple_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: tuple_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_xscale",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-040",
+    "checks": [
+      "scale_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: scale_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_yscale",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-041",
+    "checks": [
+      "scale_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: scale_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_ylim",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-042",
+    "checks": [
+      "ylim_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: ylim_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_norm",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-043",
+    "checks": [
+      "norm_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: norm_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_geometry_and_separate",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-044",
+    "checks": [
+      "geometry_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: geometry_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_xlabel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-045",
+    "checks": [
+      "label_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: label_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_ylabel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-046",
+    "checks": [
+      "label_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: label_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.defaults.determine_clabel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-047",
+    "checks": [
+      "label_determined"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: label_determined"
+  },
+  {
+    "identifier": "gwexpy.plot.gauch_dashboard.plot_gauch_dashboard",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-048",
+    "checks": [
+      "figure_returned",
+      "multi_axes_created"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: figure_returned, multi_axes_created"
+  },
+  {
+    "identifier": "gwexpy.plot.plot.plot_summary",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-049",
+    "checks": [
+      "summary_figure_returned",
+      "axes_array_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: summary_figure_returned, axes_array_returned"
+  },
+  {
+    "identifier": "gwexpy.plot.utils.adaptive_decimate",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-050",
+    "checks": [
+      "decimated_length_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: decimated_length_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.cleaning.threshold_clean",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-051",
+    "checks": [
+      "cleaned_shape",
+      "glitch_masked",
+      "glitch_replaced"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: cleaned_shape, glitch_masked, glitch_replaced"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.cleaning.rolling_median_clean",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-052",
+    "checks": [
+      "cleaned_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: cleaned_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.cleaning.line_removal_clean",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-053",
+    "checks": [
+      "cleaned_shape",
+      "lines_detected_type"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: cleaned_shape, lines_detected_type"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.provenance.validated_provenance",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-054",
+    "checks": [
+      "schema_validated"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: schema_validated"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.provenance.analysis_provenance",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-055",
+    "checks": [
+      "provenance_dict_built"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: provenance_dict_built"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.ats.read_timeseriesdict_ats",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-056",
+    "checks": [
+      "dict_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.ats.read_timeseries_ats",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-057",
+    "checks": [
+      "series_returned",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_returned, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.ats.read_timeseries_ats_mth5",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-058",
+    "checks": [
+      "adapter_call_successful",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: adapter_call_successful, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.dttxml.read_timeseriesdict_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-059",
+    "checks": [
+      "dict_returned",
+      "series_length"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned, series_length"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.dttxml.read_timeseries_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-060",
+    "checks": [
+      "series_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.dttxml.read_timeseriesmatrix_dttxml",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-061",
+    "checks": [
+      "matrix_shape"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_shape"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.gbd.read_timeseriesdict_gbd",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-062",
+    "checks": [
+      "dict_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.gbd.read_timeseries_gbd",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-063",
+    "checks": [
+      "series_returned",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_returned, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.gbd.read_timeseriesmatrix_gbd",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-064",
+    "checks": [
+      "matrix_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.gwf.framel.import_module",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-065",
+    "checks": [
+      "module_resolved"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: module_resolved"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.sdb.read_timeseriesdict_sdb",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-066",
+    "checks": [
+      "dict_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.sdb.read_timeseries_sdb",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-067",
+    "checks": [
+      "series_returned",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_returned, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.tdms.read_timeseriesdict_tdms",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-068",
+    "checks": [
+      "dict_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: dict_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.tdms.read_timeseries_tdms",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-069",
+    "checks": [
+      "series_returned",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: series_returned, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.tdms.read_timeseriesmatrix_tdms",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-070",
+    "checks": [
+      "matrix_returned"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_returned"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.win.read_win_file",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-071",
+    "checks": [
+      "records_read"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: records_read"
+  },
+  {
+    "identifier": "gwexpy.timeseries.spectral.csd_matrix_from_collection",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-072",
+    "checks": [
+      "matrix_returned",
+      "matrix_shape_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_returned, matrix_shape_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.spectral.coherence_matrix_from_collection",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-073",
+    "checks": [
+      "matrix_returned",
+      "matrix_shape_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: matrix_returned, matrix_shape_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.types.seriesmatrix_validation.convert_add_sub_values",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "smoke_only",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "smoke_signature_only",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B2-074",
+    "checks": [
+      "operands_converted",
+      "unit_scaled_to_reference"
+    ],
+    "reason": "Elevated from smoke_only to substantive contract assertions: operands_converted, unit_scaled_to_reference"
+  }
+]
