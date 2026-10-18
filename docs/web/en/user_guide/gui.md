@@ -9,7 +9,7 @@ GWexpy Studio is a separate GUI application maintained in a separate repository;
 it should not be confused with pyaggui or represented as part of GWexpy.
 
 For programmatic signal processing, I/O, statistics and plotting, use
-the supported GWexpy Python API. See the [main documentation](../index.md)
+the supported GWexpy Python API. See the {doc}`main documentation <../index>`
 for current examples.
 
 This page remains as a migration pointer for links to older GWexpy GUI guides.
