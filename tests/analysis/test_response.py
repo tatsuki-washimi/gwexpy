@@ -287,6 +287,67 @@ class TestResponseFunctionAnalysisErrors:
         assert len(result.coupling_factors) == 1
         assert len(result.injected_freqs) == 1
 
+    def test_distinct_target_asd_grid_warnings_preserve_accepted_rows(
+        self, monkeypatch
+    ):
+        """#790: distinguish within-row and common-grid rejections without changing rows."""
+        from gwexpy.analysis import response as response_module
+
+        ts = TimeSeries(np.ones(2048), t0=0.0, dt=1.0 / 256, name="T")
+
+        def make_asd(freqs):
+            return FrequencySeries(
+                np.full(3, 2.0), frequencies=np.array(freqs), unit="Hz^-0.5"
+            )
+
+        def fake_compute_row(
+            *, witness, target, segment, injected_freq, **_kwargs
+        ):
+            row_index = int(segment[0])
+            # Row 1 is internally consistent, but uses a different common grid.
+            injection_grid = (
+                [1.0, 2.0, 4.0] if row_index == 1 else [1.0, 2.0, 3.0]
+            )
+            # Row 2 disagrees with its own background ASD grid.
+            background_grid = (
+                [1.0, 2.0, 5.0] if row_index == 2 else injection_grid
+            )
+            return {
+                "span": segment,
+                "injected_freq": injected_freq,
+                "wit_inj": witness,
+                "tgt_inj": target,
+                "wit_asd_inj": make_asd(injection_grid),
+                "tgt_asd_inj": make_asd(injection_grid),
+                "wit_asd_bkg": make_asd(background_grid),
+                "tgt_asd_bkg": make_asd(background_grid),
+                "cf": 0.5,
+            }
+
+        monkeypatch.setattr(response_module, "_compute_response_row", fake_compute_row)
+        with pytest.warns(UserWarning) as caught:
+            result = ResponseFunctionAnalysis().compute(
+                witness=ts,
+                target=ts,
+                segments=[
+                    (0.0, 1.0, 10.0),
+                    (1.0, 2.0, 20.0),
+                    (2.0, 3.0, 30.0),
+                    (3.0, 4.0, 40.0),
+                ],
+                auto_detect=False,
+                fftlength=0.5,
+            )
+
+        assert [str(w.message) for w in caught] == [
+            "Skipping response row 1 because its target ASD frequency grid differs "
+            "from the common reference grid.",
+            "Skipping response row 2 due to incompatible target ASD frequency grids.",
+        ]
+        np.testing.assert_array_equal(result.injected_freqs, [10.0, 40.0])
+        np.testing.assert_array_equal(result.coupling_factors, [0.5, 0.5])
+        assert len(result.spectrogram_inj) == 2
+
     def test_memory_limit_rejects_single_row_that_cannot_fit(self):
         ts_wit = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="W")
         ts_tgt = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="T")
