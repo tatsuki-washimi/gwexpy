@@ -1064,6 +1064,12 @@ def run_batch3():
     pca_scores = pca_transform(pca_model, decomp_mat)
     pca_rec = pca_inverse_transform(pca_model, pca_scores)
     assert pca_rec.shape == decomp_mat.shape
+    assert np.isfinite(pca_rec.value).all()
+    assert np.allclose(pca_rec.value, decomp_mat.value, atol=1e-12)
+    assert pca_rec.dt == decomp_mat.dt and pca_rec.x0 == decomp_mat.x0
+    assert pca_rec.xunit == decomp_mat.xunit
+    pca_max_diff = float(np.max(np.abs(pca_rec.value - decomp_mat.value)))
+
     base = base_records["gwexpy.timeseries.decomposition.pca_inverse_transform"]
     t_id = f"WP2-B3-{len(trials)+1:03d}"
     trials.append({
@@ -1073,10 +1079,15 @@ def run_batch3():
         "trial_kind": "positive_control",
         "input_description": "Substantive contract test for gwexpy.timeseries.decomposition.pca_inverse_transform",
         "expected": {"outcome": "returned", "all_checks_passed": True},
-        "actual": {"outcome": "returned", "details": {"shape": list(pca_rec.shape)}},
+        "actual": {"outcome": "returned", "details": {"shape": list(pca_rec.shape), "max_reconstruction_diff": pca_max_diff, "finite": True}},
         "assertions": {
             "passed": True,
-            "checks": [{"check": "reconstructed_shape", "passed": True}, {"check": "finite_values", "passed": True}],
+            "checks": [
+                {"check": "reconstructed_shape", "passed": True},
+                {"check": "finite_values", "passed": True},
+                {"check": "reconstruction_numerical_accuracy", "passed": True},
+                {"check": "metadata_axes_preserved", "passed": True},
+            ],
         },
         "disposition": "verified",
         "execution_status": "actual_call",
@@ -1084,7 +1095,7 @@ def run_batch3():
         "gwpy_comparison": {
             "status": "incomparable",
             "comparison_mode": "incomparable",
-            "notes": "GWexpy TimeSeriesMatrix PCA inverse transform contract verified",
+            "notes": f"PCA inverse transform reconstructed TimeSeriesMatrix with machine epsilon accuracy (max diff={pca_max_diff:.2e}), finite values, and preserved axes/xunit",
         },
     })
     transitions.append({
@@ -1098,8 +1109,8 @@ def run_batch3():
         "gwpy_comparison": "incomparable",
         "comparison_mode": "incomparable",
         "trial_id": t_id,
-        "checks": ["reconstructed_shape", "finite_values"],
-        "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values",
+        "checks": ["reconstructed_shape", "finite_values", "reconstruction_numerical_accuracy", "metadata_axes_preserved"],
+        "reason": f"Elevated from reachability_unresolved to substantive contract assertions (shape, finite, diff={pca_max_diff:.2e}, axes)",
     })
 
     # 50: ica_inverse_transform
@@ -1107,6 +1118,12 @@ def run_batch3():
     ica_sources = ica_transform(ica_model, decomp_mat)
     ica_rec = ica_inverse_transform(ica_model, ica_sources)
     assert ica_rec.shape == decomp_mat.shape
+    assert np.isfinite(ica_rec.value).all()
+    assert np.allclose(ica_rec.value, decomp_mat.value, atol=1e-12)
+    assert ica_rec.dt == decomp_mat.dt and ica_rec.x0 == decomp_mat.x0
+    assert ica_rec.xunit == decomp_mat.xunit
+    ica_max_diff = float(np.max(np.abs(ica_rec.value - decomp_mat.value)))
+
     base = base_records["gwexpy.timeseries.decomposition.ica_inverse_transform"]
     t_id = f"WP2-B3-{len(trials)+1:03d}"
     trials.append({
@@ -1116,10 +1133,15 @@ def run_batch3():
         "trial_kind": "positive_control",
         "input_description": "Substantive contract test for gwexpy.timeseries.decomposition.ica_inverse_transform",
         "expected": {"outcome": "returned", "all_checks_passed": True},
-        "actual": {"outcome": "returned", "details": {"shape": list(ica_rec.shape)}},
+        "actual": {"outcome": "returned", "details": {"shape": list(ica_rec.shape), "max_reconstruction_diff": ica_max_diff, "finite": True}},
         "assertions": {
             "passed": True,
-            "checks": [{"check": "reconstructed_shape", "passed": True}, {"check": "finite_values", "passed": True}],
+            "checks": [
+                {"check": "reconstructed_shape", "passed": True},
+                {"check": "finite_values", "passed": True},
+                {"check": "reconstruction_numerical_accuracy", "passed": True},
+                {"check": "metadata_axes_preserved", "passed": True},
+            ],
         },
         "disposition": "verified",
         "execution_status": "actual_call",
@@ -1127,7 +1149,7 @@ def run_batch3():
         "gwpy_comparison": {
             "status": "incomparable",
             "comparison_mode": "incomparable",
-            "notes": "GWexpy TimeSeriesMatrix ICA inverse transform contract verified",
+            "notes": f"ICA inverse transform reconstructed TimeSeriesMatrix with machine epsilon accuracy (max diff={ica_max_diff:.2e}), finite values, and preserved axes/xunit",
         },
     })
     transitions.append({
@@ -1141,8 +1163,8 @@ def run_batch3():
         "gwpy_comparison": "incomparable",
         "comparison_mode": "incomparable",
         "trial_id": t_id,
-        "checks": ["reconstructed_shape", "finite_values"],
-        "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values",
+        "checks": ["reconstructed_shape", "finite_values", "reconstruction_numerical_accuracy", "metadata_axes_preserved"],
+        "reason": f"Elevated from reachability_unresolved to substantive contract assertions (shape, finite, diff={ica_max_diff:.2e}, axes)",
     })
 
     # 51: hurst

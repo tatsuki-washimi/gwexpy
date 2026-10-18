@@ -804,9 +804,11 @@
     "trial_id": "WP2-B3-049",
     "checks": [
       "reconstructed_shape",
-      "finite_values"
+      "finite_values",
+      "reconstruction_numerical_accuracy",
+      "metadata_axes_preserved"
     ],
-    "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values"
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions (shape, finite, diff=3.33e-16, axes)"
   },
   {
     "identifier": "gwexpy.timeseries.decomposition.ica_inverse_transform",
@@ -821,9 +823,11 @@
     "trial_id": "WP2-B3-050",
     "checks": [
       "reconstructed_shape",
-      "finite_values"
+      "finite_values",
+      "reconstruction_numerical_accuracy",
+      "metadata_axes_preserved"
     ],
-    "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values"
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions (shape, finite, diff=4.44e-16, axes)"
   },
   {
     "identifier": "gwexpy.timeseries.hurst.hurst",

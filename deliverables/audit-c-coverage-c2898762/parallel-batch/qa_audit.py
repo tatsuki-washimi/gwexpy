@@ -581,6 +581,12 @@ def main() -> int:
             assert "gwpy_numeric_parity" not in checks_dict
             assert "gwpy_metadata_parity" not in checks_dict
 
+        # PCA/ICA 復元精度の厳格検証（shapeだけでなく有限性・再構成誤差・軸/単位の保存）
+        if "pca_inverse_transform" in ident or "ica_inverse_transform" in ident:
+            assert checks_dict.get("reconstruction_numerical_accuracy") is True, f"Assertion 22 Failed: reconstruction_numerical_accuracy missing in {ident}"
+            assert checks_dict.get("metadata_axes_preserved") is True, f"Assertion 22 Failed: metadata_axes_preserved missing in {ident}"
+            assert checks_dict.get("finite_values") is True, f"Assertion 22 Failed: finite_values missing in {ident}"
+
     # 3バッチ集合の完全分割検査 (79 + 74 + 59 = 212)
     b1_set = set(b1_trials_map.keys())
     b2_set = set(b2_trials_map.keys())
@@ -590,10 +596,91 @@ def main() -> int:
     assert len(b2_set & b3_set) == 0, "Assertion 22 Failed: overlap between Batch 2 and Batch 3"
     assert len(b1_set | b2_set | b3_set) == 212, f"Assertion 22 Failed: union {len(b1_set | b2_set | b3_set)} != 212"
 
-    print("  [PASS] 22. WP2 Batch 3 independent audit verified across all 59 APIs (1:1 trial-transition match, all concrete assertions passed, GWpy parity strictly separated: numeric=6, exception=1, metadata=3, incomparable=49; Batch 1+2+3 partition of 212 pending APIs strictly disjoint and complete).")
+    # 旧台帳の contract_pending 212 識別子集合そのものとの完全一致を直接アサート
+    pending_212_set = {r["identifier"] for r in ledger if r["disposition"] == "contract_pending"}
+    assert len(pending_212_set) == 212, f"Assertion 22 Failed: baseline pending count {len(pending_212_set)} != 212"
+    assert (b1_set | b2_set | b3_set) == pending_212_set, "Assertion 22 Failed: Batch 1+2+3 union is not strictly equal to baseline pending_212_set"
+
+    print("  [PASS] 22. WP2 Batch 3 independent audit verified across all 59 APIs (1:1 trial-transition match, all concrete assertions passed, PCA/ICA machine epsilon accuracy & axes verified, GWpy parity strictly separated: numeric=6, exception=1, metadata=3, incomparable=49; Batch 1+2+3 strictly partitions baseline pending_212_set with 0 overlap and 0 omission).")
+
+    # 23. WP3（環境制約19 API）試行記録・判定遷移・環境境界の独立検証
+    wp3_trans_file = AUDIT_DIR / "wp3-transitions.json"
+    wp3_trials_file = AUDIT_DIR / "wp3-trials.jsonl"
+    wp3_triage_file = AUDIT_DIR / "2026-10-18-wp3-19-environment-blocked-triage.md"
+    assert wp3_trans_file.exists(), f"Assertion 23 Failed: {wp3_trans_file} does not exist"
+    assert wp3_trials_file.exists(), f"Assertion 23 Failed: {wp3_trials_file} does not exist"
+    assert wp3_triage_file.exists(), f"Assertion 23 Failed: {wp3_triage_file} does not exist"
+
+    wp3_trans = json.loads(wp3_trans_file.read_text(encoding="utf-8"))
+    wp3_trials = [json.loads(l) for l in wp3_trials_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    assert len(wp3_trans) == 19, f"Assertion 23 Failed: transitions count {len(wp3_trans)} != 19"
+    assert len(wp3_trials) == 19, f"Assertion 23 Failed: trials count {len(wp3_trials)} != 19"
+
+    wp3_trials_map = {t["target_identifier"]: t for t in wp3_trials}
+    assert len(wp3_trials_map) == 19, "Assertion 23 Failed: duplicate target_identifier in WP3 trials"
+
+    wp3_groups = collections.Counter(t["group"] for t in wp3_trans)
+    assert wp3_groups["lal_pycbc_conversion"] == 8, f"Assertion 23 Failed: lal_pycbc_conversion != 8 ({wp3_groups})"
+    assert wp3_groups["arrakis_nds2_buffer"] == 4, f"Assertion 23 Failed: arrakis_nds2_buffer != 4 ({wp3_groups})"
+    assert wp3_groups["external_data_service"] == 6, f"Assertion 23 Failed: external_data_service != 6 ({wp3_groups})"
+    assert wp3_groups["arima_environment"] == 1, f"Assertion 23 Failed: arima_environment != 1 ({wp3_groups})"
+
+    wp3_disps = collections.Counter(t["new_disposition"] for t in wp3_trans)
+    assert wp3_disps["verified"] == 14, f"Assertion 23 Failed: verified count != 14 ({wp3_disps})"
+    assert wp3_disps["environment_blocked"] == 5, f"Assertion 23 Failed: environment_blocked count != 5 ({wp3_disps})"
+
+    for trans in wp3_trans:
+        ident = trans["identifier"]
+        trial = wp3_trials_map.get(ident)
+        assert trial is not None, f"Assertion 23 Failed: missing trial for {ident}"
+        assert trans["trial_id"] == trial["trial_id"], f"Assertion 23 Failed: trial_id mismatch for {ident}"
+        assert trial["assertions"]["passed"] is True, f"Assertion 23 Failed: assertions not passed for {ident}"
+
+        checks_dict = {c["check"]: c["passed"] for c in trial["assertions"]["checks"]}
+        group = trans["group"]
+
+        if group == "lal_pycbc_conversion":
+            assert trans["new_disposition"] == "verified"
+            assert trans["gwpy_comparison"] == "numeric_value_parity"
+            assert checks_dict.get("subprocess_success") is True
+            assert checks_dict.get("gwpy_numeric_parity") is True
+            assert checks_dict.get("finite_values") is True
+        elif group == "arrakis_nds2_buffer":
+            assert trans["new_disposition"] == "verified"
+            assert trans["gwpy_comparison"] == "numeric_value_parity"
+            assert checks_dict.get("gwpy_numeric_parity") is True
+            assert checks_dict.get("metadata_property_parity") is True
+        elif group == "external_data_service":
+            if "fetch_open_data" in ident:
+                assert trans["new_disposition"] == "verified"
+                assert trans["gwpy_comparison"] == "numeric_value_parity"
+                assert checks_dict.get("public_gwosc_connection") is True
+                assert checks_dict.get("data_received") is True
+            elif "/fetch" in ident:
+                assert trans["new_disposition"] == "environment_blocked"
+                assert trans["gwpy_comparison"] == "incomparable"
+                assert checks_dict.get("nds2_credential_barrier_confirmed") is True
+            elif "/find" in ident:
+                assert trans["new_disposition"] == "environment_blocked"
+                assert trans["gwpy_comparison"] == "incomparable"
+                assert checks_dict.get("datafind_server_barrier_confirmed") is True
+        elif group == "arima_environment":
+            assert trans["new_disposition"] == "environment_blocked"
+            assert trans["gwpy_comparison"] == "incomparable"
+            assert checks_dict.get("c_abi_mismatch_reproduced") is True
+            assert checks_dict.get("numpy2_binary_barrier_documented") is True
+
+    # 旧台帳の environment_blocked 19 識別子集合そのものとの完全一致を直接アサート
+    blocked_19_set = {r["identifier"] for r in ledger if r["disposition"] == "environment_blocked"}
+    assert len(blocked_19_set) == 19, f"Assertion 23 Failed: baseline blocked count {len(blocked_19_set)} != 19"
+    wp3_set = set(wp3_trials_map.keys())
+    assert wp3_set == blocked_19_set, f"Assertion 23 Failed: WP3 target set != baseline blocked_19_set (diff: {wp3_set ^ blocked_19_set})"
+
+    print("  [PASS] 23. WP3 environment-blocked 19 APIs independent audit verified (1:1 trial-transition match, exact set match with baseline blocked_19_set, 14 elevated to verified via native/synthetic GWpy parity, 5 strictly documented as environment_blocked across Kerberos NDS2, DataFind, and NumPy 2.x ABI barriers).")
 
     print("=" * 60)
-    print("ALL 22 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 23 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 
