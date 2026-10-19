@@ -1331,7 +1331,7 @@ def test_candidate_run_is_bound_to_tag_contract_and_manifest(promotion):
     run = {
         "id": manifest["run_id"],
         "workflow_id": manifest["workflow_id"],
-        "path": manifest["workflow_path"] + "@main",
+        "path": manifest["workflow_path"],
         "event": "workflow_dispatch",
         "head_branch": "main",
         "head_sha": manifest["workflow_sha"],
@@ -1347,6 +1347,30 @@ def test_candidate_run_is_bound_to_tag_contract_and_manifest(promotion):
         tag=manifest["tag"],
         source_sha=manifest["source_sha"],
     )
+
+
+def test_candidate_run_rejects_path_with_branch_suffix(promotion):
+    module, manifest, contract = promotion
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"] + "@main",
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+    }
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_run(
+            manifest,
+            contract,
+            run,
+            repository=manifest["repository"],
+            tag=manifest["tag"],
+            source_sha=manifest["source_sha"],
+        )
 
 
 @pytest.mark.parametrize(
@@ -1368,7 +1392,7 @@ def test_candidate_run_rejects_wrong_api_identity_or_state(promotion, field, val
     run = {
         "id": manifest["run_id"],
         "workflow_id": manifest["workflow_id"],
-        "path": manifest["workflow_path"] + "@main",
+        "path": manifest["workflow_path"],
         "event": "workflow_dispatch",
         "head_branch": "main",
         "head_sha": manifest["workflow_sha"],
@@ -1407,7 +1431,7 @@ def test_candidate_run_rejects_tag_and_source_mismatches(promotion, field, value
     run = {
         "id": manifest["run_id"],
         "workflow_id": manifest["workflow_id"],
-        "path": manifest["workflow_path"] + "@main",
+        "path": manifest["workflow_path"],
         "event": "workflow_dispatch",
         "head_branch": "main",
         "head_sha": manifest["workflow_sha"],
@@ -1442,7 +1466,7 @@ def test_candidate_run_rejects_manifest_contract_or_tag_field_mismatch(
     run = {
         "id": manifest["run_id"],
         "workflow_id": manifest["workflow_id"],
-        "path": manifest["workflow_path"] + "@main",
+        "path": manifest["workflow_path"],
         "event": "workflow_dispatch",
         "head_branch": "main",
         "head_sha": manifest["workflow_sha"],

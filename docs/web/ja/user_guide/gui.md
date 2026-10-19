@@ -17,10 +17,13 @@ GWexpy は科学解析、物理データモデル、デジタル信号処理に�
 
 ## インストールと利用方法
 
-GUI機能を利用するには、独立した `pyaggui` を直接インストールして起動してください。
+`pyaggui` のGitHubリポジトリは現在privateのため、リポジトリへのアクセス権が必要です。
+GWexpy には含まれておらず、`pip install pyaggui` は案内されているインストール方法ではありません。
 
 ```bash
-pip install pyaggui
+git clone https://github.com/tatsuki-washimi/pyaggui.git
+cd pyaggui
+python -m pip install .
 pyaggui
 ```
 

@@ -269,7 +269,7 @@ def validate_candidate_run(
         "manifest workflow ref differs from candidate run",
     )
     _require(
-        candidate_run.get("path") == f"{workflow_path}@{branch}"
+        candidate_run.get("path") == workflow_path
         and candidate_run.get("event") == "workflow_dispatch"
         and manifest.get("event") == candidate_run.get("event"),
         "candidate workflow path or event differs from contract",
