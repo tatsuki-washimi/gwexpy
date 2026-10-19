@@ -3,23 +3,10 @@
 Graphical User Interface
 ========================
 
-.. warning::
-   The GWexpy GUI (``gwexpy.gui``) is **experimental** and is not included in
-   the published PyPI distribution. For source/development use, install the GUI
-   dependencies (PyQt5, pyqtgraph, qtpy, sounddevice) explicitly. The API may
-   change without notice.
+.. note::
+   The legacy GUI implementation (``gwexpy.gui``) has been removed from GWexpy
+   and extracted into a standalone repository:
+   `pyaggui <https://github.com/tatsuki-washimi/pyaggui>`_.
 
-To launch the GUI after installing the dependencies from a source checkout or
-development install:
-
-.. code-block:: bash
-
-   pip install PyQt5 pyqtgraph qtpy sounddevice
-   python -m gwexpy.gui
-
-.. currentmodule:: gwexpy.gui
-
-.. automodule:: gwexpy.gui
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   GWexpy is maintained as a scientific gravitational-wave analysis library.
+   For GUI capabilities, please refer to the standalone ``pyaggui`` project.
