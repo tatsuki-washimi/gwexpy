@@ -430,9 +430,9 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window: WindowLike = "hann",
         **kwargs: Any,
     ) -> Spectrogram:
-        """Compute an alternative spectrogram (spectrogram2).
+        """Compute non-averaged spectrogram; use ``spectrogram`` for averaging.
 
-        Returns Spectrogram.
+        ``**kwargs`` reach SciPy's ``periodogram``; ``method=`` raises ``TypeError``.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 

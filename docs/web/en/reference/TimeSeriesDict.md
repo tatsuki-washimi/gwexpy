@@ -148,7 +148,10 @@ append(self, other, copy=True, **kwargs) -> 'TimeSeriesDict'
 ```
 
 
-Append another mapping of TimeSeries or a single TimeSeries to each item.
+Append another mapping of TimeSeries or a single TimeSeries **in place**;
+returns `self`. For a mapping, existing keys are extended and new keys
+are inserted; `copy=True` copies only newly inserted series, not the
+dictionary.
 
 
 ### `asd`
