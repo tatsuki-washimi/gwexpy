@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Graphical User Interface (GUI, Experimental) &#8212; GWexpy</title>
+    <title>Graphical User Interface (Standalone pyaggui Project) &#8212; GWexpy</title>
   
   
   
@@ -402,7 +402,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Graphical User Interface (GUI, Experimental)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Graphical User Interface (Standalone pyaggui Project)</span></li>
   </ul>
 </nav>
 </div>
@@ -416,7 +416,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/645f092d77139635299f967304cc68bb3c932b3d">645f092d</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/3b3746df91cc4586539bbfd0ef5d3ec9441a33a1">3b3746df</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -428,135 +428,34 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="graphical-user-interface-gui-experimental">
-<h1>Graphical User Interface (GUI, Experimental)<a class="headerlink" href="#graphical-user-interface-gui-experimental" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="graphical-user-interface-standalone-pyaggui-project">
+<h1>Graphical User Interface (Standalone pyaggui Project)<a class="headerlink" href="#graphical-user-interface-standalone-pyaggui-project" title="Link to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p><strong>Status:</strong> Experimental, source/development track only</p>
-<p>The GWexpy source tree includes a <strong>PyQt5-based GUI</strong> for interactive data exploration and visualization. However, the GUI should currently be treated as an <strong>experimental, prototype-stage interface</strong>, not as a finalized end-user product. For reproducible and fully supported workflows, the <strong>Python API</strong> remains the primary interface.</p>
-<p>The GUI app and <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package are <strong>not included in the published PyPI distribution</strong>. The published package focuses on the Python library API; GUI stabilization is tracked separately as post-release work.</p>
+<p><strong>Status:</strong> Extracted to standalone project (<a class="reference external" href="https://github.com/tatsuki-washimi/pyaggui">pyaggui</a>)</p>
+<p>The legacy in-tree GUI implementation (<code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code>) has been removed from GWexpy and transitioned to an independent repository: <strong>pyaggui</strong>.</p>
+<p>GWexpy focuses strictly on scientific gravitational-wave analysis, physical data models, and high-performance digital signal processing algorithms. Interactive GUI tools and applications are maintained in standalone companion projects.</p>
 </section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>For source checkout or development use, install GWexpy from a local clone and install the GUI dependencies explicitly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/tatsuki-washimi/gwexpy.git
-<span class="nb">cd</span><span class="w"> </span>gwexpy
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> </span>pyqtgraph<span class="w"> </span>qtpy<span class="w"> </span>sounddevice
+<section id="companion-gui-projects">
+<h2>Companion GUI Projects<a class="headerlink" href="#companion-gui-projects" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>pyaggui</strong>: Standalone interactive diagnostic GUI and plotting application for gravitational-wave data exploration.</p>
+<ul>
+<li><p>Repository: <a class="github reference external" href="https://github.com/tatsuki-washimi/pyaggui">tatsuki-washimi/pyaggui</a></p></li>
+<li><p>Features: Interactive multi-channel time-series inspection, spectral accumulation, spectrogram visualization, and NDS streaming.</p></li>
+</ul>
+</li>
+<li><p><strong>GWexpy Studio</strong>: Next-generation desktop analytical studio (independent application project).</p></li>
+</ul>
+</section>
+<section id="installation-and-usage">
+<h2>Installation and Usage<a class="headerlink" href="#installation-and-usage" title="Link to this heading">#</a></h2>
+<p>To use GUI capabilities, install and run <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pyaggui
+pyaggui
 </pre></div>
 </div>
-<p>This installs additional dependencies:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PyQt5</span></code> - GUI framework</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code> / <code class="docutils literal notranslate"><span class="pre">qtpy</span></code> - interactive plotting and Qt abstraction</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sounddevice</span></code> - audio-related GUI features</p></li>
-</ul>
-</section>
-<section id="launching-the-gui">
-<h2>Launching the GUI<a class="headerlink" href="#launching-the-gui" title="Link to this heading">#</a></h2>
-<p>After installing the GUI dependencies from a source checkout or development install, launch the module directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
-</pre></div>
-</div>
-<p>The published PyPI package does not install a <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script or ship the <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package.</p>
-<section id="programmatically">
-<h3>Programmatically<a class="headerlink" href="#programmatically" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.gui.pyaggui</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainWindow</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtWidgets</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
-<span class="n">window</span> <span class="o">=</span> <span class="n">MainWindow</span><span class="p">()</span>
-<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="supported-file-formats">
-<h2>Supported File Formats<a class="headerlink" href="#supported-file-formats" title="Link to this heading">#</a></h2>
-<p>The GUI supports loading data in the following formats:</p>
-<ul class="simple">
-<li><p><strong>GBD</strong> (GRAPHTEC binary)</p></li>
-<li><p><strong>HDF5</strong> (HDF5-based time series)</p></li>
-<li><p><strong>FITS</strong> (Flexible Image Transport System)</p></li>
-<li><p><strong>MiniSEED</strong> (seismic data)</p></li>
-<li><p><strong>Text/CSV</strong> (comma/space-separated)</p></li>
-</ul>
-<p>Open files via:</p>
-<ol class="arabic simple">
-<li><p><strong>File → Open</strong> or press <code class="docutils literal notranslate"><span class="pre">Ctrl+O</span></code></p></li>
-<li><p>Select the data file from your filesystem</p></li>
-<li><p>The data will be loaded and displayed in the main plotting area</p></li>
-</ol>
-</section>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
-<section id="data-visualization">
-<h3>Data Visualization<a class="headerlink" href="#data-visualization" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>Interactive time series plots</p></li>
-<li><p>Spectrogram generation</p></li>
-<li><p>Frequency domain analysis</p></li>
-<li><p>Multi-channel support</p></li>
-</ul>
-</section>
-<section id="data-inspection">
-<h3>Data Inspection<a class="headerlink" href="#data-inspection" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>View metadata (sampling rate, units, duration)</p></li>
-<li><p>Zoom and pan controls</p></li>
-<li><p>Cursor position indicator</p></li>
-</ul>
-</section>
-<section id="export">
-<h3>Export<a class="headerlink" href="#export" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>Save figures as images (PNG, PDF, etc.)</p></li>
-<li><p>Export processed data</p></li>
-</ul>
-</section>
-</section>
-<section id="known-limitations">
-<h2>Known Limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>The GUI is still a prototype-stage feature. Behavior, supported workflows, and screen layout may change without the same compatibility expectations as the core Python API.</p></li>
-<li><p>The GUI is optimized for single-file analysis. For batch processing, use the Python API.</p></li>
-<li><p>Memory usage increases with file size. For large datasets, consider using the API with streaming options.</p></li>
-<li><p>Some advanced analysis features (e.g., matched filtering, machine learning pipelines) are not available in the GUI. Use the Python API for these workflows.</p></li>
-</ul>
-</section>
-<section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
-<section id="modulenotfounderror-no-module-named-pyqt5">
-<h3>“ModuleNotFoundError: No module named ‘PyQt5’”<a class="headerlink" href="#modulenotfounderror-no-module-named-pyqt5" title="Link to this heading">#</a></h3>
-<p>Ensure that the GUI dependencies were installed in a source checkout or development environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> </span>pyqtgraph<span class="w"> </span>qtpy<span class="w"> </span>sounddevice
-</pre></div>
-</div>
-</section>
-<section id="gui-does-not-launch">
-<h3>GUI does not launch<a class="headerlink" href="#gui-does-not-launch" title="Link to this heading">#</a></h3>
-<p>Check that your system has a display (X11 on Linux, native on macOS/Windows):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>:0<span class="w">  </span><span class="c1"># Linux/WSL (if needed)</span>
-python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
-</pre></div>
-</div>
-</section>
-<section id="file-does-not-load">
-<h3>File does not load<a class="headerlink" href="#file-does-not-load" title="Link to this heading">#</a></h3>
-<p>Verify that the file exists and is in a supported format. Check the console output for error messages:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</pre></div>
-</div>
-</section>
-</section>
-<section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../reference/index.html"><span class="doc">Python API Documentation</span></a> - For programmatic data analysis</p></li>
-<li><p><a class="reference internal" href="../tutorials/index.html"><span class="doc">Tutorials</span></a> - Interactive examples for learning GWexpy</p></li>
-</ul>
+<p>Please refer to the <a class="reference external" href="https://github.com/tatsuki-washimi/pyaggui">pyaggui repository</a> for installation requirements, supported desktop environments, and issue reporting.</p>
 </section>
 </section>
 
@@ -591,26 +490,8 @@ python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launching-the-gui">Launching the GUI</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#programmatically">Programmatically</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-file-formats">Supported File Formats</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualization">Data Visualization</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-inspection">Data Inspection</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export">Export</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#known-limitations">Known Limitations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modulenotfounderror-no-module-named-pyqt5">“ModuleNotFoundError: No module named ‘PyQt5’”</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gui-does-not-launch">GUI does not launch</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-does-not-load">File does not load</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#companion-gui-projects">Companion GUI Projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-and-usage">Installation and Usage</a></li>
 </ul>
   </nav></div>
 
