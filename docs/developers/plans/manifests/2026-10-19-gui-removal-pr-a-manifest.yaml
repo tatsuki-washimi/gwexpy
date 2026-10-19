@@ -1,0 +1,60 @@
+schema: gwexpy-agent-work-manifest-v1
+date_jst: "2026-10-19"
+agent: "Antigravity"
+agent_tag: "AGENT:maintenance"
+task: "PR A — Remove legacy GUI implementation and tests (#645)"
+issue: "https://github.com/tatsuki-washimi/gwexpy/issues/645"
+pr_url: "https://github.com/tatsuki-washimi/gwexpy/pull/802"
+maintainer_decision: "https://github.com/tatsuki-washimi/gwexpy/issues/645#issuecomment-6258374097"
+skills_used: []
+skills_note: "Direct repository maintenance and verification following .agent/AGENTS.md."
+repos:
+  gwexpy:
+    base_sha: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+    branch: "cleanup/remove-legacy-gui-source-tests-645"
+summary:
+  deletions:
+    gwexpy_gui_files: 32
+    tests_gui_files: 21
+    standalone_gui_tests: 3
+    gui_runner_scripts: 2
+    tests_nds_gui_worker_tests: 3
+    total_deleted: 61
+  modifications:
+    tests_io_files: 4
+    docs_api_files: 3
+    workflow_files: 1
+    total_modified: 8
+  total_files_changed: 70
+  lines_added: 80
+  lines_deleted: 11541
+validation:
+  performed:
+    - name: "git diff --check"
+      result: "PASS"
+    - name: "verify-changed-files --changed"
+      result: "PASS"
+    - name: "ruff check gwexpy tests"
+      result: "PASS"
+    - name: "ruff format --check (changed files)"
+      result: "PASS"
+    - name: "core pytest (TimeSeries, FrequencySeries, Spectrogram, Fields, Plot, DiagGUI XML, CLI)"
+      result: "PASS (249 passed, 6 skipped)"
+    - name: "GWpy behavioral compatibility (tests/timeseries/test_gwpy_behavioral_compatibility.py)"
+      result: "PASS (64 passed)"
+    - name: "wheel and sdist build (python -m build)"
+      result: "PASS (0 gui files found in archives)"
+    - name: "clean venv install and find_spec check"
+      result: "PASS (find_spec('gwexpy.gui') is None outside source tree)"
+    - name: "clean venv CLI entry point check"
+      result: "PASS (gwexpy --help)"
+    - name: "Docs CI autodoc fix"
+      result: "PASS (removed automodule:: gwexpy.gui from docs/web/en, docs/web/ja, docs_redesign)"
+    - name: "GWpy compat CI certifi pin"
+      result: "PASS (pinned certifi<=2026.7.22 in .github/workflows/test-compat-gwpy.yml to fix upstream gwosc.org TLS certificate verification)"
+  omitted:
+    - name: "pyaggui full test / NDS live smoke"
+      reason: "Decoupled per maintainer decision on Issue #645 comment 6258374097."
+    - name: "pyproject.toml and full Sphinx docs redesign"
+      reason: "Deferred to PR B as scoped in Issue #645."
+  check_physics: "PASS — no core scientific algorithms or physical unit conversions altered."

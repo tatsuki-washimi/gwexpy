@@ -8,7 +8,6 @@ import numpy as np
 import pytest
 from astropy.io.registry.base import IORegistryError
 
-from gwexpy.gui.loaders.loaders import load_products
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -58,9 +57,6 @@ def test_removed_sdb_aliases_and_extensions_are_not_supported(tmp_path, extensio
 
     with pytest.raises(IORegistryError):
         TimeSeriesDict.read(path)
-
-    with pytest.raises(RuntimeError, match="Unsupported file format"):
-        load_products(str(path))
 
 
 def test_sdb_matrix_reader_remains_available_as_implementation_surface(tmp_path):
