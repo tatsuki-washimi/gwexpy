@@ -42,8 +42,12 @@ def test_v025_schema_selection_preserves_v024_nodes_and_semantics() -> None:
     assert evidence.DTTXML_TEST_NODES == dttxml_nodes
     evidence._select_version("0.2.4")
     assert evidence.PAYLOAD_SCHEMA == "gwexpy-v024-release-payload-v1"
+    evidence._select_version("0.2.6")
+    assert evidence.VERSION == "0.2.6"
+    assert evidence.PAYLOAD_SCHEMA == "gwexpy-v026-release-payload-v1"
+    assert evidence.AGGREGATE_SCHEMA == "gwexpy-diaggui-qualification-evidence-v1"
     with pytest.raises(evidence.DiagGUIQualificationError, match="unsupported"):
-        evidence._select_version("0.2.6")
+        evidence._select_version("0.2.7")
 
 
 def canonical_json(data: object) -> bytes:

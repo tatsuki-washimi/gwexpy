@@ -278,8 +278,13 @@ def test_version_contract_preserves_v022_v023_and_adds_v024() -> None:
         "evidence_schema": "gwexpy-v025-qualification-evidence-v1",
         "expected_skips_schema": "gwexpy-v025-qualification-expected-skips-v1",
     }
+    assert evidence.qualification_contract("0.2.6") == {
+        "artifact_prefix": "gwexpy-qualification-evidence-v1",
+        "evidence_schema": "gwexpy-qualification-evidence-v1",
+        "expected_skips_schema": None,
+    }
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
-        evidence.qualification_contract("0.2.6")
+        evidence.qualification_contract("0.2.7")
 
 
 def test_v024_baseline_is_version_bound_and_has_a_distinct_identity() -> None:
@@ -1082,7 +1087,7 @@ def test_record_rejects_unknown_version_cell_and_missing_v023_inputs(
 
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
         evidence.record_cell(
-            version="0.2.6",
+            version="0.2.7",
             cell=EXPECTED_CELLS[0],
             source_sha=SOURCE_SHA,
             payload_manifest=payload,

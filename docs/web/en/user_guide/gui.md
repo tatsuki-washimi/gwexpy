@@ -17,9 +17,10 @@ GWexpy focuses strictly on scientific gravitational-wave analysis, physical data
 
 ## Installation and Usage
 
-The `pyaggui` GitHub repository is currently private, so repository access is
-required. The project is not installed with GWexpy, and `pip install pyaggui`
-is not the documented installation path:
+The `pyaggui` GitHub repository is currently private, and no public PyPI
+distribution is available. Repository access is required to install it. For
+users with repository access, its README documents this source installation
+path; `pip install pyaggui` is not the documented path:
 
 ```bash
 git clone https://github.com/tatsuki-washimi/pyaggui.git
