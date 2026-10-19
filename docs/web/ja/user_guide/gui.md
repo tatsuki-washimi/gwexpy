@@ -1,119 +1,32 @@
-# グラフィカルユーザーインターフェース（GUI、試作版）
+# グラフィカルユーザーインターフェース (独立プロジェクト pyaggui)
 
 ## 概要
 
-**ステータス:** 試作版（ソース / 開発環境専用）
+**ステータス:** 独立リポジトリへ移行完了 ([pyaggui](https://github.com/tatsuki-washimi/pyaggui))
 
-GWexpy のソースツリーには **PyQt5 ベースの GUI** が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は **試作段階 / 実験的インターフェース**として扱ってください。再現性やサポートの観点では、**Python API** が引き続き主要インターフェースです。
+旧GWexpyツリー内GUI実装（`gwexpy.gui`）はGWexpyから撤去され、独立リポジトリ **pyaggui** へ移行しました。
 
-GUI アプリと `gwexpy.gui` package は **公開済みPyPI配布物には含まれません**。公開済みパッケージは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。
+GWexpy は科学解析、物理データモデル、デジタル信号処理に特化したコアライブラリとして保守されます。対話的GUI機能は独立したコンパニオンプロジェクトで提供されます。
 
-## インストール
+## 関連GUIプロジェクト
 
-ソース checkout または開発用途では、ローカル clone から GWexpy を入れたうえで GUI 依存関係を明示的にインストールします：
+- **pyaggui**: 重力波データ探索および可視化のための独立した診断GUIアプリケーション。
+  - リポジトリ: [https://github.com/tatsuki-washimi/pyaggui](https://github.com/tatsuki-washimi/pyaggui)
+  - 主な機能: マルチチャンネル時系列探索、スペクトル蓄積・平均化、スペクトログラム表示、NDSストリーミング。
+- **GWexpy Studio**: 次世代デスクトップ解析スタジオ（独立アプリケーションプロジェクト）。
 
-```bash
-git clone https://github.com/tatsuki-washimi/gwexpy.git
-cd gwexpy
-pip install -e .
-pip install PyQt5 pyqtgraph qtpy sounddevice
-```
+## インストールと利用方法
 
-これにより、以下の追加の依存パッケージがインストールされます：
-- `PyQt5` - GUI フレームワーク
-- `pyqtgraph` / `qtpy` - インタラクティブ表示と Qt 抽象化
-- `sounddevice` - 音声系 GUI 機能
-
-## GUI を起動する
-
-ソース checkout または開発インストールで GUI 依存関係を入れた後は、モジュールを直接起動します：
+GUI機能を利用するには、独立した `pyaggui` を直接インストールして起動してください。
 
 ```bash
-python -m gwexpy.gui
+pip install pyaggui
+pyaggui
 ```
 
-公開済みPyPIパッケージでは `gwexpy.gui` console script も `gwexpy.gui` package も配布しません。
+動作要件、対応環境、Issue報告については [pyaggui リポジトリ](https://github.com/tatsuki-washimi/pyaggui) を参照してください。
 
-### プログラム内での起動
+## 関連項目
 
-```python
-from gwexpy.gui.pyaggui import MainWindow
-import sys
-from PyQt5 import QtWidgets
-
-app = QtWidgets.QApplication(sys.argv)
-window = MainWindow()
-window.show()
-sys.exit(app.exec_())
-```
-
-## 対応ファイル形式
-
-GUI は以下の形式でのデータ読み込みに対応しています：
-
-- **GBD** (GRAPHTEC バイナリ)
-- **HDF5** (HDF5 ベースの時系列)
-- **FITS** (Flexible Image Transport System)
-- **MiniSEED** (地震波データ)
-- **テキスト/CSV** (カンマまたはスペース区切り)
-
-ファイルを開く方法：
-1. **File → Open** またはキーボードの `Ctrl+O` を押す
-2. ファイルシステムからデータファイルを選択する
-3. データが読み込まれ、メインプロット領域に表示されます
-
-## 主な機能
-
-### データ可視化
-- インタラクティブな時系列プロット
-- スペクトログラムの生成
-- 周波数領域解析
-- マルチチャンネル対応
-
-### データ検査
-- メタデータの表示（サンプリングレート、単位、期間）
-- ズームとパンコントロール
-- カーソル位置インジケータ
-
-### エクスポート
-- 図を画像として保存（PNG、PDF など）
-- 処理済みデータをエクスポート
-
-## 既知の制限事項
-
-- GUI はまだ試作段階の機能であり、挙動・対応ワークフロー・画面構成は今後変更される可能性があります。コア Python API と同等の互換性保証は想定していません。
-- GUI は単一ファイルの解析に最適化されています。バッチ処理には Python API の使用をお勧めします。
-- メモリ使用量はファイルサイズとともに増加します。大規模なデータセットについては、API のストリーミングオプションの使用を検討してください。
-- 一部の高度な解析機能（マッチドフィルタリング、機械学習パイプラインなど）は GUI では利用できません。これらのワークフローについては、Python API を使用してください。
-
-## トラブルシューティング
-
-### "ModuleNotFoundError: No module named 'PyQt5'"
-
-ソース checkout または開発環境で GUI 依存関係がインストールされていることを確認してください：
-
-```bash
-pip install PyQt5 pyqtgraph qtpy sounddevice
-```
-
-### GUI が起動しない
-
-システムにディスプレイがあることを確認してください（Linux の X11、macOS/Windows はネイティブ）：
-
-```bash
-export DISPLAY=:0  # Linux/WSL（必要な場合）
-python -m gwexpy.gui
-```
-
-### ファイルが読み込めない
-
-ファイルが存在し、対応形式であることを確認してください。コンソール出力でエラーメッセージを確認してください：
-
-```bash
-python -m gwexpy.gui 2>&1 | head -20
-```
-
-## 参照
-
-- {doc}`Python API ドキュメント <../index>` - プログラミングによるデータ解析の方法
-- {doc}`チュートリアル <tutorials/index>` - GWexpy の学習用対話的な例
+- {doc}`Python API ドキュメント <../index>` - プログラマティックな科学データ解析
+- {doc}`チュートリアル <tutorials/index>` - GWexpy の学習用インタラクティブ例
