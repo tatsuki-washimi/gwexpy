@@ -65,7 +65,7 @@ python scripts/ci/run_gate.py interop-contract
 
 Each gate runs the same command set as the corresponding workflow job, so use these for local reproduction before opening a PR.
 
-The `NDS Live Tests` workflow is **manual-only** (`workflow_dispatch`): it connects to a live NDS server and needs network access plus Kerberos credentials that scheduled CI does not have, so it is never run automatically and an empty run history is expected. Trigger it on demand from the Actions tab to validate NDS connectivity.
+GWexpy retains NDS-related library I/O for offline scientific analysis. This repository does not provide a live-NDS workflow, and its test suite does not certify connectivity to remote NDS services. Live connectivity depends on the user's environment and is not part of release qualification.
 
 GUI tests are split into two buckets:
 
