@@ -450,6 +450,58 @@
         "main",
         "maint/0.2"
       ]
+    },
+    "v0.2.6": {
+      "plan_path": "docs/developers/plans/20261019_v0.2.6_release_plan.md",
+      "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
+      "review_evidence_schema": "gwexpy-v026-review-evidence-v1",
+      "payload_schema": "gwexpy-v026-release-payload-v1",
+      "integration_evidence_schema": "gwexpy-v026-integration-evidence-v1",
+      "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
+      "review_lanes": {
+        "documentation": [
+          "CHANGELOG.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes"
+        ],
+        "release-security": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts"
+        ],
+        "scientific-data-model": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ]
+      },
+      "s_to_r_allowed_paths": [
+        "docs/developers/plans/20261019_v0.2.6_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
+      ],
+      "artifact_prefix": "v026-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.2"
+      ]
     }
   }
 }

@@ -240,7 +240,7 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         raise ReleaseContractError(f"invalid release contract for {tag}")
     review_base_sha = contract.get("review_base_sha")
     if review_base_sha is not None and (
-        tag not in {"v0.2.4", "v0.2.5"}
+        tag not in {"v0.2.4", "v0.2.5", "v0.2.6"}
         or not isinstance(review_base_sha, str)
         or SHA40.fullmatch(review_base_sha) is None
     ):

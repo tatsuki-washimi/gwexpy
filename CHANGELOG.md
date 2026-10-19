@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.2.6] - 2026-10-19
+
+This maintenance release clarifies documentation contracts, refines diagnostic
+warning messages, and completes repository cleanup following the decoupling of the
+legacy in-tree GUI to the independent `pyaggui` project. It introduces no new
+public APIs, dependencies, or storage formats. Tested scientific values, dtypes,
+axes, and units are strictly preserved.
+
+### Fixed
+
+- **ASD frequency-grid rejection diagnostics**: Distinguish rejection causes
+  when validating frequency grids in ASD response functions, emitting specific
+  informative warnings while preserving warning categories and stack levels (#790, PR #794).
+
+### Documentation
+
+- **`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution
+  path and clarify constraints on stride/window arguments (#779, PR #798).
+- **`TimeSeriesDict.append()`**: Document in-place dictionary update behavior and
+  explicit `self` return contract (#640, PR #798).
+- **GUI transition guide**: Update English and Japanese user guides and how-to
+  documentation to point to the independent `pyaggui` and `GWexpy Studio`
+  projects (#645, PR #803).
+
+### Removed
+
+- **Legacy in-tree GUI**: Fully removed deprecated `gwexpy/gui/` implementation
+  and associated `tests/gui/` tests, GUI-specific development dependencies, packaging
+  exclusions, and CI fixtures following ADR 0001 (#645, PR #802, PR #803).
+  Boundary defense tests added to prevent accidental reintroduction.
+
 ## [0.2.5] - 2026-10-04
 
 This patch improves the reliability of scientific-data I/O and reduces
@@ -1606,3 +1637,4 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 [0.1.0b2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2
 [0.1.0b1]: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1
 [0.2.5]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5
+[0.2.6]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.5...v0.2.6

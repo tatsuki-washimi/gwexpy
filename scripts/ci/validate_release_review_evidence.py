@@ -36,7 +36,7 @@ ENTRY_KEYS = {
     "finding_ids",
 }
 V024_TAG = "v0.2.4"
-STRICT_APPROVAL_TAGS = {"v0.2.4", "v0.2.5"}
+STRICT_APPROVAL_TAGS = {"v0.2.4", "v0.2.5", "v0.2.6"}
 V024_HUMAN_APPROVAL_KEYS = {
     "approver_login",
     "role",

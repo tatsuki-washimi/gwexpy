@@ -61,6 +61,23 @@ review_evidence_json: |
     }
   }
 """
+V026_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = b"""\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v026-review-evidence-v1",
+    "entries": [],
+    "human_approval": {
+      "approver_login": "",
+      "role": "",
+      "reviewed_commit": "",
+      "scope_paths": [],
+      "scope_digest": "",
+      "timestamp_utc": "",
+      "verdict": "",
+      "comment_id": 0
+    }
+  }
+"""
 
 
 class ReleaseValidationError(ValueError):
@@ -412,11 +429,12 @@ def _validate_v024_review_source_placeholder(
             f"{expected_tag} reviewed source must contain the exact empty review "
             "evidence placeholder"
         ) from exc
-    placeholder = (
-        V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
-        if expected_tag == "v0.2.5"
-        else V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
-    )
+    if expected_tag == "v0.2.6":
+        placeholder = V026_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+    elif expected_tag == "v0.2.5":
+        placeholder = V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+    else:
+        placeholder = V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
     if source != placeholder:
         raise ReleaseValidationError(
             f"{expected_tag} reviewed source must contain the exact empty review "
@@ -433,7 +451,7 @@ def validate_s_to_r(
 ) -> None:
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
-    if expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5"} and reviewed_commit == source_sha:
+    if expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5", "v0.2.6"} and reviewed_commit == source_sha:
         raise ReleaseValidationError(
             f"{expected_tag} S-to-R binding requires distinct commits"
         )
@@ -461,7 +479,7 @@ def validate_s_to_r(
             reviewed_commit,
             str(contract["review_evidence_path"]),
         )
-    elif expected_tag in {"v0.2.4", "v0.2.5"}:
+    elif expected_tag in {"v0.2.4", "v0.2.5", "v0.2.6"}:
         _validate_v024_review_source_placeholder(
             root,
             reviewed_commit,
@@ -504,7 +522,7 @@ def validate_release(
         )
     contract = _release_contract(expected_tag)
     artifact_prefix = str(contract["artifact_prefix"])
-    if expected_tag in {"v0.2.4", "v0.2.5"} and review_evidence is None:
+    if expected_tag in {"v0.2.4", "v0.2.5", "v0.2.6"} and review_evidence is None:
         raise ReleaseValidationError(f"{expected_tag} requires release review evidence")
 
     if is_release_tag(release_ref):
