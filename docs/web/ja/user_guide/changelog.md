@@ -2,6 +2,7 @@
 
 GWexpy の主な変更履歴を記載します。
 
+2026-10-04（UTC）に公開しました：[PyPI 0.2.5](https://pypi.org/project/gwexpy/0.2.5/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5)。
 2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。
 
 ## [0.2.4] - 2026-09-26

@@ -2,6 +2,7 @@
 
 Notable changes to the GWexpy project.
 
+Published on 2026-10-04 UTC: [PyPI 0.2.5](https://pypi.org/project/gwexpy/0.2.5/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5).
 Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
 
 ## [0.2.4] - 2026-09-26

@@ -769,7 +769,9 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         "v0.2.5",
         "v0.2.6",
     }
-    legacy_releases = {tag: contract for tag, contract in values.items() if tag != "v0.2.6"}
+    legacy_releases = {
+        tag: contract for tag, contract in values.items() if tag != "v0.2.6"
+    }
     assert all("promotion" not in contract for contract in legacy_releases.values())
     assert (
         values["v0.2.5"]["review_evidence_schema"] == "gwexpy-v025-review-evidence-v2"

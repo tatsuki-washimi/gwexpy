@@ -82,15 +82,37 @@ def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
-def _load_review_document(path: Path) -> dict[str, Any]:
-    """Load JSON evidence, or the strict JSON block in the audit YAML."""
+class ReviewEvidenceDocument:
+    """Keep the original file bytes separate from the parsed JSON object."""
+
+    __slots__ = ("raw_bytes", "raw_sha256", "data")
+
+    def __init__(self, raw_bytes: bytes, raw_sha256: str, data: dict[str, Any]):
+        self.raw_bytes = raw_bytes
+        self.raw_sha256 = raw_sha256
+        self.data = data
+
+
+def load_review_document(path: Path | str) -> ReviewEvidenceDocument:
+    """Load bounded JSON evidence or its strict coordinator YAML wrapper.
+
+    ``raw_sha256`` always hashes the exact file bytes. ``data`` is the decoded
+    inner JSON object and must never be re-serialized to identify the file.
+    """
+    evidence_path = Path(path)
+    if evidence_path.is_symlink() or not evidence_path.is_file():
+        raise ReleaseReviewEvidenceError("review evidence must be a regular file")
     try:
-        if path.stat().st_size > MAX_REVIEW_DOCUMENT_BYTES:
+        with evidence_path.open("rb") as stream:
+            raw = stream.read(MAX_REVIEW_DOCUMENT_BYTES + 1)
+        if len(raw) > MAX_REVIEW_DOCUMENT_BYTES:
             raise ReleaseReviewEvidenceError("review evidence document is too large")
-        source = path.read_text(encoding="utf-8")
+        source = raw.decode("utf-8", errors="strict")
     except OSError as exc:
         raise ReleaseReviewEvidenceError("invalid review evidence document") from exc
-    if path.suffix in {".yaml", ".yml"}:
+    except UnicodeDecodeError as exc:
+        raise ReleaseReviewEvidenceError("invalid review evidence document") from exc
+    if evidence_path.suffix.lower() in {".yaml", ".yml"}:
         key = re.compile(r"^review_evidence_json\s*:", re.MULTILINE)
         if len(key.findall(source)) != 1:
             raise ReleaseReviewEvidenceError(
@@ -119,7 +141,16 @@ def _load_review_document(path: Path) -> dict[str, Any]:
         raise ReleaseReviewEvidenceError("invalid review evidence JSON") from exc
     if not isinstance(data, dict):
         raise ReleaseReviewEvidenceError("review evidence must be a JSON object")
-    return data
+    return ReviewEvidenceDocument(
+        raw_bytes=raw,
+        raw_sha256=hashlib.sha256(raw).hexdigest(),
+        data=data,
+    )
+
+
+def _load_review_document(path: Path) -> dict[str, Any]:
+    """Compatibility wrapper for callers that need only the parsed object."""
+    return load_review_document(path).data
 
 
 def _scope_digest(repo_root: Path, commit: str, paths: list[str]) -> str:
@@ -314,7 +345,7 @@ def validate_review_evidence(
     lane_scope_paths = {
         lane: set(paths) for lane, paths in dict(contract["review_lanes"]).items()
     }
-    data = _load_review_document(evidence_path)
+    data = load_review_document(evidence_path).data
     expected_top_level = {"schema", "entries"}
     if expected_tag in STRICT_APPROVAL_TAGS or "promotion" in contract:
         expected_top_level.add("human_approval")

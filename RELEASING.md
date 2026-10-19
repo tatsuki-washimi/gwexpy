@@ -7,20 +7,24 @@ be dispatched from `main`, which the workflow enforces. The release contract
 in `scripts/ci/release_contracts.json` determines whether a version uses the
 historical release path or build-once promotion.
 
-v0.2.5 is published and immutable. No future release version has been selected
-or contracted. A promotion release applies only when a future release contract
-opts into the promotion schema. The workflow does not add a speculative
-v0.2.6 contract. Existing contract entries and their legacy behavior remain
+v0.2.5 is published and immutable. v0.2.6 is the selected maintenance release
+candidate and has a registered promotion contract in
+`scripts/ci/release_contracts.json`; it has not been published. The v0.2.6
+contract uses the build-once promotion procedure below. Other versions use the
+historical path or build-once promotion only when their own contract selects
+that behavior. Existing contract entries and their legacy behavior remain
 unchanged as release history.
 
 ## Future build-once candidate and promotion procedure
 
-Use this procedure only after a real future release contract has selected the
-version, tracking issue, release owner, review evidence, approval rules, and
-qualification profile, and has opted into the promotion schema. Complete the
-configured independent reviews on one source commit `S`. The configured human
-approval must bind that exact `S`; it is separate from the later release-owner
-GO and cannot authorize publication.
+Use this procedure for v0.2.6 and for any later version whose contract selects
+build-once promotion. Complete the configured independent reviews on one
+source commit `S`. The configured Source Human Approval must bind that exact
+`S`; it is separate from the later Release Owner GO and cannot authorize
+publication. An approval for an earlier source commit does not transfer to a
+new source SHA. For v0.2.6, the existing Source Human Approval applies only to
+S′ `7de451802204c3d141c719c780b152e16e2ca23c` and is not valid for a remedied
+source S″.
 
 The contract's `S`-to-`R` allowlist is exact: `R` may differ from reviewed `S`
 only for the contract-allowed approval and evidence updates and existing
@@ -44,8 +48,10 @@ gh workflow run publish-release.yml --ref main \
 ```
 
 The candidate `verify` job validates the configured `S` approval before build.
-The candidate run builds the distributions once, qualifies those bytes, and
-uploads a promotion manifest after every required gate succeeds. Wait until
+Candidate Qualification must pass on the exact source before any release tag or
+distribution is published. The candidate run builds the distributions once,
+qualifies those bytes, and uploads a promotion manifest after every required
+gate succeeds. Wait until
 the candidate run is completed with conclusion success, with
 `run_attempt: 1`, and the promotion manifest artifact has been uploaded. All
 three conditions must hold before you issue the release-owner GO.

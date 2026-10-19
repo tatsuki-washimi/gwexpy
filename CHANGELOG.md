@@ -31,6 +31,23 @@ axes, and units are strictly preserved.
   exclusions, and CI fixtures following ADR 0001 (#645, PR #802, PR #803).
   Boundary defense tests added to prevent accidental reintroduction.
 
+### Known limitations
+
+These issues remain unresolved in v0.2.6. No workaround has been verified for
+the affected cases. They are individual patch candidates for v0.2.7 or later;
+this is not a commitment to include them in v0.2.7.
+
+- [#766](https://github.com/tatsuki-washimi/gwexpy/issues/766): A GWF read of a missing file using `framel` or automatic backend selection can cause a native segmentation fault and terminate the process. No safe workaround is verified.
+- [#767](https://github.com/tatsuki-washimi/gwexpy/issues/767): `PercentileThreshold.threshold()` can calculate from raw magnitudes after incompatible PSD units reach `bkg_table`, leaving the threshold scientifically ambiguous. Do not rely on that result; no safe workaround is verified.
+- [#768](https://github.com/tatsuki-washimi/gwexpy/issues/768): `standardize_matrix` can retain input units on dimensionless z-scores, so downstream unit-aware interpretation may be misleading. No workaround is verified.
+- [#769](https://github.com/tatsuki-washimi/gwexpy/issues/769): `StandardizeTransform` can retain units after standardization and silently use z-score for an unrecognized method. No workaround is verified.
+- [#770](https://github.com/tatsuki-washimi/gwexpy/issues/770): `TimeSeriesMatrix.radian()` and `.degree()` can leave container and element unit metadata inconsistent with converted values. No workaround is verified.
+- [#771](https://github.com/tatsuki-washimi/gwexpy/issues/771): A failed entry read from a non-manifest HDF5 collection can be silently skipped, yielding partial or empty data. Do not assume a successful return includes every stored entry; no workaround is verified.
+- [#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): `to_tgraph` can accept error-bar values without checking unit compatibility with the series, potentially misrepresenting uncertainties. No workaround is verified.
+- [#774](https://github.com/tatsuki-washimi/gwexpy/issues/774): An invalid nonempty HDF5 `frequency_unit` can silently fall back to Hz and misstate the frequency axis. No workaround is verified.
+- [#777](https://github.com/tatsuki-washimi/gwexpy/issues/777): `SeriesMatrix.to_hdf5` can omit Quantity-valued custom attributes without warning, losing metadata. No workaround is verified.
+- [#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` can return dimensionless data without restoring original physical units. No workaround is verified.
+
 ## [0.2.5] - 2026-10-04
 
 This patch improves the reliability of scientific-data I/O and reduces

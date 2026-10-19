@@ -24,10 +24,13 @@ PUBLISHED_V023_HISTORY_ENTRY = f"[{PUBLISHED_V023_VERSION}] - {PUBLISHED_V023_DA
 PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
-CANDIDATE_V025_VERSION = "0.2.5"
-CANDIDATE_V025_METADATA_DATE = "2026-10-04"
-CANDIDATE_V025_HISTORY_ENTRY = (
-    f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_METADATA_DATE}"
+PUBLISHED_V025_VERSION = "0.2.5"
+PUBLISHED_V025_DATE = "2026-10-04"
+PUBLISHED_V025_HISTORY_ENTRY = f"[{PUBLISHED_V025_VERSION}] - {PUBLISHED_V025_DATE}"
+CANDIDATE_V026_VERSION = "0.2.6"
+CANDIDATE_V026_METADATA_DATE = "2026-10-19"
+CANDIDATE_V026_HISTORY_ENTRY = (
+    f"[{CANDIDATE_V026_VERSION}] - {CANDIDATE_V026_METADATA_DATE}"
 )
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
@@ -141,7 +144,8 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
     release_status = json.loads(
         (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
-    version = release_status["latest_release"]
+    version = PUBLISHED_V024_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V025_VERSION
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -202,8 +206,8 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_v022_v023_and_v024_history_remains_distinct():
-    """Keep published history and the current v0.2.5 planning date explicit."""
+def test_published_history_and_v026_candidate_metadata_remain_distinct():
+    """Keep published history distinct from the current v0.2.6 candidate."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -220,11 +224,11 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         RELEASE_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
         PUBLISHED_V024_HISTORY_ENTRY,
-        CANDIDATE_V025_HISTORY_ENTRY,
+        PUBLISHED_V025_HISTORY_ENTRY,
     ):
         assert re.search(rf"^## {re.escape(history_entry)}$", changelog, re.MULTILINE)
     assert re.search(
-        rf"^version: {re.escape(CANDIDATE_V025_VERSION)}$",
+        rf"^version: {re.escape(CANDIDATE_V026_VERSION)}$",
         citation,
         re.MULTILINE,
     )
@@ -232,7 +236,7 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
     release_plan_text = " ".join(release_plan.split())
-    assert f"Release date: **{CANDIDATE_V025_METADATA_DATE} UTC**" in release_plan_text
+    assert f"Release date: **{PUBLISHED_V025_DATE} UTC**" in release_plan_text
     assert "Status: corrected-note source `S` frozen" in release_plan_text
     assert (
         "fresh same-`S` reviews, owner approval, and exact-`R` qualification pending"
@@ -337,12 +341,12 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         "they do not identify or authorize the current `S` or `R`" in release_plan_text
     )
     assert re.search(
-        rf"^date-released: {re.escape(CANDIDATE_V025_METADATA_DATE)}$",
+        rf"^date-released: {re.escape(CANDIDATE_V026_METADATA_DATE)}$",
         citation,
         re.MULTILINE,
     )
-    assert zenodo["version"] == CANDIDATE_V025_VERSION
-    assert zenodo["publication_date"] == CANDIDATE_V025_METADATA_DATE
+    assert zenodo["version"] == CANDIDATE_V026_VERSION
+    assert zenodo["publication_date"] == CANDIDATE_V026_METADATA_DATE
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
     release_note_text = " ".join(release_note.split())
     changelog_text = " ".join(changelog.split())
@@ -356,7 +360,7 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     )
     assert "candidate records are historical" not in release_note_text.lower()
 
-    assert release_status["latest_release"] == PUBLISHED_V024_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V025_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
@@ -504,9 +508,9 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     )[0]
     assert "Release status: candidate." not in current_section
     assert "Publication is on HOLD" not in current_section
-    candidate_section = canonical.split(f"## {CANDIDATE_V025_HISTORY_ENTRY}", 1)[
+    candidate_section = canonical.split(f"## {CANDIDATE_V026_HISTORY_ENTRY}", 1)[
         1
-    ].split(current_heading, 1)[0]
+    ].split(f"## {PUBLISHED_V025_HISTORY_ENTRY}", 1)[0]
     assert "Release status: candidate." not in candidate_section
     assert "Publication is on HOLD" not in candidate_section
 
@@ -517,17 +521,18 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
         re.MULTILINE,
     )
     assert rendered_headings[:3] == [
-        CANDIDATE_V025_HISTORY_ENTRY,
+        CANDIDATE_V026_HISTORY_ENTRY,
+        PUBLISHED_V025_HISTORY_ENTRY,
         PUBLISHED_V024_HISTORY_ENTRY,
-        PUBLISHED_V023_HISTORY_ENTRY,
     ]
     canonical_releases = re.findall(
         r"^## (\[[^\]]+\] - (?:TBD|\d{4}-\d{2}-\d{2}))$",
         canonical,
         re.MULTILINE,
     )
-    assert canonical_releases[0] == CANDIDATE_V025_HISTORY_ENTRY
+    assert canonical_releases[0] == CANDIDATE_V026_HISTORY_ENTRY
     assert canonical_releases[1:] == [
+        PUBLISHED_V025_HISTORY_ENTRY,
         PUBLISHED_V024_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
         RELEASE_HISTORY_ENTRY,
@@ -575,7 +580,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     )
-    assert release_entries[0] == CANDIDATE_V025_HISTORY_ENTRY
+    assert release_entries[0] == CANDIDATE_V026_HISTORY_ENTRY
     for release in release_entries[1:]:
         release_message = catalogue.get(release)
         assert release_message is not None
@@ -586,8 +591,8 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     current_release = (
         (REPO_ROOT / "CHANGELOG.md")
         .read_text(encoding="utf-8")
-        .split(f"## {PUBLISHED_V024_HISTORY_ENTRY}", 1)[1]
-        .split(f"## {PUBLISHED_V023_HISTORY_ENTRY}", 1)[0]
+        .split(f"## {CANDIDATE_V026_HISTORY_ENTRY}", 1)[1]
+        .split(f"## {PUBLISHED_V025_HISTORY_ENTRY}", 1)[0]
     )
     # This release uses headings, paragraphs and list items. Split those
     # blocks without requiring a docs-only Markdown parser in the PR gate.
@@ -607,7 +612,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
 def test_v025_changelog_matches_release_note_and_gettext_compiles() -> None:
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
-    section = changelog.split(f"## {CANDIDATE_V025_HISTORY_ENTRY}", 1)[1].split(
+    section = changelog.split(f"## {PUBLISHED_V025_HISTORY_ENTRY}", 1)[1].split(
         f"## {PUBLISHED_V024_HISTORY_ENTRY}", 1
     )[0]
     blocks = re.split(r"\n\s*\n|\n(?=\s*(?:#{1,6}|[-+*]|\d+\.)\s)", section)
@@ -637,15 +642,36 @@ def test_v025_changelog_matches_release_note_and_gettext_compiles() -> None:
     mofile.write_mo(output, catalogue)
     output.seek(0)
     translations = gettext.GNUTranslations(output)
-    # The Japanese redesign catalog retains its candidate history entry while
-    # the current release note remains a separate English publication source.
-    for message_id in (CANDIDATE_V025_HISTORY_ENTRY, "Fixed"):
+    # The Japanese redesign catalog retains the published v0.2.5 history.
+    for message_id in (PUBLISHED_V025_HISTORY_ENTRY, "Fixed"):
         message = catalogue.get(message_id)
         assert message is not None, message_id
         assert message.string and "fuzzy" not in message.flags, message_id
-        assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), message_id
+        if message_id != PUBLISHED_V025_HISTORY_ENTRY:
+            assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), (
+                message_id
+            )
         assert translations.gettext(message_id) == message.string, message_id
-        assert translations.gettext(message_id) != message_id, message_id
+        if message_id != PUBLISHED_V025_HISTORY_ENTRY:
+            assert translations.gettext(message_id) != message_id, message_id
+
+
+def test_v026_known_limitations_are_linked_in_release_artifacts() -> None:
+    issue_ids = (766, 767, 768, 769, 770, 771, 773, 774, 777, 778)
+    release_note = (REPO_ROOT / "release_notes/v0.2.6.md").read_text(encoding="utf-8")
+    changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    for issue_id in issue_ids:
+        issue_link = f"https://github.com/tatsuki-washimi/gwexpy/issues/{issue_id}"
+        assert issue_link in release_note
+        assert issue_link in changelog
+    assert "remain unresolved in v0.2.6" in release_note
+    assert "remain unresolved in v0.2.6" in changelog
+    assert "No workaround has been verified" in " ".join(release_note.split())
+    assert "No workaround has been verified" in " ".join(changelog.split())
+    release_note_text = " ".join(release_note.split()).lower()
+    changelog_text = " ".join(changelog.split()).lower()
+    assert "no commitment that it will be included in v0.2.7" in release_note_text
+    assert "not a commitment to include them in v0.2.7" in changelog_text
 
 
 def test_noise_tutorial_declares_the_packaged_gwinc_dependency() -> None:

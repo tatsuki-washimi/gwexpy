@@ -300,18 +300,12 @@ class TestResponseFunctionAnalysisErrors:
                 np.full(3, 2.0), frequencies=np.array(freqs), unit="Hz^-0.5"
             )
 
-        def fake_compute_row(
-            *, witness, target, segment, injected_freq, **_kwargs
-        ):
+        def fake_compute_row(*, witness, target, segment, injected_freq, **_kwargs):
             row_index = int(segment[0])
             # Row 1 is internally consistent, but uses a different common grid.
-            injection_grid = (
-                [1.0, 2.0, 4.0] if row_index == 1 else [1.0, 2.0, 3.0]
-            )
+            injection_grid = [1.0, 2.0, 4.0] if row_index == 1 else [1.0, 2.0, 3.0]
             # Row 2 disagrees with its own background ASD grid.
-            background_grid = (
-                [1.0, 2.0, 5.0] if row_index == 2 else injection_grid
-            )
+            background_grid = [1.0, 2.0, 5.0] if row_index == 2 else injection_grid
             return {
                 "span": segment,
                 "injected_freq": injected_freq,

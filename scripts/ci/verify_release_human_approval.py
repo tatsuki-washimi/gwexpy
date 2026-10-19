@@ -183,7 +183,10 @@ def verify_human_approval(
         root, Path(evidence) if evidence is not None else None, contract
     )
     evidence_data = _load_and_validate_evidence(root, evidence_path, expected_tag)
-    if expected_tag not in {"v0.2.4", "v0.2.5", "v0.2.6"} and "promotion" not in contract:
+    if (
+        expected_tag not in {"v0.2.4", "v0.2.5", "v0.2.6"}
+        and "promotion" not in contract
+    ):
         raise HumanApprovalError(
             "human approval verification is not configured for this tag"
         )

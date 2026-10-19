@@ -256,6 +256,72 @@ def test_review_evidence_accepts_json_block_in_coordinator_yaml(tmp_path: Path):
         validator.validate_review_evidence(evidence, SOURCE_SHA, {"A"}, tmp_path)
 
 
+def test_v026_review_document_loader_preserves_raw_bytes_and_approval(
+    tmp_path: Path,
+):
+    validator = load_validator()
+    evidence = tmp_path / "audit-manifest-v0.2.6-release-readiness.yaml"
+    raw = (
+        b"review_evidence_json: |\n"
+        b"  {\n"
+        b'    "schema": "gwexpy-v026-review-evidence-v1",\n'
+        b'    "entries": [],\n'
+        b'    "human_approval": {"comment_id": 6265784106}\n'
+        b"  }\n"
+    )
+    evidence.write_bytes(raw)
+
+    document = validator.load_review_document(evidence)
+
+    assert document.raw_bytes == raw
+    assert document.raw_sha256 == hashlib.sha256(raw).hexdigest()
+    assert document.data["schema"] == "gwexpy-v026-review-evidence-v1"
+    assert document.data["human_approval"] == {"comment_id": 6265784106}
+
+
+def test_v026_source_readiness_placeholder_does_not_claim_new_approval():
+    validator = load_validator()
+    contract = validator._release_contract("v0.2.6")
+    document = validator.load_review_document(ROOT / contract["review_evidence_path"])
+
+    assert document.data["entries"] == []
+    approval = document.data["human_approval"]
+    assert approval["reviewed_commit"] == ""
+    assert approval["scope_digest"] == ""
+    assert approval["timestamp_utc"] == ""
+    assert approval["verdict"] == ""
+    assert approval["comment_id"] == 0
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"review_evidence_json: |\n  {not-json}\n",
+        b"review_evidence_json: |\n  {}\nunreviewed: true\n",
+        b"review_evidence_json: |\n  {}\nreview_evidence_json: >-\n  ignored\n",
+        b'review_evidence_json: |\n  {"schema":"one","schema":"two"}\n',
+    ],
+)
+def test_v026_common_review_loader_rejects_ambiguous_yaml_and_json(
+    tmp_path: Path, raw: bytes
+):
+    validator = load_validator()
+    evidence = tmp_path / "audit-manifest.yaml"
+    evidence.write_bytes(raw)
+
+    with pytest.raises(validator.ReleaseReviewEvidenceError):
+        validator.load_review_document(evidence)
+
+
+def test_v026_common_review_loader_rejects_oversized_file(tmp_path: Path):
+    validator = load_validator()
+    evidence = tmp_path / "audit-manifest.yaml"
+    evidence.write_bytes(b"x" * (validator.MAX_REVIEW_DOCUMENT_BYTES + 1))
+
+    with pytest.raises(validator.ReleaseReviewEvidenceError, match="too large"):
+        validator.load_review_document(evidence)
+
+
 @pytest.mark.parametrize(
     "source",
     [

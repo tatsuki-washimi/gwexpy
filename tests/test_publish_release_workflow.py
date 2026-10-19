@@ -16,12 +16,8 @@ from pathlib import Path
 
 import pytest
 
-WORKFLOW = (
-    Path(__file__).resolve().parents[1]
-    / ".github"
-    / "workflows"
-    / "publish-release.yml"
-)
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW = ROOT / ".github" / "workflows" / "publish-release.yml"
 
 
 def read_workflow() -> str:
@@ -109,19 +105,22 @@ def test_releasing_documents_future_build_once_promotion_contract():
     path = WORKFLOW.parents[2] / "RELEASING.md"
     releasing = path.read_text(encoding="utf-8")
     normalized = re.sub(r"\s+", " ", releasing)
-    assert (
-        "A promotion release applies only when a future release contract opts into "
-        "the promotion schema"
-    ) in normalized
     assert "v0.2.5 is published and immutable" in normalized
-    assert "No future release version has been selected or contracted" in normalized
-    assert "The workflow does not add a speculative v0.2.6 contract" in normalized
+    assert "v0.2.6 is the selected maintenance release candidate" in normalized
+    assert "it has not been published" in normalized
+    assert "Candidate Qualification must pass on the exact source" in normalized
+    assert "the existing Source Human Approval applies only to S′" in normalized
+    assert "it is separate from the later Release Owner GO" in normalized
+    assert (
+        "A promotion release applies only when a future release contract"
+        not in normalized
+    )
     assert "gh workflow run publish-release.yml --ref main" in releasing
     assert "R='<40-character-SHA>'" in releasing
     assert 'release_ref="$R"' in releasing
     assert (
-        "The configured human approval must bind that exact `S`; it is separate "
-        "from the later release-owner GO"
+        "The configured Source Human Approval must bind that exact `S`; it is "
+        "separate from the later Release Owner GO"
     ) in normalized
     assert (
         "`R` may differ from reviewed `S` only for the contract-allowed approval "
@@ -1740,6 +1739,73 @@ def test_candidate_graph_is_dispatch_only_and_finalizer_is_read_only():
     )
     assert "promotion_enabled" in approval["if"]
     assert jobs["build"]["needs"] == "verify"
+
+
+def test_integration_evidence_script_loads_v026_yaml_wrapper(tmp_path: Path):
+    contract = json.loads(
+        (ROOT / "scripts" / "ci" / "release_contracts.json").read_text(encoding="utf-8")
+    )["releases"]["v0.2.6"]
+    source_root = tmp_path / "source"
+    evidence_path = source_root / contract["review_evidence_path"]
+    evidence_path.parent.mkdir(parents=True)
+    review = {
+        "schema": contract["review_evidence_schema"],
+        "entries": [],
+        "human_approval": {"approver_login": "tatsuki-washimi", "comment_id": 7},
+    }
+    raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n"
+        for line in json.dumps(review, indent=2).encode("utf-8").splitlines()
+    )
+    evidence_path.write_bytes(raw)
+    aggregate_path = tmp_path / "aggregate.json"
+    aggregate_path.write_text(
+        json.dumps({"source_sha": "a" * 40, "version": "0.2.6"}),
+        encoding="utf-8",
+    )
+    script = ROOT / "scripts" / "ci" / "integrate_release_evidence.py"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--version",
+            "0.2.6",
+            "--source-root",
+            str(source_root),
+            "--aggregate",
+            str(aggregate_path),
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    generated = json.loads(aggregate_path.read_text(encoding="utf-8"))
+    assert generated["review_evidence"] == {
+        "path": contract["review_evidence_path"],
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "human_approval": review["human_approval"],
+    }
+    assert (
+        generated["review_evidence"]["sha256"]
+        != hashlib.sha256(
+            json.dumps(review, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+    )
+
+
+def test_promotion_workflow_invokes_the_tested_review_evidence_script():
+    workflow = read_workflow()
+
+    assert "python source/scripts/ci/integrate_release_evidence.py" in workflow
+    assert "json.loads(raw)" not in workflow
+    verify = workflow.split("\n  verify:\n", maxsplit=1)[1].split(
+        "\n  build:\n", maxsplit=1
+    )[0]
+    assert "validate_release.py" in verify
+    assert "verify_release_human_approval.py" in verify
 
 
 @pytest.mark.parametrize(

@@ -451,7 +451,10 @@ def validate_s_to_r(
 ) -> None:
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
-    if expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5", "v0.2.6"} and reviewed_commit == source_sha:
+    if (
+        expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5", "v0.2.6"}
+        and reviewed_commit == source_sha
+    ):
         raise ReleaseValidationError(
             f"{expected_tag} S-to-R binding requires distinct commits"
         )

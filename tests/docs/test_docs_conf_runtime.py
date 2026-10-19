@@ -136,7 +136,9 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
     monkeypatch.setenv("OPENBLAS_NUM_THREADS", "4")
     env_env_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
     assert (
-        env_env_changed["_execution_environment"]["env_execution"]["OPENBLAS_NUM_THREADS"]
+        env_env_changed["_execution_environment"]["env_execution"][
+            "OPENBLAS_NUM_THREADS"
+        ]
         == "4"
     )
     assert env_env_changed["_execution_fingerprint"] != base_fingerprint

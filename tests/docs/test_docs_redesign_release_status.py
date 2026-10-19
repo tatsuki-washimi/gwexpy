@@ -26,7 +26,7 @@ def test_release_status_records_latest_published_and_example_releases() -> None:
     """Published-release metadata is independent from the development version."""
     status = json.loads(RELEASE_STATUS.read_text(encoding="utf-8"))
     assert status == {
-        "latest_release": "0.2.4",
+        "latest_release": "0.2.5",
         "intro_examples_release": "0.2.4",
     }
     assert _LEGACY_KEY not in status

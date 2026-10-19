@@ -14,6 +14,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+# v0.2.6 source changelog; this source is a candidate, not a published release.
+msgid "[0.2.6] - 2026-10-19"
+msgstr "[0.2.6] - 2026-10-19（候補）"
+
+msgid "This maintenance release clarifies documentation contracts, refines diagnostic warning messages, and completes repository cleanup following the decoupling of the legacy in-tree GUI to the independent `pyaggui` project. It introduces no new public APIs, dependencies, or storage formats. Tested scientific values, dtypes, axes, and units are strictly preserved."
+msgstr "このメンテナンスリリースでは、ドキュメント上の契約を明確化し、診断警告を改善し、旧来の同梱 GUI を独立した `pyaggui` プロジェクトへ分離した後のリポジトリ整理を完了します。新しい公開 API、依存関係、保存形式は追加しません。検証済みの科学データの値、dtype、軸、単位は維持します。"
+
+msgid "Fixed"
+msgstr "修正"
+
+msgid "**ASD frequency-grid rejection diagnostics**: Distinguish rejection causes when validating frequency grids in ASD response functions, emitting specific informative warnings while preserving warning categories and stack levels (#790, PR #794)."
+msgstr "**ASD 周波数グリッドの拒否診断**：ASD 応答関数で周波数グリッドを検証する際、拒否理由を区別して具体的で有用な警告を出します。警告カテゴリと stack level は維持します（#790、PR #794）。"
+
+msgid "Documentation"
+msgstr "ドキュメント"
+
+msgid "**`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution path and clarify constraints on stride/window arguments (#779, PR #798)."
+msgstr "**`TimeSeries.spectrogram2()`**：平均化を行わない periodogram の実行経路を記し、stride と window 引数の制約を明確にします（#779、PR #798）。"
+
+msgid "**`TimeSeriesDict.append()`**: Document in-place dictionary update behavior and explicit `self` return contract (#640, PR #798)."
+msgstr "**`TimeSeriesDict.append()`**：辞書を inplace で更新する動作と、`self` を返す契約を明記します（#640、PR #798）。"
+
+msgid "**GUI transition guide**: Update English and Japanese user guides and how-to documentation to point to the independent `pyaggui` and `GWexpy Studio` projects (#645, PR #803)."
+msgstr "**GUI 移行ガイド**：英語・日本語のユーザーガイドと how-to ドキュメントを更新し、独立した `pyaggui` と `GWexpy Studio` を案内します（#645、PR #803）。"
+
+msgid "Removed"
+msgstr "削除"
+
+msgid "**Legacy in-tree GUI**: Fully removed deprecated `gwexpy/gui/` implementation and associated `tests/gui/` tests, GUI-specific development dependencies, packaging exclusions, and CI fixtures following ADR 0001 (#645, PR #802, PR #803). Boundary defense tests added to prevent accidental reintroduction."
+msgstr "**旧来の同梱 GUI**：ADR 0001 に基づく分離に続き、非推奨の `gwexpy/gui/` 実装と `tests/gui/` のテスト、GUI 専用の開発依存関係、パッケージ除外設定、CI fixture を完全に削除しました。誤って再導入されないよう境界テストを追加しました（#645、PR #802、PR #803）。"
+
+msgid "Known limitations"
+msgstr "既知の制限"
+
+msgid "These issues remain unresolved in v0.2.6. No workaround has been verified for the affected cases. They are individual patch candidates for v0.2.7 or later; this is not a commitment to include them in v0.2.7."
+msgstr "以下の問題は v0.2.6 でも未解決です。該当する条件に対する回避策は検証されていません。各問題は v0.2.7 以降の個別パッチ候補ですが、v0.2.7 への収録を約束するものではありません。"
+
+msgid "[#766](https://github.com/tatsuki-washimi/gwexpy/issues/766): A GWF read of a missing file using `framel` or automatic backend selection can cause a native segmentation fault and terminate the process. No safe workaround is verified."
+msgstr "[#766](https://github.com/tatsuki-washimi/gwexpy/issues/766)：存在しないファイルを `framel` または自動バックエンド選択で GWF 読み込みすると、ネイティブ segmentation fault が発生してプロセスが終了することがあります。安全な回避策は検証されていません。"
+
+msgid "[#767](https://github.com/tatsuki-washimi/gwexpy/issues/767): `PercentileThreshold.threshold()` can calculate from raw magnitudes after incompatible PSD units reach `bkg_table`, leaving the threshold scientifically ambiguous. Do not rely on that result; no safe workaround is verified."
+msgstr "[#767](https://github.com/tatsuki-washimi/gwexpy/issues/767)：単位が整合しない PSD が `bkg_table` に渡ると、`PercentileThreshold.threshold()` が警告後に生の数値から計算を続け、物理的解釈が曖昧な閾値を返すことがあります。その結果を信頼しないでください。安全な回避策は検証されていません。"
+
+msgid "[#768](https://github.com/tatsuki-washimi/gwexpy/issues/768): `standardize_matrix` can retain input units on dimensionless z-scores, so downstream unit-aware interpretation may be misleading. No workaround is verified."
+msgstr "[#768](https://github.com/tatsuki-washimi/gwexpy/issues/768)：`standardize_matrix` は無次元の z-score を生成した後も入力単位を保持することがあり、後続処理で単位を考慮した解釈を誤る可能性があります。回避策は検証されていません。"
+
+msgid "[#769](https://github.com/tatsuki-washimi/gwexpy/issues/769): `StandardizeTransform` can retain units after standardization and silently use z-score for an unrecognized method. No workaround is verified."
+msgstr "[#769](https://github.com/tatsuki-washimi/gwexpy/issues/769)：`StandardizeTransform` は標準化後も単位を保持することがあり、未認識の method を z-score として黙って処理することがあります。回避策は検証されていません。"
+
+msgid "[#770](https://github.com/tatsuki-washimi/gwexpy/issues/770): `TimeSeriesMatrix.radian()` and `.degree()` can leave container and element unit metadata inconsistent with converted values. No workaround is verified."
+msgstr "[#770](https://github.com/tatsuki-washimi/gwexpy/issues/770)：`TimeSeriesMatrix.radian()` と `.degree()` は値を変換しても、コンテナと要素の単位メタデータが変換後の値と一致しないことがあります。回避策は検証されていません。"
+
+msgid "[#771](https://github.com/tatsuki-washimi/gwexpy/issues/771): A failed entry read from a non-manifest HDF5 collection can be silently skipped, yielding partial or empty data. Do not assume a successful return includes every stored entry; no workaround is verified."
+msgstr "[#771](https://github.com/tatsuki-washimi/gwexpy/issues/771)：manifest を使わない HDF5 コレクションで要素の読み込みに失敗すると、その要素が黙ってスキップされ、部分データまたは空データが返ることがあります。正常終了しても保存された全要素が含まれるとは限りません。回避策は検証されていません。"
+
+msgid "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): `to_tgraph` can accept error-bar values without checking unit compatibility with the series, potentially misrepresenting uncertainties. No workaround is verified."
+msgstr "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773)：`to_tgraph` は誤差棒の値と系列の単位が整合するか確認せずに受け入れることがあり、不確かさを誤って表す可能性があります。回避策は検証されていません。"
+
+msgid "[#774](https://github.com/tatsuki-washimi/gwexpy/issues/774): An invalid nonempty HDF5 `frequency_unit` can silently fall back to Hz and misstate the frequency axis. No workaround is verified."
+msgstr "[#774](https://github.com/tatsuki-washimi/gwexpy/issues/774)：HDF5 の `frequency_unit` が空でない不正な値の場合、Hz として黙って読み込まれ、周波数軸の単位を誤って示すことがあります。回避策は検証されていません。"
+
+msgid "[#777](https://github.com/tatsuki-washimi/gwexpy/issues/777): `SeriesMatrix.to_hdf5` can omit Quantity-valued custom attributes without warning, losing metadata. No workaround is verified."
+msgstr "[#777](https://github.com/tatsuki-washimi/gwexpy/issues/777)：`SeriesMatrix.to_hdf5` は Quantity のカスタム属性を警告なしに省略することがあり、メタデータが失われます。回避策は検証されていません。"
+
+msgid "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` can return dimensionless data without restoring original physical units. No workaround is verified."
+msgstr "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778)：`WhitenTransform.inverse_transform` は元の物理単位を復元せず、無次元データを返すことがあります。回避策は検証されていません。"
+
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:1
 #: 923a6647f7254d2a93a5a54ea0cc9c2a
 msgid "Changelog"
@@ -53,7 +120,7 @@ msgstr ""
 
 #: ../../../CHANGELOG.md
 msgid "[0.2.5] - 2026-10-04"
-msgstr "[0.2.5] - 2026-10-04（候補）"
+msgstr "[0.2.5] - 2026-10-04"
 
 #: ../../../CHANGELOG.md
 msgid "This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header validation; and audio registry tag provenance. The supported optional-backend routes report a backend-specific `ImportError` when their package is absent. The current candidate base includes internal I/O performance and scalability work under #580. The #584 overlay and optional parallel #588 patch are deferred; the R8 serial #588 implementation is retained unchanged. Final-source review and release qualification remain pending; public values, dtype, metadata, warning/error behavior, and on-disk format remain the acceptance contract except for the scoped #589 native-parser and #585 SDB snapshot exceptions below. The candidate adds no public API, dependency, or persistence schema. The reviewed source `S` must receive fresh approval before publishing source `R` is qualified. See the current v0.2.5 release plan for the independent four-case decision."
@@ -3583,6 +3650,10 @@ msgstr "最後の2群では、特定の Array2D/Plane2D の縮約と数値配列
 #: about/changelog.md ../../CHANGELOG.md
 msgid "Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int regression for #451, trailing-window drop, NaN-per-window propagation) and the gwexpy enhancements (time/dimensionless `Quantity` stride, unit preservation, and `ValueError` for sub-sample/zero/negative/irregular strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`."
 msgstr "`tests/timeseries/test_rms_compat.py` を追加し、GWpy と互換な `TimeSeries.rms(stride)` の挙動（GWpy との一致、#451 の整数の位置引数に関する回帰、末尾の不完全な区間の除外、区間ごとの NaN 伝播）と、GWexpy の拡張（時間または無次元の `Quantity` による stride、単位の保持、1サンプル未満、ゼロ、負、不規則な stride に対する `ValueError`）を固定しました。`test_stats_mixin.py::test_rms_with_unit` の対象を `Series` に変更しました。"
+
+#: post-publication v0.2.5
+msgid "Published on 2026-10-04 UTC: [PyPI 0.2.5](https://pypi.org/project/gwexpy/0.2.5/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5)."
+msgstr "2026-10-04（UTC）に公開しました：[PyPI 0.2.5](https://pypi.org/project/gwexpy/0.2.5/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5)。"
 
 #: post-publication v0.2.4
 msgid "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)."

@@ -1199,24 +1199,10 @@ jobs:
         env:
           VERSION: ${{ needs.verify.outputs.version }}
         run: |
-          python - "$VERSION" "${{ runner.temp }}/release-evidence/aggregate.json" <<'PYCODE'
-          import hashlib
-          import json
-          from pathlib import Path
-          import sys
-          sys.path.insert(0, "source/scripts/ci")
-          from release_promotion import configured_contract, candidate_profile
-          contract = configured_contract(sys.argv[1])
-          profile = candidate_profile(contract)
-          path = Path(sys.argv[2])
-          aggregate = json.loads(path.read_bytes())
-          review_path = contract["review_evidence_path"]
-          raw = (Path("source") / review_path).read_bytes()
-          review = json.loads(raw)
-          aggregate["schema"] = profile["evidence_schemas"]["gwexpy-integration-evidence-v1"]
-          aggregate["review_evidence"] = {"path": review_path, "sha256": hashlib.sha256(raw).hexdigest(), "human_approval": review["human_approval"]}
-          path.write_text(json.dumps(aggregate, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-          PYCODE
+          python source/scripts/ci/integrate_release_evidence.py \
+            --version "$VERSION" \
+            --source-root source \
+            --aggregate "${{ runner.temp }}/release-evidence/aggregate.json"
 
       - name: Upload 90-day integration evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

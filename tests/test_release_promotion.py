@@ -1055,6 +1055,238 @@ def test_manifest_builder_only_reads_existing_artifacts(
     ]
 
 
+def test_candidate_validation_loads_v026_yaml_review_document(
+    promotion, tmp_path: Path
+) -> None:
+    module, _, _ = promotion
+    path = tmp_path / "audit-manifest-v0.2.6-release-readiness.yaml"
+    raw = (
+        b"review_evidence_json: |\n"
+        b"  {\n"
+        b'    "schema": "gwexpy-v026-review-evidence-v1",\n'
+        b'    "entries": [],\n'
+        b'    "human_approval": {"approver_login": "tatsuki-washimi", '
+        b'"role": "release-owner", "comment_id": 6265784106}\n'
+        b"  }\n"
+    )
+    path.write_bytes(raw)
+
+    document = module.load_candidate_review_document(path)
+
+    assert document.raw_bytes == raw
+    assert document.raw_sha256 == module.sha256(raw)
+    assert document.data["human_approval"]["comment_id"] == 6265784106
+
+
+def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
+    promotion, tmp_path: Path, monkeypatch
+) -> None:
+    from types import SimpleNamespace
+
+    module, _, contract = promotion
+    version = "0.2.6"
+    source = "a" * 40
+    candidate_id = 987654
+    contract["review_evidence_path"] = (
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
+    )
+    (tmp_path / "LICENSE.txt").write_bytes(b"candidate license\n")
+    notes = tmp_path / "release_notes" / "v0.2.6.md"
+    notes.parent.mkdir()
+    notes.write_text("candidate notes\n", encoding="utf-8")
+    review = {
+        "schema": "gwexpy-v026-review-evidence-v1",
+        "entries": [],
+        "human_approval": {"approver_login": "tatsuki-washimi", "comment_id": 7},
+    }
+    review_raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n"
+        for line in json.dumps(review, indent=2).encode("utf-8").splitlines()
+    )
+    review_path = tmp_path / contract["review_evidence_path"]
+    review_path.parent.mkdir(parents=True)
+    review_path.write_bytes(review_raw)
+
+    profile = module.candidate_profile(contract)
+    wheel_name = "gwexpy-0.2.6-py3-none-any.whl"
+    sdist_name = "gwexpy-0.2.6.tar.gz"
+    sidecar = {
+        "schema": contract["payload_schema"],
+        "version": version,
+        "source_sha": source,
+        "files": {
+            "wheel": {"name": wheel_name, "sha256": "b" * 64},
+            "sdist": {"name": sdist_name, "sha256": "c" * 64},
+        },
+    }
+    artifact_records = []
+    artifact_apis = {}
+    members_by_id = {}
+    artifact_roles = [
+        ("payload", {wheel_name: b"wheel bytes", sdist_name: b"sdist bytes"}),
+        (
+            "sidecar:distribution-sha256.json",
+            {"distribution-sha256.json": json.dumps(sidecar).encode("utf-8")},
+        ),
+        (
+            "sidecar:LICENSE.sha256",
+            {
+                "LICENSE.sha256": (
+                    module.sha256((tmp_path / "LICENSE.txt").read_bytes()).encode()
+                    + b"\n"
+                )
+            },
+        ),
+    ]
+    for role in profile["evidence_schema_ids"]:
+        schema = profile["evidence_schemas"][role]
+        evidence = {
+            "schema": schema,
+            "version": version,
+            "source_sha": source,
+            "payload": sidecar["files"],
+        }
+        if role == "gwexpy-integration-evidence-v1":
+            evidence["review_evidence"] = {
+                "path": contract["review_evidence_path"],
+                "sha256": module.sha256(review_raw),
+                "human_approval": review["human_approval"],
+            }
+        artifact_roles.append(
+            (
+                "evidence:" + role,
+                {"aggregate.json": json.dumps(evidence).encode("utf-8")},
+            )
+        )
+    for artifact_id, (role, members) in enumerate(artifact_roles, start=10):
+        api = {
+            "artifact_id": artifact_id,
+            "name": "artifact-" + role,
+            "run_id": candidate_id,
+            "expired": False,
+            "size_in_bytes": sum(len(value) for value in members.values()),
+            "digest": "sha256:" + module.sha256(b"archive"),
+        }
+        artifact_apis[artifact_id] = api
+        members_by_id[artifact_id] = members
+        artifact_records.append(
+            {
+                **api,
+                "role": role,
+                "files": [
+                    {
+                        "name": name,
+                        "size_in_bytes": len(content),
+                        "sha256": module.sha256(content),
+                    }
+                    for name, content in members.items()
+                ],
+            }
+        )
+
+    manifest_raw = b"promotion manifest bytes"
+    manifest_sha256 = module.sha256(manifest_raw)
+    manifest_api = {
+        "artifact_id": 1,
+        "name": f"release-promotion-manifest-{source}",
+        "run_id": candidate_id,
+        "expired": False,
+        "size_in_bytes": len(b"manifest archive"),
+        "digest": "sha256:" + module.sha256(b"manifest archive"),
+        "created_at": "2026-10-19T00:00:00Z",
+    }
+    candidate_run = {
+        "id": candidate_id,
+        "workflow_id": 42,
+        "head_sha": source,
+        "head_branch": "main",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+    }
+    manifest = {
+        "run_id": candidate_id,
+        "artifacts": artifact_records,
+    }
+    captured: dict[str, object] = {}
+
+    class StopAfterManifestValidation(Exception):
+        pass
+
+    def stop_after_manifest(manifest_arg, contract_arg, expected_arg, **kwargs):
+        captured.update(expected_arg)
+
+    tag_body = "\n".join(
+        [
+            "GWEXPY-PROMOTION-v1",
+            "repository=tatsuki-washimi/gwexpy",
+            "tag=v0.2.6",
+            f"source_sha={source}",
+            f"candidate_run_id={candidate_id}",
+            f"promotion_manifest_sha256={manifest_sha256}",
+            "release_go_comment_id=7",
+        ]
+    )
+    monkeypatch.setattr(module, "configured_contract", lambda _version: contract)
+
+    def api_json(_repository, _token, endpoint):
+        if endpoint == f"actions/runs/{candidate_id}":
+            return candidate_run
+        artifact_id = int(endpoint.rsplit("/", 1)[1])
+        return artifact_apis[artifact_id]
+
+    monkeypatch.setattr(module, "_api_json", api_json)
+    monkeypatch.setattr(module, "_api_pages", lambda *_: [manifest_api])
+    monkeypatch.setattr(module, "_artifact_observation", lambda value: value)
+    monkeypatch.setattr(module, "select_manifest_artifact", lambda *args: manifest_api)
+    monkeypatch.setattr(
+        module, "validate_manifest_artifact_metadata", lambda *args: None
+    )
+    monkeypatch.setattr(
+        module, "_download_artifact_archive", lambda *args: b"manifest archive"
+    )
+    monkeypatch.setattr(
+        module,
+        "observe_archive",
+        lambda api, raw, run_id: (
+            {"promotion-manifest.json": manifest_raw}
+            if api["artifact_id"] == 1
+            else members_by_id[api["artifact_id"]]
+        ),
+    )
+    monkeypatch.setattr(module, "load_manifest", lambda _raw: manifest)
+    monkeypatch.setattr(module, "validate_manifest_artifact", lambda *args: None)
+    monkeypatch.setattr(module, "validate_candidate_run", lambda *args, **kwargs: None)
+    monkeypatch.setattr(module, "validate_artifact_api_metadata", lambda *args: None)
+    monkeypatch.setattr(module, "_candidate_gate_jobs", lambda *args: [])
+    monkeypatch.setattr(module, "validate_candidate_aggregate", lambda *args: None)
+    monkeypatch.setattr(module, "validate_manifest", stop_after_manifest)
+    original_local_module = module._local_module
+    monkeypatch.setattr(
+        module,
+        "_local_module",
+        lambda name: (
+            SimpleNamespace(verify_release_go=lambda **kwargs: None)
+            if name == "verify_release_go"
+            else original_local_module(name)
+        ),
+    )
+    output = tmp_path / "verified"
+
+    result = module.verify_tag_candidate(
+        source_root=tmp_path,
+        tag="v0.2.6",
+        source_sha=source,
+        tag_body=tag_body,
+        repository="tatsuki-washimi/gwexpy",
+        token="unused",
+        output=output,
+    )
+
+    assert result["manifest_sha256"] == manifest_sha256
+    assert captured["review_evidence_sha256"] == module.sha256(review_raw)
+
+
 def test_future_profile_selects_every_required_gate_and_schema(promotion):
     module, _, contract = promotion
     selected = module.candidate_profile(contract)
@@ -1327,8 +1559,17 @@ def test_finalizer_reads_original_ids_before_run_completion(
     source = "a" * 40
     (tmp_path / "LICENSE.txt").write_bytes(b"Synthetic repository license\n")
     license_digest = module.sha256((tmp_path / "LICENSE.txt").read_bytes())
-    contract["review_evidence_path"] = "review.json"
-    (tmp_path / "review.json").write_text('{"human_approval":{"comment_id":123}}\n')
+    contract["review_evidence_path"] = "review.yaml"
+    review_payload = {
+        "schema": "gwexpy-v026-review-evidence-v1",
+        "entries": [],
+        "human_approval": {"comment_id": 123},
+    }
+    review_raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n"
+        for line in json.dumps(review_payload, indent=2).encode("utf-8").splitlines()
+    )
+    (tmp_path / "review.yaml").write_bytes(review_raw)
     (tmp_path / "release_notes").mkdir()
     (tmp_path / "release_notes" / f"v{version}.md").write_text(
         "Synthetic future notes\n"
@@ -1440,8 +1681,8 @@ def test_finalizer_reads_original_ids_before_run_completion(
             evidence["license_sha256"] = "0" * 64
         if schema == "gwexpy-integration-evidence-v1":
             evidence["review_evidence"] = {
-                "path": "review.json",
-                "sha256": module.sha256((tmp_path / "review.json").read_bytes()),
+                "path": "review.yaml",
+                "sha256": module.sha256(review_raw),
                 "human_approval": {"comment_id": 123},
             }
             if mutation == "approval_binding":
@@ -1504,6 +1745,10 @@ def test_finalizer_reads_original_ids_before_run_completion(
         assert set(downloads) == set(archives)
         assert len(downloads) == len(archives)
         assert {a["artifact_id"] for a in manifest["artifacts"]} == set(archives)
+        assert manifest["review_evidence"]["sha256"] == module.sha256(review_raw)
+        assert manifest["review_evidence"]["sha256"] != module.sha256(
+            json.dumps(review_payload, sort_keys=True).encode("utf-8")
+        )
         assert all(
             a["name"] != "release-promotion-manifest-" + source
             for a in manifest["artifacts"]

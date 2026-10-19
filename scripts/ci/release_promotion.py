@@ -756,6 +756,8 @@ def build_manifest(
     artifact_inputs: Sequence[tuple[str, Mapping[str, Any], Mapping[str, Path]]],
     review_evidence_path: Path,
     release_notes_path: Path,
+    *,
+    review_evidence_sha256: str | None = None,
 ) -> dict[str, Any]:
     """Build manifest data from existing files and API metadata, without writes.
 
@@ -766,6 +768,16 @@ def build_manifest(
     promotion = release_contract.get("promotion")
     _require(
         isinstance(promotion, Mapping), "release contract has no promotion contract"
+    )
+    evidence_sha256 = (
+        review_evidence_sha256
+        if review_evidence_sha256 is not None
+        else sha256(review_evidence_path.read_bytes())
+    )
+    _require(
+        isinstance(evidence_sha256, str)
+        and SHA256.fullmatch(evidence_sha256) is not None,
+        "invalid review evidence file hash",
     )
     artifacts = [
         describe_existing_artifact({**api, "role": role}, files)
@@ -780,7 +792,7 @@ def build_manifest(
         },
         "review_evidence": {
             "path": release_contract["review_evidence_path"],
-            "sha256": sha256(review_evidence_path.read_bytes()),
+            "sha256": evidence_sha256,
         },
         "release_notes": {
             "path": f"release_notes/v{metadata['version']}.md",
@@ -803,6 +815,15 @@ def _local_module(name: str) -> Any:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def load_candidate_review_document(path: Path) -> Any:
+    """Use the readiness validator's shared loader for candidate evidence."""
+    validator = _local_module("validate_release_review_evidence")
+    try:
+        return validator.load_review_document(path)
+    except validator.ReleaseReviewEvidenceError as exc:
+        raise PromotionManifestError(f"invalid review evidence: {exc}") from exc
 
 
 def validate_candidate_aggregate(
@@ -1279,8 +1300,8 @@ def verify_tag_candidate(
     )
 
     review_path = source_root / contract["review_evidence_path"]
-    review_raw = review_path.read_bytes()
-    review = json.loads(review_raw, object_pairs_hook=_pairs)
+    review_document = load_candidate_review_document(review_path)
+    review = review_document.data
     release_notes = source_root / "release_notes" / f"v{version}.md"
     expected = {
         "repository": repository,
@@ -1297,7 +1318,7 @@ def verify_tag_candidate(
         "source_sha": source_sha,
         "release_sha": source_sha,
         "run_id": candidate_id,
-        "review_evidence_sha256": sha256(review_raw),
+        "review_evidence_sha256": review_document.raw_sha256,
         "release_notes_sha256": sha256(release_notes.read_bytes()),
     }
     jobs = _candidate_gate_jobs(
@@ -1359,7 +1380,7 @@ def verify_tag_candidate(
                 evidence.get("review_evidence")
                 == {
                     "path": contract["review_evidence_path"],
-                    "sha256": sha256(review_raw),
+                    "sha256": review_document.raw_sha256,
                     "human_approval": expected_approval,
                 },
                 "candidate evidence S-approval binding mismatch",
@@ -1619,8 +1640,8 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
         }
         review = root / contract["review_evidence_path"]
         notes = root / f"release_notes/v{version}.md"
-        review_raw = review.read_bytes()
-        review_data = json.loads(review_raw, object_pairs_hook=_pairs)
+        review_document = load_candidate_review_document(review)
+        review_data = review_document.data
         for schema, evidence in aggregates:
             _require(
                 evidence.get("payload", evidence.get("files")) == sidecar["files"],
@@ -1631,7 +1652,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
                     evidence.get("review_evidence")
                     == {
                         "path": contract["review_evidence_path"],
-                        "sha256": sha256(review_raw),
+                        "sha256": review_document.raw_sha256,
                         "human_approval": review_data["human_approval"],
                     },
                     "aggregate source approval identity mismatch",
@@ -1639,10 +1660,17 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
             validate_candidate_aggregate(
                 evidence, schema, contract, metadata, sidecar, license_digest
             )
-        manifest = build_manifest(metadata, contract, inputs, review, notes)
+        manifest = build_manifest(
+            metadata,
+            contract,
+            inputs,
+            review,
+            notes,
+            review_evidence_sha256=review_document.raw_sha256,
+        )
         expected = {key: metadata[key] for key in EXPECTED_FIELDS if key in metadata}
         expected.update(
-            review_evidence_sha256=sha256(review.read_bytes()),
+            review_evidence_sha256=review_document.raw_sha256,
             release_notes_sha256=sha256(notes.read_bytes()),
         )
         validate_manifest(
