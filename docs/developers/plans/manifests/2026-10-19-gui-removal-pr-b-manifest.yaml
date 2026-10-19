@@ -1,0 +1,34 @@
+schema_version: "1.0"
+audit_id: "gui-removal-pr-b"
+date: "2026-10-19"
+author: "Antigravity Agent"
+issue: 645
+scope: "PR B: Clean up repository configuration, docs, CI, tests, and boundaries following legacy GUI removal (#802)"
+changes:
+  packaging:
+    - "Removed pytest-qt and pytest-xvfb from test dependencies in pyproject.toml"
+    - "Removed gwexpy.gui* from setuptools package find exclude"
+    - "Removed gwexpy/gui/* from ruff lint per-file-ignores"
+    - "Removed gwexpy/gui/ reference paths from mypy exclude"
+    - "Removed gui and pyautogui markers from pytest.ini_options"
+    - "Removed gwexpy/gui/* from coverage.run omit list"
+  tests_and_ci:
+    - "Removed pytest-qt fixture, headless gui skip, and Qt cleanup hooks from tests/conftest.py"
+    - "Removed stale --ignore=tests/gui/ from scripts/ci/run_gate.py"
+    - "Removed GUI test dependencies from .github/actions/setup-gwexpy and .github/workflows/nds-live.yml"
+    - "Added tests/test_gui_boundary.py to prevent GUI reintroduction"
+  documentation:
+    - "Updated docs/web/en/user_guide/gui.md and docs/web/ja/user_guide/gui.md to announce standalone pyaggui transition"
+    - "Updated docs_redesign/how-to/gui.md with pyaggui transition guide"
+    - "Marked docs/developers/guides/gui_testing.md, docs/developers/design/gui/implementation_map.md, and docs/developers/design/gui/reference_analysis.md as historical references"
+    - "Created docs/developers/adr/0001-gui-decoupling-and-project-boundaries.md"
+    - "Added ADR 0001 to docs/developers/index.rst"
+  boundaries:
+    - "Added gwexpy/gui/ and tests/gui/ to FORBIDDEN_PREFIXES in scripts/check_repo_hygiene.py"
+    - "Cleaned legacy GUI paths from .gitignore"
+validation:
+  - "pytest tests/test_gui_boundary.py passed (3/3)"
+  - "ruff check and ruff format --check passed on all changed Python files"
+  - "python3 -m build produced valid wheel and sdist with zero gwexpy/gui files"
+  - "twine check dist/* passed"
+  - "Sphinx HTML docs build succeeded"

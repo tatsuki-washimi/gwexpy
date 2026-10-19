@@ -1,4 +1,8 @@
-# DTT (diaggui) リファレンス解析レポート
+# DTT (diaggui) リファレンス解析レポート (Historical Archive)
+
+> **Note**: The in-tree GUI (`gwexpy/gui/`) was removed in v0.2.6 (#645)
+> and migrated to the standalone [pyaggui](https://github.com/tatsuki-washimi/pyaggui) repository.
+> This document is preserved for historical reference only.
 
 このレポートは、当時ローカル参照として利用していた C++ 版 DTT (Diagnostic Test Tools) 実装（旧 `gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag`、現在は Git 管理外の外部参照）を解析したものです。Python による再実装版 (`gwexpy/gui`) の開発および検証のためのリファレンス情報を提供することを目的としています。
 

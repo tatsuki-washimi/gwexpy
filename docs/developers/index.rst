@@ -11,6 +11,7 @@ Architecture & Design
    contracts/public_interop_contract
    contracts/public_io_contract
    coupling_segment_schema_v1
+   adr/0001-gui-decoupling-and-project-boundaries
    design/design_data/index
    design/gui/implementation_map
    design/gui/reference_analysis

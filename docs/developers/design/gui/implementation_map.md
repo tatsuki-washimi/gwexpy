@@ -1,4 +1,8 @@
-# Source Code Status Report: gwexpy/gui
+# Source Code Status Report: gwexpy/gui (Historical Archive)
+
+> **Note**: The in-tree GUI (`gwexpy/gui/`) described below was removed in v0.2.6 (#645)
+> and migrated to the standalone [pyaggui](https://github.com/tatsuki-washimi/pyaggui) repository.
+> This document is preserved for historical architecture reference only.
 
 ## 1. 全体アーキテクチャ
 本プロジェクトは、C++製の "DTT diaggui" を Python (PyQt5 + pyqtgraph) で再現し、かつ拡張することを目的としています。

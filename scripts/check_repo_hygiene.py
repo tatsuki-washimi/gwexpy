@@ -13,6 +13,8 @@ from typing import NamedTuple
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 FORBIDDEN_PREFIXES = (
+    "gwexpy/gui/",
+    "tests/gui/",
     "docs/.doctrees/",
     "docs/_build/",
     "scratch/.venv_docs/",
