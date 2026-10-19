@@ -23,8 +23,9 @@ summary:
   modifications:
     tests_io_files: 4
     docs_api_files: 3
-    total_modified: 7
-  total_files_changed: 69
+    workflow_files: 1
+    total_modified: 8
+  total_files_changed: 70
   lines_deleted: 11540
 validation:
   performed:
@@ -48,6 +49,8 @@ validation:
       result: "PASS (gwexpy --help)"
     - name: "Docs CI autodoc fix"
       result: "PASS (removed automodule:: gwexpy.gui from docs/web/en, docs/web/ja, docs_redesign)"
+    - name: "GWpy compat CI certifi pin"
+      result: "PASS (pinned certifi<=2026.7.22 in .github/workflows/test-compat-gwpy.yml to fix upstream gwosc.org TLS certificate verification)"
   omitted:
     - name: "pyaggui full test / NDS live smoke"
       reason: "Decoupled per maintainer decision on Issue #645 comment 6258374097."
