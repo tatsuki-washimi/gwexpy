@@ -1800,7 +1800,11 @@ class _RedirectingRecorder(http.server.BaseHTTPRequestHandler):
 
 
 @pytest.fixture
-def local_servers():
+def local_servers(monkeypatch):
+    # Loopback must never be routed through an inherited proxy.
+    for name in ("http_proxy", "HTTP_PROXY", "https_proxy", "HTTPS_PROXY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("no_proxy", "127.0.0.1")
     servers: list[http.server.ThreadingHTTPServer] = []
 
     def make() -> http.server.ThreadingHTTPServer:
@@ -1838,3 +1842,57 @@ def test_github_token_is_sent_only_to_the_original_origin(
         assert target.seen_authorization == [None]
     else:
         assert origin.seen_authorization == ["Bearer probe-token"] * 2
+
+
+@pytest.mark.parametrize(
+    ("redirect_url", "keeps_token"),
+    [
+        ("https://api.github.com/b", True),
+        ("https://API.github.com:443/b", True),
+        ("http://api.github.com/b", False),
+        ("https://api.github.com:8443/b", False),
+        ("https://evil.example/b", False),
+        ("https://api.github.com@evil.example/b", False),
+    ],
+)
+def test_redirect_handler_keeps_token_only_for_same_scheme_host_and_port(
+    promotion, redirect_url, keeps_token
+):
+    import urllib.request
+
+    module, _, _ = promotion
+    request = urllib.request.Request(
+        "https://api.github.com/a", headers={"Authorization": "Bearer probe-token"}
+    )
+    handler = module._DropTokenOnCrossOriginRedirect()
+
+    redirected = handler.redirect_request(request, None, 302, "Found", {}, redirect_url)
+
+    assert redirected is not None
+    assert redirected.has_header("Authorization") is keeps_token
+
+
+def test_api_and_artifact_helpers_route_through_the_github_opener(
+    promotion, monkeypatch
+):
+    import io
+
+    module, _, _ = promotion
+    seen: list[str] = []
+
+    def fake_open(request, timeout=60):
+        seen.append(request.full_url)
+        return io.BytesIO(b'{"ok": true}')
+
+    monkeypatch.setattr(module, "_open_github_request", fake_open)
+
+    assert module._api_json("owner/repo", "probe-token", "actions/runs/1") == {
+        "ok": True
+    }
+    assert module._download_artifact_archive("owner/repo", "probe-token", 7) == (
+        b'{"ok": true}'
+    )
+    assert seen == [
+        "https://api.github.com/repos/owner/repo/actions/runs/1",
+        "https://api.github.com/repos/owner/repo/actions/artifacts/7/zip",
+    ]

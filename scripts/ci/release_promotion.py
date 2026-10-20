@@ -1105,6 +1105,19 @@ def _artifact_observation(record: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+_DEFAULT_PORTS = {"http": 80, "https": 443}
+
+
+def _url_origin(url: str) -> tuple[str, str, int | None]:
+    parts = urllib.parse.urlsplit(url)
+    scheme = parts.scheme.lower()
+    return (
+        scheme,
+        (parts.hostname or "").lower(),
+        parts.port or _DEFAULT_PORTS.get(scheme),
+    )
+
+
 class _DropTokenOnCrossOriginRedirect(urllib.request.HTTPRedirectHandler):
     """Keep the API token on the API origin; signed blob URLs get no Authorization."""
 
@@ -1118,10 +1131,7 @@ class _DropTokenOnCrossOriginRedirect(urllib.request.HTTPRedirectHandler):
         newurl: str,
     ) -> urllib.request.Request | None:
         redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
-        if redirected is not None and (
-            urllib.parse.urlsplit(newurl).netloc
-            != urllib.parse.urlsplit(req.full_url).netloc
-        ):
+        if redirected is not None and _url_origin(newurl) != _url_origin(req.full_url):
             redirected.remove_header("Authorization")
         return redirected
 
