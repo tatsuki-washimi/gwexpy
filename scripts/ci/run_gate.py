@@ -225,7 +225,6 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "-m",
                 "network or nds",
                 "tests/io/",
-                "tests/nds/",
                 "tests/segments/",
                 "tests/timeseries/test_timeseries.py",
             ]

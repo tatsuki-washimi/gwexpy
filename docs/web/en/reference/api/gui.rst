@@ -1,7 +1,7 @@
 Graphical User Interface
 ========================
 
-**Stability:** Experimental
+**Stability:** Removed from GWexpy in v0.2.6; use the independent pyaggui project.
 
 .. note::
    The legacy GUI implementation (``gwexpy.gui``) has been removed from GWexpy

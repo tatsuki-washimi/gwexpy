@@ -64,3 +64,15 @@ def test_reviewed_exceptions_match_pinned_hashes():
         if digest != row["sha256"]:
             mismatches.append(row["path"])
     assert mismatches == []
+
+
+def test_every_tracked_zip_is_in_the_ledger():
+    # ZIP members are not text-searched, so the ledger must list every tracked archive.
+    probe = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "ls-files", "-z", "--", "*.zip"],
+        capture_output=True,
+        check=True,
+    )
+    tracked = {path for path in probe.stdout.decode("utf-8").split("\0") if path}
+    listed = {row["path"] for row in _ledger_rows() if row["category"] == "E-ZIP"}
+    assert tracked == listed
