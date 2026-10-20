@@ -75,7 +75,7 @@ promotion manifestはUTF-8のJSONとし、sorted keys、duplicate keyなし、�
 
 manifest自身のSHA-256はファイルのraw bytesから計算し、manifest内には自己digestを含めない。
 
-manifestには`schema=gwexpy-release-promotion-v1`を含め、少なくとも次の情報を記録する。
+manifestには`schema=gwexpy-release-promotion-manifest-v1`を含め、少なくとも次の情報を記録する。
 
 - schema version、repository、package version、expected tag。
 - SとRのfull commit SHA、candidate run IDとattempt番号、event、dispatch ref、workflow ID、canonical workflow path、workflow ref、workflow SHA。

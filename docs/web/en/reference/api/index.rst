@@ -92,8 +92,8 @@ This index groups the main modules by topic. If you're unsure where to start, be
      - Experimental
      - Entry point, version reporting, and planned command-line workflows
    * - GUI
-     - Experimental
-     - Graphical interface and interactive tools
+     - Removed in v0.2.6
+     - Moved to the independent pyaggui project
 
 .. seealso::
    Cross-navigation:

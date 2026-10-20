@@ -1,5 +1,7 @@
 # Release Artifact Build-Once Promotion Implementation Plan
 
+> **Status (recorded for v0.2.6 review):** This plan was written before the v0.2.6 release contract existed. The implementation described here is present in the repository, and its schema is `gwexpy-release-promotion-manifest-v1`. The checkboxes below were not updated when the work landed, so they do not show completion. The line "Do not add a speculative v0.2.6 contract" is historical; the v0.2.6 contract was added in the release-preparation work recorded in `docs/developers/plans/20261019_v0.2.6_release_plan.md`.
+
 > **For agentic workers:** REQUIRED: Use `superpowers:subagent-driven-development` (if subagents are available) or `superpowers:executing-plans` to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Refactor future GWexpy releases so candidate-qualified sdist and wheel bytes are promoted unchanged to GitHub Release and PyPI.
