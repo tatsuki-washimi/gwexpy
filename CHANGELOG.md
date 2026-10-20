@@ -17,8 +17,9 @@ axes, and units are preserved.
 ### Documentation
 
 - **`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution
-  path and state that extra keyword arguments are forwarded to
-  `scipy.signal.periodogram`, where `method=` is rejected (#779, PR #798).
+  path and state that extra keyword arguments are passed on to
+  `scipy.signal.periodogram` (GWpy consumes `nproc` itself), where `method=` is
+  rejected (#779, PR #798).
 - **`TimeSeriesDict.append()`**: Document in-place dictionary update behavior and
   explicit `self` return contract (#640, PR #798).
 - **GUI transition guide**: Update English and Japanese user guides and how-to

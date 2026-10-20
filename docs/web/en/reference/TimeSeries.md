@@ -72,7 +72,7 @@ Extended TimeSeries with full gwexpy functionality.
 `TimeSeries.spectrogram2(fftlength, overlap=..., window=...)` builds a
 **non-averaged** spectrogram from periodograms. Unlike `spectrogram()`, it
 does not accept an FFT-averaging `method` option: additional keyword arguments
-are passed to `scipy.signal.periodogram`. That function has no `method`
+are passed to `scipy.signal.periodogram` (GWpy consumes `nproc` itself). That function has no `method`
 parameter, so a `method` keyword such as `method='mean'` raises a `TypeError`.
 To choose an averaging method, use `spectrogram(stride=..., method='welch')`
 (or `'median'`) instead.
