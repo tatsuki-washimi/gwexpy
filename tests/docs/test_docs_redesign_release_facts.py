@@ -28,7 +28,7 @@ PUBLISHED_V025_VERSION = "0.2.5"
 PUBLISHED_V025_DATE = "2026-10-04"
 PUBLISHED_V025_HISTORY_ENTRY = f"[{PUBLISHED_V025_VERSION}] - {PUBLISHED_V025_DATE}"
 CANDIDATE_V026_VERSION = "0.2.6"
-CANDIDATE_V026_METADATA_DATE = "2026-10-20"
+CANDIDATE_V026_METADATA_DATE = "2026-10-23"
 CANDIDATE_V026_HISTORY_ENTRY = (
     f"[{CANDIDATE_V026_VERSION}] - {CANDIDATE_V026_METADATA_DATE}"
 )
@@ -377,7 +377,8 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     )
     assert "Published on 2026-09-26 UTC" in redesigned_changelog
     assert "development-activity-v0.2.4.svg" in redesigned_changelog
-    assert ':start-after: "# Changelog"' in redesigned_changelog
+    assert ":end-before:" not in redesigned_changelog
+    assert ':start-after: "`WhitenTransform.inverse_transform`' in redesigned_changelog
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
     assert release_message is not None
@@ -500,7 +501,9 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     published_heading = f"## {PUBLISHED_V023_HISTORY_ENTRY}"
     current_heading = f"## {PUBLISHED_V024_HISTORY_ENTRY}"
     assert ":::{include} ../../CHANGELOG.md" in source
-    assert ':start-after: "# Changelog"' in source
+    include_anchor = re.search(r':start-after: "(.+)"', source).group(1)
+    assert canonical.index(include_anchor) < canonical.index("## [0.2.5]")
+    assert ":end-before:" not in source
     assert current_heading not in source
     assert published_heading not in source
     current_section = canonical.split(current_heading, 1)[1].split(
