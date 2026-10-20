@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import urllib.parse
+import urllib.request
 from collections.abc import Mapping, Sequence
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -1063,8 +1065,6 @@ def validate_downloaded_artifact(
 
 
 def _api_json(repository: str, token: str, path: str) -> Any:
-    import urllib.request
-
     url = "https://api.github.com/repos/" + repository + "/" + path
     request = urllib.request.Request(
         url,
@@ -1074,7 +1074,7 @@ def _api_json(repository: str, token: str, path: str) -> Any:
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
+    with _open_github_request(request) as response:
         return json.load(response)
 
 
@@ -1105,9 +1105,33 @@ def _artifact_observation(record: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _download_artifact_archive(repository: str, token: str, artifact_id: int) -> bytes:
-    import urllib.request
+class _DropTokenOnCrossOriginRedirect(urllib.request.HTTPRedirectHandler):
+    """Keep the API token on the API origin; signed blob URLs get no Authorization."""
 
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is not None and (
+            urllib.parse.urlsplit(newurl).netloc
+            != urllib.parse.urlsplit(req.full_url).netloc
+        ):
+            redirected.remove_header("Authorization")
+        return redirected
+
+
+def _open_github_request(request: urllib.request.Request, timeout: int = 60) -> Any:
+    opener = urllib.request.build_opener(_DropTokenOnCrossOriginRedirect)
+    return opener.open(request, timeout=timeout)
+
+
+def _download_artifact_archive(repository: str, token: str, artifact_id: int) -> bytes:
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repository}/actions/artifacts/{artifact_id}/zip",
         headers={
@@ -1116,7 +1140,7 @@ def _download_artifact_archive(repository: str, token: str, artifact_id: int) ->
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
+    with _open_github_request(request) as response:
         return response.read()
 
 
@@ -1446,7 +1470,6 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
     import datetime
     import os
     import tempfile
-    import urllib.request
 
     contract = configured_contract(version)
     profile = candidate_profile(contract)
@@ -1562,7 +1585,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
                 f"https://api.github.com/repos/{repository}/actions/artifacts/{record['id']}/zip",
                 headers={"Authorization": "Bearer " + token},
             )
-            with urllib.request.urlopen(request, timeout=60) as response:
+            with _open_github_request(request) as response:
                 raw = response.read()
             members = observe_archive(api, raw, run_id)
             if role.startswith("sidecar:"):

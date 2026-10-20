@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import copy
+import http.server
 import importlib.util
 import json
 import sys
+import threading
 from pathlib import Path
 
 import pytest
@@ -1575,7 +1577,6 @@ def test_finalizer_reads_original_ids_before_run_completion(
     promotion, tmp_path, monkeypatch, mutation
 ):
     import io
-    import urllib.request
     import zipfile
 
     module, _, contract = promotion
@@ -1752,12 +1753,12 @@ def test_finalizer_reads_original_ids_before_run_completion(
     )
     downloads = []
 
-    def download(request, timeout):
+    def download(request, timeout=60):
         artifact_id = int(request.full_url.split("/")[-2])
         downloads.append(artifact_id)
         return io.BytesIO(archives[artifact_id])
 
-    monkeypatch.setattr(urllib.request, "urlopen", download)
+    monkeypatch.setattr(module, "_open_github_request", download)
     output = tmp_path / "promotion-manifest.json"
     if mutation:
         with pytest.raises(module.PromotionManifestError):
@@ -1777,3 +1778,63 @@ def test_finalizer_reads_original_ids_before_run_completion(
             a["name"] != "release-promotion-manifest-" + source
             for a in manifest["artifacts"]
         )
+
+
+class _RedirectingRecorder(http.server.BaseHTTPRequestHandler):
+    """Record Authorization headers; /start redirects to the configured Location."""
+
+    def do_GET(self) -> None:
+        self.server.seen_authorization.append(self.headers.get("Authorization"))
+        if self.path == "/start":
+            self.send_response(302)
+            self.send_header("Location", self.server.redirect_to)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Length", "2")
+        self.end_headers()
+        self.wfile.write(b"ok")
+
+    def log_message(self, *_args: object) -> None:
+        pass
+
+
+@pytest.fixture
+def local_servers():
+    servers: list[http.server.ThreadingHTTPServer] = []
+
+    def make() -> http.server.ThreadingHTTPServer:
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _RedirectingRecorder)
+        server.seen_authorization = []  # type: ignore[attr-defined]
+        server.redirect_to = ""  # type: ignore[attr-defined]
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        servers.append(server)
+        return server
+
+    yield make
+    for server in servers:
+        server.shutdown()
+        server.server_close()
+
+
+@pytest.mark.parametrize("cross_origin", [True, False])
+def test_github_token_is_sent_only_to_the_original_origin(
+    promotion, local_servers, cross_origin
+):
+    module, _, _ = promotion
+    origin = local_servers()
+    target = local_servers() if cross_origin else origin
+    origin.redirect_to = f"http://127.0.0.1:{target.server_address[1]}/blob"
+    request = module.urllib.request.Request(
+        f"http://127.0.0.1:{origin.server_address[1]}/start",
+        headers={"Authorization": "Bearer probe-token"},
+    )
+
+    with module._open_github_request(request, timeout=10) as response:
+        assert response.read() == b"ok"
+
+    if cross_origin:
+        assert origin.seen_authorization == ["Bearer probe-token"]
+        assert target.seen_authorization == [None]
+    else:
+        assert origin.seen_authorization == ["Bearer probe-token"] * 2
