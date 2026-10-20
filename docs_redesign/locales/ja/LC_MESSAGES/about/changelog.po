@@ -18,7 +18,7 @@ msgstr ""
 msgid "[0.2.6] - 2026-10-20"
 msgstr "[0.2.6] - 2026-10-20（候補）"
 
-msgid "This maintenance release clarifies documentation contracts, refines diagnostic warning messages, and completes repository cleanup following the decoupling of the legacy in-tree GUI to the independent `pyaggui` project. It introduces no new public APIs, dependencies, or storage formats. Tested scientific values, dtypes, axes, and units are strictly preserved."
+msgid "This maintenance release clarifies documentation contracts, refines diagnostic warning messages, and completes repository cleanup following the decoupling of the legacy in-tree GUI to the independent `pyaggui` project. It introduces no new public APIs, dependencies, or storage formats. Tested scientific values, dtypes, axes, and units are preserved."
 msgstr "このメンテナンスリリースでは、ドキュメント上の契約を明確化し、診断警告を改善し、旧来の同梱 GUI を独立した `pyaggui` プロジェクトへ分離した後のリポジトリ整理を完了します。新しい公開 API、依存関係、保存形式は追加しません。検証済みの科学データの値、dtype、軸、単位は維持します。"
 
 msgid "Fixed"
@@ -44,6 +44,9 @@ msgstr "削除"
 
 msgid "**Legacy in-tree GUI**: Fully removed deprecated `gwexpy/gui/` implementation and associated `tests/gui/` tests, GUI-specific development dependencies, packaging exclusions, and CI fixtures following ADR 0001 (#645, PR #802, PR #803). Boundary defense tests added to prevent accidental reintroduction."
 msgstr "**旧来の同梱 GUI**：ADR 0001 に基づく分離に続き、非推奨の `gwexpy/gui/` 実装と `tests/gui/` のテスト、GUI 専用の開発依存関係、パッケージ除外設定、CI fixture を完全に削除しました。誤って再導入されないよう境界テストを追加しました（#645、PR #802、PR #803）。"
+
+msgid "**Obsolete NDS live workflow**: Removed the manual `nds-live.yml` workflow, which selected no tests after the GUI cleanup. NDS library I/O and offline analysis support are retained; no replacement live workflow is provided."
+msgstr "**旧 NDS ライブワークフロー**：GUI 整理後にテストを選択していなかった手動の `nds-live.yml` ワークフローを削除しました。NDS ライブラリの I/O とオフライン解析の機能は維持します。ライブ向けの代替ワークフローは提供しません。"
 
 msgid "Known limitations"
 msgstr "既知の制限"
