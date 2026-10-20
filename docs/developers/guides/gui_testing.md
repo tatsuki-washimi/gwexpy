@@ -1,17 +1,9 @@
-# GUI Testing (Historical Reference)
+# GUI Testing
 
-.. note::
-   The legacy GUI implementation and tests (`gwexpy/gui/`, `tests/gui/`) were removed
-   from the GWexpy repository and extracted into the standalone `pyaggui` project.
-   For active GUI testing and development, refer to `pyaggui <https://github.com/tatsuki-washimi/pyaggui>`_.
+GWexpy no longer contains the legacy GUI implementation, GUI behavior tests,
+or their test runner. GUI development and display-dependent testing are
+maintained in the standalone [pyaggui project](https://github.com/tatsuki-washimi/pyaggui).
+Follow that repository's current contributor instructions for GUI testing.
 
-The instructions below are preserved for historical reference only.
-
-## Default Suite (Legacy)
-
-```bash
-tests/run_gui_tests.sh
-```
-
-The default runner used `xvfb-run` and excluded `@pytest.mark.pyautogui` tests
-unless explicitly passing a custom `-m/--markexpr`.
+GWexpy's `tests/test_gui_boundary.py` checks the repository boundary. It does
+not run or certify GUI behavior.

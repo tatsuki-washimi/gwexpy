@@ -1,24 +1,26 @@
 # Full Test Environment
 
-This project can run with a minimal dependency set, but the full test suite
-expects optional Python packages and a few system-level tools. Use the
-instructions below to provision a "full" environment that should run all tests
-without skips.
+This project can run with a minimal dependency set, but broader test coverage
+uses optional Python packages and some system-level tools. The environment
+below installs the development tooling and non-GUI Python extras; tests that
+need unavailable system tools or external services may still be skipped.
 
 ## Python Extras
 
-Recommended (installs test tooling and all optional Python extras):
+Recommended (installs test tooling and all non-GUI optional Python extras):
 
 ```bash
 pip install -e ".[dev,all]"
 ```
 
-Extras responsibilities: `dev` = test/lint/type tooling, `gui` = Qt runtime, `geophysics` = domain-specific deps.
+Extras responsibilities: `dev` provides test/lint/type tooling, and `all`
+provides the optional Python features supported by this repository. GUI code
+and GUI behavior tests are maintained in the standalone `pyaggui` project.
 
 If you prefer to install only the pieces you need, use the explicit extras:
 
 ```bash
-pip install -e ".[dev,gw,stats,fitting,astro,geophysics,audio,bio,interop,control,gui,plot,analysis]"
+pip install -e ".[dev,gw,analysis,fitting,seismic,audio,io,netcdf4,zarr,plotting,control]"
 ```
 
 ## System-Level Dependencies
@@ -67,14 +69,11 @@ Each gate runs the same command set as the corresponding workflow job, so use th
 
 GWexpy retains NDS-related library I/O for offline scientific analysis. This repository does not provide a live-NDS workflow, and its test suite does not certify connectivity to remote NDS services. Live connectivity depends on the user's environment and is not part of release qualification.
 
-GUI tests are split into two buckets:
+## GUI test boundary
 
-- The default GUI suite is headless-safe and runs under the GUI runner with
-  Xvfb.
-- `pyautogui` tests require real pointer injection and should be run against a
-  real desktop/session display, not the default Xvfb path.
-
-In headless environments (no `DISPLAY`/`WAYLAND_DISPLAY` or
-`QT_QPA_PLATFORM=offscreen/minimal`), the harness skips GUI tests and disables
-pytest plugin autoloading to avoid Qt crashes. To run GUI tests in headless CI,
-use the GUI runner described in `docs/developers/guides/gui_testing.md`.
+GWexpy no longer contains the legacy GUI implementation, GUI behavior tests,
+or their test runner and headless hooks. GUI development and display-dependent
+testing are maintained by the standalone
+[`pyaggui` project](https://github.com/tatsuki-washimi/pyaggui); follow that
+project's current contributor instructions. GWexpy's `tests/test_gui_boundary.py`
+checks the repository boundary and does not run or certify GUI behavior.
