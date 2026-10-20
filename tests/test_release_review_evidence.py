@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +14,25 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evidence.py"
+RELEASE_SCRIPT_PATH = ROOT / "scripts" / "validate_release.py"
+V026_EMPTY_READINESS_BYTES = b"""\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v026-review-evidence-v1",
+    "entries": [],
+    "human_approval": {
+      "approver_login": "",
+      "role": "",
+      "reviewed_commit": "",
+      "scope_paths": [],
+      "scope_digest": "",
+      "timestamp_utc": "",
+      "verdict": "",
+      "comment_id": 0
+    }
+  }
+"""
+V026_CHECKBOX_PATTERN = re.compile(r"\[[ xX]\]")
 CONTRACTS = json.loads(
     (ROOT / "scripts" / "ci" / "release_contracts.json").read_text(encoding="utf-8")
 )["releases"]
@@ -279,11 +299,43 @@ def test_v026_review_document_loader_preserves_raw_bytes_and_approval(
     assert document.data["human_approval"] == {"comment_id": 6265784106}
 
 
-def test_v026_source_readiness_placeholder_does_not_claim_new_approval():
-    validator = load_validator()
-    contract = validator._release_contract("v0.2.6")
-    document = validator.load_review_document(ROOT / contract["review_evidence_path"])
+def load_release_validator():
+    spec = importlib.util.spec_from_file_location(
+        "validate_release_for_readiness_tests", RELEASE_SCRIPT_PATH
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
+
+def _git(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", *args], cwd=repo, check=True, text=True, capture_output=True
+    ).stdout.strip()
+
+
+def _commit_all(repo: Path, message: str) -> str:
+    _git(repo, "add", "-A")
+    _git(
+        repo,
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-q",
+        "-m",
+        message,
+    )
+    return _git(repo, "rev-parse", "HEAD")
+
+
+def _assert_v026_source_placeholder(validator, path: Path) -> None:
+    """S state: the exact unapproved placeholder and no completed gates."""
+    assert path.read_bytes() == V026_EMPTY_READINESS_BYTES
+    document = validator.load_review_document(path)
     assert document.data["entries"] == []
     approval = document.data["human_approval"]
     assert approval["reviewed_commit"] == ""
@@ -291,6 +343,155 @@ def test_v026_source_readiness_placeholder_does_not_claim_new_approval():
     assert approval["timestamp_utc"] == ""
     assert approval["verdict"] == ""
     assert approval["comment_id"] == 0
+    plan = (ROOT / validator._release_contract("v0.2.6")["plan_path"]).read_text(
+        encoding="utf-8"
+    )
+    checklist = plan.split("## Release Gates Checklist", 1)[1]
+    assert not [line for line in checklist.splitlines() if line.startswith("- [x]")]
+
+
+def _assert_v026_candidate_record(validator, path: Path) -> None:
+    """R state: three bound reviews, one approval, and a valid S-to-R binding."""
+    contract = validator._release_contract("v0.2.6")
+    data = validator.validate_review_evidence(
+        path, None, None, ROOT, expected_tag="v0.2.6"
+    )
+    lanes = {entry["lane"] for entry in data["entries"]}
+    commits = {entry["reviewed_commit"] for entry in data["entries"]}
+    assert lanes == set(contract["review_lanes"])
+    assert len(commits) == 1
+    assert data["human_approval"]["reviewed_commit"] == next(iter(commits))
+
+    release_validator = load_release_validator()
+    head = _git(ROOT, "rev-parse", "HEAD")
+    release_validator.validate_s_to_r(
+        ROOT, next(iter(commits)), head, expected_tag="v0.2.6"
+    )
+
+
+def test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate():
+    """Fail closed: S must be the exact placeholder; any other state must be R."""
+    validator = load_validator()
+    contract = validator._release_contract("v0.2.6")
+    path = ROOT / contract["review_evidence_path"]
+
+    if path.read_bytes() == V026_EMPTY_READINESS_BYTES:
+        _assert_v026_source_placeholder(validator, path)
+    else:
+        _assert_v026_candidate_record(validator, path)
+
+
+def test_v026_candidate_checkbox_row_has_one_checkbox_token():
+    contract = load_validator()._release_contract("v0.2.6")
+    plan = (ROOT / contract["plan_path"]).read_text(encoding="utf-8")
+    rows = [line for line in plan.splitlines() if "Create candidate `R`" in line]
+
+    assert len(rows) == 1
+    assert len(V026_CHECKBOX_PATTERN.findall(rows[0])) == 1
+    assert rows[0].startswith(("- [ ]", "- [x]"))
+
+
+def _v026_transition_repo(
+    tmp_path: Path,
+    *,
+    source_plan: str,
+    candidate_plan: str,
+    source_manifest: bytes = V026_EMPTY_READINESS_BYTES,
+    candidate_manifest: bytes = b"review_evidence_json: |\n  {}\n",
+    extra_path: str | None = None,
+) -> tuple[Path, str, str]:
+    """Build a throwaway S commit and a candidate R commit with synthetic content."""
+    contract = load_validator()._release_contract("v0.2.6")
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    plan = repo / contract["plan_path"]
+    manifest = repo / contract["review_evidence_path"]
+    plan.parent.mkdir(parents=True, exist_ok=True)
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    plan.write_text(source_plan, encoding="utf-8")
+    manifest.write_bytes(source_manifest)
+    source = _commit_all(repo, "source")
+
+    plan.write_text(candidate_plan, encoding="utf-8")
+    manifest.write_bytes(candidate_manifest)
+    if extra_path is not None:
+        extra = repo / extra_path
+        extra.parent.mkdir(parents=True, exist_ok=True)
+        extra.write_text("unrelated\n", encoding="utf-8")
+    candidate = _commit_all(repo, "candidate")
+    return repo, source, candidate
+
+
+V026_SOURCE_PLAN = (
+    "## Release Gates Checklist\n\n"
+    "- [ ] Create candidate `R` with only permitted readiness evidence population "
+    "and the matching plan checkbox transitions from unchecked to checked.\n"
+    "- [ ] Execute candidate qualification workflow.\n"
+)
+V026_CANDIDATE_PLAN = V026_SOURCE_PLAN.replace("- [ ] Create", "- [x] Create", 1)
+
+
+def test_v026_s_to_r_transition_allows_only_manifest_and_one_checkbox(
+    tmp_path: Path,
+):
+    release_validator = load_release_validator()
+    repo, source, candidate = _v026_transition_repo(
+        tmp_path,
+        source_plan=V026_SOURCE_PLAN,
+        candidate_plan=V026_CANDIDATE_PLAN,
+    )
+
+    release_validator.validate_s_to_r(repo, source, candidate, expected_tag="v0.2.6")
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        (
+            {"extra_path": "README.md"},
+            "outside coordinator audit paths",
+        ),
+        (
+            {
+                "source_plan": V026_SOURCE_PLAN.replace(
+                    "- [ ] Create", "- [ ] Create `[ ]` marker,", 1
+                ),
+                "candidate_plan": V026_SOURCE_PLAN.replace(
+                    "- [ ] Create", "- [x] Create `[ ]` marker,", 1
+                ),
+            },
+            "must only transition",
+        ),
+        (
+            {
+                "candidate_plan": V026_CANDIDATE_PLAN.replace(
+                    "from unchecked to checked", "from unchecked to done", 1
+                ),
+            },
+            "must only transition",
+        ),
+        (
+            {"source_manifest": b"review_evidence_json: |\n  {}\n"},
+            "exact empty review evidence placeholder",
+        ),
+    ],
+)
+def test_v026_s_to_r_transition_rejects_out_of_contract_changes(
+    tmp_path: Path, kwargs: dict[str, object], message: str
+):
+    release_validator = load_release_validator()
+    values: dict[str, object] = {
+        "source_plan": V026_SOURCE_PLAN,
+        "candidate_plan": V026_CANDIDATE_PLAN,
+    }
+    values.update(kwargs)
+    repo, source, candidate = _v026_transition_repo(tmp_path, **values)
+
+    with pytest.raises(release_validator.ReleaseValidationError, match=message):
+        release_validator.validate_s_to_r(
+            repo, source, candidate, expected_tag="v0.2.6"
+        )
 
 
 @pytest.mark.parametrize(
