@@ -49,6 +49,13 @@ Diagnose and fix common problems.
 
 Upgrade notes and breaking changes between releases.
 :::
+
+:::{grid-item-card} GUI transition
+:link: gui
+:link-type: doc
+
+Install and use the standalone `pyaggui` project when you have repository access.
+:::
 ::::
 
 ## Technique recipes
@@ -151,6 +158,7 @@ time_utilities
 
 troubleshooting
 migration
+gui
 ```
 
 ```{toctree}
