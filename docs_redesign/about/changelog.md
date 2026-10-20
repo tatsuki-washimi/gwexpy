@@ -26,4 +26,5 @@ The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuk
 
 :::{include} ../../CHANGELOG.md
 :start-after: "# Changelog"
+:end-before: "## [0.2.6]"
 :::

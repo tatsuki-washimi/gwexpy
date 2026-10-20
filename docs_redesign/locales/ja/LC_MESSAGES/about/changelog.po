@@ -30,8 +30,8 @@ msgstr "**ASD 周波数グリッドの拒否診断**：ASD 応答関数で周波
 msgid "Documentation"
 msgstr "ドキュメント"
 
-msgid "**`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution path and clarify constraints on stride/window arguments (#779, PR #798)."
-msgstr "**`TimeSeries.spectrogram2()`**：平均化を行わない periodogram の実行経路を記し、stride と window 引数の制約を明確にします（#779、PR #798）。"
+msgid "**`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution path and state that extra keyword arguments are forwarded to `scipy.signal.periodogram`, where `method=` is rejected (#779, PR #798)."
+msgstr "**`TimeSeries.spectrogram2()`**：平均化を行わない periodogram の実行経路を記し、追加のキーワード引数が `scipy.signal.periodogram` に転送されること、そこで `method=` が拒否されることを明記します（#779、PR #798）。"
 
 msgid "**`TimeSeriesDict.append()`**: Document in-place dictionary update behavior and explicit `self` return contract (#640, PR #798)."
 msgstr "**`TimeSeriesDict.append()`**：辞書を inplace で更新する動作と、`self` を返す契約を明記します（#640、PR #798）。"

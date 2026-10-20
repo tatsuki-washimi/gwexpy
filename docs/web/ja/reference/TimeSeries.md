@@ -72,8 +72,8 @@ psd = ts.psd(fftlength=1.0)
 `TimeSeries.spectrogram2(fftlength, overlap=..., window=...)` は periodogram を使う
 **非平均化**スペクトログラムです。`spectrogram()` と異なり、FFT の平均化方式を選ぶ
 `method` 引数には対応しません。追加キーワード引数は `scipy.signal.periodogram` に
-渡されるため、現行の GWpy 経路では `method='mean'` や `method='welch'` を指定すると
-内部の `TypeError` が発生します。平均化方式を選びたい場合は、
+渡されます。`scipy.signal.periodogram` には `method` 引数がないため、`method='mean'` などを指定すると
+`TypeError` が発生します。平均化方式を選びたい場合は、
 `spectrogram(stride=..., method='welch')`（または `'median'`）を使ってください。
 
 ### 前処理の意味
