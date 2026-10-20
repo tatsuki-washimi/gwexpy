@@ -47,10 +47,10 @@ this is not a commitment to include them in v0.2.7.
 - [#769](https://github.com/tatsuki-washimi/gwexpy/issues/769): `StandardizeTransform` can retain units after standardization and silently use z-score for an unrecognized method. No workaround is verified.
 - [#770](https://github.com/tatsuki-washimi/gwexpy/issues/770): `TimeSeriesMatrix.radian()` and `.degree()` can leave container and element unit metadata inconsistent with converted values. No workaround is verified.
 - [#771](https://github.com/tatsuki-washimi/gwexpy/issues/771): A failed entry read from a non-manifest HDF5 collection can be silently skipped, yielding partial or empty data. Do not assume a successful return includes every stored entry; no workaround is verified.
-- [#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): `to_tgraph` can accept error-bar values without checking unit compatibility with the series, potentially misrepresenting uncertainties. No workaround is verified.
+- [#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): `to_tgraph` is reported to accept error-bar values without checking unit compatibility with the series, potentially misrepresenting uncertainties. This release review did not reproduce the report. No workaround is verified.
 - [#774](https://github.com/tatsuki-washimi/gwexpy/issues/774): An invalid nonempty HDF5 `frequency_unit` can silently fall back to Hz and misstate the frequency axis. No workaround is verified.
 - [#777](https://github.com/tatsuki-washimi/gwexpy/issues/777): `SeriesMatrix.to_hdf5` can omit Quantity-valued custom attributes without warning, losing metadata. No workaround is verified.
-- [#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` can return dimensionless data without restoring original physical units. No workaround is verified.
+- [#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` is reported to return dimensionless data without restoring original physical units. This release review did not reproduce the report. No workaround is verified.
 
 ## [0.2.5] - 2026-10-04
 

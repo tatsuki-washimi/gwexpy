@@ -12,13 +12,13 @@
 
 ## Findings
 
-- `Advanced Signal Processing` is still oversized in both languages: 17 items in [docs/web/ja/user_guide/tutorials/index.rst](/home/washimi/work/gwexpy/docs/web/ja/user_guide/tutorials/index.rst:51) and [docs/web/en/user_guide/tutorials/index.rst](/home/washimi/work/gwexpy/docs/web/en/user_guide/tutorials/index.rst:51).
-- Direct file I/O tutorials are no longer listed under that section. The previous worst offender, `case_gbd_format`, already lives under `Specialized Tools` at [JA](/home/washimi/work/gwexpy/docs/web/ja/user_guide/tutorials/index.rst:73) / [EN](/home/washimi/work/gwexpy/docs/web/en/user_guide/tutorials/index.rst:73).
+- `Advanced Signal Processing` is still oversized in both languages: 17 items in [docs/web/ja/user_guide/tutorials/index.rst](../../web/ja/user_guide/tutorials/index.rst:51) and [docs/web/en/user_guide/tutorials/index.rst](../../web/en/user_guide/tutorials/index.rst:51).
+- Direct file I/O tutorials are no longer listed under that section. The previous worst offender, `case_gbd_format`, already lives under `Specialized Tools` at [JA](../../web/ja/user_guide/tutorials/index.rst:73) / [EN](../../web/en/user_guide/tutorials/index.rst:73).
 - The remaining issue is classification drift, not a literal IV-section misplacement:
   - `intro_interop` is currently grouped under `Core Data Structures`, but its notebook is about external conversions and storage bridges, not core containers.
   - `case_gbd_format` is pure direct I/O.
   - `case_seismic_obspy` is mixed: it starts with MiniSEED/SAC/FDSN reading and `obspy` conversion, then proceeds to signal processing. It is I/O/interop-adjacent enough that users will look for it near data-ingest content.
-- This drift conflicts with the rule already established in [docs/web/ja/user_guide/io_formats.md](/home/washimi/work/gwexpy/docs/web/ja/user_guide/io_formats.md:6) and [docs/web/ja/user_guide/interop.md](/home/washimi/work/gwexpy/docs/web/ja/user_guide/interop.md:1): direct I/O and interop are separate entry points and should not be hidden inside signal-processing buckets.
+- This drift conflicts with the rule already established in [docs/web/ja/user_guide/io_formats.md](../../web/ja/user_guide/io_formats.md:6) and [docs/web/ja/user_guide/interop.md](../../web/ja/user_guide/interop.md:1): direct I/O and interop are separate entry points and should not be hidden inside signal-processing buckets.
 
 ## Recommended Target Structure
 

@@ -12,12 +12,12 @@
 
 ## Findings
 
-- Current `intersphinx_mapping` in [docs/conf.py](/home/washimi/work/gwexpy/docs/conf.py:261) is remote-first for every dependency and explicitly hardcodes GWpy to `https://gwpy.readthedocs.io/en/stable/objects.inv`.
+- Current `intersphinx_mapping` in [docs/conf.py](../../conf.py:261) is remote-first for every dependency and explicitly hardcodes GWpy to `https://gwpy.readthedocs.io/en/stable/objects.inv`.
 - A local docs build reproduced the actual failure mode: `sphinx-build -b html -D nbsphinx_execute=never docs docs/_build/html` succeeded, but emitted six intersphinx fetch warnings caused by DNS resolution failures for `python`, `numpy`, `scipy`, `astropy`, `matplotlib`, and `gwpy`.
-- CI history is worse than “local DNS only”: [gwexpy-failure-report.md](/home/washimi/work/gwexpy/docs_internal/archive/ci-failure-triage/2026-04-09/analysis/gwexpy-failure-report.md:97) records repeated `Sphinx: Intersphinx 404 (GWpy docs stable)` failures on April 9, 2026. That means the current GWpy inventory source is also operationally brittle on networked runners.
-- The build currently suppresses `ref.intersphinx` in [docs/conf.py](/home/washimi/work/gwexpy/docs/conf.py:160), so missing external resolution is easy to miss unless someone inspects warnings carefully.
+- CI history is worse than “local DNS only”: [gwexpy-failure-report.md](../../../docs_internal/archive/ci-failure-triage/2026-04-09/analysis/gwexpy-failure-report.md:97) records repeated `Sphinx: Intersphinx 404 (GWpy docs stable)` failures on April 9, 2026. That means the current GWpy inventory source is also operationally brittle on networked runners.
+- The build currently suppresses `ref.intersphinx` in [docs/conf.py](../../conf.py:160), so missing external resolution is easy to miss unless someone inspects warnings carefully.
 - The source tree does use real external Sphinx roles such as `:class:\`gwpy.plot.Plot\`` and `:meth:\`gwpy.spectrogram.Spectrogram.imshow\`` in code docstrings, so fixing `intersphinx_mapping` matters for more than cosmetic navigation.
-- Some public docs pages already contain hardcoded GWpy links as a workaround, for example [docs/web/en/reference/FrequencySeries.md](/home/washimi/work/gwexpy/docs/web/en/reference/FrequencySeries.md:47). Those links reduce damage, but they do not solve unresolved docstring cross-references elsewhere.
+- Some public docs pages already contain hardcoded GWpy links as a workaround, for example [docs/web/en/reference/FrequencySeries.md](../../web/en/reference/FrequencySeries.md:47). Those links reduce damage, but they do not solve unresolved docstring cross-references elsewhere.
 
 ## Recommended Solution
 
@@ -234,7 +234,7 @@ Expected:
 
 - [ ] **Step 4: Update the audit report**
 
-Change section 16-12 in [docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md](/home/washimi/work/gwexpy/docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md:529) from `要確認` to a resolved note such as:
+Change section 16-12 in [docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md](../../../docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md:529) from `要確認` to a resolved note such as:
 
 ```md
 ✅修正済み（intersphinx inventory を `docs/_intersphinx/` に同梱し、ローカル制約下でも GWpy / NumPy / SciPy / Astropy / Matplotlib への外部 API リンクを解決可能にした）
