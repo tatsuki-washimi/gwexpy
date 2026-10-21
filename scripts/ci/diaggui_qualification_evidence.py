@@ -338,7 +338,11 @@ def _installed_candidate_facts(
             "installed gwexpy digest does not match candidate"
         )
     parsed_url = urlparse(direct_url.get("url", ""))
-    if parsed_url.scheme != "file" or not parsed_url.path:
+    if (
+        parsed_url.scheme != "file"
+        or parsed_url.netloc not in {"", "localhost"}
+        or not parsed_url.path
+    ):
         raise DiagGUIQualificationError(
             "installed gwexpy URL is not a local candidate artifact"
         )

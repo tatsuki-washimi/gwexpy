@@ -307,7 +307,10 @@ jobs:
       - name: Verify PyPI attestations with pinned official tool
         env:
           EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        # pipefail: a failing verify must fail the step, not the trailing tee.
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install --disable-pip-version-check --no-cache-dir \
             "pypi-attestations==0.0.30"
           pypi-attestations --version | tee \
