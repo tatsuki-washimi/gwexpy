@@ -48,6 +48,7 @@ jobs:
       - name: Check out workflow revision for validator code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ github.workflow_sha }}
           fetch-depth: 0
           path: control
@@ -55,6 +56,7 @@ jobs:
       - name: Check out requested source revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
           # Full history is required for release ancestry validation.
           fetch-depth: 0
@@ -154,6 +156,7 @@ jobs:
       - name: Check out verified source revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -236,6 +239,7 @@ jobs:
       - name: Check out frozen validator revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
           path: control
@@ -353,6 +357,7 @@ jobs:
       - name: Check out verified qualification source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -574,6 +579,7 @@ jobs:
         if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.promotion_enabled == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -739,6 +745,7 @@ jobs:
       - name: Check out verified DiagGUI qualification source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -854,6 +861,7 @@ jobs:
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -925,6 +933,7 @@ jobs:
       - name: Check out verified I/O source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -1006,6 +1015,7 @@ jobs:
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -1054,6 +1064,7 @@ jobs:
         if: needs.verify.outputs.version == '0.2.5'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -1147,6 +1158,7 @@ jobs:
       - name: Check out verified collector revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 1
           path: source
@@ -1225,11 +1237,13 @@ jobs:
       - name: Check out frozen finalizer code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ github.workflow_sha }}
           path: control
       - name: Check out candidate review and release notes
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Set up Python
@@ -1277,6 +1291,7 @@ jobs:
       - name: Check out exact release source and annotated tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 0
           path: source
@@ -1354,6 +1369,7 @@ jobs:
       - name: Check out verified release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 0
           path: source
@@ -1511,6 +1527,7 @@ jobs:
       - name: Check out release validator
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Download exact candidate payload by ID
@@ -1567,6 +1584,7 @@ jobs:
       - name: Check out verified release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 0
           path: source
@@ -1735,6 +1753,7 @@ jobs:
       - name: Check out readback validator
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Download exact candidate payload by ID
