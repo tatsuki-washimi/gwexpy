@@ -193,7 +193,7 @@ jobs:
           PY
 
       - name: Download prior release payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/prior-payload
@@ -202,7 +202,7 @@ jobs:
           github-token: ${{ github.token }}
 
       - name: Download prior release sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-sidecars-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/prior-sidecars
@@ -467,7 +467,7 @@ jobs:
           PY
 
       - name: Upload exact public payload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-public-payload-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/public-payload
@@ -475,7 +475,7 @@ jobs:
           retention-days: 30
 
       - name: Upload identity evidence separately
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-identity-evidence-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/identity-evidence
@@ -569,7 +569,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Download exact public payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
@@ -619,7 +619,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -661,7 +661,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Download exact public payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
@@ -702,7 +702,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -734,7 +734,7 @@ jobs:
           python-version: "3.12"
 
       - name: Download exact public payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
@@ -774,7 +774,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-sdist-3.12-claims
           path: |
@@ -855,7 +855,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -888,7 +888,7 @@ jobs:
           python-version: "3.11"
 
       - name: Download exact public payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
@@ -944,7 +944,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-scientific-3.11-wheel
           path: |
@@ -977,7 +977,7 @@ jobs:
           python-version: "3.11"
 
       - name: Download exact public payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
@@ -1018,7 +1018,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-report-docs-en-ja-3.11-wheel
           path: |
@@ -1072,21 +1072,21 @@ jobs:
 
       - name: Download exact public payload
         if: always()
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/public-payload
 
       - name: Download identity evidence
         if: always()
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: post-release-identity-evidence-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
           path: ${{ runner.temp }}/identity-evidence
 
       - name: Download all qualification reports
         if: always()
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: post-release-report-*
           path: ${{ runner.temp }}/qualification-reports
@@ -1116,7 +1116,7 @@ jobs:
 
       - name: Upload aggregate qualification evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: post-release-qualification-aggregate
           path: |
