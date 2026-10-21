@@ -17,10 +17,15 @@ GWexpy focuses strictly on scientific gravitational-wave analysis, physical data
 
 ## Installation and Usage
 
-To use GUI capabilities, install and run `pyaggui` directly:
+The `pyaggui` GitHub repository is currently private, and no public PyPI
+distribution is available. Repository access is required to install it. For
+users with repository access, its README documents this source installation
+path; `pip install pyaggui` is not the documented path:
 
 ```bash
-pip install pyaggui
+git clone https://github.com/tatsuki-washimi/pyaggui.git
+cd pyaggui
+python -m pip install .
 pyaggui
 ```
 

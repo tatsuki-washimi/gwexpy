@@ -3,11 +3,11 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-09-26.*
+*Last updated: 2026-10-19.*
 
 ## How to Read This Page
 
-- **Released baseline**: the shipped v0.2.4 maintenance baseline and the v0.2.0 semantic contract
+- **Released baseline**: the published v0.2.5 maintenance baseline and the v0.2.0 semantic contract
 - **Directional themes**: areas we may improve in upcoming iterations
 - **Mid-term**: work we want to expose more broadly after the current docs and API cleanup
 - **Long-term**: exploratory directions that are useful but not yet scheduled
@@ -16,13 +16,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Current Release Baseline
 
-- [v0.2.4](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4) is the current released maintenance baseline. It improves characterized DiagGUI XML support without adding a public API or dependency.
+- [v0.2.5](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5) is the current released maintenance baseline. It improves characterized scientific-data I/O reliability and reduces repeated work in selected read and merge paths without adding a public API or dependency.
 - v0.2.0 establishes the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades
 - Exact timing, interoperable persistence, deterministic provenance, and public
-  GWpy compatibility were established in v0.2.0 and are retained by v0.2.4
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.5
 
-The v0.2.4 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/), [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), [conda-forge](https://anaconda.org/conda-forge/gwexpy), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439). No next-minor release theme is committed; future work remains directional.
+The v0.2.5 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.5/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5). No next-minor release theme is committed; future work remains directional.
 
 ## Directional Themes
 

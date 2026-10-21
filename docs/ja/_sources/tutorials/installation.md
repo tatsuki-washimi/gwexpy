@@ -10,7 +10,8 @@ myst:
 GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/),
 the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases),
 and [conda-forge](https://anaconda.org/conda-forge/gwexpy). The latest conda-forge
-package is v0.2.4. Its source is archived on [Zenodo](https://zenodo.org/records/22978439).
+package is v0.2.4. The v0.2.4 source is archived on
+[Zenodo](https://zenodo.org/records/22978439).
 Check each install source for its available versions.
 :::
 
