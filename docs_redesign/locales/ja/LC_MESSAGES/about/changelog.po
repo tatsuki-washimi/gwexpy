@@ -21,14 +21,8 @@ msgstr "[0.2.6] - 2026-10-23（候補）"
 msgid "This maintenance release clarifies documentation contracts, refines diagnostic warning messages, and completes repository cleanup following the decoupling of the legacy in-tree GUI to the independent `pyaggui` project. It introduces no new public APIs, dependencies, or storage formats. Tested scientific values, dtypes, axes, and units are preserved."
 msgstr "このメンテナンスリリースでは、ドキュメント上の契約を明確化し、診断警告を改善し、旧来の同梱 GUI を独立した `pyaggui` プロジェクトへ分離した後のリポジトリ整理を完了します。新しい公開 API、依存関係、保存形式は追加しません。検証済みの科学データの値、dtype、軸、単位は維持します。"
 
-msgid "Fixed"
-msgstr "修正"
-
 msgid "**ASD frequency-grid rejection diagnostics**: Distinguish rejection causes when validating frequency grids in ASD response functions, emitting specific informative warnings while preserving warning categories and stack levels (#790, PR #794)."
 msgstr "**ASD 周波数グリッドの拒否診断**：ASD 応答関数で周波数グリッドを検証する際、拒否理由を区別して具体的で有用な警告を出します。警告カテゴリと stack level は維持します（#790、PR #794）。"
-
-msgid "Documentation"
-msgstr "ドキュメント"
 
 msgid "**`TimeSeries.spectrogram2()`**: Document the non-averaged periodogram execution path and state that extra keyword arguments are passed on to `scipy.signal.periodogram`, where `method=` is rejected (#779, PR #798). With GWpy 4.0.1, `nproc` values above 1 fail with `AttributeError`, so use the default `nproc=1`; GWpy 4.0.2 was not tested in this release review."
 msgstr "**`TimeSeries.spectrogram2()`**：平均化を行わない periodogram の実行経路を記し、追加のキーワード引数が `scipy.signal.periodogram` に渡されること、そこで `method=` が拒否されることを明記します（#779、PR #798）。GWpy 4.0.1 では、`nproc` に 1 より大きい値を指定すると `AttributeError` になるため、既定値の `nproc=1` を使用してください。GWpy 4.0.2 は本リリースのレビューでは未検証です。"
@@ -47,9 +41,6 @@ msgstr "**旧来の同梱 GUI**：ADR 0001 に基づく分離に続き、非推�
 
 msgid "**Obsolete NDS live workflow**: Removed the manual `nds-live.yml` workflow, which selected no tests after the GUI cleanup. NDS library I/O and offline analysis support are retained; no replacement live workflow is provided."
 msgstr "**旧 NDS ライブワークフロー**：GUI 整理後にテストを選択していなかった手動の `nds-live.yml` ワークフローを削除しました。NDS ライブラリの I/O とオフライン解析の機能は維持します。ライブ向けの代替ワークフローは提供しません。"
-
-msgid "Known limitations"
-msgstr "既知の制限"
 
 msgid "These issues remain unresolved in v0.2.6. No workaround has been verified for the affected cases. They are individual patch candidates for v0.2.7 or later; this is not a commitment to include them in v0.2.7."
 msgstr "以下の問題は v0.2.6 でも未解決です。該当する条件に対する回避策は検証されていません。各問題は v0.2.7 以降の個別パッチ候補ですが、v0.2.7 への収録を約束するものではありません。"
