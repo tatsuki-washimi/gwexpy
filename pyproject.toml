@@ -340,6 +340,7 @@ markers = [
     "long: long running tests",
     "flaky: mark test as flaky (used by gwpy)",
     "network: tests requiring external network access (GWOSC, DataFind, etc.)",
+    "upstream_gwosc_live: upstream GWpy test that requires a live GWOSC/DataFind request or a fixture fetched from that service",
     "root: tests requiring optional PyROOT/ROOT native bindings",
 ]
 filterwarnings = [

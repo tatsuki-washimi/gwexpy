@@ -152,9 +152,16 @@ jobs:
             tests/test_gwpy4_proxy_contract.py tests/table/test_table.py tests/interop/test_interop_lal.py \
             2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/proxy.log"
 
+      - name: Audit GWOSC live test selection
+        run: |
+          python scripts/ci/audit_gwosc_timeseries.py \
+            --output "${RUNNER_TEMP}/gwpy-compat-evidence/gwosc-timeseries-audit.json" \
+            2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/gwosc-timeseries-audit.log"
+
       - name: Run full timeseries suite
         run: |
-          pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" tests/timeseries \
+          pytest -q -m "not upstream_gwosc_live" \
+            --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" tests/timeseries \
             2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.log"
 
       - name: Retain compatibility evidence

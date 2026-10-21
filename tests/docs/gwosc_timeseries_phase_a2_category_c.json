@@ -1,0 +1,1357 @@
+{
+  "audit_base": "da3391d12d97a793c9710107d03d78e9f41d8e3b",
+  "gwpy_versions": [
+    "4.0.1",
+    "4.0.2"
+  ],
+  "class_under_test": "gwpy.timeseries.TimeSeries",
+  "cases": [
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_asd",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_asd",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_asd",
+      "gwpy_api": "TimeSeries.asd() / TimeSeries.psd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_average_fft",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_average_fft",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_average_fft",
+      "gwpy_api": "TimeSeries.average_fft() / detrend() / fft()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_bandpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_bandpass_happy_path",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_bandpass_happy_path",
+      "gwpy_api": "TimeSeries.bandpass() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_coherence",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Local subclass fixture unconditionally skips before data fetch",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Retain existing ID and unconditional local fixture skip; no GWOSC request reaches this case",
+      "upstream_test_method": "test_coherence",
+      "gwpy_api": "TimeSeries.coherence()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence_spectrogram",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_coherence_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Local subclass fixture unconditionally skips before data fetch",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Retain existing ID and unconditional local fixture skip; no GWOSC request reaches this case",
+      "upstream_test_method": "test_coherence_spectrogram",
+      "gwpy_api": "TimeSeries.coherence_spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd_spectrogram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_csd_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_csd_spectrogram",
+      "gwpy_api": "TimeSeries.csd_spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_detrend",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_detrend",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_detrend",
+      "gwpy_api": "TimeSeries.detrend()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_fft",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_fft",
+      "gwpy_api": "TimeSeries.fft()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_fftgram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_fftgram",
+      "gwpy_api": "TimeSeries.fftgram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_fftgram_overlap",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_fftgram_overlap",
+      "gwpy_api": "TimeSeries.fftgram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_filter",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_filter",
+      "gwpy_api": "TimeSeries.filter()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter_sos",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_filter_sos",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_filter_sos",
+      "gwpy_api": "TimeSeries.filter() / filter_design highpass ZPK-to-SOS equivalence"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_nds2",
+      "category": "C",
+      "fixtures": [
+        "gw150914_16384"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_get_nds2",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Requires optional nds2; current CI setup skips before fixture setup when absent",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Retain as optional upstream NDS2 compatibility test; requires-marker skips before fixture when NDS2 is absent",
+      "upstream_test_method": "test_get_nds2",
+      "gwpy_api": "TimeSeries.get(source=nds2)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_highpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_highpass_happy_path",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_highpass_happy_path",
+      "gwpy_api": "TimeSeries.highpass() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_lowpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_lowpass_happy_path",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_lowpass_happy_path",
+      "gwpy_api": "TimeSeries.lowpass() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_notch",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_notch",
+      "gwpy_api": "TimeSeries.notch()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_notch_happy_path",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_notch_happy_path",
+      "gwpy_api": "TimeSeries.notch() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_default_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_psd_default_overlap",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_psd_default_overlap",
+      "gwpy_api": "TimeSeries.psd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_lal_median_mean",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_psd_lal_median_mean",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_psd_lal_median_mean",
+      "gwpy_api": "TimeSeries.psd(method=lal_median_mean)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_gram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_q_gram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_q_gram",
+      "gwpy_api": "TimeSeries.q_gram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_q_transform",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_q_transform",
+      "gwpy_api": "TimeSeries.q_transform() / asd() / whiten()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform_logf",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_q_transform_logf",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_q_transform_logf",
+      "gwpy_api": "TimeSeries.q_transform(logf=True)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rayleigh_spectrum",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_rayleigh_spectrum",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_rayleigh_spectrum",
+      "gwpy_api": "TimeSeries.rayleigh_spectrum()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[None]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_interval_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_interval_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read interval validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framecpp]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_interval_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_interval_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read interval validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framel]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_interval_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_interval_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read interval validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[lalframe]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_interval_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_interval_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read interval validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[None]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_name_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_name_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read channel-name validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framecpp]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_name_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_name_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read channel-name validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framel]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_name_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_name_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read channel-name validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[lalframe]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_read_write_gwf_name_error",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_read_write_gwf_name_error",
+      "gwpy_api": "TimeSeries.write(format=gwf) / read channel-name validation"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample",
+      "gwpy_api": "TimeSeries.resample() / asd()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_simple_upsample",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_resample_simple_upsample",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_resample_simple_upsample",
+      "gwpy_api": "TimeSeries.resample()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rms",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_rms",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_rms",
+      "gwpy_api": "TimeSeries.rms()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectral_variance",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectral_variance",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectral_variance",
+      "gwpy_api": "TimeSeries.spectral_variance()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram2",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram2",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram2",
+      "gwpy_api": "TimeSeries.spectrogram2() / spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram",
+      "gwpy_api": "TimeSeries.spectrogram()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_fftlength",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram_fftlength",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram_fftlength",
+      "gwpy_api": "TimeSeries.spectrogram() FFT-length handling"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[lal]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram_median_mean",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram_median_mean",
+      "gwpy_api": "TimeSeries.spectrogram(method=median_mean)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[pycbc]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram_median_mean",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram_median_mean",
+      "gwpy_api": "TimeSeries.spectrogram(method=median_mean)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_multiprocessing",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram_multiprocessing",
+      "phase_a2_classification": "gwexpy-influenced",
+      "execution_note": "tests/conftest.py _mp_fallback can replace nproc=2 worker dispatch with serial dispatch only if semlock probe fails",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Separate from live gate only with a synthetic GWexpy TimeSeries nproc=1 versus nproc=2 regression; no current offline nproc=2 parity test found",
+      "upstream_test_method": "test_spectrogram_multiprocessing",
+      "gwpy_api": "TimeSeries.spectrogram(nproc=1 vs nproc=2)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_spectrogram_overlap",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_spectrogram_overlap",
+      "gwpy_api": "TimeSeries.spectrogram(overlap=)"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_transfer_function",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_transfer_function",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Local subclass fixture unconditionally skips before data fetch",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Retain existing ID and unconditional local fixture skip; no GWOSC request reaches this case",
+      "upstream_test_method": "test_transfer_function",
+      "gwpy_api": "TimeSeries.transfer_function()"
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_zpk",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "target_class": "gwpy.timeseries.TimeSeries",
+      "target_method": "test_zpk",
+      "phase_a2_classification": "upstream-only",
+      "execution_note": "Uses the local GWOSC fixture wrapper or inherited upstream GWOSC fixture",
+      "gwexpy_product_path": "No GWexpy TimeSeries instance or GWexpy override is the target; see execution_note for harness-only effects",
+      "suggested_disposition": "Candidate for separation from GWexpy-required CI; executes only GWpy implementation on GWOSC-derived data",
+      "upstream_test_method": "test_zpk",
+      "gwpy_api": "TimeSeries.zpk() / filter()"
+    }
+  ]
+}

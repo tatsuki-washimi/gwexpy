@@ -1,0 +1,1176 @@
+{
+  "schema": "gwexpy-gwosc-timeseries-candidate-inventory-v2",
+  "gwpy_versions": [
+    "4.0.1",
+    "4.0.2"
+  ],
+  "upstream_test_timeseries_sha256": "74cb0aac347e3df06e8660dd3ace9f5c14954a66e0516ec2f97e154d9d251766",
+  "candidate_cases": [
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_asd",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_average_fft",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_bandpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": false
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence_spectrogram",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": false
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd_spectrogram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_detrend",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data_error",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter_sos",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_best_frametype_in_find",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_httperror",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_runtimeerror",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_datafind",
+      "category": "A",
+      "fixtures": [],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_gwosc_kwargs",
+      "category": "A",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream GWOSC/DataFind live request",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_nds2",
+      "category": "C",
+      "fixtures": [
+        "gw150914_16384"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_highpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_lowpass_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch_happy_path",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_default_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_lal_median_mean",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_gram",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform_logf",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rayleigh_spectrum",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[None]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framecpp]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framel]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[lalframe]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[None]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framecpp]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framel]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[lalframe]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-fir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-iir]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_simple_upsample",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rms",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectral_variance",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram2",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-bartlett]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-median]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-welch]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_fftlength",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[lal]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[pycbc]",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_multiprocessing",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_overlap",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_transfer_function",
+      "category": "C",
+      "fixtures": [
+        "gw150914_h1_32",
+        "gw150914_l1_32"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": false
+    },
+    {
+      "nodeid": "tests/timeseries/test_timeseries.py::TestTimeSeries::test_zpk",
+      "category": "C",
+      "fixtures": [
+        "gw150914"
+      ],
+      "reason": "Upstream calculation/I/O case obtains its input from a live GWOSC fixture; equivalent offline GWexpy regressions remain required",
+      "upstream_gwosc_live": true
+    }
+  ],
+  "live_marker_ids": [
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_asd",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_average_fft",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_bandpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd_spectrogram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_detrend",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter_sos",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_best_frametype_in_find",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_httperror",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_runtimeerror",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_datafind",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_gwosc_kwargs",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_nds2",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_highpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_lowpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_default_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_lal_median_mean",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_gram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform_logf",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rayleigh_spectrum",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_simple_upsample",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rms",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectral_variance",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram2",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_fftlength",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[lal]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[pycbc]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_multiprocessing",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_zpk"
+  ],
+  "inherited_upstream_test_ids": [
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_abs",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_append",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_asd",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_average_fft",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_bandpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_boolean_statetimeseries",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_channel",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_coherence_spectrogram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_convolve",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_copy",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_correlate",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_between_grid_points_is_floored",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_float_precision_first_value_float",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_float_precision_last_value",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_float_precision_last_value_float",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_float_precision_near_last_value_float",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_irregular",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_crop_warnings",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd_fftlength",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_csd_spectrogram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_demodulate",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_detrend",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_diff",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_duration",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_dx",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_empty_slice",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_epoch",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch[nds1]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch[nds2]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_connection",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_empty_iterate_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_open_data_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_pad[nds1]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fetch_pad[nds2]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft_ifft[data0]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft_ifft[data1]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft_ifft[data2]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fft_ifft[data3]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_fftgram_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_filter_sos",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_best_frametype_in_find",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_httperror",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_datafind_runtimeerror",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_find_observatory_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_flatten",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[bool-False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[bool-True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[float64-False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[float64-True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[int32-False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[int32-True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[np_bool-False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_arrakis[np_bool-True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_nds2_buffer",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_from_nds2_buffer_dynamic_scaled",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_gate",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_datafind",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_gwosc_kwargs",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_get_nds2",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_getitem",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_getitem_index",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_getitem_list_index",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_heterodyne",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_heterodyne_phase_length_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_heterodyne_scalar_phase_error",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_highpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_inject[False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_inject[True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_compatible",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_compatible_error_dx",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_compatible_error_unit",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_compatible_error_xindex",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_compatible_xindex",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_is_contiguous",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_ligotimegps",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_lowpass_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_mask",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_math",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_median",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_name",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_new",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_new_epoch_t0",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_new_sample_rate_dt",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_notch_happy_path",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_override_unit",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_pad",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_pad_asymmetric",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_pad_index",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_plot",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_prepend",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd[bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd[median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd[welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_default_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[lal-median_mean]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[pycbc.psd-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[pycbc.psd-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[pycbc.psd-median_mean]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated[pycbc.psd-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_lal_median_mean",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_gram",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform_logf",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_q_transform_nan",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rayleigh_spectrum",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_ascii_header",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_cache",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_end_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_end_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_end_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_end_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_negative_duration_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_negative_duration_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_negative_duration_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_gwf_negative_duration_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad[both]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad[left]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad[none]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad[right]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad[zero]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_pad_raise",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_remote",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_start_end_args",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_ascii[csv]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_ascii[txt]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_csv",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_interval_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[1-None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[1-framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[1-framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[1-lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[2-None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[2-framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[2-framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_multiple[2-lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[None-h5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[None-hdf5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[X1:TEST-CHANNEL-h5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[X1:TEST-CHANNEL-hdf5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[test-h5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_hdf5[test-hdf5]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_wav",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_repr",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1.5 kHz-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024 Hz-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-fir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample[1024-iir]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_noop",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_rate_units",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_resample_simple_upsample",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_rms",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_del",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_ghz",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_none",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_type[samp0-dt0]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_type[samp1-dt1]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_sample_rate_type[samp2-dt2]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_shift",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_single_getitem_not_created",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectral_variance",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram2",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[None-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[array-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[hann-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-lal-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-pycbc-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-bartlett]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-median]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram[window2-scipy-welch]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_fftlength",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[lal]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_median_mean[pycbc]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_multiprocessing",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_spectrogram_overlap",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_str",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_taper",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal_no_copy[False]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal_no_copy[True]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal_pow10_units",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal_scaled_units",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_lal_unrecognised_units",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_to_from_pycbc",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_transfer_function",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_unit",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_update",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_value_at",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_whiten",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_channel_name[None]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_channel_name[framecpp]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_channel_name[framel]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_channel_name[lalframe]",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_overwrite",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_write_gwf_type",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_x0",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_xindex",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_xindex_dtype",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_xindex_length_exception",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_xspan",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_xunit",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_zip",
+    "tests/timeseries/test_timeseries.py::TestTimeSeries::test_zpk"
+  ]
+}

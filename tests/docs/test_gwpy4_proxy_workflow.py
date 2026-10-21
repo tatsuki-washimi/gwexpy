@@ -1,5 +1,6 @@
 """Keep the exact-GWpy compatibility matrix wired to proxy contracts."""
 
+import json
 import re
 from pathlib import Path
 
@@ -8,6 +9,8 @@ from packaging.version import Version
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
+GWOSC_INVENTORY = ROOT / "tests/docs/gwosc_timeseries_inventory.json"
+GWOSC_PHASE_A2 = ROOT / "tests/docs/gwosc_timeseries_phase_a2_category_c.json"
 
 
 def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
@@ -119,9 +122,96 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
         if step.get("name") == "Run full timeseries suite"
     )
     assert steps.index(proxy_step) < full_index
+    audit_step = by_name["Audit GWOSC live test selection"]
+    audit_command = " ".join(audit_step["run"].replace("\\\n", " ").split())
+    assert "scripts/ci/audit_gwosc_timeseries.py" in audit_command
+    assert "gwosc-timeseries-audit.json" in audit_command
+    assert "gwosc-timeseries-audit.log" in audit_command
+    assert steps.index(audit_step) < full_index
     full_command = " ".join(steps[full_index]["run"].replace("\\\n", " ").split())
     assert full_command == (
-        'pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" '
+        'pytest -q -m "not upstream_gwosc_live" '
+        '--junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" '
         'tests/timeseries 2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.log"'
     )
+    assert '"not network"' not in full_command
     assert by_name["Retain compatibility evidence"]["if"] == "always()"
+
+
+def test_gwosc_live_gate_is_limited_to_audited_upstream_node_ids() -> None:
+    inventory = json.loads(GWOSC_INVENTORY.read_text(encoding="utf-8"))
+    assert inventory["schema"] == "gwexpy-gwosc-timeseries-candidate-inventory-v2"
+    assert inventory["gwpy_versions"] == ["4.0.1", "4.0.2"]
+    cases = {entry["nodeid"]: entry for entry in inventory["candidate_cases"]}
+    live_ids = set(inventory["live_marker_ids"])
+    assert len(cases) == 92
+    assert len(live_ids) == 89
+    inherited_test_ids = set(inventory["inherited_upstream_test_ids"])
+    assert len(inherited_test_ids) == 256
+    assert set(cases) <= inherited_test_ids
+    assert {case["category"] for case in cases.values()} == {"A", "C"}
+    assert sum(case["category"] == "A" for case in cases.values()) == 8
+    assert sum(case["category"] == "C" for case in cases.values()) == 84
+    assert live_ids <= set(cases)
+    expected_live_ids = {
+        nodeid
+        for nodeid, case in cases.items()
+        if case["category"] == "A"
+        or (
+            case["category"] == "C"
+            and set(case["fixtures"]).intersection({"gw150914", "gw150914_16384"})
+        )
+    }
+    assert live_ids == expected_live_ids
+
+    retained_h1_l1 = {
+        nodeid
+        for nodeid, case in cases.items()
+        if case["category"] == "C"
+        and set(case["fixtures"]).intersection({"gw150914_h1_32", "gw150914_l1_32"})
+    }
+    assert len(retained_h1_l1) == 3
+    assert not (retained_h1_l1 & live_ids)
+
+    audit_source = (ROOT / "scripts/ci/audit_gwosc_timeseries.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'os.environ.get("EXPECTED_SOURCE_SHA")' in audit_source
+    assert "live_marker_ids" in audit_source
+    assert "unknown_fixture_ids" in audit_source
+    assert "unknown_network_ids" in audit_source
+
+    phase_a2 = json.loads(GWOSC_PHASE_A2.read_text(encoding="utf-8"))
+    assert phase_a2["audit_base"] == "da3391d12d97a793c9710107d03d78e9f41d8e3b"
+    assert phase_a2["gwpy_versions"] == ["4.0.1", "4.0.2"]
+    category_c = {nodeid for nodeid, case in cases.items() if case["category"] == "C"}
+    phase_a2_cases = {case["nodeid"]: case for case in phase_a2["cases"]}
+    assert set(phase_a2_cases) == category_c
+    assert len(phase_a2_cases) == 84
+    assert {case["phase_a2_classification"] for case in phase_a2_cases.values()} == {
+        "upstream-only",
+        "gwexpy-influenced",
+    }
+    assert (
+        sum(
+            case["phase_a2_classification"] == "upstream-only"
+            for case in phase_a2_cases.values()
+        )
+        == 83
+    )
+    assert (
+        sum(
+            case["phase_a2_classification"] == "gwexpy-influenced"
+            for case in phase_a2_cases.values()
+        )
+        == 1
+    )
+    influenced = next(
+        case
+        for case in phase_a2_cases.values()
+        if case["phase_a2_classification"] == "gwexpy-influenced"
+    )
+    assert influenced["nodeid"].endswith("test_spectrogram_multiprocessing")
+    assert "test_timeseries_spectrogram_multiprocessing_matches_serial" in (
+        ROOT / "tests/timeseries/test_gwpy_override_terminal_compat.py"
+    ).read_text(encoding="utf-8")

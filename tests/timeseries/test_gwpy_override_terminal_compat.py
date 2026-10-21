@@ -665,6 +665,17 @@ def test_timeseries_spectrogram_regular_routes_match_gwpy(
     _assert_spectrogram_equal(actual, expected)
 
 
+def test_timeseries_spectrogram_multiprocessing_matches_serial() -> None:
+    """Keep GWexpy's multiprocessing path covered without a GWOSC fixture."""
+    series = _spectral_series(TimeSeries)
+    kwargs = {"fftlength": 0.5, "overlap": 0.25, "window": "hann"}
+
+    serial = series.spectrogram(1, nproc=1, **kwargs)
+    parallel = series.spectrogram(1, nproc=2, **kwargs)
+
+    _assert_spectrogram_equal(parallel, serial)
+
+
 @pytest.mark.parametrize(
     ("args", "kwargs"),
     [

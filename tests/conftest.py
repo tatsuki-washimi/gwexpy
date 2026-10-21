@@ -198,6 +198,26 @@ def pytest_collection_modifyitems(config, items):
 
     for item in items:
         path = str(item.fspath)
+        if (
+            path.endswith("tests/timeseries/test_timeseries.py")
+            and item.cls is not None
+            and item.cls.__name__ == "TestTimeSeries"
+        ):
+            live_fixture_dependency = bool(
+                set(item.fixturenames).intersection({"gw150914", "gw150914_16384"})
+            )
+            live_api_case = item.originalname in {
+                "test_fetch_open_data",
+                "test_fetch_open_data_error",
+                "test_find",
+                "test_find_best_frametype_in_find",
+                "test_find_datafind_httperror",
+                "test_find_datafind_runtimeerror",
+                "test_get_datafind",
+                "test_get_gwosc_kwargs",
+            }
+            if live_fixture_dependency or live_api_case:
+                item.add_marker(pytest.mark.upstream_gwosc_live)
         if skip_mp and path.endswith("test_mp.py"):
             item.add_marker(skip_mp)
         if skip_mp and hasattr(item, "callspec"):
