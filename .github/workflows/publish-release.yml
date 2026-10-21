@@ -1160,7 +1160,7 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ needs.verify.outputs.source_sha }}
-          fetch-depth: 1
+          fetch-depth: 0
           path: source
 
       - name: Set up Python

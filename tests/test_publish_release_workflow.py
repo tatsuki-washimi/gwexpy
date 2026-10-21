@@ -1741,6 +1741,19 @@ def test_candidate_graph_is_dispatch_only_and_finalizer_is_read_only():
     assert jobs["build"]["needs"] == "verify"
 
 
+def test_integration_evidence_checkout_includes_reviewed_source_history():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    checkout = next(
+        step
+        for step in jobs["evidence"]["steps"]
+        if step.get("name") == "Check out verified collector revision"
+    )
+
+    assert checkout["with"]["fetch-depth"] == 0
+
+
 def test_integration_evidence_script_loads_v026_yaml_wrapper(tmp_path: Path):
     contract = json.loads(
         (ROOT / "scripts" / "ci" / "release_contracts.json").read_text(encoding="utf-8")
