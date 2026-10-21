@@ -432,9 +432,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     ) -> Spectrogram:
         """Compute non-averaged spectrogram; use ``spectrogram`` for averaging.
 
-        ``**kwargs`` reach SciPy's ``periodogram``; ``method=`` raises ``TypeError``.
-        With GWpy 4.0.1, ``nproc`` values above 1 raise ``AttributeError``; use the
-        default ``nproc=1``.
+        ``**kwargs`` reach SciPy's ``periodogram``; ``method=`` raises ``TypeError``; GWpy 4.0.1 ``nproc>1`` raises ``AttributeError``.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
