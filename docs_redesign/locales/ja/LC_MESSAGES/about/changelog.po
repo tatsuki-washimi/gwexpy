@@ -72,8 +72,8 @@ msgstr "[#770](https://github.com/tatsuki-washimi/gwexpy/issues/770)：`TimeSeri
 msgid "[#771](https://github.com/tatsuki-washimi/gwexpy/issues/771): A failed entry read from a non-manifest HDF5 collection can be silently skipped, yielding partial or empty data. Do not assume a successful return includes every stored entry; no workaround is verified."
 msgstr "[#771](https://github.com/tatsuki-washimi/gwexpy/issues/771)：manifest を使わない HDF5 コレクションで要素の読み込みに失敗すると、その要素が黙ってスキップされ、部分データまたは空データが返ることがあります。正常終了しても保存された全要素が含まれるとは限りません。回避策は検証されていません。"
 
-msgid "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): `to_tgraph` is reported to accept error-bar values without checking unit compatibility with the series, potentially misrepresenting uncertainties. This release review did not reproduce the report. No workaround is verified."
-msgstr "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773)：`to_tgraph` は誤差棒の値と系列の単位が整合するか確認せずに受け入れることがあると報告されており、不確かさを誤って表す可能性があります。本リリースの確認では再現していません。回避策は検証されていません。"
+msgid "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773): Error-bar values whose units are incompatible with the series are accepted without a check in the helper that feeds ROOT `to_tgraph`. Measured on the pre-ROOT path, incompatible units were accepted without error, and an error series in `mm` was not converted to the series unit `m`. The ROOT `to_tgraph` end-to-end path was not verified because ROOT is not available in the release environment. This is a known limitation of v0.2.6; no fix or verified workaround is claimed."
+msgstr "[#773](https://github.com/tatsuki-washimi/gwexpy/issues/773)：系列と単位が整合しない誤差棒の値が、ROOT の `to_tgraph` に渡す補助処理で確認なしに受け入れられます。ROOT 前の経路での実測では、非互換な単位がエラーなしに受け入れられ、`mm` の誤差系列が系列の単位 `m` に変換されませんでした。ROOT を使う `to_tgraph` の端から端までの経路は、リリース環境で ROOT が利用できないため検証していません。v0.2.6 の既知の制限であり、修正や検証済みの回避策はありません。"
 
 msgid "[#774](https://github.com/tatsuki-washimi/gwexpy/issues/774): An invalid nonempty HDF5 `frequency_unit` can silently fall back to Hz and misstate the frequency axis. No workaround is verified."
 msgstr "[#774](https://github.com/tatsuki-washimi/gwexpy/issues/774)：HDF5 の `frequency_unit` が空でない不正な値の場合、Hz として黙って読み込まれ、周波数軸の単位を誤って示すことがあります。回避策は検証されていません。"
@@ -81,8 +81,8 @@ msgstr "[#774](https://github.com/tatsuki-washimi/gwexpy/issues/774)：HDF5 の 
 msgid "[#777](https://github.com/tatsuki-washimi/gwexpy/issues/777): `SeriesMatrix.to_hdf5` can omit Quantity-valued custom attributes without warning, losing metadata. No workaround is verified."
 msgstr "[#777](https://github.com/tatsuki-washimi/gwexpy/issues/777)：`SeriesMatrix.to_hdf5` は Quantity のカスタム属性を警告なしに省略することがあり、メタデータが失われます。回避策は検証されていません。"
 
-msgid "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` is reported to return dimensionless data without restoring original physical units. This release review did not reproduce the report. No workaround is verified."
-msgstr "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778)：`WhitenTransform.inverse_transform` は元の物理単位を復元せず、無次元データを返すことがあると報告されています。本リリースの確認では再現していません。回避策は検証されていません。"
+msgid "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` was reproduced returning dimensionless data instead of restoring the original physical unit (`strain`), and the dictionary keys changed from `A`/`B` to `row0`/`row1`. This is a known limitation of v0.2.6; no fix or verified workaround is claimed."
+msgstr "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778)：`WhitenTransform.inverse_transform` は、元の物理単位（`strain`）を復元せず無次元のデータを返すことを再現しました。辞書のキーも `A`/`B` から `row0`/`row1` に変わりました。v0.2.6 の既知の制限であり、修正や検証済みの回避策はありません。"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:1
 #: 923a6647f7254d2a93a5a54ea0cc9c2a

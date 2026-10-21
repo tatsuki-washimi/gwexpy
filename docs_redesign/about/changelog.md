@@ -25,5 +25,5 @@ The earlier v0.2.2 snapshot remains available as an [SVG](/_static/images/develo
 The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).
 
 :::{include} ../../CHANGELOG.md
-:start-after: "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` is reported to return dimensionless data without restoring original physical units. This release review did not reproduce the report. No workaround is verified."
+:start-after: "[#778](https://github.com/tatsuki-washimi/gwexpy/issues/778): `WhitenTransform.inverse_transform` was reproduced returning dimensionless data instead of restoring the original physical unit (`strain`), and the dictionary keys changed from `A`/`B` to `row0`/`row1`. This is a known limitation of v0.2.6; no fix or verified workaround is claimed."
 :::
