@@ -6,6 +6,7 @@ import matplotlib
 
 matplotlib.use("Agg")  # non-interactive backend before any plt import
 
+import astropy.units as u
 import numpy as np
 import pytest
 from gwpy.timeseries import TimeSeries
@@ -28,7 +29,7 @@ def _make_spectrogram(n_steps=3, n_freqs=50, t0=0.0):
     data = np.abs(np.random.default_rng(42).normal(1e-20, 1e-22, (n_steps, n_freqs)))
     freqs = np.linspace(1.0, 100.0, n_freqs)
     times = np.arange(n_steps, dtype=float) + t0
-    return Spectrogram(data, times=times, frequencies=freqs, unit="1/Hz**0.5")
+    return Spectrogram(data, times=times, frequencies=freqs, unit=u.Hz**-0.5)
 
 
 def _make_result(n_steps=3, n_freqs=50):
@@ -147,7 +148,7 @@ class TestResponseFunctionResult:
         freqs = np.linspace(1.0, 100.0, n_freqs)
         times = np.arange(3, dtype=float)
         sg_bkg = Spectrogram(
-            sg_bkg_data, times=times, frequencies=freqs, unit="1/Hz**0.5"
+            sg_bkg_data, times=times, frequencies=freqs, unit=u.Hz**-0.5
         )
         result = ResponseFunctionResult(
             spectrogram_inj=sg_inj,
@@ -269,7 +270,7 @@ class TestResponseFunctionAnalysisErrors:
             else:
                 freqs = np.array([1.0, 2.0, 3.0, 4.0])
                 values = np.array([1.0, 1.0, 1.0, 1.0])
-            return FrequencySeries(values, frequencies=freqs, unit="Hz^-0.5")
+            return FrequencySeries(values, frequencies=freqs, unit=u.Hz**-0.5)
 
         monkeypatch.setattr(TimeSeries, "asd", fake_asd)
         try:
@@ -297,7 +298,7 @@ class TestResponseFunctionAnalysisErrors:
 
         def make_asd(freqs):
             return FrequencySeries(
-                np.full(3, 2.0), frequencies=np.array(freqs), unit="Hz^-0.5"
+                np.full(3, 2.0), frequencies=np.array(freqs), unit=u.Hz**-0.5
             )
 
         def fake_compute_row(*, witness, target, segment, injected_freq, **_kwargs):
