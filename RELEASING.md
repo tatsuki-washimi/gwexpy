@@ -477,10 +477,27 @@ delta must be byte-identical except for existing checkbox transitions from
 ## Locked release build toolchain
 
 `requirements/release-build.txt` is the Ubuntu/CPython 3.11 release-builder
-lock.  Generate it from a disposable environment with `pip-compile
---generate-hashes`, including `pip`, `build`, `twine`, `setuptools`, `wheel`,
-and every transitive dependency.  Review the exact versions and SHA-256 hashes
-before replacing the file.  The workflow installs it with
+lock. Generate it from a disposable Python 3.11 environment with:
+
+```bash
+CUSTOM_COMPILE_COMMAND='PIP_CONFIG_FILE=/dev/null pip-compile --no-config --generate-hashes --allow-unsafe --pip-args=--only-binary=:all: --index-url=https://pypi.org/simple --output-file=requirements/release-build.txt requirements/release-build.in' \
+PIP_CONFIG_FILE=/dev/null pip-compile --no-config --generate-hashes --allow-unsafe \
+  --pip-args='--only-binary=:all:' \
+  --index-url=https://pypi.org/simple \
+  --output-file=requirements/release-build.txt \
+  requirements/release-build.in
+```
+
+`CUSTOM_COMPILE_COMMAND` keeps the generated header accurate; pip-tools 7.5.3
+can otherwise record a default-false `--no-index` option in the comment even
+when the resolver uses the explicit PyPI index. `--no-config` disables
+pip-tools project configuration, and `PIP_CONFIG_FILE=/dev/null` disables pip
+configuration for this resolution.
+
+The input pins `pip`, `build`, `twine`, `setuptools`, and `wheel`, and requires
+the Certifi security fix at `2026.10.19` or later. Include every transitive
+dependency and review the exact versions and SHA-256 hashes before replacing the
+file. The workflow installs it with
 `python -m pip install --require-hashes -r requirements/release-build.txt`
 and builds with `python -m build --no-isolation`; it must never substitute a
 floating `pip install --upgrade pip build twine` command.
