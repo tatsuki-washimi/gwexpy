@@ -186,6 +186,16 @@ def _list_changed_docs_notebooks(repo_root: Path, base: str, head: str) -> list[
     return sorted(notebooks)
 
 
+def _check_output_root(repo_root: Path, output_root: Path) -> None:
+    """Refuse an output tree that overlaps the repository, since it is removed."""
+    if (
+        output_root == repo_root
+        or repo_root.is_relative_to(output_root)
+        or output_root.is_relative_to(repo_root)
+    ):
+        raise ValueError("Use an output directory outside the repository")
+
+
 def _copy_repo_tree(repo_root: Path, output_root: Path) -> None:
     if output_root.exists():
         shutil.rmtree(output_root)
@@ -439,6 +449,7 @@ def main() -> int:
     args = parse_args()
     repo_root = Path(args.repo_root).resolve()
     output_root = Path(args.output_root).resolve()
+    _check_output_root(repo_root, output_root)
 
     if args.mode == "full":
         notebook_paths = _iter_docs_notebooks(repo_root)
