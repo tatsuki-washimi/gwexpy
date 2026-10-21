@@ -262,10 +262,12 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     assert "GWEXPY_DOCS_BASEURL" in ja_build["env"]
 
 
-def test_docs_preview_workflow_rebuilds_when_the_canonical_changelog_changes():
+def test_docs_preview_workflow_is_manual_dispatch_only():
+    """No push trigger may publish to gh-pages from an unprotected branch."""
     workflow = _load_workflow(DOCS_PREVIEW_WORKFLOW_PATH)
 
-    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
+    assert "push" not in workflow[True]
+    assert "workflow_dispatch" in workflow[True]
     steps_by_name = {
         step["name"]: step
         for step in workflow["jobs"]["publish-preview"]["steps"]

@@ -1,18 +1,9 @@
 name: Docs Redesign Preview
 
+# Automatic push deployment is removed: the preview branch is unprotected, and
+# any writer to it could publish to gh-pages. Preview builds are dispatched
+# manually by a maintainer instead.
 on:
-  push:
-    branches: [claude/docs-redesign-pydata]
-    paths:
-      - "CHANGELOG.md"
-      - "docs_redesign/**"
-      - "docs/web/en/user_guide/tutorials/**"
-      - "scripts/prepare_public_docs.py"
-      - "scripts/check_public_docs.py"
-      - "scripts/verify_public_examples.py"
-      - "gwexpy/**"
-      - "pyproject.toml"
-      - ".github/workflows/docs-redesign-preview.yml"
   workflow_dispatch:
 
 permissions:
@@ -59,10 +50,10 @@ jobs:
       GWEXPY_DOCS_NOINDEX: "1"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
+        uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
         with:
           environment-file: environment.yml
           environment-name: gwexpy
