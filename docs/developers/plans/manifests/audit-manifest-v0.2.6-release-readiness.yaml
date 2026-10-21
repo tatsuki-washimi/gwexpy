@@ -1,15 +1,102 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v026-review-evidence-v1",
-    "entries": [],
+    "entries": [
+      {
+        "lane": "documentation",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes"
+        ],
+        "scope_digest": "90a322bf028c8461418cf3a9119d09be6676ce48c69ec6abb97935ef309cb0d9",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-21T08:22:56Z",
+        "raw_report_sha256": "f7a4c01d47c70bc7f60824d19b2751e68b0c330e9f58e21b1ad1db57804a9808",
+        "finding_ids": [
+          "DOC-S18-1",
+          "DOC-S18-2",
+          "DOC-S18-3"
+        ]
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts"
+        ],
+        "scope_digest": "65ea4f5c8f9152f5076ce8813c68a4d814f1444159e2e0a94a9ce2fedb49df99",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-21T08:17:19Z",
+        "raw_report_sha256": "e5c025527c34d0c89c2087b4fb87ac124a52d1adf5d5e5be451a83533c329ea4",
+        "finding_ids": [
+          "RS-1"
+        ]
+      },
+      {
+        "lane": "scientific-data-model",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "scope_digest": "848c6dbfa44512819a3b72215669d2913f10d4eb32897ab85eb4b91dbb1d1d42",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-21T08:14:44Z",
+        "raw_report_sha256": "0cf92f99f6cdc8a840de0d817c9eeb09d910c3907204ae5f1e6003d23effc3e9",
+        "finding_ids": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5"
+        ]
+      }
+    ],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0
+      "approver_login": "tatsuki-washimi",
+      "role": "release-owner",
+      "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "scope_digest": "848c6dbfa44512819a3b72215669d2913f10d4eb32897ab85eb4b91dbb1d1d42",
+      "timestamp_utc": "2026-10-21T09:56:05Z",
+      "verdict": "APPROVED",
+      "comment_id": 6313174780
     }
   }
