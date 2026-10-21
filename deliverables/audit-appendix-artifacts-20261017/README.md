@@ -66,4 +66,4 @@ chat2plan 実行ディレクトリ（ローカルマシン上）:
 - B: `~/.local/state/chat2plan/runs/20261017T075741Z-91daf9/execution/`
 - C: `~/.local/state/chat2plan/runs/20261017T064433Z-c8bd51/execution/`
 
-履歴: 2026-10-17 に chat2plan 原本4ファイルのみを同梱した配布 ZIP（`agent-deliverables-20261017-195716.zip`）を先行作成したが、リポジトリ未コミットのため GitHub 上には存在しない。現在の正本は `main` 上の本ディレクトリと `agent-deliverables-20261017-200607.zip`（照合スクリプト・検査 JSON・README 同梱）である。
+履歴: 2026-10-17 に chat2plan 原本4ファイルのみを同梱した配布 ZIP（`agent-deliverables-20261017-195716.zip`）を先行作成したが、リポジトリ未コミットのため GitHub 上には存在しない。現在の正本は `main` 上の本ディレクトリの個別ファイルである。
