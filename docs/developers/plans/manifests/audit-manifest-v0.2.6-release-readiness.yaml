@@ -7,7 +7,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6.1-sol",
         "effort": "medium",
-        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "reviewed_commit": "da3391d12d97a793c9710107d03d78e9f41d8e3b",
         "scope_paths": [
           "CHANGELOG.md",
           "ROADMAP.md",
@@ -16,14 +16,16 @@ review_evidence_json: |
           "docs_redesign",
           "release_notes"
         ],
-        "scope_digest": "90a322bf028c8461418cf3a9119d09be6676ce48c69ec6abb97935ef309cb0d9",
+        "scope_digest": "16290fb7d6ee904cecaf2818ace08c812ce03b58034c8ed9d67334ef905564cb",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-10-21T08:22:56Z",
-        "raw_report_sha256": "f7a4c01d47c70bc7f60824d19b2751e68b0c330e9f58e21b1ad1db57804a9808",
+        "timestamp_utc": "2026-10-21T11:05:46Z",
+        "raw_report_sha256": "20615680019138502e654a3b5a95c13a0d2369c8847d801976c780b42bcce420",
         "finding_ids": [
-          "DOC-S18-1",
-          "DOC-S18-2",
-          "DOC-S18-3"
+          "S20-DOC-F01",
+          "S20-DOC-F02",
+          "S20-DOC-F03",
+          "S20-DOC-F04",
+          "S20-DOC-F05"
         ]
       },
       {
@@ -31,7 +33,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6.1-sol",
         "effort": "high",
-        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "reviewed_commit": "da3391d12d97a793c9710107d03d78e9f41d8e3b",
         "scope_paths": [
           ".agent",
           ".clinerules",
@@ -51,12 +53,14 @@ review_evidence_json: |
           "requirements-dev.txt",
           "scripts"
         ],
-        "scope_digest": "65ea4f5c8f9152f5076ce8813c68a4d814f1444159e2e0a94a9ce2fedb49df99",
+        "scope_digest": "fc7906b394f547f19889c6d4d6c8b7727c4c720d06725af0a472915812867f57",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-10-21T08:17:19Z",
-        "raw_report_sha256": "e5c025527c34d0c89c2087b4fb87ac124a52d1adf5d5e5be451a83533c329ea4",
+        "timestamp_utc": "2026-10-21T11:08:18Z",
+        "raw_report_sha256": "f84d3ea6db1ff95cf1ca19aa5c6b6cf6db2d0e4db5160913f91be100bc568c64",
         "finding_ids": [
-          "RS-1"
+          "RS20-001",
+          "RS20-002",
+          "RS20-003"
         ]
       },
       {
@@ -64,39 +68,38 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6.1-sol",
         "effort": "medium",
-        "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+        "reviewed_commit": "da3391d12d97a793c9710107d03d78e9f41d8e3b",
         "scope_paths": [
           "benchmarks",
           "environment.yml",
           "gwexpy",
           "tests"
         ],
-        "scope_digest": "848c6dbfa44512819a3b72215669d2913f10d4eb32897ab85eb4b91dbb1d1d42",
+        "scope_digest": "d9a6e1344df6c23196f16db8b12a790e342089f2a94cf0946a43bb2db9b3c2c4",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-10-21T08:14:44Z",
-        "raw_report_sha256": "0cf92f99f6cdc8a840de0d817c9eeb09d910c3907204ae5f1e6003d23effc3e9",
+        "timestamp_utc": "2026-10-21T11:04:55Z",
+        "raw_report_sha256": "44f57df9a78fcf76a50ba5ed79c0761ffd2a00c6f279c17993da25f43c10bc60",
         "finding_ids": [
-          "F1",
-          "F2",
-          "F3",
-          "F4",
-          "F5"
+          "SDM-001",
+          "SDM-002",
+          "SDM-003",
+          "SDM-004"
         ]
       }
     ],
     "human_approval": {
       "approver_login": "tatsuki-washimi",
       "role": "release-owner",
-      "reviewed_commit": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
+      "reviewed_commit": "da3391d12d97a793c9710107d03d78e9f41d8e3b",
       "scope_paths": [
         "benchmarks",
         "environment.yml",
         "gwexpy",
         "tests"
       ],
-      "scope_digest": "848c6dbfa44512819a3b72215669d2913f10d4eb32897ab85eb4b91dbb1d1d42",
-      "timestamp_utc": "2026-10-21T09:56:05Z",
+      "scope_digest": "d9a6e1344df6c23196f16db8b12a790e342089f2a94cf0946a43bb2db9b3c2c4",
+      "timestamp_utc": "2026-10-21T14:26:00Z",
       "verdict": "APPROVED",
-      "comment_id": 6313174780
+      "comment_id": 6318510547
     }
   }

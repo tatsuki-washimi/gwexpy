@@ -92,9 +92,9 @@ jobs:
           # The reviewed inventory records Matplotlib-generated set() signatures.
           # Matplotlib 3.11 moves the _Unset sentinel and changes that evidence
           # even on the unchanged base; keep the reference environment explicit.
-          # Note: certifi 2026.10.18 removed the legacy CA chaining gwosc.org's
-          # intermediate certificate; pin certifi<=2026.7.22 until upstream updates.
-          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas "matplotlib==3.10.8" h5py "gwpy==$GWPY_VERSION" "certifi<=2026.7.22"
+          # Require Certifi's emSign CA-key-compromise fix while retaining the
+          # unaffected roots needed by current GWOSC endpoints.
+          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas "matplotlib==3.10.8" h5py "gwpy==$GWPY_VERSION" "certifi>=2026.10.19"
           python -m pip install lalsuite
           python -m pip install pytest pytest-forked PyYAML iminuit
           python -m pip install -e . --no-deps
@@ -118,7 +118,15 @@ jobs:
           print("python=" + sys.version)
           print("source_sha=" + os.environ["EXPECTED_SOURCE_SHA"])
           print("lalsuite=" + version("lalsuite"))
-          for package in ("numpy", "scipy", "astropy", "pandas", "matplotlib", "iminuit"):
+          for package in (
+              "numpy",
+              "scipy",
+              "astropy",
+              "pandas",
+              "matplotlib",
+              "certifi",
+              "iminuit",
+          ):
               print(package + "=" + version(package))
           PY
 

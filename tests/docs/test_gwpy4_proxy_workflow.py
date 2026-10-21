@@ -1,8 +1,10 @@
 """Keep the exact-GWpy compatibility matrix wired to proxy contracts."""
 
+import re
 from pathlib import Path
 
 import yaml
+from packaging.version import Version
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
@@ -62,6 +64,18 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     provisioning = by_name["Provision compatibility environment"]["run"]
     assert "python -m pip install lalsuite" in provisioning
     assert '"gwpy==$GWPY_VERSION"' in provisioning
+    assert '"certifi>=2026.10.19"' in provisioning
+
+    for lock_path in (
+        ROOT / "requirements-dev.txt",
+        ROOT / "requirements" / "release-build.txt",
+    ):
+        match = re.search(
+            r"(?m)^certifi==([^\s;\\]+)",
+            lock_path.read_text(encoding="utf-8"),
+        )
+        assert match is not None, f"certifi missing from {lock_path}"
+        assert Version(match.group(1)) >= Version("2026.10.19")
 
     version_step = by_name["Record compatibility versions"]
     provisioning_index = steps.index(by_name["Provision compatibility environment"])
@@ -72,6 +86,7 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     assert "if actual_gwpy != expected_gwpy:" in normalized_version_command
     assert "raise SystemExit(" in normalized_version_command
     assert 'version("lalsuite")' in normalized_version_command
+    assert '"certifi"' in normalized_version_command
 
     old_focused = by_name["Run focused compatibility tests"]["run"]
     for test_path in (
