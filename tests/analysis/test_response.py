@@ -343,6 +343,77 @@ class TestResponseFunctionAnalysisErrors:
         np.testing.assert_array_equal(result.coupling_factors, [0.5, 0.5])
         assert len(result.spectrogram_inj) == 2
 
+    def test_output_spectrograms_carry_the_asd_unit(self, monkeypatch):
+        """Spectrogram values are ASDs, so their unit is the ASD unit, not the target's."""
+        from gwexpy.analysis import response as response_module
+
+        ts = TimeSeries(np.ones(2048), t0=0.0, dt=1.0 / 256, name="T", unit="strain")
+        asd_unit = u.Unit("strain") / u.Hz**0.5
+
+        def fake_compute_row(*, witness, target, segment, injected_freq, **_kwargs):
+            asd = FrequencySeries(
+                np.full(3, 2.0), frequencies=np.array([1.0, 2.0, 3.0]), unit=asd_unit
+            )
+            return {
+                "span": segment,
+                "injected_freq": injected_freq,
+                "wit_inj": witness,
+                "tgt_inj": target,
+                "wit_asd_inj": asd,
+                "tgt_asd_inj": asd,
+                "wit_asd_bkg": asd,
+                "tgt_asd_bkg": asd,
+                "cf": 0.5,
+            }
+
+        monkeypatch.setattr(response_module, "_compute_response_row", fake_compute_row)
+        result = ResponseFunctionAnalysis().compute(
+            witness=ts,
+            target=ts,
+            segments=[(0.0, 1.0, 10.0), (1.0, 2.0, 20.0)],
+            auto_detect=False,
+            fftlength=0.5,
+        )
+
+        assert result.spectrogram_inj.unit == asd_unit
+        assert result.spectrogram_bkg.unit == asd_unit
+
+    def test_mixed_asd_units_across_rows_are_rejected(self, monkeypatch):
+        """Rows with different ASD units must not be silently given one unit."""
+        from gwexpy.analysis import response as response_module
+
+        ts = TimeSeries(np.ones(2048), t0=0.0, dt=1.0 / 256, name="T", unit="strain")
+
+        def fake_compute_row(*, witness, target, segment, injected_freq, **_kwargs):
+            row_index = int(segment[0])
+            unit = u.Unit("strain") if row_index == 0 else u.Unit("m")
+            asd = FrequencySeries(
+                np.full(3, 2.0),
+                frequencies=np.array([1.0, 2.0, 3.0]),
+                unit=unit / u.Hz**0.5,
+            )
+            return {
+                "span": segment,
+                "injected_freq": injected_freq,
+                "wit_inj": witness,
+                "tgt_inj": target,
+                "wit_asd_inj": asd,
+                "tgt_asd_inj": asd,
+                "wit_asd_bkg": asd,
+                "tgt_asd_bkg": asd,
+                "cf": 0.5,
+            }
+
+        monkeypatch.setattr(response_module, "_compute_response_row", fake_compute_row)
+        with pytest.raises(ValueError, match="ASD units differ"):
+            ResponseFunctionAnalysis().compute(
+                witness=ts,
+                target=ts,
+                segments=[(0.0, 1.0, 10.0), (1.0, 2.0, 20.0)],
+                auto_detect=False,
+                fftlength=0.5,
+            )
+
     def test_memory_limit_rejects_single_row_that_cannot_fit(self):
         ts_wit = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="W")
         ts_tgt = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="T")

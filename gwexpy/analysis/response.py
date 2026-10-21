@@ -911,7 +911,18 @@ class ResponseFunctionAnalysis:
         cf_vals = np.asarray(st_data["cf"].values)
         inj_freqs = np.asarray(st_data["injected_freq"].values)
 
-        unit = getattr(target, "unit", None) or "dimensionless"
+        # The spectrogram values are target ASDs, so the unit is the ASD unit
+        # (e.g. strain/sqrt(Hz)), not the unit of the target time series.
+        asd_units = {
+            str(asd.unit)
+            for asd in [*st_data["tgt_asd_inj"], *st_data["tgt_asd_bkg"]]
+        }
+        if len(asd_units) > 1:
+            raise ValueError(
+                "Target ASD units differ across compatible rows "
+                f"({sorted(asd_units)}); refusing to assign one spectrogram unit."
+            )
+        unit = st_data["tgt_asd_inj"][0].unit
         sg_inj = Spectrogram(
             spec_inj_data,
             times=step_times,
