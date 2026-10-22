@@ -58,7 +58,7 @@ The complete collection reports are in `$TMPDIR/gwosc-s20-audit/` as
 | --- | ---: | --- |
 | A | 8 | Direct inherited GWOSC/DataFind tests: `test_fetch_open_data`, `test_fetch_open_data_error`, `test_find`, `test_find_best_frametype_in_find`, `test_find_datafind_httperror`, `test_find_datafind_runtimeerror`, `test_get_datafind`, and `test_get_gwosc_kwargs`. Four are already unconditionally skipped in the local subclass; they are not newly excluded. The other four are live API cases. |
 | B | Not part of the 92 live-fixture set | GWexpy-owned tests and overrides, including the LOSC re-export identity check, focused compatibility checks, override inventory/evidence execution, and synthetic/offline scientific and I/O regressions. Keep as required gates. |
-| C | 84 | Inherited upstream calculation/I/O cases whose inputs come from `gw150914`, `gw150914_16384`, `gw150914_h1_32`, or `gw150914_l1_32`; examples include FFT/PSD/ASD, spectrogram, filtering, resampling, Q-transform, and GWF interval assertions. Their numerical value is not dismissed. Their current `TEST_CLASS` is nevertheless GWpy's class. Do not remove these from the required suite until their scientific intent has been mapped to and retained by specific GWexpy offline regressions, or an offline fixture strategy has been validated. |
+| C | 84 | Inherited upstream calculation/I/O cases whose inputs come from `gw150914`, `gw150914_16384`, `gw150914_h1_32`, or `gw150914_l1_32`; examples include FFT/PSD/ASD, spectrogram, filtering, resampling, Q-transform, and GWF interval assertions. Their numerical value is not dismissed. Their current `TEST_CLASS` is nevertheless GWpy's class. Phase A2 mapped all 84 cases individually: 83 are upstream-only; the multiprocessing harness affects one, now covered by an offline GWexpy regression. The three H1/L1-fixture cases remain selected in the required suite. |
 
 The local `gw150914_h1_32` and `gw150914_l1_32` fixtures are unconditionally
 skipped because the LAL/frame-backed fixtures segfault in the CI environment.
@@ -73,9 +73,8 @@ The baseline Candidate R summaries were:
 | 4.0.1 | 3,308 | 3,091 | 65 | 1 | 146 | 5 |
 | 4.0.2 | 3,308 | 3,091 | 0 | 0 | 214 | 3 |
 
-These are the original full-suite CI results, not post-change results. No
-post-change execution set is reported because Phase B was stopped before
-changing the gate.
+These are the original full-suite Candidate R results, not the post-change
+execution set. Post-change results are recorded in Phase B/C below.
 
 ## Phase A2. Category C responsibility audit
 
@@ -145,14 +144,16 @@ installed under `$TMPDIR` for validation.
 No `gwexpy/` product code, public API, scientific algorithm, Certifi policy, or
 TLS verification behavior changed. Focused compatibility, proxy, override
 inventory, artifact, and exact source checkout gates remain. S20, Candidate R,
-`main`, `maint/0.2`, and PR #805 remain unchanged. The work is still on the
-isolated S20-based worktree; Source freezing, three-lane reviews, and new
-Source Human Approval have not yet occurred.
+`main`, `maint/0.2`, and PR #805 remain unchanged. The corrected S21 source is
+frozen on this isolated S20-based branch. Its initial review attempts were
+canceled and are not evidence; this exact source commit must receive fresh
+three-lane reviews. Source Human Approval has not been requested.
 
 ## Recommendation
 
-**HOLD.** Phase B/C is validated, but the source is not frozen and the required
-independent Documentation, Release-Security, and Scientific-Data-Model reviews
-have not yet run. After those reviews approve the frozen Source, request Source
-Human Approval. No Candidate R, Candidate Qualification, Final GO, tag, release,
-or PyPI action is authorized by this audit.
+**HOLD.** Phase B/C validation is complete and the corrected S21 source is
+frozen on the isolated branch. The initial review attempts were canceled; the
+exact frozen source SHA must pass fresh independent Documentation, Release-Security, and
+Scientific-Data-Model reviews before Source Human Approval is requested. No
+Candidate R, Candidate Qualification, Final GO, tag, release, or PyPI action is
+authorized by this audit.

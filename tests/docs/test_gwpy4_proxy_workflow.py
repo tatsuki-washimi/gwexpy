@@ -4,8 +4,11 @@ import json
 import re
 from pathlib import Path
 
+import pytest
 import yaml
 from packaging.version import Version
+
+from scripts.ci.audit_gwosc_timeseries import _validate_candidate_cases
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
@@ -215,3 +218,19 @@ def test_gwosc_live_gate_is_limited_to_audited_upstream_node_ids() -> None:
     assert "test_timeseries_spectrogram_multiprocessing_matches_serial" in (
         ROOT / "tests/timeseries/test_gwpy_override_terminal_compat.py"
     ).read_text(encoding="utf-8")
+
+
+def test_gwosc_audit_rejects_fixture_and_classification_metadata_drift() -> None:
+    inventory = json.loads(GWOSC_INVENTORY.read_text(encoding="utf-8"))
+    cases = inventory["candidate_cases"]
+    _validate_candidate_cases(cases, cases)
+
+    changed = [dict(case) for case in cases]
+    changed[0]["fixtures"] = ["new_fixture"]
+    with pytest.raises(SystemExit, match="metadata mismatch"):
+        _validate_candidate_cases(changed, cases)
+
+    changed = [dict(case) for case in cases]
+    changed[0]["category"] = "unclassified"
+    with pytest.raises(SystemExit, match="metadata mismatch"):
+        _validate_candidate_cases(changed, cases)

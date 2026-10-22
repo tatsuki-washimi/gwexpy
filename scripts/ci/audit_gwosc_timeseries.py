@@ -124,6 +124,19 @@ def upstream_source_sha256() -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _validate_candidate_cases(
+    current: list[dict[str, object]], expected: list[dict[str, object]]
+) -> None:
+    """Fail closed if IDs or their audited fixture/classification metadata drift."""
+    current_sorted = sorted(current, key=lambda row: str(row["nodeid"]))
+    expected_sorted = sorted(expected, key=lambda row: str(row["nodeid"]))
+    if current_sorted != expected_sorted:
+        raise SystemExit(
+            "GWOSC candidate inventory metadata mismatch; audit fixture, "
+            "category, reason, and marker changes before updating the manifest"
+        )
+
+
 def audit(output: Path, write_baseline: bool = False) -> int:
     collector = CollectionAudit()
     result = pytest.main(
@@ -134,8 +147,6 @@ def audit(output: Path, write_baseline: bool = False) -> int:
         raise SystemExit(f"pytest collection failed with exit code {result}")
 
     gwpy_version = version("gwpy")
-    candidate_ids = sorted(entry["nodeid"] for entry in collector.items)
-    candidate_set = set(candidate_ids)
     live_marker_ids = sorted(
         entry["nodeid"] for entry in collector.items if entry["upstream_gwosc_live"]
     )
@@ -187,19 +198,13 @@ def audit(output: Path, write_baseline: bool = False) -> int:
         )
     else:
         expected = json.loads(MANIFEST.read_text(encoding="utf-8"))
-        expected_ids = {str(entry["nodeid"]) for entry in expected["candidate_cases"]}
         if gwpy_version not in expected["gwpy_versions"]:
             raise SystemExit(f"GWpy {gwpy_version} is not in the audited matrix")
         if upstream_source_sha256() != expected["upstream_test_timeseries_sha256"]:
             raise SystemExit(
                 "upstream GWpy test module changed; audit it before updating the inventory"
             )
-        if candidate_set != expected_ids:
-            added = sorted(candidate_set - expected_ids)
-            missing = sorted(expected_ids - candidate_set)
-            raise SystemExit(
-                f"GWOSC test inventory mismatch; added={added!r}, missing={missing!r}"
-            )
+        _validate_candidate_cases(collector.items, expected["candidate_cases"])
         if live_marker_ids != expected["live_marker_ids"]:
             added = sorted(live_marker_set - set(expected["live_marker_ids"]))
             missing = sorted(set(expected["live_marker_ids"]) - live_marker_set)
