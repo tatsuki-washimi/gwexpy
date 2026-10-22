@@ -261,7 +261,7 @@ The effective test Certifi overlay and release-builder lock are
 `2026.10.19`; the release-builder pip input and lock are `26.2.2`. The lock
 hash for pip's Python 3 wheel matches the PyPI-published SHA-256. No TLS
 verification bypass was used. Full logs, JUnit XML, and audit JSON are retained
-outside the repository under `/home/washimi/HDD1TB/tmp/gwosc-s21-final/`.
+outside the repository in the designated temporary evidence directory.
 
 After the pip bootstrap change, the required GWpy 4.0.1 and 4.0.2 suites were
 rerun in the pinned local environments: each collected 3,309 tests and ended
@@ -286,3 +286,20 @@ The changed Python files pass Ruff check and format. Whole-repository
 Whole-repository `ruff format --check .` reports 57 paths;
 the S20 comparison recorded 59, with the two previously failing paths fixed
 and no new failure path from this follow-up. No mass-formatting was done.
+
+## Fresh review findings on source 6c382f48
+
+The fresh Documentation review found that this audit had recorded a machine-
+specific temporary directory, which violated the existing DOC-2 exception
+ledger. The Scientific-Data-Model review separately found that the v0.2.6
+changelog's blanket statement that units are preserved omitted the intentional
+response-function correction: output spectrograms carry the target ASD unit,
+and mixed ASD units are rejected. Both findings blocked source
+`6c382f48f5aa17db0b28438decf5d016907e3a6a`. The temporary path was replaced
+with a portable description; the release plan, release notes, English
+changelog, and Japanese changelog catalogue now state the ASD-unit behavior.
+This is a documentation disclosure of existing implementation, not a product-
+code change. The DOC-2 regression passed (3 tests), the release documentation
+contracts passed (13 tests), and the response analysis tests passed (23 tests).
+These corrections require a new source SHA and fresh three-lane reviews; no
+review result transfers to the corrected source.
