@@ -83,6 +83,21 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
         assert match is not None, f"certifi missing from {lock_path}"
         assert Version(match.group(1)) >= Version("2026.10.19")
 
+    release_requirements = ROOT / "requirements" / "release-build.in"
+    pip_input = re.search(
+        r"(?m)^pip==([^\s;\\]+)",
+        release_requirements.read_text(encoding="utf-8"),
+    )
+    pip_lock = re.search(
+        r"(?m)^pip==([^\s;\\]+)",
+        (ROOT / "requirements" / "release-build.txt").read_text(encoding="utf-8"),
+    )
+    assert pip_input is not None
+    assert pip_lock is not None
+    assert Version(pip_input.group(1)) >= Version("26.2.2")
+    assert Version(pip_lock.group(1)) >= Version("26.2.2")
+    assert pip_input.group(1) == pip_lock.group(1)
+
     version_step = by_name["Record compatibility versions"]
     provisioning_index = steps.index(by_name["Provision compatibility environment"])
     assert steps.index(version_step) == provisioning_index + 1

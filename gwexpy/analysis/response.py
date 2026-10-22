@@ -914,8 +914,7 @@ class ResponseFunctionAnalysis:
         # The spectrogram values are target ASDs, so the unit is the ASD unit
         # (e.g. strain/sqrt(Hz)), not the unit of the target time series.
         asd_units = {
-            str(asd.unit)
-            for asd in [*st_data["tgt_asd_inj"], *st_data["tgt_asd_bkg"]]
+            str(asd.unit) for asd in [*st_data["tgt_asd_inj"], *st_data["tgt_asd_bkg"]]
         }
         if len(asd_units) > 1:
             raise ValueError(

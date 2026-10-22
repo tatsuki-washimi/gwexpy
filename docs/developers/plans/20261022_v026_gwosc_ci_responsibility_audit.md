@@ -1,6 +1,6 @@
 # GWexpy v0.2.6 GWOSC CI responsibility audit
 
-Status: **Phase B/C validation complete; Phase D source review pending.**
+Status: **HOLD; narrow review follow-up implemented; validation and fresh Phase D reviews pending.**
 
 Audit base: approved Source S20 `da3391d12d97a793c9710107d03d78e9f41d8e3b`.
 Candidate R evidence: `caa780f025443bccbce463e17577ef488e9b10e3`.
@@ -170,3 +170,69 @@ exact frozen source SHA must pass fresh independent Documentation, Release-Secur
 Scientific-Data-Model reviews before Source Human Approval is requested. No
 Candidate R, Candidate Qualification, Final GO, tag, release, or PyPI action is
 authorized by this audit.
+
+## Review follow-up: Ruff format and release-builder pip trust store
+
+The Scientific-Data-Model review found one Ruff formatter violation in
+`gwexpy/analysis/response.py` at the target ASD unit collection. Git history
+shows the multiline set comprehension was introduced by commit
+`b79965df71584937774e34a9584ee74f824453ca` on 2026-10-21 as part of the ASD
+unit correction. That commit is an ancestor of both Candidate R
+`caa780f025443bccbce463e17577ef488e9b10e3` and approved S20
+`da3391d12d97a793c9710107d03d78e9f41d8e3b`; the expression is absent from
+review base `3439fba41dcc644af12870d91bee794524098fb4`. It was not introduced
+by the GWOSC test split or DOC-01 correction, but it is inherited from the
+prior candidate/source rather than older baseline code. It was reformatted to
+Ruff's one-line form because the fresh review blocked the source on repository
+formatting policy. The expression, inputs, resulting set, validation
+behavior, and scientific calculations are unchanged. This is the only
+`gwexpy/` path changed by this follow-up and is a formatting-only diff.
+
+The interrupted Release-Security review also identified
+`pip==26.0.1` in the release-builder direct requirements and lock. The release
+workflow installs this lock into its builder environment. A standalone
+Certifi pin does not replace pip's vendored Certifi bundle; the Python
+security notice directs users to pip 26.2.2 or later because older pip
+continues trusting the affected emSign chain. The builder pin was raised to
+26.2.2 and the hash lock regenerated from its `.in` source. The existing
+`certifi>=2026.10.19` requirement remains. No TLS verification bypass or
+custom trust root was added. A workflow contract now checks that both the
+input and lock retain pip 26.2.2 or newer.
+
+The format-only source edit and release-builder security update require a new
+source SHA and fresh Documentation, Release-Security, and
+Scientific-Data-Model reviews. The prior S21 lane verdicts, including the
+partial security note, do not transfer.
+
+### Validation of the review follow-up
+
+Both GWpy versions collected 3,309 timeseries IDs; the audit selected 3,220,
+separated 89 live IDs, and reported 92 fixture-dependent candidates classified
+as Category A=8, B=0, C=84. Unknown fixture IDs and unknown network IDs were
+zero. The GWpy 4.0.1 and 4.0.2 required timeseries suites each passed with
+3,173 passed, 44 skipped, 89 deselected, and 3 xfailed. The first 4.0.1 run
+used an overlong temporary path and failed only the AF_UNIX socket-path case;
+the isolated case passed and the full suite passed on rerun with a shorter
+temporary path. The existing GWOSC live cases remain deselected by the
+audited marker.
+
+On both GWpy versions, focused compatibility tests passed 11/11, proxy tests
+passed 88/88, and the override inventory/evidence execution passed 396/396
+cases. The GWOSC selection audit passed with the counts above. Response,
+workflow-contract, and DOC-01 regression selections passed 30 tests; release
+workflow/payload/contract selections passed 122 tests. The changed Python
+files passed Ruff check and format, and the audit appendix `SHA256SUMS`
+verification passed.
+
+The whole-repository `ruff format --check` still reports 57 unrelated
+pre-existing files requiring formatting. The S20 comparison reports 59; the
+two paths removed from that failure set are the response comprehension fixed
+here and `deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2.py`
+fixed in the DOC-01 follow-up. No new path was added to the failure set. The
+full repository was not mass-formatted.
+
+The effective test Certifi overlay and release-builder lock are
+`2026.10.19`; the release-builder pip input and lock are `26.2.2`. The lock
+hash for pip's Python 3 wheel matches the PyPI-published SHA-256. No TLS
+verification bypass was used. Full logs, JUnit XML, and audit JSON are retained
+outside the repository under `/home/washimi/HDD1TB/tmp/gwosc-s21-final/`.
