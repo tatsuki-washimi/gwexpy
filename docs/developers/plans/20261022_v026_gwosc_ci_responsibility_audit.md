@@ -204,6 +204,32 @@ source SHA and fresh Documentation, Release-Security, and
 Scientific-Data-Model reviews. The prior S21 lane verdicts, including the
 partial security note, do not transfer.
 
+The fresh Release-Security review of `a3b705c84e8435925b0940c6c19a16e533691b9e`
+found a P1 gap: smoke, qualification, DiagGUI, and cross-format jobs created
+fresh interpreters whose bundled pip could make unhashlocked network installs
+before reaching the updated release-builder lock. This includes both
+`setup-python` and micromamba qualification runtimes. The build lock is local
+to its own job and does not update `ensurepip` in other interpreters. A
+standalone Certifi requirement also does not change pip's vendored CA set.
+
+The follow-up adds `scripts/ci/bootstrap_trusted_pip.py`, which asks the
+interpreter's existing pip to install the pip 26.2.2 wheel from the official
+PyPI index using a temporary one-entry requirements file with the published
+SHA-256 and `--require-hashes`. It clears inherited `PIP_*` configuration,
+keeps normal TLS verification, and verifies both pip 26.2.2 and vendored
+Certifi 2026.10.19 or newer before returning. The build, smoke, pip and conda
+qualification, DiagGUI, and cross-format jobs call this before their first
+network package installation. The required GWpy compatibility workflow also
+uses it before provisioning test dependencies. No unverified CA trust or TLS
+bypass is added. Workflow contracts cover the call ordering and pinned hash,
+and an offline unit test covers the bootstrap arguments. The new isolated-venv
+integration check successfully upgraded its ensurepip pip 25.0.1 to pip
+26.2.2 and reported vendored Certifi 2026.10.19.
+
+This correction responds to the independent P1 blocker. It is not yet a
+Release-Security approval: the source must be frozen at a new SHA and all
+three review lanes must rerun against that exact source.
+
 ### Validation of the review follow-up
 
 Both GWpy versions collected 3,309 timeseries IDs; the audit selected 3,220,
@@ -236,3 +262,27 @@ The effective test Certifi overlay and release-builder lock are
 hash for pip's Python 3 wheel matches the PyPI-published SHA-256. No TLS
 verification bypass was used. Full logs, JUnit XML, and audit JSON are retained
 outside the repository under `/home/washimi/HDD1TB/tmp/gwosc-s21-final/`.
+
+After the pip bootstrap change, the required GWpy 4.0.1 and 4.0.2 suites were
+rerun in the pinned local environments: each collected 3,309 tests and ended
+with 3,173 passed, 44 skipped, 89 audited GWOSC-live deselections, and 3
+expected failures. The focused and proxy selections passed 99 cases on each
+GWpy version; override inventory evidence passed 396 cases on each. The
+GWOSC selection audit still reports the same 3,309 / 3,220 / 89 / 92 totals
+and A=8, B=0, C=84 classifications.
+
+The first retry accidentally prepended a NumPy 2.4.6 dependency overlay to an
+environment whose pmdarima binary targets NumPy 1.26, producing three ABI
+failures in ARIMA tests. No repository or environment package was changed to
+mask them. Removing that unrelated overlay restored the recorded NumPy 1.26.4
+environment; the full suites then passed. The release and workflow regression
+selection passed 290 tests, including the new hash-bootstrap contract and
+offline helper test. An isolated venv integration upgraded bundled pip 25.0.1
+to the exact pip 26.2.2 wheel, verified its SHA-256 through pip's
+`--require-hashes` path, and asserted vendored Certifi 2026.10.19.
+
+The changed Python files pass Ruff check and format. Whole-repository
+`ruff check .` reports 106 findings, none in the changed Python files.
+Whole-repository `ruff format --check .` reports 57 paths;
+the S20 comparison recorded 59, with the two previously failing paths fixed
+and no new failure path from this follow-up. No mass-formatting was done.

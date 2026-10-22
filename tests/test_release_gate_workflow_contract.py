@@ -120,3 +120,71 @@ def test_future_promotion_candidate_graph_is_dispatch_only_but_legacy_tag_builds
     assert "promotion_manifest" in jobs
     assert "workflow_dispatch" in jobs["promotion_manifest"]["if"]
     assert "github.event_name == 'push'" in jobs["promotion_verify"]["if"]
+
+
+def test_release_workflow_hash_bootstraps_pip_before_network_installs() -> None:
+    import yaml
+
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github/workflows/publish-release.yml").read_text()
+    )
+    jobs = workflow["jobs"]
+    expectations = {
+        "build": (
+            "python scripts/ci/bootstrap_trusted_pip.py",
+            "python -m pip install --require-hashes -r requirements/release-build.txt",
+        ),
+        "smoke": (
+            "control/scripts/ci/bootstrap_trusted_pip.py",
+            '"$smoke_dir/venv/bin/python" -m pip install',
+        ),
+        "qualify": (
+            "source/scripts/ci/bootstrap_trusted_pip.py",
+            "python -m pip install --disable-pip-version-check",
+        ),
+        "diaggui_qualification": (
+            "source/scripts/ci/bootstrap_trusted_pip.py",
+            '"$python" -m pip install --disable-pip-version-check',
+        ),
+        "cross_format_io": (
+            "source/scripts/ci/bootstrap_trusted_pip.py",
+            '"$python" -m pip install --disable-pip-version-check',
+        ),
+    }
+    for job_name, (bootstrap, install) in expectations.items():
+        combined = "\n".join(step.get("run", "") for step in jobs[job_name]["steps"])
+        assert bootstrap in combined, job_name
+        assert combined.index(bootstrap) < combined.index(install), job_name
+
+    qualify_run = next(
+        step["run"]
+        for step in jobs["qualify"]["steps"]
+        if "micromamba run -n qualification python -m pip install"
+        in step.get("run", "")
+    )
+    assert qualify_run.count("source/scripts/ci/bootstrap_trusted_pip.py") == 2
+    assert qualify_run.index(
+        "micromamba run -n qualification python source/scripts/ci/bootstrap_trusted_pip.py"
+    ) < qualify_run.index("micromamba run -n qualification python -m pip install")
+    assert qualify_run.index(
+        "python source/scripts/ci/bootstrap_trusted_pip.py"
+    ) < qualify_run.index("python -m pip install --disable-pip-version-check")
+
+    bootstrap_source = (REPO_ROOT / "scripts/ci/bootstrap_trusted_pip.py").read_text()
+    assert 'PIP_VERSION = "26.2.2"' in bootstrap_source
+    assert (
+        "fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+        in bootstrap_source
+    )
+    assert '"--require-hashes"' in bootstrap_source
+    assert '"https://pypi.org/simple"' in bootstrap_source
+    assert (
+        'f"pip=={PIP_VERSION} --hash=sha256:{PIP_WHEEL_SHA256}\\n"' in bootstrap_source
+    )
+
+    compatibility_workflow = (
+        REPO_ROOT / ".github/workflows/test-compat-gwpy.yml"
+    ).read_text()
+    assert compatibility_workflow.index(
+        "python scripts/ci/bootstrap_trusted_pip.py"
+    ) < compatibility_workflow.index("python -m pip install")

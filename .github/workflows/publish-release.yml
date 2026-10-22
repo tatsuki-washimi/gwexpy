@@ -172,6 +172,7 @@ jobs:
           SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           VERSION: ${{ needs.verify.outputs.version }}
         run: |
+          python scripts/ci/bootstrap_trusted_pip.py
           python -m pip install --require-hashes -r requirements/release-build.txt
           mkdir release-payload release-sidecars
           python -m build --no-isolation --sdist --wheel --outdir release-payload
@@ -275,6 +276,7 @@ jobs:
           expected_license_hash_file="${{ runner.temp }}/release-sidecars/LICENSE.sha256"
           smoke_dir="$(mktemp -d)"
           python -m venv "$smoke_dir/venv"
+          python control/scripts/ci/bootstrap_trusted_pip.py --python "$smoke_dir/venv/bin/python"
           "$smoke_dir/venv/bin/python" -m pip install "$artifact"
           "$smoke_dir/venv/bin/python" - "$artifact" "$expected_license_hash_file" "$REPORT" <<'PY'
           import hashlib
@@ -411,9 +413,11 @@ jobs:
           artifact_name="$(python source/scripts/ci/validate_release_payload.py --payload-dir "${{ runner.temp }}/release-payload" --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" --expected-version "$EXPECTED_VERSION" --kind "$DISTRIBUTION")"
           artifact="${{ runner.temp }}/release-payload/$artifact_name"
           if [[ "${{ matrix.runtime }}" == "conda" ]]; then
+            micromamba run -n qualification python source/scripts/ci/bootstrap_trusted_pip.py --python python
             micromamba run -n qualification python -m pip install --disable-pip-version-check --no-cache-dir "$artifact" ${{ matrix.extras }}
             micromamba run -n qualification python -m pip check
           else
+            python source/scripts/ci/bootstrap_trusted_pip.py
             python -m pip install --disable-pip-version-check --no-cache-dir "$artifact" ${{ matrix.extras }}
             python -m pip check
           fi
@@ -777,6 +781,7 @@ jobs:
         run: |
           python -m venv "${{ runner.temp }}/diaggui-venv"
           python="${{ runner.temp }}/diaggui-venv/bin/python"
+          python source/scripts/ci/bootstrap_trusted_pip.py --python "$python"
           artifact_name="$(python source/scripts/ci/validate_release_payload.py \
             --payload-dir "${{ runner.temp }}/release-payload" \
             --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
@@ -969,6 +974,7 @@ jobs:
         run: |
           python -m venv "${{ runner.temp }}/cross-format-io-venv"
           python="${{ runner.temp }}/cross-format-io-venv/bin/python"
+          python source/scripts/ci/bootstrap_trusted_pip.py --python "$python"
           artifact_name="$(python source/scripts/ci/validate_release_payload.py \
             --payload-dir "$PAYLOAD_DIR" --manifest "$PAYLOAD_MANIFEST" \
             --expected-version "${{ needs.verify.outputs.version }}" --source-sha "$SOURCE_SHA" --kind "$DISTRIBUTION")"
