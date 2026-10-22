@@ -14,7 +14,7 @@
 | `crosscheck_audit_appendix_stage2.py` | 本リポジトリ | 再実行可能な独立照合 |
 | `crosscheck_audit_appendix_stage2_results.json` | スクリプト出力 | 機械検査の確定結果（`passed: true/false`） |
 | `2026-10-17-audit-appendix-stage2-crosscheck.md` | 本リポジトリ | 人間可読の照合レポート |
-| `SHA256SUMS` | 生成 | 原本4ファイル＋照合成果物のハッシュ |
+| `SHA256SUMS` | 生成 | 原本4ファイル、照合スクリプト、履歴成果物、READMEのハッシュ |
 
 ## 再現手順
 
@@ -23,29 +23,26 @@ cd deliverables/audit-appendix-artifacts-20261017
 
 python3 crosscheck_audit_appendix_stage2.py \
   --artifact-dir . \
-  --output crosscheck_audit_appendix_stage2_results.json
-```
-
-D 台帳（B 2,650 行との突合）を含める場合、同ディレクトリの親に D ZIP があるときは自動で
-`../agent-deliverables-20261017-175223.zip` を読みます。明示する例:
-
-```bash
-python3 crosscheck_audit_appendix_stage2.py \
-  --artifact-dir . \
   --d-zip ../agent-deliverables-20261017-175223.zip \
-  --output crosscheck_audit_appendix_stage2_results.json
+  --output "$TMPDIR/crosscheck_audit_appendix_stage2_reproduced.json"
 ```
 
-終了コード `0` かつ JSON の `"passed": true` で、第2段階の機械検査が再現できています。
+この標準手順はB/C検査とD台帳との2,650行照合を実行します。結果は履歴成果物を上書きしないよう、`$TMPDIR`に保存します。D ZIPを明示しない場合は、同ディレクトリの親にある
+`../agent-deliverables-20261017-175223.zip` を自動で読みます。別の保存場所を使う場合は、`--d-zip`にそのパスを指定してください。
+
+終了コード `0` かつ JSON の `"passed": true` で、B/C検査とB↔D照合の両方が再現できています。
 
 ### D ZIP 依存（必読）
 
 | 条件 | `b_d_surface_2650` | 全体 `passed` |
 | --- | --- | --- |
 | `--d-zip` / 同梱 D ZIP あり | 2,650 行突合実行 | B/C + B↔D すべて満たせば `true` |
-| D 未指定かつ親 ZIP 不在 | `skipped: true` | B/C のみ満たせば **`true` のまま**（B↔D は未実施） |
+| D 未指定かつ親 ZIP 不在 | `skipped: true` | **`false`**（完全照合未実施のため終了コード非0） |
+| 明示したDファイルが不在または読込不能 | `skipped: true` と理由を記録 | **`false`**。既定ZIPへフォールバックしない |
 
-完全な stage-2 再現には **`deliverables/agent-deliverables-20261017-175223.zip`**（監査 D、123KB 程度）を同じ `deliverables/` に置く。配布 ZIP `agent-deliverables-20261017-200607.zip` には D 本体は含めない（サイズ・出所の分離）。
+完全な stage-2 再現には **`deliverables/agent-deliverables-20261017-175223.zip`**（監査 D、約123KB）を同じ `deliverables/` に置く。B/Cだけの部分検証モードは提供しない。配布 ZIP `agent-deliverables-20261017-200607.zip` には D 本体は含めない（サイズ・出所の分離）。
+
+`crosscheck_audit_appendix_stage2_results.json` は過去の照合結果を保持する履歴成果物です。再実行結果で上書きせず、別の `--output` パスを指定してください。
 
 ## 解釈上の境界（重要）
 

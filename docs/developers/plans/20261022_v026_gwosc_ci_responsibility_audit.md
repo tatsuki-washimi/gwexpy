@@ -149,6 +149,19 @@ frozen on this isolated S20-based branch. Its initial review attempts were
 canceled and are not evidence; this exact source commit must receive fresh
 three-lane reviews. Source Human Approval has not been requested.
 
+### DOC-01 follow-up
+
+After the first Documentation review, the independent audit-appendix crosscheck
+was corrected to fail closed when its D ledger is absent or unreadable. An
+explicit missing D path no longer falls back to the default ZIP. Four
+regressions cover complete B↔D success, absent D, invalid explicit path, and a
+B↔D mismatch. The README now makes the full B/C/D verification the standard
+procedure; reruns write to a separate output so the historical result remains
+unchanged. `SHA256SUMS` was regenerated and verified. This correction does not
+change the GWOSC selection or its validation results. The resulting frozen
+source requires new three-lane reviews; none of the prior review states carry
+forward.
+
 ## Recommendation
 
 **HOLD.** Phase B/C validation is complete and the corrected S21 source is

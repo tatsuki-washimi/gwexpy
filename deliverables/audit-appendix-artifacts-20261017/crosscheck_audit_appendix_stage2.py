@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Reproducible stage-2 crosscheck for GWexpy 2026-10-17 audit appendix artifacts.
+r"""Reproducible stage-2 crosscheck for GWexpy 2026-10-17 audit appendix artifacts.
 
-Reads B/C machine-readable ledgers under this directory and optionally D's
-pass2-surface-coverage.jsonl (from agent-deliverables-20261017-175223.zip).
+Reads B/C machine-readable ledgers under this directory and requires D's
+pass2-surface-coverage.jsonl (from agent-deliverables-20261017-175223.zip) for
+a successful complete crosscheck. If D is unavailable, the report fails.
 
 Usage:
   python crosscheck_audit_appendix_stage2.py \\
     --artifact-dir . \\
-    --d-surface-jsonl /path/to/pass2-surface-coverage.jsonl \\
-    --output crosscheck_audit_appendix_stage2_results.json
+    --d-zip ../agent-deliverables-20261017-175223.zip \\
+    --output /tmp/crosscheck_audit_appendix_stage2_reproduced.json
 """
 
 from __future__ import annotations
@@ -89,13 +90,14 @@ def main() -> int:
         default=Path(__file__).resolve().parent,
         help="Directory containing pass1/pass2 B and C artifacts",
     )
-    parser.add_argument(
+    d_source_group = parser.add_mutually_exclusive_group()
+    d_source_group.add_argument(
         "--d-surface-jsonl",
         type=Path,
         default=None,
         help="D pass2-surface-coverage.jsonl (2650 rows)",
     )
-    parser.add_argument(
+    d_source_group.add_argument(
         "--d-zip",
         type=Path,
         default=None,
@@ -134,7 +136,9 @@ def main() -> int:
     c2_rows = load_jsonl(paths["pass2_api_status"])
     module_fns = [
         ln.strip()
-        for ln in paths["pass2_module_functions"].read_text(encoding="utf-8").splitlines()
+        for ln in paths["pass2_module_functions"]
+        .read_text(encoding="utf-8")
+        .splitlines()
         if ln.strip()
     ]
 
@@ -180,7 +184,11 @@ def main() -> int:
     if not b_c1_align["sequence_identical"] or b_c1_align["b_count"] != 155:
         result["passed"] = False
 
-    flagged = [h for h in handlers if h["disposition"] in ("confirmed_issue", "further_verification")]
+    flagged = [
+        h
+        for h in handlers
+        if h["disposition"] in ("confirmed_issue", "further_verification")
+    ]
     flagged_report: list[dict[str, Any]] = []
     unallocated: list[str] = []
     wrong_candidate: list[str] = []
@@ -214,7 +222,9 @@ def main() -> int:
     if flagged_check["flagged_count"] != 14 or unallocated or wrong_candidate:
         result["passed"] = False
 
-    no_change_notes = Counter(h["note"] for h in handlers if h["disposition"] == "no_change")
+    no_change_notes = Counter(
+        h["note"] for h in handlers if h["disposition"] == "no_change"
+    )
     result["checks"]["b_no_change_note_buckets"] = {
         "distinct_note_texts": len(no_change_notes),
         "counts_by_note": [
@@ -241,8 +251,12 @@ def main() -> int:
             status_aggregate[st] += 1
 
     executed_mids = {mid for mid, sts in c2_by_mid.items() if "pass2_executed" in sts}
-    reused_mids = {mid for mid, sts in c2_by_mid.items() if "pass1_evidence_reused" in sts}
-    only_ne = {mid for mid in unique_mids if c2_by_mid.get(mid) == {"pass2_not_evaluated"}}
+    reused_mids = {
+        mid for mid, sts in c2_by_mid.items() if "pass1_evidence_reused" in sts
+    }
+    only_ne = {
+        mid for mid in unique_mids if c2_by_mid.get(mid) == {"pass2_not_evaluated"}
+    }
 
     c_api_check = {
         "pass2_jsonl_total_rows": len(c2_rows),
@@ -277,18 +291,42 @@ def main() -> int:
         result["passed"] = False
 
     d_rows: list[dict[str, Any]] | None = None
-    if args.d_surface_jsonl and args.d_surface_jsonl.is_file():
-        d_rows = load_jsonl(args.d_surface_jsonl)
-    elif args.d_zip and args.d_zip.is_file():
-        with zipfile.ZipFile(args.d_zip) as zf:
-            raw = zf.read("external/pass2-surface-coverage.jsonl").decode("utf-8")
-        d_rows = [json.loads(ln) for ln in raw.splitlines() if ln.strip()]
-    elif (art.parent / "agent-deliverables-20261017-175223.zip").is_file():
-        d_zip = art.parent / "agent-deliverables-20261017-175223.zip"
-        with zipfile.ZipFile(d_zip) as zf:
-            raw = zf.read("external/pass2-surface-coverage.jsonl").decode("utf-8")
-        d_rows = [json.loads(ln) for ln in raw.splitlines() if ln.strip()]
-        result["d_source"] = str(d_zip)
+    d_error: str | None = None
+    d_source: Path | None = None
+    if args.d_surface_jsonl is not None:
+        d_source = args.d_surface_jsonl
+        if not d_source.is_file():
+            d_error = f"Explicit D JSONL file not found: {d_source}"
+    elif args.d_zip is not None:
+        d_source = args.d_zip
+        if not d_source.is_file():
+            d_error = f"Explicit D ZIP file not found: {d_source}"
+    else:
+        default_d_zip = art.parent / "agent-deliverables-20261017-175223.zip"
+        if default_d_zip.is_file():
+            d_source = default_d_zip
+        else:
+            d_error = f"Default D ZIP file not found: {default_d_zip}"
+
+    if d_error is None and d_source is not None:
+        try:
+            if d_source.suffix.lower() == ".zip":
+                with zipfile.ZipFile(d_source) as zf:
+                    raw = zf.read("external/pass2-surface-coverage.jsonl").decode(
+                        "utf-8"
+                    )
+                d_rows = [json.loads(ln) for ln in raw.splitlines() if ln.strip()]
+            else:
+                d_rows = load_jsonl(d_source)
+            result["d_source"] = str(d_source)
+        except (
+            OSError,
+            KeyError,
+            UnicodeDecodeError,
+            json.JSONDecodeError,
+            zipfile.BadZipFile,
+        ) as exc:
+            d_error = f"Unable to read D ledger from {d_source}: {exc}"
 
     if d_rows is not None:
         b_surface = b["public_surface_2650"]
@@ -297,7 +335,9 @@ def main() -> int:
         for i, (br, dr) in enumerate(zip(b_surface, d_rows)):
             for key in compare_keys:
                 if br.get(key) != dr.get(key):
-                    mismatches.append({"index": i, "field": key, "b": br.get(key), "d": dr.get(key)})
+                    mismatches.append(
+                        {"index": i, "field": key, "b": br.get(key), "d": dr.get(key)}
+                    )
                     break
         b_d = {
             "b_row_count": len(b_surface),
@@ -323,8 +363,9 @@ def main() -> int:
     else:
         result["checks"]["b_d_surface_2650"] = {
             "skipped": True,
-            "reason": "D pass2-surface-coverage.jsonl not provided and default ZIP not found",
+            "reason": d_error or "D pass2-surface-coverage.jsonl was not loaded",
         }
+        result["passed"] = False
 
     out_json = json.dumps(result, indent=2, ensure_ascii=False) + "\n"
     if args.output:
