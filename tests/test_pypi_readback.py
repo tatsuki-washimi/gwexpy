@@ -400,6 +400,61 @@ def test_http_body_read_stops_at_absolute_deadline(monkeypatch):
     assert socket_timeouts == pytest.approx([1.0, 1.0, 0.6, 0.2])
 
 
+def test_http_headers_cannot_consume_the_body_deadline(monkeypatch):
+    validator = _load_validator()
+    now = [0.0]
+    deadline = 1.0
+    url = "https://pypi.org/pypi/gwexpy/99.88.77/json"
+
+    class FakeSocket:
+        def settimeout(self, _timeout):
+            pytest.fail("expired headers must not start a body read")
+
+    class FakeRaw:
+        _sock = FakeSocket()
+
+    class FakeFile:
+        raw = FakeRaw()
+
+    class FakeResponse:
+        status = 200
+        fp = FakeFile()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def geturl(self):
+            return url
+
+        def read1(self, _size):
+            pytest.fail("expired headers must not start a body read")
+
+    class FakeOpener:
+        def open(self, _request, *, timeout):
+            assert timeout == pytest.approx(deadline)
+            now[0] = deadline
+            return FakeResponse()
+
+    monkeypatch.setattr(
+        validator.urllib.request, "build_opener", lambda *_: FakeOpener()
+    )
+
+    with pytest.raises(
+        validator.PypiReadbackError, match="retry window expired during download"
+    ):
+        validator._http_get(
+            url,
+            timeout=5.0,
+            deadline=deadline,
+            clock=lambda: now[0],
+        )
+
+    assert now[0] == deadline
+
+
 @pytest.mark.parametrize("blocked_stage", ["headers", "body"])
 def test_http_get_interrupts_blocking_io_at_global_deadline(monkeypatch, blocked_stage):
     import signal
@@ -409,6 +464,13 @@ def test_http_get_interrupts_blocking_io_at_global_deadline(monkeypatch, blocked
         pytest.skip("hard HTTP deadline test requires setitimer support")
     validator = _load_validator()
     url = "https://pypi.org/pypi/gwexpy/99.88.77/json"
+    entered_blocks = []
+    completed_blocks = []
+
+    def block(stage):
+        entered_blocks.append(stage)
+        time.sleep(0.6)
+        completed_blocks.append(stage)
 
     class FakeSocket:
         def settimeout(self, _timeout):
@@ -434,27 +496,30 @@ def test_http_get_interrupts_blocking_io_at_global_deadline(monkeypatch, blocked
             return url
 
         def read1(self, _size):
-            time.sleep(0.6)
+            block("body")
             return b"slow chunk"
 
     class FakeOpener:
         def open(self, _request, *, timeout):
             assert timeout <= 5.0
             if blocked_stage == "headers":
-                time.sleep(0.6)
+                block("headers")
             return FakeResponse()
 
     monkeypatch.setattr(
         validator.urllib.request, "build_opener", lambda *_: FakeOpener()
     )
     started = time.monotonic()
-    with pytest.raises(validator.PypiReadbackError, match="retry window"):
+    with pytest.raises(
+        validator.PypiReadbackError, match="expired during HTTP request"
+    ):
         validator._http_get(
             url,
             timeout=5.0,
-            deadline=started + 0.05,
+            deadline=started + 0.2,
         )
-    assert time.monotonic() - started < 0.4
+    assert entered_blocks == [blocked_stage]
+    assert completed_blocks == []
 
 
 def test_request_timeout_does_not_replace_global_readback_deadline(monkeypatch):
