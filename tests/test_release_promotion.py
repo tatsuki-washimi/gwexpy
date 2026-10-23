@@ -565,6 +565,22 @@ def test_manifest_fixture_validates_against_contract_and_expected_context(
     )
 
 
+def test_manifest_fixture_uses_distribution_sidecar_archive_member_name(
+    promotion,
+) -> None:
+    _, manifest, _ = promotion
+    sidecar = next(
+        artifact
+        for artifact in manifest["artifacts"]
+        if artifact["role"] == "sidecar:distribution-sha256.json"
+    )
+
+    assert sidecar["name"] == (
+        "sidecar-distribution-sha256.json-" + expected()["source_sha"]
+    )
+    assert [item["name"] for item in sidecar["files"]] == ["distribution-sha256.json"]
+
+
 @pytest.mark.parametrize(
     "missing", ["run_attempt", "jobs", "artifact_api", "observed_files"]
 )
