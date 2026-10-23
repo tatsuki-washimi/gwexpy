@@ -289,8 +289,8 @@ The UTC tagger date must equal the release date recorded in `.zenodo.json`,
 validator fails closed on any mismatch.  The date is a property of the frozen
 source: do not backdate a tag, and if the date changes, create a new source
 freeze with fresh reviews and new human approval.  For v0.2.6 the conditional
-target is 2026-10-23 UTC; if the gates cannot complete by that date (the
-window ends 2026-10-24 09:00 JST), hold and request a new date from the Release
+target is 2026-10-24 UTC; if the gates cannot complete by that date (the
+window ends 2026-10-25 09:00 JST), hold and request a new date from the Release
 Owner rather than retagging.
 Push the tag only after the candidate result, target-SHA CI, physics sign-off,
 PyPI publisher, environment, and ruleset readbacks are all approved.

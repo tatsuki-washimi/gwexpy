@@ -357,6 +357,13 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     )
     assert "by 2026-10-25 09:00 JST (the end of 2026-10-24 UTC)" in candidate_plan_text
     assert "Release decision: **HOLD**" in candidate_plan_text
+    releasing_text = " ".join(
+        (REPO_ROOT / "RELEASING.md").read_text(encoding="utf-8").split()
+    )
+    assert (
+        "For v0.2.6 the conditional target is 2026-10-24 UTC; if the gates cannot "
+        "complete by that date (the window ends 2026-10-25 09:00 JST)" in releasing_text
+    )
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
     release_note_text = " ".join(release_note.split())
     changelog_text = " ".join(changelog.split())
