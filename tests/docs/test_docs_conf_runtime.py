@@ -62,65 +62,99 @@ def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatc
     assert conf.nb_execution_raise_on_error is True
 
 
-def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
-    """Verify that execution fingerprint ignores Git SHA changes, but invalidates
-    on changes to Python source, sample data, settings, or environment."""
+def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch, tmp_path):
+    """Verify fingerprint invalidation in an isolated copy of the inputs."""
+    import json
     import runpy
-    import subprocess
-    from pathlib import Path
+    import shutil
 
-    base_env = runpy.run_path(str(REDESIGN_CONF_PATH))
+    import gwexpy
+
+    writes: list[Path] = []
+    original_write_text = Path.write_text
+
+    def record_write_text(path, *args, **kwargs):
+        writes.append(path.resolve())
+        return original_write_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", record_write_text)
+
+    isolated_root = tmp_path / "fingerprint-checkout"
+    isolated_package = isolated_root / "gwexpy"
+    shutil.copytree(ROOT / "gwexpy", isolated_package)
+
+    isolated_docs = isolated_root / "docs_redesign"
+    isolated_docs.mkdir(parents=True)
+    isolated_conf = isolated_docs / "conf.py"
+    shutil.copy2(REDESIGN_CONF_PATH, isolated_conf)
+    shutil.copy2(ROOT / "docs_redesign" / "release_status.json", isolated_docs)
+    identity_path = isolated_docs / "_build_identity.json"
+    identity_path.write_text(
+        json.dumps(
+            {
+                "source_revision": "0" * 40,
+                "source_ref": "fingerprint-test",
+                "dirty": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    for relative in (
+        "tests/data",
+        "tests/fixtures/data",
+        "tests/sample-data",
+        "docs/_static/samples",
+        "docs_redesign/_static/samples",
+    ):
+        source = ROOT / relative
+        if source.is_dir():
+            destination = isolated_root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(source, destination)
+    isolated_samples = isolated_root / "docs" / "_static" / "samples"
+    isolated_samples.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(gwexpy, "__file__", str(isolated_package / "__init__.py"))
+    base_env = runpy.run_path(str(isolated_conf))
     base_fingerprint = base_env["_execution_fingerprint"]
 
-    # 1. Changing Git SHA in _build_identity must NOT change execution fingerprint
+    # 1. Changing only the recorded Git SHA must NOT change the execution fingerprint.
     assert "source_revision" not in base_env["_execution_environment"]
-    orig_check_output = subprocess.check_output
-
-    def fake_check_output(cmd, *args, **kwargs):
-        if isinstance(cmd, list) and cmd[:2] == ["git", "rev-parse"]:
-            return "1111222233334444555566667777888899990000\n"
-        return orig_check_output(cmd, *args, **kwargs)
-
-    monkeypatch.setattr(subprocess, "check_output", fake_check_output)
-    env_git_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
+    identity = json.loads(identity_path.read_text(encoding="utf-8"))
+    identity["source_revision"] = "1111222233334444555566667777888899990000"
+    identity_path.write_text(json.dumps(identity), encoding="utf-8")
+    env_git_changed = runpy.run_path(str(isolated_conf))
     assert (
         env_git_changed["_build_identity"]["source_revision"]
         == "1111222233334444555566667777888899990000"
     )
     assert env_git_changed["_execution_fingerprint"] == base_fingerprint
-    monkeypatch.undo()
 
-    # 2. Modifying Python source code invalidates runtime_source_sha256 and fingerprint
-    probe_source = ROOT / "gwexpy" / "_test_fingerprint_probe.py"
-    try:
-        probe_source.write_text("# probe for fingerprint invalidation\n")
-        env_source_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
-        assert (
-            env_source_changed["_execution_environment"]["runtime_source_sha256"]
-            != base_env["_execution_environment"]["runtime_source_sha256"]
-        )
-        assert env_source_changed["_execution_fingerprint"] != base_fingerprint
-    finally:
-        if probe_source.exists():
-            probe_source.unlink()
+    # 2. Modifying Python source invalidates the runtime source hash and fingerprint.
+    probe_source = isolated_package / "_test_fingerprint_probe.py"
+    probe_source.write_text("# probe for fingerprint invalidation\n", encoding="utf-8")
+    env_source_changed = runpy.run_path(str(isolated_conf))
+    assert (
+        env_source_changed["_execution_environment"]["runtime_source_sha256"]
+        != base_env["_execution_environment"]["runtime_source_sha256"]
+    )
+    assert env_source_changed["_execution_fingerprint"] != base_fingerprint
 
-    # 3. Modifying sample data invalidates repo_data_sha256 and fingerprint
-    probe_data = ROOT / "docs" / "_static" / "samples" / "_test_fingerprint_probe.csv"
-    try:
-        probe_data.write_text("x,y\n1,2\n")
-        env_data_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
-        assert (
-            env_data_changed["_execution_environment"]["repo_data_sha256"]
-            != base_env["_execution_environment"]["repo_data_sha256"]
-        )
-        assert env_data_changed["_execution_fingerprint"] != base_fingerprint
-    finally:
-        if probe_data.exists():
-            probe_data.unlink()
+    # 3. Modifying sample data invalidates the data hash and fingerprint.
+    probe_data = isolated_samples / "_test_fingerprint_probe.csv"
+    probe_data.write_text("x,y\n1,2\n", encoding="utf-8")
+    env_data_changed = runpy.run_path(str(isolated_conf))
+    assert (
+        env_data_changed["_execution_environment"]["repo_data_sha256"]
+        != base_env["_execution_environment"]["repo_data_sha256"]
+    )
+    assert env_data_changed["_execution_fingerprint"] != base_fingerprint
 
-    # 4. Changing execution settings invalidates conf_execution_sha256 and fingerprint
-    monkeypatch.setenv("GWEXPY_NB_TIMEOUT", "999")
-    env_setting_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
+    # 4. Changing execution settings invalidates their hash and fingerprint.
+    with monkeypatch.context() as env_patch:
+        env_patch.setenv("GWEXPY_NB_TIMEOUT", "999")
+        env_setting_changed = runpy.run_path(str(isolated_conf))
     assert env_setting_changed["nb_execution_timeout"] == 999
     assert (
         env_setting_changed["_conf_execution_settings"]["nb_execution_timeout"] == 999
@@ -130,11 +164,11 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
         != base_env["_execution_environment"]["conf_execution_sha256"]
     )
     assert env_setting_changed["_execution_fingerprint"] != base_fingerprint
-    monkeypatch.undo()
 
-    # 5. Changing execution environment variable invalidates env_execution and fingerprint
-    monkeypatch.setenv("OPENBLAS_NUM_THREADS", "4")
-    env_env_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
+    # 5. Changing execution environment invalidates the environment and fingerprint.
+    with monkeypatch.context() as env_patch:
+        env_patch.setenv("OPENBLAS_NUM_THREADS", "4")
+        env_env_changed = runpy.run_path(str(isolated_conf))
     assert (
         env_env_changed["_execution_environment"]["env_execution"][
             "OPENBLAS_NUM_THREADS"
@@ -142,6 +176,10 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
         == "4"
     )
     assert env_env_changed["_execution_fingerprint"] != base_fingerprint
+
+    # Any files written by this test, including probes, must stay under tmp_path.
+    assert writes
+    assert all(path.is_relative_to(tmp_path.resolve()) for path in writes)
 
 
 def test_explicit_notebook_build_keeps_nbsphinx_when_pandoc_exists(monkeypatch):
