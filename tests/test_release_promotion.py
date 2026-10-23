@@ -565,20 +565,35 @@ def test_manifest_fixture_validates_against_contract_and_expected_context(
     )
 
 
-def test_manifest_fixture_uses_distribution_sidecar_archive_member_name(
+def test_manifest_fixture_uses_workflow_artifact_and_archive_member_names(
     promotion,
 ) -> None:
-    _, manifest, _ = promotion
-    sidecar = next(
-        artifact
-        for artifact in manifest["artifacts"]
-        if artifact["role"] == "sidecar:distribution-sha256.json"
-    )
+    _, manifest, contract = promotion
+    source = expected()["source_sha"]
+    artifacts = {artifact["role"]: artifact for artifact in manifest["artifacts"]}
 
-    assert sidecar["name"] == (
-        "sidecar-distribution-sha256.json-" + expected()["source_sha"]
+    assert artifacts["payload"]["name"] == (
+        contract["promotion"]["artifact_naming"]["payload_prefix"] + source
     )
-    assert [item["name"] for item in sidecar["files"]] == ["distribution-sha256.json"]
+    for name in contract["promotion"]["artifact_naming"]["sidecar_names"]:
+        artifact = artifacts[f"sidecar:{name}"]
+        assert artifact["name"] == f"release-sidecar-{name}-{source}"
+        assert [item["name"] for item in artifact["files"]] == [name]
+
+    evidence_members = {
+        "gwexpy-cross-format-io-evidence-v1": "cross-format-io-manifest.json",
+        "gwexpy-diaggui-qualification-evidence-v1": (
+            "diaggui-qualification-manifest.json"
+        ),
+        "gwexpy-integration-evidence-v1": "aggregate.json",
+        "gwexpy-qualification-evidence-v1": "qualification-manifest.json",
+    }
+    for schema in contract["promotion"]["evidence_schema_ids"]:
+        artifact = artifacts[f"evidence:{schema}"]
+        assert artifact["name"] == f"{schema}-{source}"
+        assert [item["name"] for item in artifact["files"]] == [
+            evidence_members[schema]
+        ]
 
 
 @pytest.mark.parametrize(
