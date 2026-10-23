@@ -1768,12 +1768,14 @@ def test_integration_evidence_script_loads_v026_yaml_wrapper(tmp_path: Path):
         "schema": contract["review_evidence_schema"],
         "entries": [],
         "human_approval": {"approver_login": "tatsuki-washimi", "comment_id": 7},
+        "large_report_probe": "x" * (70 * 1024),
     }
     raw = b"review_evidence_json: |\n" + b"".join(
         b"  " + line + b"\n"
         for line in json.dumps(review, indent=2).encode("utf-8").splitlines()
     )
     evidence_path.write_bytes(raw)
+    assert len(raw) > 64 * 1024
     aggregate_path = tmp_path / "aggregate.json"
     aggregate_path.write_text(
         json.dumps({"source_sha": "a" * 40, "version": "0.2.6"}),

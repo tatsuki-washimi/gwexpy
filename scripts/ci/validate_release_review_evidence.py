@@ -207,7 +207,7 @@ def load_review_document(
         source = "\n".join(line[2:] if line else "" for line in lines[1:])
     try:
         data = json.loads(source, object_pairs_hook=_reject_duplicate_keys)
-    except (json.JSONDecodeError, _DuplicateJSONKey) as exc:
+    except (json.JSONDecodeError, _DuplicateJSONKey, RecursionError) as exc:
         raise ReleaseReviewEvidenceError("invalid review evidence JSON") from exc
     if not isinstance(data, dict):
         raise ReleaseReviewEvidenceError("review evidence must be a JSON object")
@@ -323,6 +323,11 @@ def _valid_utc_timestamp(value: object) -> bool:
     except ValueError:
         return False
     return True
+
+
+def _utc_datetime(value: str) -> datetime:
+    """Parse a timestamp already checked by ``_valid_utc_timestamp``."""
+    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
 
 
 def _v025_owner_approval_module() -> Any:
@@ -954,6 +959,14 @@ def _validate_v026_review_evidence(
             contract,
             "v0.2.6",
         )
+        approval_time = _utc_datetime(data["human_approval"]["timestamp_utc"])
+        latest_review_completion = max(
+            _utc_datetime(entry["completed_at_utc"]) for entry in entries
+        )
+        if approval_time <= latest_review_completion:
+            raise ReleaseReviewEvidenceError(
+                "human approval must follow all review completion timestamps"
+            )
         if data["human_approval"]["risk_decisions_sha256"] != _canonical_json_sha256(
             decisions
         ):

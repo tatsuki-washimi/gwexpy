@@ -1062,22 +1062,43 @@ def test_candidate_validation_loads_v026_yaml_review_document(
 ) -> None:
     module, _, _ = promotion
     path = tmp_path / "audit-manifest-v0.2.6-release-readiness.yaml"
-    raw = (
-        b"review_evidence_json: |\n"
-        b"  {\n"
-        b'    "schema": "gwexpy-v026-review-evidence-v2",\n'
-        b'    "entries": [],\n'
-        b'    "human_approval": {"approver_login": "tatsuki-washimi", '
-        b'"role": "release-owner", "comment_id": 6265784106}\n'
-        b"  }\n"
+    review = {
+        "schema": "gwexpy-v026-review-evidence-v2",
+        "entries": [],
+        "human_approval": {
+            "approver_login": "tatsuki-washimi",
+            "role": "release-owner",
+            "comment_id": 6265784106,
+        },
+        "large_report_probe": "x" * (70 * 1024),
+    }
+    raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n"
+        for line in json.dumps(review, indent=2).encode("utf-8").splitlines()
     )
     path.write_bytes(raw)
+    assert len(raw) > 64 * 1024
 
-    document = module.load_candidate_review_document(path)
+    document = module.load_candidate_review_document(path, version="0.2.6")
 
     assert document.raw_bytes == raw
     assert document.raw_sha256 == module.sha256(raw)
     assert document.data["human_approval"]["comment_id"] == 6265784106
+
+
+def test_candidate_validation_keeps_legacy_review_document_size_limit(
+    promotion, tmp_path: Path
+) -> None:
+    module, _, _ = promotion
+    path = tmp_path / "legacy-review.yaml"
+    inner = json.dumps({"padding": "x" * (70 * 1024)}).encode("utf-8")
+    raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n" for line in inner.splitlines()
+    )
+    path.write_bytes(raw)
+
+    with pytest.raises(module.PromotionManifestError, match="too large"):
+        module.load_candidate_review_document(path, version="0.2.5")
 
 
 def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(

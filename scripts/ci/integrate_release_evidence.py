@@ -55,7 +55,9 @@ def integrate_review_evidence(
             "review evidence must remain inside the source root"
         ) from exc
     try:
-        document = review_validator.load_review_document(review_path)
+        document = review_validator.load_review_document(
+            review_path, allow_v026_size=version == "0.2.6"
+        )
     except review_validator.ReleaseReviewEvidenceError as exc:
         raise IntegrationEvidenceError(f"invalid review evidence: {exc}") from exc
     human_approval = document.data.get("human_approval")

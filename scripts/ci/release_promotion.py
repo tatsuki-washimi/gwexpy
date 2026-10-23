@@ -819,11 +819,11 @@ def _local_module(name: str) -> Any:
     return module
 
 
-def load_candidate_review_document(path: Path) -> Any:
+def load_candidate_review_document(path: Path, *, version: str) -> Any:
     """Use the readiness validator's shared loader for candidate evidence."""
     validator = _local_module("validate_release_review_evidence")
     try:
-        return validator.load_review_document(path)
+        return validator.load_review_document(path, allow_v026_size=version == "0.2.6")
     except validator.ReleaseReviewEvidenceError as exc:
         raise PromotionManifestError(f"invalid review evidence: {exc}") from exc
 
@@ -1334,7 +1334,7 @@ def verify_tag_candidate(
     )
 
     review_path = source_root / contract["review_evidence_path"]
-    review_document = load_candidate_review_document(review_path)
+    review_document = load_candidate_review_document(review_path, version=version)
     review = review_document.data
     release_notes = source_root / "release_notes" / f"v{version}.md"
     expected = {
@@ -1673,7 +1673,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
         }
         review = root / contract["review_evidence_path"]
         notes = root / f"release_notes/v{version}.md"
-        review_document = load_candidate_review_document(review)
+        review_document = load_candidate_review_document(review, version=version)
         review_data = review_document.data
         for schema, evidence in aggregates:
             _require(

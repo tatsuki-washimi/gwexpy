@@ -260,6 +260,23 @@ def test_v026_v2_recomputes_hash_of_runtime_model_evidence(tmp_path):
         _validate(validator, repo, contract, source_sha, path)
 
 
+def test_review_document_loader_reports_deep_json_as_domain_error(tmp_path):
+    validator = _load_validator()
+    path = tmp_path / "deep.json"
+    path.write_text('{"nested":' * 1200 + "0" + "}" * 1200, encoding="utf-8")
+
+    old_recursion_limit = sys.getrecursionlimit()
+    try:
+        sys.setrecursionlimit(500)
+        with pytest.raises(
+            validator.ReleaseReviewEvidenceError,
+            match="invalid review evidence JSON",
+        ):
+            validator.load_review_document(path, allow_v026_size=True)
+    finally:
+        sys.setrecursionlimit(old_recursion_limit)
+
+
 def test_v026_v2_requires_an_exact_changed_path_map_and_path_ledger(tmp_path):
     validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
     data["changed_path_map"]["documentation"] = []
@@ -337,6 +354,42 @@ def test_v026_v2_reports_owner_risk_gate_and_binds_it_in_candidate_approval(
     path.write_text(json.dumps(data), encoding="utf-8")
     with pytest.raises(validator.ReleaseReviewEvidenceError, match="risk digest"):
         _validate(validator, repo, contract, source_sha, path, phase="candidate")
+
+
+@pytest.mark.parametrize(
+    ("approval_timestamp", "accepted"),
+    [
+        ("2026-10-23T00:09:59Z", False),
+        ("2026-10-23T00:10:00Z", False),
+        ("2026-10-23T00:10:01Z", True),
+    ],
+)
+def test_v026_candidate_approval_must_follow_all_review_completions(
+    tmp_path, approval_timestamp, accepted
+):
+    validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
+    science_paths = contract["review_lanes"]["scientific-data-model"]
+    data["human_approval"] = {
+        "approver_login": "tatsuki-washimi",
+        "role": "release-owner",
+        "reviewed_commit": source_sha,
+        "scope_paths": science_paths,
+        "scope_digest": _scope_digest(validator, repo, source_sha, science_paths),
+        "timestamp_utc": approval_timestamp,
+        "verdict": "APPROVED",
+        "comment_id": 123456789,
+        "risk_decisions_sha256": validator._canonical_json_sha256([]),
+    }
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    if accepted:
+        _validate(validator, repo, contract, source_sha, path, phase="candidate")
+    else:
+        with pytest.raises(
+            validator.ReleaseReviewEvidenceError,
+            match="must follow all review completion timestamps",
+        ):
+            _validate(validator, repo, contract, source_sha, path, phase="candidate")
 
 
 def test_v026_v2_rejects_source_review_packet_with_owner_approval(tmp_path):
