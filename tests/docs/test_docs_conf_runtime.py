@@ -63,7 +63,7 @@ def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatc
 
 
 def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch, tmp_path):
-    """Verify fingerprint invalidation in an isolated copy of the inputs."""
+    """Verify each fingerprint input independently in an isolated copy."""
     import json
     import runpy
     import shutil
@@ -140,6 +140,7 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch, tmp_
         != base_env["_execution_environment"]["runtime_source_sha256"]
     )
     assert env_source_changed["_execution_fingerprint"] != base_fingerprint
+    probe_source.unlink()
 
     # 3. Modifying sample data invalidates the data hash and fingerprint.
     probe_data = isolated_samples / "_test_fingerprint_probe.csv"
@@ -150,6 +151,7 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch, tmp_
         != base_env["_execution_environment"]["repo_data_sha256"]
     )
     assert env_data_changed["_execution_fingerprint"] != base_fingerprint
+    probe_data.unlink()
 
     # 4. Changing execution settings invalidates their hash and fingerprint.
     with monkeypatch.context() as env_patch:
@@ -166,14 +168,23 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch, tmp_
     assert env_setting_changed["_execution_fingerprint"] != base_fingerprint
 
     # 5. Changing execution environment invalidates the environment and fingerprint.
+    base_execution_env = base_env["_execution_environment"]["env_execution"]
+    previous_openblas_value = base_execution_env.get("OPENBLAS_NUM_THREADS")
+    changed_openblas_value = "4" if previous_openblas_value != "4" else "3"
     with monkeypatch.context() as env_patch:
-        env_patch.setenv("OPENBLAS_NUM_THREADS", "4")
+        env_patch.setenv("OPENBLAS_NUM_THREADS", changed_openblas_value)
         env_env_changed = runpy.run_path(str(isolated_conf))
     assert (
         env_env_changed["_execution_environment"]["env_execution"][
             "OPENBLAS_NUM_THREADS"
         ]
-        == "4"
+        == changed_openblas_value
+    )
+    assert (
+        env_env_changed["_execution_environment"]["env_execution"][
+            "OPENBLAS_NUM_THREADS"
+        ]
+        != previous_openblas_value
     )
     assert env_env_changed["_execution_fingerprint"] != base_fingerprint
 
