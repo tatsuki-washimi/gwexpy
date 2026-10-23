@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.6] - 2026-10-23
+## [0.2.6] - 2026-10-24
 
 This maintenance release clarifies documentation contracts, refines diagnostic
 warning messages, and completes repository cleanup following the decoupling of the

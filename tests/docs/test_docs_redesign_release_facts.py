@@ -28,7 +28,7 @@ PUBLISHED_V025_VERSION = "0.2.5"
 PUBLISHED_V025_DATE = "2026-10-04"
 PUBLISHED_V025_HISTORY_ENTRY = f"[{PUBLISHED_V025_VERSION}] - {PUBLISHED_V025_DATE}"
 CANDIDATE_V026_VERSION = "0.2.6"
-CANDIDATE_V026_METADATA_DATE = "2026-10-23"
+CANDIDATE_V026_METADATA_DATE = "2026-10-24"
 CANDIDATE_V026_HISTORY_ENTRY = (
     f"[{CANDIDATE_V026_VERSION}] - {CANDIDATE_V026_METADATA_DATE}"
 )
@@ -347,6 +347,16 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     )
     assert zenodo["version"] == CANDIDATE_V026_VERSION
     assert zenodo["publication_date"] == CANDIDATE_V026_METADATA_DATE
+    candidate_plan = (
+        REPO_ROOT / "docs/developers/plans/20261019_v0.2.6_release_plan.md"
+    ).read_text(encoding="utf-8")
+    candidate_plan_text = " ".join(candidate_plan.split())
+    assert (
+        "Target release date: **2026-10-24 UTC (conditional target only)**"
+        in candidate_plan_text
+    )
+    assert "by 2026-10-25 09:00 JST (the end of 2026-10-24 UTC)" in candidate_plan_text
+    assert "Release decision: **HOLD**" in candidate_plan_text
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
     release_note_text = " ".join(release_note.split())
     changelog_text = " ".join(changelog.split())
