@@ -260,21 +260,41 @@ def test_v026_v2_recomputes_hash_of_runtime_model_evidence(tmp_path):
         _validate(validator, repo, contract, source_sha, path)
 
 
-def test_review_document_loader_reports_deep_json_as_domain_error(tmp_path):
+def test_review_document_loader_translates_parser_recursion_error(
+    tmp_path, monkeypatch
+):
+    validator = _load_validator()
+    path = tmp_path / "recursion.json"
+    path.write_text('{"nested": 0}', encoding="utf-8")
+
+    def raise_recursion_error(*args, **kwargs):
+        raise RecursionError("simulated JSON parser recursion failure")
+
+    monkeypatch.setattr(validator.json, "loads", raise_recursion_error)
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError,
+        match="invalid review evidence JSON",
+    ) as exc_info:
+        validator.load_review_document(path, allow_v026_size=True)
+
+    assert isinstance(exc_info.value.__cause__, RecursionError)
+
+
+def test_deep_json_input_does_not_leak_parser_recursion_error(tmp_path):
     validator = _load_validator()
     path = tmp_path / "deep.json"
     path.write_text('{"nested":' * 1200 + "0" + "}" * 1200, encoding="utf-8")
 
-    old_recursion_limit = sys.getrecursionlimit()
     try:
-        sys.setrecursionlimit(500)
-        with pytest.raises(
-            validator.ReleaseReviewEvidenceError,
-            match="invalid review evidence JSON",
-        ):
-            validator.load_review_document(path, allow_v026_size=True)
-    finally:
-        sys.setrecursionlimit(old_recursion_limit)
+        document = validator.load_review_document(path, allow_v026_size=True)
+    except validator.ReleaseReviewEvidenceError as exc:
+        assert str(exc) == "invalid review evidence JSON"
+        assert isinstance(exc.__cause__, RecursionError)
+        return
+    except RecursionError:
+        pytest.fail("JSON parser recursion errors must be translated to a domain error")
+
+    assert isinstance(document.data, dict)
 
 
 def test_v026_v2_requires_an_exact_changed_path_map_and_path_ledger(tmp_path):
