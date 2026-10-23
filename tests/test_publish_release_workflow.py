@@ -109,7 +109,10 @@ def test_releasing_documents_future_build_once_promotion_contract():
     assert "v0.2.6 is the selected maintenance release candidate" in normalized
     assert "it has not been published" in normalized
     assert "Candidate Qualification must pass on the exact source" in normalized
-    assert "the existing Source Human Approval applies only to S′" in normalized
+    assert (
+        "Historical v0.2.6 source approvals, including approvals for S18 and S20, "
+        "do not apply to a later source."
+    ) in normalized
     assert "it is separate from the later Release Owner GO" in normalized
     assert (
         "A promotion release applies only when a future release contract"

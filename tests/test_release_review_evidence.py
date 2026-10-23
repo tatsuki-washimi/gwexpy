@@ -1,4 +1,4 @@
-"""Fail-closed schema contracts for Terra advisory review evidence."""
+"""Fail-closed schema contracts for platform-independent AI review evidence."""
 
 from __future__ import annotations
 
@@ -18,8 +18,16 @@ RELEASE_SCRIPT_PATH = ROOT / "scripts" / "validate_release.py"
 V026_EMPTY_READINESS_BYTES = b"""\
 review_evidence_json: |
   {
-    "schema": "gwexpy-v026-review-evidence-v1",
+    "schema": "gwexpy-v026-review-evidence-v2",
+    "source_sha": "",
+    "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
+    "changed_path_map": {
+      "documentation": [],
+      "release-security": [],
+      "scientific-data-model": []
+    },
     "entries": [],
+    "owner_risk_decisions": [],
     "human_approval": {
       "approver_login": "",
       "role": "",
@@ -28,7 +36,8 @@ review_evidence_json: |
       "scope_digest": "",
       "timestamp_utc": "",
       "verdict": "",
-      "comment_id": 0
+      "comment_id": 0,
+      "risk_decisions_sha256": ""
     }
   }
 """
@@ -284,7 +293,7 @@ def test_v026_review_document_loader_preserves_raw_bytes_and_approval(
     raw = (
         b"review_evidence_json: |\n"
         b"  {\n"
-        b'    "schema": "gwexpy-v026-review-evidence-v1",\n'
+        b'    "schema": "gwexpy-v026-review-evidence-v2",\n'
         b'    "entries": [],\n'
         b'    "human_approval": {"comment_id": 6265784106}\n'
         b"  }\n"
@@ -295,7 +304,7 @@ def test_v026_review_document_loader_preserves_raw_bytes_and_approval(
 
     assert document.raw_bytes == raw
     assert document.raw_sha256 == hashlib.sha256(raw).hexdigest()
-    assert document.data["schema"] == "gwexpy-v026-review-evidence-v1"
+    assert document.data["schema"] == "gwexpy-v026-review-evidence-v2"
     assert document.data["human_approval"] == {"comment_id": 6265784106}
 
 

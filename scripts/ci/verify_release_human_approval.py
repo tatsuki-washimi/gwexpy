@@ -154,6 +154,27 @@ def _validate_comment(
             )
         except (KeyError, ValueError) as exc:
             raise HumanApprovalError("invalid v0.2.5 approval binding") from exc
+    elif "promotion" in _contract(expected_tag):
+        authority = _contract(expected_tag)["promotion"]["source_approval"]
+        if authority["format"] == "GWEXPY-SOURCE-APPROVAL-v2":
+            expected_body = [
+                authority["format"],
+                f"version={expected_tag}",
+                f"source_sha={reviewed_commit}",
+                f"scope_sha256={approval['scope_digest']}",
+                f"risk_sha256={approval['risk_decisions_sha256']}",
+                "decision=APPROVED",
+            ]
+        elif authority["format"] == "GWEXPY-SOURCE-APPROVAL-v1":
+            expected_body = [
+                authority["format"],
+                f"version={expected_tag}",
+                f"source_sha={reviewed_commit}",
+                f"scope_sha256={approval['scope_digest']}",
+                "decision=APPROVED",
+            ]
+        else:
+            raise HumanApprovalError("unsupported source approval format")
     else:
         expected_body = [
             f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
@@ -205,38 +226,14 @@ def verify_human_approval(
     if "promotion" in contract:
         authority = contract["promotion"]["source_approval"]
         if (
-            authority["format"] != "GWEXPY-SOURCE-APPROVAL-v1"
+            authority["format"]
+            not in {"GWEXPY-SOURCE-APPROVAL-v1", "GWEXPY-SOURCE-APPROVAL-v2"}
             or approval["approver_login"] != authority["approver"]
         ):
             raise HumanApprovalError(
                 "unsupported source approval format or wrong approver"
             )
-        expected_body = "\n".join(
-            [
-                authority["format"],
-                f"version={expected_tag}",
-                f"source_sha={reviewed_commit}",
-                f"scope_sha256={approval['scope_digest']}",
-                "decision=APPROVED",
-            ]
-        )
-        if comment.get("body") != expected_body:
-            raise HumanApprovalError("source approval body is not canonical")
-        # Reuse legacy author, immutable timestamp, and comment size validation.
-        canonical = {
-            **comment,
-            "body": "\n".join(
-                [
-                    f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
-                    f"S: {reviewed_commit}",
-                    f"SCOPE: {approval['scope_digest']}",
-                    "VERDICT: APPROVED",
-                ]
-            ),
-        }
-        _validate_comment(canonical, approval, reviewed_commit, expected_tag)
-    else:
-        _validate_comment(comment, approval, reviewed_commit, expected_tag)
+    _validate_comment(comment, approval, reviewed_commit, expected_tag)
     return reviewed_commit
 
 

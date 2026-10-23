@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate sanitized, non-authorizing Terra review evidence."""
+"""Validate versioned, source-bound AI review evidence."""
 
 from __future__ import annotations
 
@@ -22,6 +22,8 @@ FINDING_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
 EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 MAX_FINDING_IDS = 128
 MAX_REVIEW_DOCUMENT_BYTES = 64 * 1024
+MAX_V026_REVIEW_DOCUMENT_BYTES = 1024 * 1024
+MAX_V026_REPORT_BYTES = 128 * 1024
 ENTRY_KEYS = {
     "lane",
     "role",
@@ -48,6 +50,62 @@ V024_HUMAN_APPROVAL_KEYS = {
     "comment_id",
 }
 V025_HUMAN_APPROVAL_KEYS = V024_HUMAN_APPROVAL_KEYS | {"disposition_digest"}
+V026_HUMAN_APPROVAL_KEYS = V024_HUMAN_APPROVAL_KEYS | {"risk_decisions_sha256"}
+V026_REVIEW_SCHEMA = "gwexpy-v026-review-evidence-v2"
+V026_TOP_LEVEL_KEYS = {
+    "schema",
+    "source_sha",
+    "review_base_sha",
+    "changed_path_map",
+    "entries",
+    "owner_risk_decisions",
+    "human_approval",
+}
+V026_ENTRY_KEYS = {
+    "lane",
+    "role",
+    "reviewer_type",
+    "reviewer_id",
+    "execution_context_id",
+    "execution_environment",
+    "started_at_utc",
+    "completed_at_utc",
+    "requested_model",
+    "requested_effort",
+    "model_observation",
+    "reviewed_commit",
+    "scope_paths",
+    "scope_digest",
+    "path_ledger",
+    "findings",
+    "verdict",
+    "report",
+    "raw_report_sha256",
+}
+V026_MODEL_OBSERVATION_KEYS = {
+    "status",
+    "effective_model",
+    "effective_effort",
+    "evidence_source",
+    "evidence_record",
+    "evidence_sha256",
+    "limitations",
+    "self_reported_model",
+    "self_reported_effort",
+}
+V026_PATH_LEDGER_KEYS = {"path", "methods", "status", "note"}
+V026_FINDING_KEYS = {"id", "severity", "required", "status", "summary", "resolution"}
+V026_RISK_DECISION_KEYS = {"finding_id", "decision", "rationale"}
+V026_PATH_METHODS = {
+    "full-diff-and-context",
+    "structured-validation",
+    "archive-inspection",
+    "notebook-cell-review",
+    "visual-inspection",
+    "test-execution",
+    "source-or-workflow-trace",
+}
+V026_APPROVER_LOGIN = "tatsuki-washimi"
 V024_APPROVER_LOGIN = "tatsuki-washimi"
 
 
@@ -93,7 +151,9 @@ class ReviewEvidenceDocument:
         self.data = data
 
 
-def load_review_document(path: Path | str) -> ReviewEvidenceDocument:
+def load_review_document(
+    path: Path | str, *, allow_v026_size: bool = False
+) -> ReviewEvidenceDocument:
     """Load bounded JSON evidence or its strict coordinator YAML wrapper.
 
     ``raw_sha256`` always hashes the exact file bytes. ``data`` is the decoded
@@ -104,8 +164,18 @@ def load_review_document(path: Path | str) -> ReviewEvidenceDocument:
         raise ReleaseReviewEvidenceError("review evidence must be a regular file")
     try:
         with evidence_path.open("rb") as stream:
-            raw = stream.read(MAX_REVIEW_DOCUMENT_BYTES + 1)
-        if len(raw) > MAX_REVIEW_DOCUMENT_BYTES:
+            read_limit = (
+                MAX_V026_REVIEW_DOCUMENT_BYTES
+                if allow_v026_size
+                else MAX_REVIEW_DOCUMENT_BYTES
+            )
+            raw = stream.read(read_limit + 1)
+        max_bytes = (
+            MAX_V026_REVIEW_DOCUMENT_BYTES
+            if allow_v026_size
+            else MAX_REVIEW_DOCUMENT_BYTES
+        )
+        if len(raw) > max_bytes:
             raise ReleaseReviewEvidenceError("review evidence document is too large")
         source = raw.decode("utf-8", errors="strict")
     except OSError as exc:
@@ -274,7 +344,9 @@ def _validate_human_approval(
     expected_tag: str,
 ) -> None:
     keys = (
-        V025_HUMAN_APPROVAL_KEYS
+        V026_HUMAN_APPROVAL_KEYS
+        if expected_tag == "v0.2.6"
+        else V025_HUMAN_APPROVAL_KEYS
         if expected_tag == "v0.2.5"
         else V024_HUMAN_APPROVAL_KEYS
     )
@@ -324,7 +396,7 @@ def _validate_human_approval(
             )
 
 
-def validate_review_evidence(
+def _validate_legacy_review_evidence(
     path: Path | str,
     reviewed_commit: str | None,
     required_lanes: set[str] | None,
@@ -332,7 +404,7 @@ def validate_review_evidence(
     *,
     expected_tag: str = "v0.1.13",
 ) -> dict[str, Any]:
-    """Validate one approved entry per required lane; raw reports are never read."""
+    """Validate the historical evidence format without changing its rules."""
     evidence_path = Path(path)
     if repo_root is None:
         raise ReleaseReviewEvidenceError(
@@ -444,6 +516,502 @@ def validate_review_evidence(
     return data
 
 
+def _canonical_json_sha256(value: Any) -> str:
+    encoded = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8", errors="strict")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _v026_changed_path_map(
+    repo_root: Path,
+    reviewed_commit: str,
+    contract: dict[str, Any],
+) -> dict[str, list[str]]:
+    base = contract.get("review_base_sha")
+    if not isinstance(base, str) or SHA40.fullmatch(base) is None:
+        raise ReleaseReviewEvidenceError("release has no frozen review baseline")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", base, reviewed_commit],
+        cwd=repo_root,
+        capture_output=True,
+        check=False,
+    )
+    if ancestor.returncode:
+        raise ReleaseReviewEvidenceError(
+            "release review baseline is not an ancestor of reviewed commit"
+        )
+    changed = changed_paths_between(repo_root, base, reviewed_commit)
+    lanes = dict(contract["review_lanes"])
+    mapping = {
+        lane: sorted(
+            (path for path in changed if _scope_covers_path(path, set(paths))),
+            key=lambda item: item.encode("utf-8"),
+        )
+        for lane, paths in lanes.items()
+    }
+    uncovered = sorted(
+        path
+        for path in changed
+        if not any(path in mapped for mapped in mapping.values())
+    )
+    if uncovered:
+        raise ReleaseReviewEvidenceError(
+            "release review lanes do not cover changed paths: " + ", ".join(uncovered)
+        )
+    return mapping
+
+
+def _validate_v026_approval_placeholder(approval: object) -> None:
+    expected = {
+        "approver_login": "",
+        "role": "",
+        "reviewed_commit": "",
+        "scope_paths": [],
+        "scope_digest": "",
+        "timestamp_utc": "",
+        "verdict": "",
+        "comment_id": 0,
+        "risk_decisions_sha256": "",
+    }
+    if approval != expected:
+        raise ReleaseReviewEvidenceError(
+            "source-review phase must keep the owner approval empty"
+        )
+
+
+def _validate_v026_model_observation(value: object) -> bool:
+    if not isinstance(value, dict) or set(value) != V026_MODEL_OBSERVATION_KEYS:
+        return False
+    status = value["status"]
+    effective_model = value["effective_model"]
+    effective_effort = value["effective_effort"]
+    evidence_source = value["evidence_source"]
+    evidence_record = value["evidence_record"]
+    limitations = value["limitations"]
+    self_model = value["self_reported_model"]
+    evidence_sha256 = value["evidence_sha256"]
+    self_effort = value["self_reported_effort"]
+    if not isinstance(status, str) or status not in {
+        "verified",
+        "unverified",
+        "unavailable",
+    }:
+        return False
+    if self_model is not None and (
+        not isinstance(self_model, str) or MODEL_ID.fullmatch(self_model) is None
+    ):
+        return False
+    if self_effort is not None and (
+        not isinstance(self_effort, str) or self_effort not in EFFORTS
+    ):
+        return False
+    if status == "verified":
+        return (
+            isinstance(effective_model, str)
+            and MODEL_ID.fullmatch(effective_model) is not None
+            and isinstance(effective_effort, str)
+            and effective_effort in EFFORTS
+            and isinstance(evidence_source, str)
+            and bool(evidence_source.strip())
+            and isinstance(evidence_record, str)
+            and bool(evidence_record.strip())
+            and len(evidence_record.encode("utf-8")) <= 32 * 1024
+            and isinstance(evidence_sha256, str)
+            and SHA256.fullmatch(evidence_sha256) is not None
+            and hashlib.sha256(evidence_record.encode("utf-8")).hexdigest()
+            == evidence_sha256
+            and limitations == ""
+        )
+    if status == "unverified":
+        return (
+            effective_model is None
+            and effective_effort is None
+            and isinstance(evidence_source, str)
+            and bool(evidence_source.strip())
+            and (
+                (evidence_record is None and evidence_sha256 is None)
+                or (
+                    isinstance(evidence_record, str)
+                    and bool(evidence_record.strip())
+                    and len(evidence_record.encode("utf-8")) <= 32 * 1024
+                    and isinstance(evidence_sha256, str)
+                    and SHA256.fullmatch(evidence_sha256) is not None
+                    and hashlib.sha256(evidence_record.encode("utf-8")).hexdigest()
+                    == evidence_sha256
+                )
+            )
+            and isinstance(limitations, str)
+            and bool(limitations.strip())
+        )
+    return (
+        effective_model is None
+        and effective_effort is None
+        and self_model is None
+        and self_effort is None
+        and isinstance(evidence_source, str)
+        and bool(evidence_source.strip())
+        and evidence_record is None
+        and evidence_sha256 is None
+        and isinstance(limitations, str)
+        and bool(limitations.strip())
+    )
+
+
+def _validate_v026_path_ledger(value: object, expected_paths: list[str]) -> bool:
+    if not isinstance(value, list) or len(value) != len(expected_paths):
+        return False
+    for item, expected_path in zip(value, expected_paths):
+        if not isinstance(item, dict) or set(item) != V026_PATH_LEDGER_KEYS:
+            return False
+        methods = item["methods"]
+        status = item["status"]
+        if (
+            item["path"] != expected_path
+            or not isinstance(status, str)
+            or status not in {"reviewed", "exception"}
+            or not isinstance(methods, list)
+            or any(
+                not isinstance(method, str) or method not in V026_PATH_METHODS
+                for method in methods
+            )
+            or (status == "reviewed" and not methods)
+            or (status == "exception" and methods)
+            or methods != sorted(set(methods))
+            or not isinstance(item["note"], str)
+            or not item["note"].strip()
+            or len(item["note"].encode("utf-8")) > 2048
+        ):
+            return False
+    return True
+
+
+def _validate_v026_findings(value: object) -> list[dict[str, Any]]:
+    if not isinstance(value, list) or len(value) > MAX_FINDING_IDS:
+        raise ReleaseReviewEvidenceError("invalid review findings")
+    findings: list[dict[str, Any]] = []
+    identifiers: list[str] = []
+    for item in value:
+        if not isinstance(item, dict) or set(item) != V026_FINDING_KEYS:
+            raise ReleaseReviewEvidenceError("invalid review finding keys")
+        identifier = item["id"]
+        severity = item["severity"]
+        required = item["required"]
+        status = item["status"]
+        if (
+            not isinstance(identifier, str)
+            or FINDING_ID.fullmatch(identifier) is None
+            or not isinstance(severity, str)
+            or severity not in {"critical", "high", "medium", "low", "info"}
+            or type(required) is not bool
+            or not isinstance(status, str)
+            or status not in {"resolved", "nonblocking", "unresolved"}
+            or not isinstance(item["summary"], str)
+            or not item["summary"].strip()
+            or len(item["summary"].encode("utf-8")) > 4096
+            or not isinstance(item["resolution"], str)
+            or len(item["resolution"].encode("utf-8")) > 4096
+            or (status == "resolved" and not item["resolution"].strip())
+            or (status == "nonblocking" and required)
+            or (status == "nonblocking" and not item["resolution"].strip())
+        ):
+            raise ReleaseReviewEvidenceError("invalid review finding")
+        identifiers.append(identifier)
+        findings.append(item)
+    if identifiers != sorted(set(identifiers), key=lambda item: item.encode("utf-8")):
+        raise ReleaseReviewEvidenceError("review finding IDs must be unique and sorted")
+    return findings
+
+
+def _validate_v026_owner_risk_decisions(
+    value: object,
+    required_unresolved_ids: set[str],
+    approver_login: str | None = None,
+) -> list[dict[str, Any]]:
+    if not isinstance(value, list) or len(value) > MAX_FINDING_IDS:
+        raise ReleaseReviewEvidenceError("invalid owner risk decisions")
+    decisions: list[dict[str, Any]] = []
+    identifiers: list[str] = []
+    for item in value:
+        if not isinstance(item, dict) or set(item) != V026_RISK_DECISION_KEYS:
+            raise ReleaseReviewEvidenceError("invalid owner risk decision keys")
+        identifier = item["finding_id"]
+        if (
+            not isinstance(identifier, str)
+            or FINDING_ID.fullmatch(identifier) is None
+            or item["decision"] != "ACCEPT_WITH_LIMITATION"
+            or not isinstance(item["rationale"], str)
+            or not item["rationale"].strip()
+            or len(item["rationale"].encode("utf-8")) > 4096
+        ):
+            raise ReleaseReviewEvidenceError("invalid owner risk decision")
+        identifiers.append(identifier)
+        decisions.append(item)
+    if identifiers != sorted(set(identifiers), key=lambda item: item.encode("utf-8")):
+        raise ReleaseReviewEvidenceError(
+            "owner risk decisions must be unique and sorted"
+        )
+    if set(identifiers) != required_unresolved_ids:
+        raise ReleaseReviewEvidenceError(
+            "owner risk decisions must cover exactly the unresolved required findings"
+        )
+    if decisions and approver_login != V026_APPROVER_LOGIN:
+        raise ReleaseReviewEvidenceError(
+            "owner risk decisions require Release Owner approval"
+        )
+    return decisions
+
+
+def _v026_status(data: dict[str, Any]) -> str:
+    if not all(entry["verdict"] == "APPROVED" for entry in data["entries"]):
+        return "HOLD_REVIEW_LANE"
+    unresolved_required = {
+        finding["id"]
+        for entry in data["entries"]
+        for finding in entry["findings"]
+        if finding["required"] and finding["status"] == "unresolved"
+    }
+    if unresolved_required:
+        return "HOLD_OWNER_RISK_DECISION"
+    return "READY_FOR_SOURCE_HUMAN_APPROVAL"
+
+
+def _validate_v026_review_evidence(
+    path: Path | str,
+    reviewed_commit: str | None,
+    required_lanes: set[str] | None,
+    repo_root: Path,
+    contract: dict[str, Any],
+    phase: str,
+) -> dict[str, Any]:
+    document = load_review_document(path, allow_v026_size=True)
+    data = document.data
+    lanes = dict(contract["review_lanes"])
+    all_lanes = set(lanes)
+    if required_lanes is not None and required_lanes != all_lanes:
+        raise ReleaseReviewEvidenceError(
+            "v0.2.6 requires all three independent review lanes"
+        )
+    if set(data) != V026_TOP_LEVEL_KEYS or data.get("schema") != V026_REVIEW_SCHEMA:
+        raise ReleaseReviewEvidenceError(
+            "unknown or missing v0.2.6 review evidence keys"
+        )
+    source_sha = data["source_sha"]
+    base_sha = data["review_base_sha"]
+    if (
+        not isinstance(source_sha, str)
+        or SHA40.fullmatch(source_sha) is None
+        or (reviewed_commit is not None and source_sha != reviewed_commit)
+        or not isinstance(base_sha, str)
+        or base_sha != contract.get("review_base_sha")
+    ):
+        raise ReleaseReviewEvidenceError(
+            "review evidence is not bound to the exact source and review base"
+        )
+    expected_map = _v026_changed_path_map(repo_root, source_sha, contract)
+    if data["changed_path_map"] != expected_map:
+        raise ReleaseReviewEvidenceError(
+            "changed path map does not exactly cover the review-base diff"
+        )
+    entries = data["entries"]
+    if not isinstance(entries, list) or len(entries) != len(all_lanes):
+        raise ReleaseReviewEvidenceError("v0.2.6 requires exactly three review entries")
+    if not isinstance(data["owner_risk_decisions"], list):
+        raise ReleaseReviewEvidenceError("owner risk decisions must be a list")
+    if phase not in {"candidate", "source-review"}:
+        raise ReleaseReviewEvidenceError("unsupported review validation phase")
+    if phase == "source-review":
+        _validate_v026_approval_placeholder(data["human_approval"])
+        if data["owner_risk_decisions"]:
+            raise ReleaseReviewEvidenceError(
+                "source-review evidence cannot invent or pre-authorize owner risk decisions"
+            )
+    elif (
+        not isinstance(data["human_approval"], dict)
+        or set(data["human_approval"]) != V026_HUMAN_APPROVAL_KEYS
+    ):
+        raise ReleaseReviewEvidenceError("invalid human approval keys")
+
+    reviewer_ids: set[str] = set()
+    execution_ids: set[str] = set()
+    all_findings: list[dict[str, Any]] = []
+    seen_lanes: set[str] = set()
+    if any(not isinstance(item, dict) for item in entries):
+        raise ReleaseReviewEvidenceError("review entries must be objects")
+    ordered_entries = sorted(entries, key=lambda item: str(item.get("lane", "")))
+    if entries != ordered_entries:
+        raise ReleaseReviewEvidenceError("review entries must be sorted by lane")
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != V026_ENTRY_KEYS:
+            raise ReleaseReviewEvidenceError(
+                "unknown or missing v0.2.6 review entry keys"
+            )
+        lane = entry["lane"]
+        if not isinstance(lane, str) or lane not in all_lanes or lane in seen_lanes:
+            raise ReleaseReviewEvidenceError("unknown or duplicate review lane")
+        reviewer_id = entry["reviewer_id"]
+        execution_id = entry["execution_context_id"]
+        environment = entry["execution_environment"]
+        requested_model = entry["requested_model"]
+        requested_effort = entry["requested_effort"]
+        started_at = entry["started_at_utc"]
+        completed_at = entry["completed_at_utc"]
+        scope_paths = entry["scope_paths"]
+        report = entry["report"]
+        report_hash = entry["raw_report_sha256"]
+        if (
+            entry["role"] != "reviewer"
+            or entry["reviewer_type"] != "ai-agent"
+            or not isinstance(reviewer_id, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", reviewer_id)
+            or reviewer_id in reviewer_ids
+            or not isinstance(execution_id, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", execution_id)
+            or execution_id in execution_ids
+            or not isinstance(environment, str)
+            or not environment.strip()
+            or len(environment.encode("utf-8")) > 1024
+            or (
+                requested_model is not None
+                and (
+                    not isinstance(requested_model, str)
+                    or MODEL_ID.fullmatch(requested_model) is None
+                )
+            )
+            or (
+                requested_effort is not None
+                and (
+                    not isinstance(requested_effort, str)
+                    or requested_effort not in EFFORTS
+                )
+            )
+            or not _valid_utc_timestamp(started_at)
+            or not _valid_utc_timestamp(completed_at)
+            or completed_at < started_at
+            or entry["reviewed_commit"] != source_sha
+            or scope_paths != sorted(lanes[lane], key=lambda item: item.encode("utf-8"))
+            or not isinstance(entry["verdict"], str)
+            or entry["verdict"] not in {"APPROVED", "HOLD"}
+            or not isinstance(report, str)
+            or not report.strip()
+            or len(report.encode("utf-8")) > MAX_V026_REPORT_BYTES
+            or not isinstance(report_hash, str)
+            or SHA256.fullmatch(report_hash) is None
+            or hashlib.sha256(report.encode("utf-8")).hexdigest() != report_hash
+            or not isinstance(entry["scope_digest"], str)
+            or SHA256.fullmatch(entry["scope_digest"]) is None
+        ):
+            raise ReleaseReviewEvidenceError("invalid v0.2.6 review execution record")
+        if not _validate_v026_model_observation(entry["model_observation"]):
+            raise ReleaseReviewEvidenceError(
+                "invalid model observation; unverified values must not be presented as effective"
+            )
+        if entry["scope_digest"] != _scope_digest(repo_root, source_sha, scope_paths):
+            raise ReleaseReviewEvidenceError(
+                "review scope digest does not match the reviewed tree"
+            )
+        if not _validate_v026_path_ledger(entry["path_ledger"], expected_map[lane]):
+            raise ReleaseReviewEvidenceError(
+                f"changed-path review ledger is incomplete for lane {lane}"
+            )
+        if entry["verdict"] == "APPROVED" and any(
+            item["status"] != "reviewed" for item in entry["path_ledger"]
+        ):
+            raise ReleaseReviewEvidenceError(
+                "an approved lane cannot contain unreviewed path exceptions"
+            )
+        findings = _validate_v026_findings(entry["findings"])
+        if any(
+            finding["id"] in {item["id"] for item in all_findings}
+            for finding in findings
+        ):
+            raise ReleaseReviewEvidenceError(
+                "finding IDs must be unique across review lanes"
+            )
+        all_findings.extend(findings)
+        reviewer_ids.add(reviewer_id)
+        execution_ids.add(execution_id)
+        seen_lanes.add(lane)
+    if seen_lanes != all_lanes:
+        raise ReleaseReviewEvidenceError("review evidence has missing or extra lanes")
+    validate_review_scope_coverage(repo_root, source_sha, contract)
+
+    required_unresolved_ids = {
+        finding["id"]
+        for finding in all_findings
+        if finding["required"] and finding["status"] == "unresolved"
+    }
+    if phase == "candidate":
+        decisions = _validate_v026_owner_risk_decisions(
+            data["owner_risk_decisions"],
+            required_unresolved_ids,
+            data["human_approval"].get("approver_login"),
+        )
+        _validate_human_approval(
+            repo_root,
+            data["human_approval"],
+            source_sha,
+            contract,
+            "v0.2.6",
+        )
+        if data["human_approval"]["risk_decisions_sha256"] != _canonical_json_sha256(
+            decisions
+        ):
+            raise ReleaseReviewEvidenceError(
+                "human approval risk digest does not match owner risk decisions"
+            )
+        if any(entry["verdict"] != "APPROVED" for entry in entries):
+            raise ReleaseReviewEvidenceError(
+                "candidate evidence contains a HOLD review"
+            )
+    return data
+
+
+def validate_review_evidence(
+    path: Path | str,
+    reviewed_commit: str | None,
+    required_lanes: set[str] | None,
+    repo_root: Path | str | None = None,
+    *,
+    expected_tag: str = "v0.1.13",
+    phase: str = "candidate",
+) -> dict[str, Any]:
+    """Validate source reviews or a candidate record for the configured release."""
+    if repo_root is None:
+        raise ReleaseReviewEvidenceError(
+            "review evidence validation requires --repo-root"
+        )
+    evidence_path = Path(path)
+    if evidence_path.is_symlink() or not evidence_path.is_file():
+        raise ReleaseReviewEvidenceError("review evidence must be a regular file")
+    contract = _release_contract(expected_tag)
+    if expected_tag == "v0.2.6":
+        try:
+            return _validate_v026_review_evidence(
+                evidence_path,
+                reviewed_commit,
+                required_lanes,
+                Path(repo_root),
+                contract,
+                phase,
+            )
+        except UnicodeEncodeError as exc:
+            raise ReleaseReviewEvidenceError(
+                "review evidence contains text that is not valid UTF-8"
+            ) from exc
+    if phase != "candidate":
+        raise ReleaseReviewEvidenceError(
+            "source-review phase is available only for v0.2.6"
+        )
+    return _validate_legacy_review_evidence(
+        evidence_path,
+        reviewed_commit,
+        required_lanes,
+        repo_root,
+        expected_tag=expected_tag,
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", type=Path, required=True)
@@ -451,17 +1019,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-tag", required=True)
     parser.add_argument("--required-lane", action="append")
     parser.add_argument("--repo-root", type=Path)
+    parser.add_argument(
+        "--phase", choices=("candidate", "source-review"), default="candidate"
+    )
     args = parser.parse_args(argv)
     try:
-        validate_review_evidence(
+        validated = validate_review_evidence(
             args.evidence,
             args.reviewed_commit,
             set(args.required_lane) if args.required_lane else None,
             args.repo_root,
             expected_tag=args.expected_tag,
+            phase=args.phase,
         )
     except ReleaseReviewEvidenceError as exc:
         parser.error(str(exc))
+    if args.phase == "source-review":
+        status = _v026_status(validated)
+        print(f"source_review_status={status}")
+        if status != "READY_FOR_SOURCE_HUMAN_APPROVAL":
+            return 1
     return 0
 
 

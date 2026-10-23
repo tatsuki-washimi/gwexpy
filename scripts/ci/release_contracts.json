@@ -454,7 +454,7 @@
     "v0.2.6": {
       "plan_path": "docs/developers/plans/20261019_v0.2.6_release_plan.md",
       "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
-      "review_evidence_schema": "gwexpy-v026-review-evidence-v1",
+      "review_evidence_schema": "gwexpy-v026-review-evidence-v2",
       "payload_schema": "gwexpy-v026-release-payload-v1",
       "integration_evidence_schema": "gwexpy-v026-integration-evidence-v1",
       "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -465,7 +465,8 @@
           "deliverables",
           "docs",
           "docs_redesign",
-          "release_notes"
+          "release_notes",
+          "tests/docs"
         ],
         "release-security": [
           ".agent",
@@ -484,7 +485,18 @@
           "pyproject.toml",
           "requirements",
           "requirements-dev.txt",
-          "scripts"
+          "scripts",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_validate_release_script.py"
         ],
         "scientific-data-model": [
           "benchmarks",
@@ -510,7 +522,7 @@
           "owner_login": "tatsuki-washimi"
         },
         "source_approval": {
-          "format": "GWEXPY-SOURCE-APPROVAL-v1",
+          "format": "GWEXPY-SOURCE-APPROVAL-v2",
           "approver": "tatsuki-washimi"
         },
         "artifact_naming": {

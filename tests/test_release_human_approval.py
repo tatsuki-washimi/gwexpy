@@ -572,6 +572,7 @@ def test_future_review_evidence_requires_configured_approver(tmp_path, monkeypat
         validator.validate_review_evidence(
             path, None, None, repo, expected_tag="v99.88.77"
         )
+
     data = json.loads(path.read_bytes())
     data["human_approval"]["approver_login"] = "source-approver"
     path.write_text(json.dumps(data))
@@ -587,3 +588,40 @@ def test_future_review_evidence_requires_configured_approver(tmp_path, monkeypat
         validator.validate_review_evidence(
             path, None, None, repo, expected_tag="v99.88.77"
         )
+
+
+def test_v026_source_approval_v2_binds_owner_risk_decisions(monkeypatch):
+    verifier = load_module("v026_human_verifier", HUMAN_VERIFIER)
+    source = "a" * 40
+    risk_digest = "b" * 64
+    approval = {
+        "approver_login": "tatsuki-washimi",
+        "timestamp_utc": "2026-10-23T00:20:00Z",
+        "scope_digest": "c" * 64,
+        "risk_decisions_sha256": risk_digest,
+    }
+    contract = {
+        "promotion": {"source_approval": {"format": "GWEXPY-SOURCE-APPROVAL-v2"}}
+    }
+    monkeypatch.setattr(verifier, "_contract", lambda _tag: contract)
+    comment = {
+        "user": {"login": approval["approver_login"]},
+        "created_at": approval["timestamp_utc"],
+        "updated_at": approval["timestamp_utc"],
+        "body": "\n".join(
+            [
+                "GWEXPY-SOURCE-APPROVAL-v2",
+                "version=v0.2.6",
+                f"source_sha={source}",
+                f"scope_sha256={approval['scope_digest']}",
+                f"risk_sha256={risk_digest}",
+                "decision=APPROVED",
+            ]
+        ),
+    }
+
+    verifier._validate_comment(comment, approval, source, "v0.2.6")
+
+    comment["body"] = comment["body"].replace(risk_digest, "d" * 64)
+    with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
+        verifier._validate_comment(comment, approval, source, "v0.2.6")

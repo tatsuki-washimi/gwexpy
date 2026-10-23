@@ -15,6 +15,54 @@ historical path or build-once promotion only when their own contract selects
 that behavior. Existing contract entries and their legacy behavior remain
 unchanged as release history.
 
+## v0.2.6 source review evidence v2
+
+The v0.2.6 source review uses three separate AI reviewer executions for
+`scientific-data-model`, `documentation`, and `release-security`. Each lane has
+its own task context, reviewer identity, execution environment, timestamps,
+path ledger, scope digest, findings, report text, and report SHA-256. These
+separate executions provide review separation for an individual maintainer;
+they are not equivalent to an external research audit or three human reviews.
+The Release Owner is the required human approver.
+
+The review evidence binds one exact source SHA and the configured Review Base.
+Its lane-by-path map must match every changed path between those commits. The
+review path ledger then records how each changed file was checked. A scope
+digest alone does not mark a path reviewed. The evidence loader recomputes the
+SHA-256 from each embedded UTF-8 report before accepting it. Source review
+packets may be checked before Owner approval with
+`validate_release_review_evidence.py --phase source-review`; candidate
+validation uses the default `candidate` phase and requires the Owner approval.
+The approved source review packet is copied into the readiness manifest only
+after Source Human Approval, within the configured S-to-R allowlist.
+
+Requested model and effort are recorded separately from observed effective
+values. A `verified` observation includes the captured evidence record, and the
+validator recomputes its SHA-256. The reviewer must assess the evidence source;
+the hash detects later edits but does not authenticate the runtime. `unverified`
+and `unavailable` are valid explicit states with null effective values and a
+statement of the evidence limit. A requested model setting or a reviewer's
+self-report never proves the effective model or effort.
+
+Every finding records whether it is required and whether it is resolved,
+nonblocking, or unresolved. Required unresolved findings need an explicit
+Release Owner risk decision with rationale before candidate evidence validates.
+The canonical Source Approval binds the exact Owner risk-decision list by its
+SHA-256:
+
+```text
+GWEXPY-SOURCE-APPROVAL-v2
+version=v0.2.6
+source_sha=<40-character-SHA>
+scope_sha256=<scientific-data-model-scope-SHA-256>
+risk_sha256=<canonical-owner-risk-decisions-SHA-256>
+decision=APPROVED
+```
+
+This review gate does not replace Candidate Qualification or the separate
+Release Owner GO. Prior review reports and approvals remain historical and
+cannot be transferred to the new schema or source.
+
 ## Future build-once candidate and promotion procedure
 
 Use this procedure for v0.2.6 and for any later version whose contract selects
@@ -22,9 +70,8 @@ build-once promotion. Complete the configured independent reviews on one
 source commit `S`. The configured Source Human Approval must bind that exact
 `S`; it is separate from the later Release Owner GO and cannot authorize
 publication. An approval for an earlier source commit does not transfer to a
-new source SHA. For v0.2.6, the existing Source Human Approval applies only to
-S′ `7de451802204c3d141c719c780b152e16e2ca23c` and is not valid for a remedied
-source S″.
+new source SHA. Historical v0.2.6 source approvals, including approvals for
+S18 and S20, do not apply to a later source.
 
 The contract's `S`-to-`R` allowlist is exact: `R` may differ from reviewed `S`
 only for the contract-allowed approval and evidence updates and existing
@@ -375,11 +422,13 @@ For both releases, the publish job depends on the version-specific
 qualification aggregate as well as the four-cell smoke aggregate, so it
 cannot publish a payload different from the qualified bytes.
 
-Terra review evidence is advisory orchestration metadata, not identity proof,
-legal approval, or publication authorization.  It contains the reviewed
-commit, canonical `git ls-tree -r -z --full-tree` scope digest, sanitized
-finding IDs, and verdict only.  Raw reports are not collected.  Human approval
-and protected-environment controls remain the only publication authorization.
+Legacy Terra-format review evidence is advisory orchestration metadata, not
+identity proof, legal approval, or publication authorization. It contains the
+reviewed commit, canonical `git ls-tree -r -z --full-tree` scope digest,
+sanitized finding IDs, and verdict only; raw reports are not collected. This
+legacy format is not used for v0.2.6, whose v2 source-review evidence is
+described above. Human approval and protected-environment controls remain the
+only publication authorization.
 
 The coordinator-owned path selected for the expected tag by
 `scripts/ci/release_contracts.json` is the sole release-gate review-evidence

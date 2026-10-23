@@ -779,6 +779,25 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
     assert "promotion" in values["v0.2.6"]
 
 
+def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
+    contract = load_contract_module().release_contract("v0.2.6")
+
+    assert contract["review_evidence_schema"] == "gwexpy-v026-review-evidence-v2"
+    assert contract["promotion"]["source_approval"] == {
+        "format": "GWEXPY-SOURCE-APPROVAL-v2",
+        "approver": "tatsuki-washimi",
+    }
+    assert set(contract["review_lanes"]) == {
+        "documentation",
+        "release-security",
+        "scientific-data-model",
+    }
+    assert (
+        "tests/test_v026_review_evidence_v2.py"
+        in contract["review_lanes"]["release-security"]
+    )
+
+
 @pytest.mark.parametrize(
     "mutate",
     [

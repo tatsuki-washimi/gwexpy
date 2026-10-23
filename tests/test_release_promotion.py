@@ -1065,7 +1065,7 @@ def test_candidate_validation_loads_v026_yaml_review_document(
     raw = (
         b"review_evidence_json: |\n"
         b"  {\n"
-        b'    "schema": "gwexpy-v026-review-evidence-v1",\n'
+        b'    "schema": "gwexpy-v026-review-evidence-v2",\n'
         b'    "entries": [],\n'
         b'    "human_approval": {"approver_login": "tatsuki-washimi", '
         b'"role": "release-owner", "comment_id": 6265784106}\n'
@@ -1097,7 +1097,7 @@ def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
     notes.parent.mkdir()
     notes.write_text("candidate notes\n", encoding="utf-8")
     review = {
-        "schema": "gwexpy-v026-review-evidence-v1",
+        "schema": "gwexpy-v026-review-evidence-v2",
         "entries": [],
         "human_approval": {"approver_login": "tatsuki-washimi", "comment_id": 7},
     }
@@ -1586,7 +1586,7 @@ def test_finalizer_reads_original_ids_before_run_completion(
     license_digest = module.sha256((tmp_path / "LICENSE.txt").read_bytes())
     contract["review_evidence_path"] = "review.yaml"
     review_payload = {
-        "schema": "gwexpy-v026-review-evidence-v1",
+        "schema": "gwexpy-v026-review-evidence-v2",
         "entries": [],
         "human_approval": {"comment_id": 123},
     }
