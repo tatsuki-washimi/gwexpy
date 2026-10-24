@@ -2,11 +2,7 @@ name: Actionlint
 
 on:
   pull_request:
-    branches: [main, maint/0.1]
-    paths:
-      - ".github/workflows/**"
-      - ".github/actions/**"
-      - ".github/actionlint.yaml"
+    branches: [main, maint/0.1, maint/0.2]
   push:
     branches: [main, maint/0.1]
     paths:
