@@ -444,7 +444,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.6</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/983f58d4ef2668103ec7c6e4786b884927d03061">983f58d4</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a4497b3498dc159469466cd337ef63f10cf76a58">a4497b34</a>
   · Intro examples tested with 0.2.4
   · <a href="documentation_version.html">Version details</a>
   · <a href="known_limitations.html">Known limitations</a>
@@ -529,8 +529,8 @@ preserving tested public results. The measured benefit varies by workload;
 these changes do not promise a general speedup.</p></li>
 <li><p>Single-channel WAV selection avoids creating an unused channel object after
 decoding. The audio backend still reads the full interleaved file.</p></li>
-<li><p>On one measured large native DTTXML PSD fixture, peak memory was 19.6% lower
-while warm processing time was 12.5% higher; cold processing time was
+<li><p>On one measured large native DTTXML PSD fixture, peak memory was <code class="docutils literal notranslate"><span class="pre">19.6%</span></code> lower
+while warm processing time was <code class="docutils literal notranslate"><span class="pre">12.5%</span></code> higher; cold processing time was
 comparable. This is a workload-specific memory/throughput tradeoff.</p></li>
 <li><p>On one measured multi-cell NetCDF fixture, warm wall and CPU time medians
 improved about 33% after reducing full-array copies. Results depend on input
@@ -1430,7 +1430,7 @@ statistic (#506).</p></li>
 periodogram segments GWpy averages per column, which is <em>not</em> <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>
 whenever the segments overlap: GWpy chunks the series into
 <code class="docutils literal notranslate"><span class="pre">nstride</span> <span class="pre">+</span> <span class="pre">noverlap</span></code> samples, so <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code>’s default path – which
-resolves <code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> to the recommended 50% for the default hann window
+resolves <code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> to the recommended <code class="docutils literal notranslate"><span class="pre">50%</span></code> for the default hann window
 – produces twice <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>. Fixing only the null distribution above would have left
 the default path <em>worse</em> calibrated than before, because the stale <code class="docutils literal notranslate"><span class="pre">39</span></code>
 happened to compensate for the wrong distribution shape at some
@@ -1440,9 +1440,9 @@ compatibility; a value that disagrees with the derived one now emits a
 <code class="docutils literal notranslate"><span class="pre">inspect.signature()</span></code> reports a different default (#506).</p></li>
 <li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when
 <code class="docutils literal notranslate"><span class="pre">overlap</span></code> resolves to anything other than <code class="docutils literal notranslate"><span class="pre">0</span></code> or GWpy’s recommended
-overlap for the window (50% for the default hann), allowing one sample of
-slack for the truncating seconds-to-samples conversion. At 75% overlap
-GWpy previously returned without error or warning while using about 36% of
+overlap for the window (<code class="docutils literal notranslate"><span class="pre">50%</span></code> for the default hann), allowing one sample of
+slack for the truncating seconds-to-samples conversion. At <code class="docutils literal notranslate"><span class="pre">75%</span></code> overlap
+GWpy previously returned without error or warning while using about <code class="docutils literal notranslate"><span class="pre">36%</span></code> of
 the data, <em>and</em> the per-segment powers stop being even approximately
 i.i.d. exponential there, so no segment-count correction can make the null
 distribution apply (#506).</p></li>
@@ -1451,8 +1451,8 @@ FFT length in samples is even, the Nyquist bin as <code class="docutils literal 
 <code class="docutils literal notranslate"><span class="pre">nfft=</span></code> keyword so the Nyquist bin can be identified. A real-valued
 input’s DC and Nyquist FFT coefficients are purely real, so their power
 follows chi2_1 rather than an exponential; scoring them against the
-exponential null fired on pure Gaussian noise about 77% of the time at
-nominal <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, which alone pinned <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> near a 100% veto
+exponential null fired on pure Gaussian noise about <code class="docutils literal notranslate"><span class="pre">77%</span></code> of the time at
+nominal <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, which alone pinned <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> near a <code class="docutils literal notranslate"><span class="pre">100%</span></code> veto
 rate. An odd FFT length has no exact Nyquist bin and its last one-sided
 bin is left scored. This mirrors the DC/Nyquist handling added to
 <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> in v0.1.11 (#465). Recovering detection power at
@@ -1460,7 +1460,7 @@ these bins with a chi2_1 null is left for a future release (#506).</p></li>
 <li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code> now derives its own
 per-segment averaging instead of delegating to GWpy’s <code class="docutils literal notranslate"><span class="pre">rayleigh()</span></code>, which
 advances segment starts by <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">-</span> <span class="pre">overlap</span></code> but counts segments using
-<code class="docutils literal notranslate"><span class="pre">overlap</span></code>. Those agree only at exactly 50% overlap, so for an odd FFT
+<code class="docutils literal notranslate"><span class="pre">overlap</span></code>. Those agree only at exactly <code class="docutils literal notranslate"><span class="pre">50%</span></code> overlap, so for an odd FFT
 length – where the recommended Hann overlap is not <code class="docutils literal notranslate"><span class="pre">nfft</span> <span class="pre">//</span> <span class="pre">2</span></code> – or for
 any other explicit overlap, GWpy omits valid segments or requests short
 ones. The count and the slice starts now come from the same hop. <strong>This
@@ -1488,7 +1488,7 @@ entry points, since the distribution layer memoises into a shared cache
 <li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> still applies no multiple-comparison
 correction – it flags a time when <em>any</em> frequency bin has <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">&lt;</span> <span class="pre">alpha</span></code>.
 With correctly calibrated p-values and 63 scored bins this vetoes about
-96% of times at the default <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, so the above is a fix to
+<code class="docutils literal notranslate"><span class="pre">96%</span></code> of times at the default <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, so the above is a fix to
 per-bin calibration and <strong>not</strong> a fix to spurious vetoes. Choose <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
 accordingly, or restrict the frequency range.</p></li>
 <li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> can still return exactly <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>,
