@@ -20,8 +20,12 @@ TIMESTAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 FINDING_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
 LOCAL_ABSOLUTE_PATH = re.compile(
-    r"(?<![\w/])/(?!/)\S+|(?<![\w])(?:[A-Za-z]:[\\/]|\\\\[^\\/\s]+\\)[^\s,;]+"
+    r"(?<![\w./])/+\S*"
+    r"|(?<![\w])[A-Za-z]:[\\/]\S*"
+    r"|(?<![\w])\\\\[^\\/\s]+[\\/][^\\/\s]+(?:[\\/]\S*)?"
 )
+REMOTE_URL = re.compile(r"(?i)\b(?!file:)[A-Za-z][A-Za-z0-9+.-]*://\S+")
+LOCAL_FILE_URL = re.compile(r"(?i)\bfile:/+\S*")
 EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 MAX_FINDING_IDS = 128
 MAX_REVIEW_DOCUMENT_BYTES = 64 * 1024
@@ -118,6 +122,14 @@ class ReleaseReviewEvidenceError(ValueError):
 
 class _DuplicateJSONKey(ValueError):
     """Raised by the JSON hook when an object has ambiguous keys."""
+
+
+def _contains_local_absolute_path(value: str) -> bool:
+    """Detect local absolute paths while ignoring non-file URL path syntax."""
+    if LOCAL_FILE_URL.search(value):
+        return True
+    without_remote_urls = REMOTE_URL.sub(" ", value)
+    return LOCAL_ABSOLUTE_PATH.search(without_remote_urls) is not None
 
 
 def _release_contract(expected_tag: str) -> dict[str, Any]:
@@ -910,7 +922,7 @@ def _validate_v026_review_evidence(
             or SHA256.fullmatch(entry["scope_digest"]) is None
         ):
             raise ReleaseReviewEvidenceError("invalid v0.2.6 review execution record")
-        if LOCAL_ABSOLUTE_PATH.search(environment):
+        if _contains_local_absolute_path(environment):
             raise ReleaseReviewEvidenceError(
                 "execution environment must not contain local absolute paths"
             )

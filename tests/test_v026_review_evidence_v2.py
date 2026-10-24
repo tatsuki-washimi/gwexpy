@@ -234,7 +234,8 @@ def test_v026_v2_accepts_portable_execution_environment_description(tmp_path):
     for entry in data["entries"]:
         entry["execution_environment"] = (
             "Linux/bash; independent read-only review of the exact source SHA; "
-            "clean checkout; no repository files modified."
+            "clean checkout; no repository files modified; reference "
+            "https://example.org/review?checkout=/portable/review."
         )
     path.write_text(json.dumps(data), encoding="utf-8")
 
@@ -248,8 +249,13 @@ def test_v026_v2_accepts_portable_execution_environment_description(tmp_path):
     [
         "Linux/bash; read-only checkout at /home/reviewer/work/gwexpy.",
         "Linux/bash; checkout:/home/reviewer/work/gwexpy.",
+        "Linux; checkout at /.",
         r"Windows; read-only checkout at C:\Users\reviewer\gwexpy.",
+        "Windows; read-only checkout at C:/.",
+        "Windows; read-only checkout at C:\\",
         r"Linux; read-only checkout at \\build-host\work\gwexpy.",
+        "Windows; read-only checkout at //build-host/share/work/gwexpy.",
+        "Linux; local evidence URI file:///home/reviewer/work/gwexpy.",
     ],
 )
 def test_v026_v2_rejects_local_absolute_paths_in_execution_environment(
