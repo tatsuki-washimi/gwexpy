@@ -1,7 +1,7 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v026-review-evidence-v2",
-    "source_sha": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
+    "source_sha": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
     "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
     "changed_path_map": {
       "documentation": [
@@ -153,6 +153,9 @@ review_evidence_json: |
         "scripts/notebook_gen/prepare_docs_notebook_tree.py",
         "scripts/validate_release.py",
         "scripts/verify_public_examples.py",
+        "tests/fixtures/release/promotion-contract-v1.json",
+        "tests/fixtures/release/promotion-contract-v2.json",
+        "tests/fixtures/release/promotion-manifest-v1.json",
         "tests/test_publish_release_workflow.py",
         "tests/test_release_contracts.py",
         "tests/test_release_gate_workflow_contract.py",
@@ -212,6 +215,7 @@ review_evidence_json: |
         "tests/docs/test_v024_publication_status.py",
         "tests/e2e/test_gui_smoke.py",
         "tests/fixtures/release/promotion-contract-v1.json",
+        "tests/fixtures/release/promotion-contract-v2.json",
         "tests/fixtures/release/promotion-manifest-v1.json",
         "tests/gui/archive/README.md",
         "tests/gui/conftest.py",
@@ -271,25 +275,25 @@ review_evidence_json: |
         "lane": "documentation",
         "role": "reviewer",
         "reviewer_type": "ai-agent",
-        "reviewer_id": "root/s24_doc003_documentation",
-        "execution_context_id": "ctx-9faa-doc-01",
-        "execution_environment": "Codex native subagent review in the read-only shared worktree; requested route was verified by hmodel; effective model/effort attestation unavailable.",
-        "started_at_utc": "2026-10-24T03:26:00Z",
-        "completed_at_utc": "2026-10-24T03:29:30Z",
+        "reviewer_id": "docs_lane_source_review_final",
+        "execution_context_id": "exec-ab6ad040-docs",
+        "execution_environment": "Codex native v2 subagent; read-only review of the exact final source in the HDD worktree; hmodel requested model/effort recorded; authenticated effective model/effort observation unavailable.",
+        "started_at_utc": "2026-10-24T06:32:14Z",
+        "completed_at_utc": "2026-10-24T06:35:47Z",
         "requested_model": "gpt-6.1-sol",
         "requested_effort": "medium",
         "model_observation": {
           "status": "unavailable",
           "effective_model": null,
           "effective_effort": null,
-          "evidence_source": "Native collaboration result exposed no effective runtime attestation.",
+          "evidence_source": "Codex native v2 agent result schema",
           "evidence_record": null,
           "evidence_sha256": null,
-          "limitations": "Requested route is recorded; effective runtime model and effort cannot be verified from available execution metadata.",
+          "limitations": "Authenticated effective model and effort metadata are not exposed in the native v2 subagent result; requested routing values are not treated as effective observations.",
           "self_reported_model": null,
           "self_reported_effort": null
         },
-        "reviewed_commit": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
+        "reviewed_commit": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
         "scope_paths": [
           "CHANGELOG.md",
           "ROADMAP.md",
@@ -299,7 +303,7 @@ review_evidence_json: |
           "release_notes",
           "tests/docs"
         ],
-        "scope_digest": "626b6a743f054bd7e0200c089108d738d9a8124809e457b7627d0a846e3e956e",
+        "scope_digest": "dfda6113d0d570649bcb15ba2bb010e615056d0dfcbb3babfa03308fd3db4761",
         "path_ledger": [
           {
             "path": "CHANGELOG.md",
@@ -307,663 +311,692 @@ review_evidence_json: |
               "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Reviewed in the exact-source f821-to-e0e4 lane report; this path is part of the four-file documentation delta."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/agent-deliverables-20261017-175223.zip",
             "methods": [
-              "structured-validation"
+              "archive-inspection",
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked archive integrity, safe member paths, and relevant contents."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/2026-10-17-audit-appendix-stage2-crosscheck.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/README.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/SHA256SUMS",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2_results.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/pass1-population.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/pass2-api-status.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/pass2-module-functions.txt",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-appendix-artifacts-20261017/pass2-population-and-dispositions.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-b-n01-n02-probes/2026-10-17-b-n01-n02-runtime-notes.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-b-n01-n02-probes/README.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-b-n01-n02-probes/b_n01_n02_probe_results.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-b-n01-n02-probes/b_n01_n02_runtime_probe.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/2026-10-17-c-coverage-c2898762.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/2026-10-17-c-inherited-batch1-runtime.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/README.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762-summary.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-coverage-probe-stats.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-coverage-runtime-probes.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime-summary.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762-summary.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c_coverage_build_inherited_priority_slice.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c_coverage_build_ledger.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c_coverage_runtime_probes.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/audit-c-coverage-c2898762/c_inherited_batch1_runtime.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/2026-10-17-warnings-crosswalk-c2898762.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/coupling_probe_result.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762-summary.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762.jsonl",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_probe_coupling.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_scan.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/adr/0001-gui-decoupling-and-project-boundaries.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/design/gui/implementation_map.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/design/gui/reference_analysis.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/guides/gui_testing.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/guides/testing.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/index.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/2026-10-06-local-branch-refresh.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/20261019_v0.2.6_release_plan.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/20261022_v026_gwosc_ci_responsibility_audit.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/manifests/2026-10-18-spectrogram2-append-docs-agent-manifest.yaml",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-a-manifest.yaml",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-b-manifest.yaml",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "docs/developers/reports/2026-10-18-error-audit-issue-pr-work-crosswalk.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/superpowers/plans/2026-04-17-intersphinx-offline-fix.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/superpowers/plans/2026-04-17-tutorials-section-14-3-reorg.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/superpowers/plans/2026-10-05-release-artifact-build-once-promote.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/superpowers/specs/2026-10-04-release-artifact-build-once-promote-design.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/reference/TimeSeries.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/reference/TimeSeriesDict.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/reference/api/gui.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/reference/api/index.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/user_guide/changelog.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/user_guide/gui.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/en/user_guide/tutorials/case_noise_budget.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs/web/en/user_guide/tutorials/case_segment_analysis.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs/web/en/user_guide/tutorials/intro_interop.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs/web/ja/reference/TimeSeries.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/ja/reference/TimeSeriesDict.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/ja/reference/api/gui.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/ja/reference/api/index.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/ja/user_guide/changelog.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs/web/ja/user_guide/gui.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/_static/images/commissioner-asd.png",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "visual-inspection"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Visually inspected the changed documentation figure and placement."
           },
           {
             "path": "docs_redesign/_static/images/commissioner-coherence.png",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "visual-inspection"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Visually inspected the changed documentation figure and placement."
           },
           {
             "path": "docs_redesign/_static/images/first-analysis-timeseries.png",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "visual-inspection"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Visually inspected the changed documentation figure and placement."
           },
           {
             "path": "docs_redesign/_static/images/scientific-python-asd.png",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "visual-inspection"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Visually inspected the changed documentation figure and placement."
           },
           {
             "path": "docs_redesign/about/changelog.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/conf.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/explanation/roadmap.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/how-to/case-studies/case_noise_budget.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs_redesign/how-to/case-studies/case_segment_analysis.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs_redesign/how-to/gui.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/how-to/index.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/how-to/interop/intro_interop.ipynb",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "notebook-cell-review"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed changed notebook cells and related documentation context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
@@ -971,143 +1004,144 @@ review_evidence_json: |
               "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Inspected the exact e0e4-to-9faa99e7 Japanese msgstr delta; S24-DOC-003 is resolved. Babel/Sphinx verification passes. The inherited GNU msgfmt duplicate-message limitation is recorded as nonblocking."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/ecosystem.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/calibration/index.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_segment_analysis.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/gui.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/monitoring/index.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/spectral/resonance_discovery_q.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/commissioner.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/first_analysis.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/scientific_python.po",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/reference/api/gui.rst",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/release_status.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "docs_redesign/tutorials/commissioner.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/tutorials/first_analysis.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/tutorials/installation.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "docs_redesign/tutorials/scientific_python.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "release_notes/v0.2.5.md",
@@ -1115,47 +1149,49 @@ review_evidence_json: |
               "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Reviewed in the exact-source f821-to-e0e4 lane report; this path is part of the four-file documentation delta."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "release_notes/v0.2.6.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/gwosc_timeseries_inventory.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Checked structure, provenance, cross-ledger consistency, or hashes."
           },
           {
             "path": "tests/docs/test_audit_appendix_crosscheck.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_conf_runtime.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_redesign_release_facts.py",
@@ -1163,94 +1199,61 @@ review_evidence_json: |
               "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Reviewed in the exact-source f821-to-e0e4 lane report; this path is part of the four-file documentation delta."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_redesign_release_status.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_gwpy4_proxy_workflow.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_v024_publication_status.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           }
         ],
-        "findings": [
-          {
-            "id": "S24-DOC-001",
-            "severity": "low",
-            "required": false,
-            "status": "resolved",
-            "summary": "The Japanese v0.2.5 changelog catalog had stale msgids, causing English fallback for current release content.",
-            "resolution": "Refreshed the catalog to the canonical 19 source messages; the final Japanese HTML shows the translated v0.2.5 content."
-          },
-          {
-            "id": "S24-DOC-002",
-            "severity": "medium",
-            "required": false,
-            "status": "resolved",
-            "summary": "Seven Babel placeholder diagnostics affected literal historical percentages in the Japanese changelog catalog.",
-            "resolution": "Matched canonical English percentage formatting to catalog keys; Babel Catalog.check has zero diagnostics and strict EN/JA builds passed."
-          },
-          {
-            "id": "S24-DOC-003",
-            "severity": "medium",
-            "required": false,
-            "status": "resolved",
-            "summary": "The historical Japanese changelog could imply a segment-count correction enables a null distribution, unlike the English source.",
-            "resolution": "Corrected only the Japanese msgstr to say the segment powers are not even approximately i.i.d. exponential and no segment-count correction makes the null distribution applicable."
-          },
-          {
-            "id": "S24-DOC-004",
-            "severity": "low",
-            "required": false,
-            "status": "nonblocking",
-            "summary": "GNU msgfmt rejects duplicate active 'Fixed' messages in the Japanese changelog catalog; the same failure exists at adopted baseline e0e4.",
-            "resolution": "Left unchanged under the S24-DOC-003-only scope. The configured Babel/Sphinx build and generated Japanese HTML pass; record this inherited catalog portability limitation for separate follow-up."
-          }
-        ],
+        "findings": [],
         "verdict": "APPROVED",
-        "report": "Documentation lane review — APPROVED\n\nReviewed Source: 9faa99e7be2c4ce288108d57e012e463d2b91efc\nReview Base: 3439fba41dcc644af12870d91bee794524098fb4\nAdopted baseline: e0e4a1fc180c0079b9e19ecf661ef22f34224e4b\n\nThe complete baseline-to-source delta changes only Japanese msgstr continuation lines in docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po. Canonical English CHANGELOG.md, message IDs, comments, and headers are unchanged.\n\nFindings:\n- S24-DOC-001: resolved; carried forward from the adopted review.\n- S24-DOC-002: resolved; carried forward. Babel compilation and Catalog.check pass without diagnostics.\n- S24-DOC-003: resolved. The translation preserves 75%, approximately 36%, and #506. It accurately states that segment powers cease to be even approximately independent and identically distributed exponential variables, and that no segment-count correction makes the null distribution applicable.\n- S24-DOC-004: low, required=false, nonblocking. GNU msgfmt --check --check-format rejects duplicate active msgid \"Fixed\" entries with msgstr \"修正\" at lines 128 and 2601. The identical failure exists at adopted baseline e0e4 and is unchanged by this correction. This is recorded as an inherited catalog portability limitation for follow-up; no fix is claimed. The configured Babel/Sphinx flow passes and renders the corrected translation, so this does not block the scoped review.\n\nEvidence: exact-source generated Japanese HTML contains the corrected paragraph at line 896 without the old mistranslation or English fallback. build-info.json records this SHA, dirty=false, language=ja. The coordinator reports 14 documentation tests and the strict Japanese Sphinx build passing. Diff checks pass.\n\nLimits: incremental review retains the adopted Documentation review; unrelated translations were not re-audited. No source edits, publication actions, or Source Human Approval were performed. Effective runtime model/effort could not be independently attested.",
-        "raw_report_sha256": "f75b59c528f882756bc5f8089aca2c01b15b0ad48903065b4e851cef07275107"
+        "report": "Fresh review of the exact final source against the frozen base. Reviewed all 111 changed documentation-lane paths: CHANGELOG.md (1), deliverables (36), docs (34), docs_redesign (30), release_notes (2), tests/docs (8). ROADMAP.md has no changed path. Confirmed the predecessor-to-final delta consists solely of the historical v1 promotion-contract fixture and its rejection test, outside this lane. Release plan and empty readiness placeholder consistently require fresh three-lane reviews and new Source Human Approval; publication remains HOLD. The conditional 2026-10-24 UTC date, 2026-10-25 09:00 JST deadline, failed-run exclusion, and configured 90-day retention with both measured expiration thresholds agree with the contract and operational guidance. Public documentation retains v0.2.5 as published and excludes unpublished v0.2.6 changelog content. Ten deferred scientific limitations, ASD-unit correction, spectrogram2 constraints, GUI availability, and NDS testing boundaries are disclosed consistently. Reviewed notebook changes and four images. All changed JSON/JSONL, Python files, and ordinary notebook code parse. All 12 changed translation catalogues have zero Babel diagnostics; current v0.2.6 and v0.2.5 changelog blocks have corresponding translations. B/C/D crosscheck passed; eight appendix checksums and all 921 DOC-2 exception hashes match. Historical ledger totals and retained ZIP integrity, safe member paths, and recorded home-directory occurrence counts agree with their disclosures. No new findings. Source tree remains clean. Full Sphinx builds, pytest, and scientific probe executions were not run; historical observations were reviewed as records rather than claimed as freshly reproduced.",
+        "raw_report_sha256": "fd0bc254ee31249eabe4dde1035b7bce88c0c93d1a9ee4e6822b903ebf1d67e9"
       },
       {
         "lane": "release-security",
         "role": "reviewer",
         "reviewer_type": "ai-agent",
-        "reviewer_id": "root/s24_doc003_release_security",
-        "execution_context_id": "ctx-9faa-security-01",
-        "execution_environment": "Codex native subagent review in the read-only shared worktree; requested route was verified by hmodel; effective model/effort attestation unavailable.",
-        "started_at_utc": "2026-10-24T03:26:00Z",
-        "completed_at_utc": "2026-10-24T03:29:30Z",
+        "reviewer_id": "security_lane_source_review_final",
+        "execution_context_id": "exec-ab6ad040-security",
+        "execution_environment": "Codex native v2 subagent; read-only review of the exact final source in the HDD worktree; hmodel requested model/effort recorded; authenticated effective model/effort observation unavailable.",
+        "started_at_utc": "2026-10-24T06:32:10Z",
+        "completed_at_utc": "2026-10-24T06:35:10Z",
         "requested_model": "gpt-6.1-sol",
         "requested_effort": "high",
         "model_observation": {
           "status": "unavailable",
           "effective_model": null,
           "effective_effort": null,
-          "evidence_source": "Native collaboration result exposed no effective runtime attestation.",
+          "evidence_source": "Codex native v2 agent result schema",
           "evidence_record": null,
           "evidence_sha256": null,
-          "limitations": "Requested route is recorded; effective runtime model and effort cannot be verified from available execution metadata.",
+          "limitations": "Authenticated effective model and effort metadata are not exposed in the native v2 subagent result; requested routing values are not treated as effective observations.",
           "self_reported_model": null,
           "self_reported_effort": null
         },
-        "reviewed_commit": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
+        "reviewed_commit": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
         "scope_paths": [
           ".agent",
           ".clinerules",
@@ -1269,6 +1272,9 @@ review_evidence_json: |
           "requirements",
           "requirements-dev.txt",
           "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
           "tests/test_publish_release_workflow.py",
           "tests/test_release_contracts.py",
           "tests/test_release_evidence.py",
@@ -1281,732 +1287,805 @@ review_evidence_json: |
           "tests/test_v026_review_evidence_v2.py",
           "tests/test_validate_release_script.py"
         ],
-        "scope_digest": "1d43d49df79805e2e4a970da2872e6584f0bdc55c7bba76ec3871481d06b7a59",
+        "scope_digest": "32f3a5530f7efdc097c018352406dc192b1a8fabd9f56c80467639630d7678b2",
         "path_ledger": [
           {
             "path": ".github/actions/setup-gwexpy/action.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/docs-pages.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/docs-redesign-preview.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/nds-live.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/ops-weekly.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/post-release-qualification.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/publish-release.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".github/workflows/test-compat-gwpy.yml",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".gitignore",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": ".zenodo.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "CITATION.cff",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "RELEASING.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "pyproject.toml",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "requirements-dev.txt",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "requirements/release-build.in",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "requirements/release-build.txt",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/check_repo_hygiene.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/audit_gwosc_timeseries.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/bootstrap_trusted_pip.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/diaggui_qualification_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/integrate_release_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/qualification_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/release_contract.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/release_contracts.json",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/release_promotion.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/run_gate.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/v025_cross_format_io_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/validate_github_release_readback.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/validate_pypi_readback.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/validate_release_review_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/verify_release_go.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/ci/verify_release_human_approval.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/notebook_gen/prepare_docs_notebook_tree.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/validate_release.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "source-or-workflow-trace"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "scripts/verify_public_examples.py",
             "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
+          },
+          {
+            "path": "tests/fixtures/release/promotion-contract-v1.json",
+            "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
+          },
+          {
+            "path": "tests/fixtures/release/promotion-contract-v2.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
+          },
+          {
+            "path": "tests/fixtures/release/promotion-manifest-v1.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_publish_release_workflow.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "test-execution"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_contracts.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "test-execution"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_gate_workflow_contract.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_go.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_human_approval.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_promotion.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "test-execution"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_review_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "test-execution"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_v026_review_evidence_v2.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context",
+              "test-execution"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           }
         ],
         "findings": [],
         "verdict": "APPROVED",
-        "report": "Release-Security lane review — APPROVED\n\nReviewed Source: 9faa99e7be2c4ce288108d57e012e463d2b91efc\nVerified parent/adopted baseline: e0e4a1fc180c0079b9e19ecf661ef22f34224e4b\nReview Base: 3439fba41dcc644af12870d91bee794524098fb4\n\nIndependently inspected the complete parent-to-source delta: only docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po changes. The historical Rayleigh translation now correctly states that segment-count correction cannot restore the null distribution under the described overlap conditions. Percentages, issue reference, and English source remain unchanged.\n\nRelease dates and facts, candidate/publication status, approval state, release contracts, workflows, security gates, and artifact/promotion paths are unchanged. The previous full Release-Security review is retained for unchanged paths. No new release-security risk was identified.\n\nFindings/resolutions: None.\n\nVerification: exact source and parent confirmed; working tree clean; complete delta inspected; all other paths verified unchanged; git diff --check passed.\n\nLimitations: static, read-only delta review. Unchanged pipeline internals rely on the retained baseline review. No GitHub actions, posting, approval, tagging, or publication occurred. Effective runtime model/effort could not be attested. This is not Source Human Approval.",
-        "raw_report_sha256": "1f840b8f2ede15cc90d49813c5d8b22898aa092c44135b9c7792e1180b9fb773"
+        "report": "Fresh independent review covered the full frozen-base-to-final-source diff for all 46 changed release-security paths, including deleted paths, workflows, scripts, promotion fixtures, release instructions, and release-control tests. Coverage: 46/46; exceptions: 0.\n\nThe promotion contract fails closed on its exact v2 schema and retention values. The finalizer applies both approved expiry thresholds to every one of the seven manifest-bound artifact roles. Workflow uploads request 90 days. Original artifact IDs, run binding, archive sizes/digests, extracted-file hashes, aggregate validation, and later download rechecks remain enforced.\n\nSource approval, completed candidate qualification, and exact-candidate Owner GO remain separate gates. Tag promotion requires a successful completed first-attempt candidate and its manifest; failed run 40067733454 cannot qualify or supply replacement artifacts. The restored promotion-contract-v1 fixture is historical; the current v0.2.6 contract loader rejects it.\n\nReview evidence binds the exact source/base, complete changed-path map, path ledgers, recomputed scope/report digests, independent execution identities, and subsequent Owner approval. No blocking workflow compatibility or secret-handling issue was found.\n\nGitHub documents public retention limits of 1-90 days and nonretroactive setting changes. Custom artifact retention cannot exceed repository, organization, or enterprise limits. Sources: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository and https://docs.github.com/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts.\n\nLane scope digest: 32f3a5530f7efdc097c018352406dc192b1a8fabd9f56c80467639630d7678b2. git diff --check passed; worktree remained clean. Tests were inspected, not executed by this reviewer. No files, evidence, commits, or posts were created.",
+        "raw_report_sha256": "3bb1f0b5dd39e2cac16e7605da0e775947e11c6f224d5a0b937cf7bab72f0ff6"
       },
       {
         "lane": "scientific-data-model",
         "role": "reviewer",
         "reviewer_type": "ai-agent",
-        "reviewer_id": "root/s24_doc003_scientific_data_model",
-        "execution_context_id": "ctx-9faa-science-01",
-        "execution_environment": "Codex native subagent review in the read-only shared worktree; requested route was verified by hmodel; effective model/effort attestation unavailable.",
-        "started_at_utc": "2026-10-24T03:26:00Z",
-        "completed_at_utc": "2026-10-24T03:29:30Z",
+        "reviewer_id": "sdm_lane_source_review_final",
+        "execution_context_id": "exec-ab6ad040-sdm",
+        "execution_environment": "Codex native v2 subagent; read-only review of the exact final source in the HDD worktree; hmodel requested model/effort recorded; authenticated effective model/effort observation unavailable.",
+        "started_at_utc": "2026-10-24T06:32:14Z",
+        "completed_at_utc": "2026-10-24T06:35:11Z",
         "requested_model": "gpt-6.1-sol",
         "requested_effort": "medium",
         "model_observation": {
           "status": "unavailable",
           "effective_model": null,
           "effective_effort": null,
-          "evidence_source": "Native collaboration result exposed no effective runtime attestation.",
+          "evidence_source": "Codex native v2 agent result schema",
           "evidence_record": null,
           "evidence_sha256": null,
-          "limitations": "Requested route is recorded; effective runtime model and effort cannot be verified from available execution metadata.",
+          "limitations": "Authenticated effective model and effort metadata are not exposed in the native v2 subagent result; requested routing values are not treated as effective observations.",
           "self_reported_model": null,
           "self_reported_effort": null
         },
-        "reviewed_commit": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
+        "reviewed_commit": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
         "scope_paths": [
           "benchmarks",
           "environment.yml",
           "gwexpy",
           "tests"
         ],
-        "scope_digest": "53ad00a8fa37c25f35c411cb0bd37a4e2040cd3feb57016c186fa4ed3ebc3c4f",
+        "scope_digest": "e19f572bce308758d445ca9331069e0d46319a9a5ce54886787725d1e9bd44aa",
         "path_ledger": [
           {
             "path": "environment.yml",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/_version.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/analysis/response.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/AGENTS.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/CLAUDE.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/README.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/__init__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/__main__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/channel_handling.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/data_sources.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/engine.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/excitation/generator.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/excitation/params.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/loaders/__init__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/loaders/loaders.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/loaders/products.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/__init__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/audio_thread.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/buffer.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/cache.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/nds_thread.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/sim_thread.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/nds/util.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/plotting/__init__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/plotting/normalize.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/pyaggui.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/streaming.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/__init__.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/_tab_builders.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/channel_browser.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/excitation_manager.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/graph_panel.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/main_window.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/plot_renderer.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/gui/ui/tabs.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/timeseries/_spectral_fourier.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "gwexpy/timeseries/collections.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/analysis/test_response.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/conftest.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/gwosc_timeseries_inventory.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_audit_appendix_crosscheck.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_conf_runtime.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_redesign_release_facts.py",
@@ -2014,486 +2093,497 @@ review_evidence_json: |
               "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Reviewed in the exact-source f821-to-e0e4 lane report; this path is part of the four-file documentation delta."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_docs_redesign_release_status.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_gwpy4_proxy_workflow.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/docs/test_v024_publication_status.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/e2e/test_gui_smoke.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/fixtures/release/promotion-contract-v1.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
+          },
+          {
+            "path": "tests/fixtures/release/promotion-contract-v2.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/fixtures/release/promotion-manifest-v1.json",
             "methods": [
+              "full-diff-and-context",
               "structured-validation"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/archive/README.md",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/conftest.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_channel_config.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_excitation_controls.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_main_window_flow.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_measurement_params.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_pyautogui_smoke.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_simulation_acquisition.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/integration/test_simulation_partial_channels.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_accumulator_delay.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_channel_browser_dialog.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_excitation_manager.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_gui_data_backend.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_gui_main_window.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_gui_payload_contracts.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_gui_result_tab.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_main_window_channel_browser.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_main_window_excitation_integration.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_plot_renderer.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_pyqtgraph_deleted_guard.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/gui/test_visual_stability.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/io/test_io_contract.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/io/test_pickle_direct_io.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/io/test_sdb_public_io.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/io/test_wav_public_io.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/nds/conftest.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/nds/test_gui_nds_smoke.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/nds/test_nds_channel_list_live_smoke.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/nds/test_nds_thread_live_smoke.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/run_gui_nds_tests.sh",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/run_gui_tests.sh",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_check_release_metadata_script.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_diaggui_qualification_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_gui_boundary.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_nds_live_workflow_retirement.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_prepare_docs_notebook_tree_output_root.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_publish_release_workflow.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_pypi_readback.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_qualification_skip_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_contracts.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_gate_workflow_contract.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_go.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_human_approval.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_promotion.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_release_review_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_trusted_pip_bootstrap.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_v025_cross_format_io_evidence.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_v025_historical_gate.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_v026_local_path_exceptions.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/test_v026_review_evidence_v2.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           },
           {
             "path": "tests/timeseries/test_gwpy_override_terminal_compat.py",
             "methods": [
-              "structured-validation"
+              "full-diff-and-context"
             ],
             "status": "reviewed",
-            "note": "Retained the full base-to-f821 lane review and verified this path is unchanged at e0e4 relative to f821."
+            "note": "Reviewed this path's exact frozen-base diff and relevant release context."
           }
         ],
         "findings": [],
         "verdict": "APPROVED",
-        "report": "Scientific-Data-Model lane review — APPROVED\n\nReviewed Source: 9faa99e7be2c4ce288108d57e012e463d2b91efc\nAdopted baseline / verified parent: e0e4a1fc180c0079b9e19ecf661ef22f34224e4b\nReview Base: 3439fba41dcc644af12870d91bee794524098fb4\n\nInspected delta: one Japanese msgstr in docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po. The correction faithfully conveys the unchanged English statement: at 75% overlap, using approximately 36% of the data, segment powers cease to be even approximately independent and identically exponentially distributed; correcting the segment count cannot make the stated null distribution applicable. Historical values, release facts, the English source, and scientific product code remain unchanged.\n\nNo new Scientific-Data-Model findings. The prior full lane review and dispositions are carried forward for all other paths.\n\nChecks: exact HEAD and parent verified; complete incremental diff inspected; git diff --check passed.\n\nLimitations: static review only; no numerical probes, tests, or documentation build were repeated by this reviewer. Prior evidence was adopted for unchanged paths. No human scientific sign-off or publication authorization is granted. Effective runtime model/effort could not be attested.",
-        "raw_report_sha256": "686e3f6b16550d5525ed69ba6af6b4aff02f59d2e7930a078abc2b9d9d2e5b6c"
+        "report": "Fresh review of exact final source ab6ad040b50de0f7324ba992d048a5880e126bd8 against frozen base 3439fba41dcc644af12870d91bee794524098fb4. No predecessor review was reused.\n\nCovered all 102 lane paths using frozen-base diffs, structured fixture inspection, relevant source/test context, and deletion/import-boundary tracing. No benchmarks changed.\n\nProduction scientific source and environment.yml are byte-identical to approved S 9faa99e7be2c4ce288108d57e012e463d2b91efc. Scientific tests, conftest, I/O tests, timeseries tests, and historical promotion-contract-v1.json are also unchanged from that S; git diff --exit-code returned zero.\n\nThe full-base response change correctly assigns target ASD units to ASD spectrogram values and rejects inconsistent accepted-row units. Frequency-grid diagnostics retain row selection and coupling factors. Timeseries changes document existing behavior. GUI deletions follow the recorded project boundary; no remaining production GUI imports were found. Removed I/O assertions concern the deleted GUI loader, while library I/O assertions remain. GWOSC selection is limited to audited inherited tests; GWexpy spectrogram multiprocessing has a synthetic offline regression.\n\nRetention tests cover exact accepted boundaries and one-second violations of both bounds for all seven manifest-bound artifact roles. Missing/naive timestamps, expired artifacts, and different-run artifacts are rejected. Qualification jobs and scientific evidence schemas remain unchanged. The restored historical v1 fixture is used to assert rejection of the old promotion contract; active fixtures use v2. These changes introduce no scientific numerical or metadata assumptions.\n\nNo additional findings. Previously documented Owner-deferred limitations remain recorded in the release plan. This verdict is source-review approval, not Candidate Qualification or release authorization. Read-only review: no edits, commits, evidence creation, or external posts. Tests were inspected but not executed. Worktree remained clean.",
+        "raw_report_sha256": "1279f5124639650f3ee3bce4a9dd58affc104d7d2e0dda3a96b73dda45cb8782"
       }
     ],
     "owner_risk_decisions": [],
     "human_approval": {
       "approver_login": "tatsuki-washimi",
       "role": "release-owner",
-      "reviewed_commit": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
+      "reviewed_commit": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
       "scope_paths": [
         "benchmarks",
         "environment.yml",
         "gwexpy",
         "tests"
       ],
-      "scope_digest": "53ad00a8fa37c25f35c411cb0bd37a4e2040cd3feb57016c186fa4ed3ebc3c4f",
-      "timestamp_utc": "2026-10-24T04:07:20Z",
+      "scope_digest": "e19f572bce308758d445ca9331069e0d46319a9a5ce54886787725d1e9bd44aa",
+      "timestamp_utc": "2026-10-24T06:52:25Z",
       "verdict": "APPROVED",
-      "comment_id": 6379658724,
+      "comment_id": 6381126473,
       "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
   }

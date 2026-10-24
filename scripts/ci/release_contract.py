@@ -17,7 +17,7 @@ ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PROMOTION_MANIFEST_PREFIX = "release-promotion-manifest-"
 PROMOTION_PAYLOAD_PREFIX = "release-payload-"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
-PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v1"
+PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v2"
 LOGIN = re.compile(r"^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$")
 IDENTIFIER = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 JOB_IDENTIFIER = re.compile(r"^[a-z0-9]+(?:[-_][a-z0-9]+)*$")
@@ -41,6 +41,11 @@ PROMOTION_PROFILE_EVIDENCE_IDS = (
     "gwexpy-integration-evidence-v1",
     "gwexpy-qualification-evidence-v1",
 )
+PROMOTION_ARTIFACT_RETENTION = {
+    "configured_retention_days": 90,
+    "expires_at_after_run_started_at_seconds": 90 * 24 * 60 * 60,
+    "expires_at_after_created_at_seconds": (90 * 24 * 60 * 60) - (60 * 60),
+}
 CONTRACT_KEYS = {
     "plan_path",
     "review_evidence_path",
@@ -105,6 +110,7 @@ def _validate_promotion(tag: str, value: object) -> dict[str, Any]:
         "release_go",
         "source_approval",
         "artifact_naming",
+        "artifact_retention",
         "qualification_profile",
         "qualification_profiles",
         "evidence_schemas",
@@ -160,6 +166,16 @@ def _validate_promotion(tag: str, value: object) -> dict[str, Any]:
         != {"LICENSE.sha256", "distribution-sha256.json"}
     ):
         raise ReleaseContractError(f"invalid artifact naming rules for {tag}")
+    retention = value["artifact_retention"]
+    if (
+        not isinstance(retention, dict)
+        or set(retention) != set(PROMOTION_ARTIFACT_RETENTION)
+        or any(
+            type(retention[key]) is not int or retention[key] != minimum_seconds
+            for key, minimum_seconds in PROMOTION_ARTIFACT_RETENTION.items()
+        )
+    ):
+        raise ReleaseContractError(f"invalid artifact retention rules for {tag}")
     selected = value["qualification_profile"]
     profiles = value["qualification_profiles"]
     schemas = value["evidence_schemas"]

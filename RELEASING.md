@@ -171,10 +171,14 @@ those bytes. It promotes those same candidate bytes without rebuilding or
 rerunning candidate qualification.
 
 The candidate workflow uploads the payload, sidecars, aggregate gate evidence,
-and promotion manifest with `retention-days: 90`. The finalizer also requires
-each required aggregate evidence artifact's measured `expires_at - created_at`
-to be at least 90 days. At tag time, any required candidate artifact that is
-expired, unavailable, or not downloadable by its recorded ID fails promotion;
+and promotion manifest with `retention-days: 90`. The finalizer validates every
+manifest-bound payload, sidecar, and aggregate evidence artifact against both
+API timestamps: `expires_at - run_started_at` must be at least 90 days, and
+`expires_at - created_at` must be at least 89 days and 23 hours. This accounts
+for GitHub setting `expires_at` relative to the workflow run while also requiring
+a minimum remaining lifetime after each artifact is created. At tag time, any
+required candidate artifact that is expired, unavailable, or not downloadable by
+its recorded ID fails promotion;
 an artifact from another run cannot replace it. If a required artifact is lost
 before tagging, complete a new candidate qualification and obtain a new
 exact-candidate GO bound to that candidate run, manifest, and distribution

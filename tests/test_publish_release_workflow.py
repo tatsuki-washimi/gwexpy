@@ -186,8 +186,8 @@ def test_releasing_documents_future_build_once_promotion_contract():
         "and promotion manifest with `retention-days: 90`"
     ) in normalized
     assert (
-        "each required aggregate evidence artifact's measured `expires_at - "
-        "created_at` to be at least 90 days"
+        "`expires_at - run_started_at` must be at least 90 days, and "
+        "`expires_at - created_at` must be at least 89 days and 23 hours"
     ) in normalized
     assert (
         "any required candidate artifact that is expired, unavailable, or not "
@@ -861,6 +861,32 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         "retention-days: 90",
     ):
         assert token in workflow if token == "retention-days: 90" else token in smoke
+
+
+def test_manifest_bound_candidate_artifacts_request_90_day_retention():
+    import yaml
+
+    workflow = yaml.safe_load(read_workflow())
+    upload_steps = {
+        step["name"]: step
+        for job in workflow["jobs"].values()
+        for step in job.get("steps", [])
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    }
+    required_steps = {
+        "Upload PyPI payload only",
+        "Upload promotion distribution sidecar",
+        "Upload promotion license sidecar",
+        "Upload qualification manifest",
+        "Upload DiagGUI qualification manifest",
+        "Upload I/O qualification manifest",
+        "Upload 90-day integration evidence",
+    }
+
+    assert required_steps <= upload_steps.keys()
+    assert all(
+        upload_steps[name]["with"]["retention-days"] == 90 for name in required_steps
+    )
 
 
 def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
@@ -1898,7 +1924,7 @@ def test_synthetic_future_compatibility_path_runs_junit_and_records_evidence(tmp
     contract = dict(registry["releases"]["v0.2.5"])
     contract.pop("review_base_sha", None)
     contract["promotion"] = json.loads(
-        (root / "tests/fixtures/release/promotion-contract-v1.json").read_text()
+        (root / "tests/fixtures/release/promotion-contract-v2.json").read_text()
     )["promotion"]
     registry["releases"]["v" + version] = contract
     (scripts / "release_contracts.json").write_text(json.dumps(registry))
