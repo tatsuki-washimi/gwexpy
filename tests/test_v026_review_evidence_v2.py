@@ -253,6 +253,7 @@ def test_v026_v2_accepts_portable_execution_environment_description(tmp_path):
         r"Windows; read-only checkout at C:\Users\reviewer\gwexpy.",
         "Windows; read-only checkout at C:/.",
         "Windows; read-only checkout at C:\\",
+        "Windows; read-only checkout at C://Users/reviewer/gwexpy.",
         r"Linux; read-only checkout at \\build-host\work\gwexpy.",
         "Windows; read-only checkout at //build-host/share/work/gwexpy.",
         "Linux; local evidence URI file:///home/reviewer/work/gwexpy.",

@@ -24,7 +24,9 @@ LOCAL_ABSOLUTE_PATH = re.compile(
     r"|(?<![\w])[A-Za-z]:[\\/]\S*"
     r"|(?<![\w])\\\\[^\\/\s]+[\\/][^\\/\s]+(?:[\\/]\S*)?"
 )
-REMOTE_URL = re.compile(r"(?i)\b(?!file:)[A-Za-z][A-Za-z0-9+.-]*://\S+")
+# A one-letter scheme followed by :// is ambiguous with a Windows drive path;
+# leave it for the drive-path check rather than masking it as a URL.
+REMOTE_URL = re.compile(r"(?i)\b(?!file:)(?![A-Za-z]://)[A-Za-z][A-Za-z0-9+.-]*://\S+")
 LOCAL_FILE_URL = re.compile(r"(?i)\bfile:/+\S*")
 EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 MAX_FINDING_IDS = 128
