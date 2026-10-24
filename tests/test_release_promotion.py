@@ -17,7 +17,7 @@ SCRIPT = ROOT / "scripts" / "ci" / "release_promotion.py"
 FIXTURE = ROOT / "tests" / "fixtures" / "release" / "promotion-manifest-v1.json"
 CONTRACTS = ROOT / "scripts" / "ci" / "release_contract.py"
 PROMOTION_CONTRACT = (
-    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v1.json"
+    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v2.json"
 )
 
 
@@ -1601,11 +1601,52 @@ def test_publisher_download_is_rehashed_against_exact_manifest_files(
         module.validate_downloaded_artifact(manifest, "payload", payload_dir)
 
 
+def test_artifact_retention_accepts_exact_policy_boundaries(promotion) -> None:
+    import datetime
+
+    module, _, contract = promotion
+    run_started_at = datetime.datetime(2026, 10, 1, tzinfo=datetime.timezone.utc)
+    created_at = run_started_at + datetime.timedelta(hours=1)
+    expires_at = run_started_at + datetime.timedelta(days=90)
+    record = {
+        "created_at": created_at.isoformat().replace("+00:00", "Z"),
+        "expires_at": expires_at.isoformat().replace("+00:00", "Z"),
+    }
+
+    module._validate_artifact_retention(
+        record,
+        run_started_at,
+        contract["promotion"]["artifact_retention"],
+    )
+
+
 @pytest.mark.parametrize(
     "mutation",
     [
         None,
         "retention",
+        "expired",
+        "different_run",
+        "missing_run_start",
+        "naive_run_start",
+        "bad_run_start",
+        "missing_created_at",
+        "naive_created_at",
+        "missing_expires_at",
+        "naive_expires_at",
+        *[
+            f"{bound}_retention_{role}"
+            for bound in ("run", "created")
+            for role in (
+                "payload",
+                "distribution_sidecar",
+                "license_sidecar",
+                "cross_format_evidence",
+                "diaggui_evidence",
+                "integration_evidence",
+                "qualification_evidence",
+            )
+        ],
         "digest",
         "skipped",
         "missing_gate",
@@ -1700,9 +1741,16 @@ def test_finalizer_reads_original_ids_before_run_completion(
         "head_sha": source,
         "event": "workflow_dispatch",
         "run_attempt": 1,
+        "run_started_at": "2026-10-01T00:00:00Z",
         "status": "in_progress",
         "conclusion": None,
     }
+    if mutation == "missing_run_start":
+        del run["run_started_at"]
+    elif mutation == "naive_run_start":
+        run["run_started_at"] = "2026-10-01T00:00:00"
+    elif mutation == "bad_run_start":
+        run["run_started_at"] = "not-a-timestamp"
     monkeypatch.setattr(module, "_api_json", lambda *args: run)
     payload = {
         f"gwexpy-{version}-py3-none-any.whl": b"synthetic wheel",
@@ -1788,12 +1836,44 @@ def test_finalizer_reads_original_ids_before_run_completion(
                 "expired": False,
                 "digest": "sha256:" + module.sha256(raw),
                 "size_in_bytes": len(raw),
-                "created_at": "2026-10-01T00:00:00Z",
-                "expires_at": "2026-12-31T00:00:00Z",
+                "created_at": "2026-10-01T00:00:01Z",
+                "expires_at": "2026-12-30T00:00:00Z",
             }
         )
     if mutation == "retention":
         artifacts[-1]["expires_at"] = "2026-10-31T00:00:00Z"
+    elif mutation == "expired":
+        artifacts[-1]["expired"] = True
+    elif mutation == "different_run":
+        artifacts[-1]["workflow_run"]["id"] = 988
+    elif mutation == "missing_created_at":
+        del artifacts[-1]["created_at"]
+    elif mutation == "naive_created_at":
+        artifacts[-1]["created_at"] = "2026-10-01T00:00:01"
+    elif mutation == "missing_expires_at":
+        del artifacts[-1]["expires_at"]
+    elif mutation == "naive_expires_at":
+        artifacts[-1]["expires_at"] = "2026-12-30T00:00:00"
+    elif isinstance(mutation, str) and (
+        mutation.startswith("run_retention_")
+        or mutation.startswith("created_retention_")
+    ):
+        bound, role = mutation.split("_retention_", maxsplit=1)
+        names = {
+            "payload": "release-payload-" + source,
+            "distribution_sidecar": "release-sidecar-distribution-sha256.json-"
+            + source,
+            "license_sidecar": "release-sidecar-LICENSE.sha256-" + source,
+            "cross_format_evidence": "gwexpy-cross-format-io-evidence-v1-" + source,
+            "diaggui_evidence": "gwexpy-diaggui-qualification-evidence-v1-" + source,
+            "integration_evidence": "gwexpy-integration-evidence-v1-" + source,
+            "qualification_evidence": "gwexpy-qualification-evidence-v1-" + source,
+        }
+        target = next(item for item in artifacts if item["name"] == names[role])
+        if bound == "run":
+            target["expires_at"] = "2026-12-29T23:59:59Z"
+        else:
+            target["created_at"] = "2026-10-01T01:00:01Z"
     if mutation == "digest":
         artifacts[0]["digest"] = "sha256:" + "0" * 64
     if mutation == "duplicate":

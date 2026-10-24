@@ -9,6 +9,36 @@ PR_FAST = REPO_ROOT / ".github" / "workflows" / "pr-fast.yml"
 SETUP_ACTION = REPO_ROOT / ".github" / "actions" / "setup-gwexpy" / "action.yml"
 
 
+def test_actionlint_required_check_runs_for_release_pr_targets_without_path_filter() -> (
+    None
+):
+    import yaml
+
+    workflow = yaml.load(
+        (REPO_ROOT / ".github/workflows/actionlint.yml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    events = workflow["on"]
+
+    assert events["pull_request"]["branches"] == ["main", "maint/0.1", "maint/0.2"]
+    assert "paths" not in events["pull_request"]
+    assert events["push"]["branches"] == ["main", "maint/0.1"]
+    assert events["push"]["paths"] == [
+        ".github/workflows/**",
+        ".github/actions/**",
+        ".github/actionlint.yaml",
+    ]
+    assert "workflow_dispatch" in events
+
+    job = workflow["jobs"]["actionlint"]
+    assert job["name"] == "Release workflow static analysis"
+    assert any("gh attestation verify" in step.get("run", "") for step in job["steps"])
+    assert any(
+        '"${{ steps.actionlint.outputs.executable }}" -color' in step.get("run", "")
+        for step in job["steps"]
+    )
+
+
 def test_pr_fast_runs_the_dedicated_release_gates() -> None:
     workflow = PR_FAST.read_text(encoding="utf-8")
     validate_job = workflow.split("\n  io-contract-gate:", maxsplit=1)[0]
