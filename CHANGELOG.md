@@ -868,7 +868,7 @@ numbers must pin to the version that produced them.
   periodogram segments GWpy averages per column, which is *not* `dt * df`
   whenever the segments overlap: GWpy chunks the series into
   `nstride + noverlap` samples, so `rayleigh_test()`'s default path -- which
-  resolves `overlap=None` to the recommended 50% for the default hann window
+  resolves `overlap=None` to the recommended `50%` for the default hann window
   -- produces twice `dt * df`. Fixing only the null distribution above would have left
   the default path *worse* calibrated than before, because the stale `39`
   happened to compensate for the wrong distribution shape at some
@@ -879,9 +879,9 @@ numbers must pin to the version that produced them.
 
 - **statistics**: `TimeSeries.rayleigh_test()` now raises `ValueError` when
   `overlap` resolves to anything other than `0` or GWpy's recommended
-  overlap for the window (50% for the default hann), allowing one sample of
-  slack for the truncating seconds-to-samples conversion. At 75% overlap
-  GWpy previously returned without error or warning while using about 36% of
+  overlap for the window (`50%` for the default hann), allowing one sample of
+  slack for the truncating seconds-to-samples conversion. At `75%` overlap
+  GWpy previously returned without error or warning while using about `36%` of
   the data, *and* the per-segment powers stop being even approximately
   i.i.d. exponential there, so no segment-count correction can make the null
   distribution apply (#506).
@@ -891,8 +891,8 @@ numbers must pin to the version that produced them.
   `nfft=` keyword so the Nyquist bin can be identified. A real-valued
   input's DC and Nyquist FFT coefficients are purely real, so their power
   follows chi2_1 rather than an exponential; scoring them against the
-  exponential null fired on pure Gaussian noise about 77% of the time at
-  nominal `alpha=0.05`, which alone pinned `to_segments()` near a 100% veto
+  exponential null fired on pure Gaussian noise about `77%` of the time at
+  nominal `alpha=0.05`, which alone pinned `to_segments()` near a `100%` veto
   rate. An odd FFT length has no exact Nyquist bin and its last one-sided
   bin is left scored. This mirrors the DC/Nyquist handling added to
   `compute_student_t_nu()` in v0.1.11 (#465). Recovering detection power at
@@ -901,7 +901,7 @@ numbers must pin to the version that produced them.
 - **statistics**: `TimeSeries.rayleigh_spectrogram()` now derives its own
   per-segment averaging instead of delegating to GWpy's `rayleigh()`, which
   advances segment starts by `fftlength - overlap` but counts segments using
-  `overlap`. Those agree only at exactly 50% overlap, so for an odd FFT
+  `overlap`. Those agree only at exactly `50%` overlap, so for an odd FFT
   length -- where the recommended Hann overlap is not `nfft // 2` -- or for
   any other explicit overlap, GWpy omits valid segments or requests short
   ones. The count and the slice starts now come from the same hop. **This
@@ -928,7 +928,7 @@ numbers must pin to the version that produced them.
 - **statistics**: `to_segments()` still applies no multiple-comparison
   correction -- it flags a time when *any* frequency bin has `p < alpha`.
   With correctly calibrated p-values and 63 scored bins this vetoes about
-  96% of times at the default `alpha=0.05`, so the above is a fix to
+  `96%` of times at the default `alpha=0.05`, so the above is a fix to
   per-bin calibration and **not** a fix to spurious vetoes. Choose `alpha`
   accordingly, or restrict the frequency range.
 
