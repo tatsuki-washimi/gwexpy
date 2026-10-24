@@ -686,6 +686,18 @@ def test_v025_changelog_matches_release_note_and_gettext_compiles() -> None:
             assert translations.gettext(message_id) != message_id, message_id
 
 
+def test_japanese_changelog_catalog_has_no_placeholder_diagnostics() -> None:
+    path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    with path.open(encoding="utf-8") as stream:
+        catalogue = pofile.read_po(stream, locale="ja")
+
+    diagnostics = [
+        f"{message.id!r}: {', '.join(str(error) for error in errors)}"
+        for message, errors in catalogue.check()
+    ]
+    assert not diagnostics, "\n".join(diagnostics)
+
+
 def test_v026_known_limitations_are_linked_in_release_artifacts() -> None:
     issue_ids = (766, 767, 768, 769, 770, 771, 773, 774, 777, 778)
     release_note = (REPO_ROOT / "release_notes/v0.2.6.md").read_text(encoding="utf-8")

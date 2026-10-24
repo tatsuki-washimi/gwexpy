@@ -120,92 +120,76 @@ msgid "[0.2.5] - 2026-10-04"
 msgstr "[0.2.5] - 2026-10-04"
 
 #: ../../../CHANGELOG.md
-msgid "This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header validation; and audio registry tag provenance. The supported optional-backend routes report a backend-specific `ImportError` when their package is absent. The current candidate base includes internal I/O performance and scalability work under #580. The #584 overlay and optional parallel #588 patch are deferred; the R8 serial #588 implementation is retained unchanged. Final-source review and release qualification remain pending; public values, dtype, metadata, warning/error behavior, and on-disk format remain the acceptance contract except for the scoped #589 native-parser and #585 SDB snapshot exceptions below. The candidate adds no public API, dependency, or persistence schema. The reviewed source `S` must receive fresh approval before publishing source `R` is qualified. See the current v0.2.5 release plan for the independent four-case decision."
-msgstr "このパッチでは、対応する NetCDF4 と Zarr の行列の値・軸・単位、HDF5 マニフェストの整合性、TDMS の波形間隔と GBD ヘッダーの検証、音声レジストリのタグ来歴を修正します。必要なパッケージがない場合、対応するオプションバックエンドの経路はバックエンド固有の `ImportError` を返します。現在の候補ベースには #580 の内部 I/O 性能と拡張性に関する作業が含まれます。#584 の追加変更と #588 の任意の並列パッチは延期し、R8 にある #588 の直列実装を変更せず保持します。最終ソースのレビューとリリース認定は未完了です。以下で範囲を定める #589 ネイティブパーサーと #585 SDB スナップショットの例外を除き、公開される値、dtype、メタデータ、警告・エラーの挙動、および保存形式を受け入れ条件として維持します。候補に公開 API、依存関係、永続化スキーマは追加しません。レビュー対象のソース `S` に対する新たな承認を得た後で、公開対象のソース `R` を認定する必要があります。独立した4ケースの判断は現行の v0.2.5 リリース計画を参照してください。"
+msgid "This patch improves the reliability of scientific-data I/O and reduces unnecessary work in several read and merge paths. It adds no public API, dependency, or storage schema. Tested values, dtypes, axes, and units are preserved except for the explicitly described behavior for unselected native DTTXML payloads and concurrent SDB writes."
+msgstr "このパッチリリースでは、科学データの I/O の信頼性を高め、複数の読み込み・結合経路で不要な処理を減らします。公開 API、依存関係、保存スキーマは追加しません。未選択のネイティブ DTTXML ペイロードと同時書き込み中の SDB について明記した挙動を除き、検証済みの値、dtype、軸、単位を維持します。"
 
 #: ../../../CHANGELOG.md
-msgid "**NetCDF4 matrices and axes**: Reject malformed matrix topology, unsafe heterogeneous dtype conversion, and irregular legacy time axes; retain cell units in supported matrix writes and legacy reads."
-msgstr "**NetCDF4 の行列と軸**：不正な行列構造、値が失われる異種 dtype 変換、および旧形式の不規則な時間軸を拒否します。対応する行列の書き込みと旧形式の読み込みでは、セルの単位を保持します。"
+msgid "Fixed"
+msgstr "修正"
 
 #: ../../../CHANGELOG.md
-msgid "**Zarr values and metadata**: Retain tested integer and complex samples, axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes in supported stores."
-msgstr "**Zarr の値とメタデータ**：検証済みの整数値と複素数値、軸、単位を保持します。対応するストアでは、値が失われる混合 dtype 変換と整合しない軸を拒否します。"
+msgid "**NetCDF4 matrices**: Preserve cell units and axes for supported matrix layouts. Reject malformed matrix structure, unsafe mixed-dtype conversion, and irregular legacy time axes instead of returning ambiguous data."
+msgstr "**NetCDF4 の行列**：対応する行列レイアウトではセルの単位と軸を保持します。不正な行列構造、安全でない混合 dtype 変換、および曖昧なデータを返すことになる旧形式の不規則な時間軸を拒否します。"
 
 #: ../../../CHANGELOG.md
-msgid "**HDF5 manifest-backed collections**: Reject unreadable, missing, or substituted payloads while preserving tolerant manifest-free discovery."
-msgstr "**HDF5 のマニフェスト付きコレクション**：読めない、欠落した、または差し替えられたペイロードを拒否します。マニフェストのない場合の探索は従来どおり許容します。"
+msgid "**Zarr values and metadata**: Preserve tested integer and complex samples, axes, and units. Reject unsafe mixed-dtype conversion and inconsistent axes."
+msgstr "**Zarr の値とメタデータ**：検証済みの整数・複素数サンプル、軸、単位を保持します。安全でない混合 dtype 変換と整合しない軸を拒否します。"
 
 #: ../../../CHANGELOG.md
-msgid "**TDMS and GL500 GBD validation**: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope."
-msgstr "**TDMS と GL500 GBD の検証**：波形間隔が欠落または不正な TDMS データと、検証済みファームウェアの範囲で必須ヘッダー項目が不正な GL500 データを拒否します。"
+msgid "**HDF5 collections**: Manifest-backed reads reject missing, unreadable, or substituted payloads. Manifest-free discovery remains tolerant."
+msgstr "**HDF5 コレクション**：マニフェスト付きの読み込みでは、ペイロードの欠落、読み込み不能、差し替えを拒否します。マニフェストなしの探索は従来どおり許容します。"
 
 #: ../../../CHANGELOG.md
-msgid "**Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance."
-msgstr "**音声形式のレジストリのタグ**：取得できた WAV と FLAC のタグ情報を出所情報に保持します。"
+msgid "**HDF5 histogram collections**: `HistogramDict` and `HistogramList` still write each entry as a group containing `values` and `edges`, even when `layout=\"dataset\"` is requested. A true dataset-per-entry histogram format is not established; the group-based layout is the one covered for these collections."
+msgstr "**HDF5 ヒストグラムコレクション**：`layout=\"dataset\"` を指定しても、`HistogramDict` と `HistogramList` は各要素を `values` と `edges` を含むグループとして書き込みます。要素ごとに dataset を使うヒストグラム形式は確立されていません。これらのコレクションで検証対象となっているのはグループ形式です。"
 
 #: ../../../CHANGELOG.md
-msgid "**Optional backends**: Supported public Zarr and NetCDF4 routes raise a backend-specific `ImportError` when the required package is absent."
-msgstr "**オプションのバックエンド**：対応する公開 Zarr 経路と NetCDF4 経路では、必要なパッケージがない場合にバックエンド固有の `ImportError` を送出します。"
+msgid "**TDMS and GL500 GBD files**: Reject missing or invalid waveform increments and malformed required GL500 header fields for the characterized firmware."
+msgstr "**TDMS と GL500 GBD ファイル**：特性を確認したファームウェアの範囲で、波形増分の欠落や不正、および必須 GL500 ヘッダーフィールドの不正を検出して拒否します。"
 
 #: ../../../CHANGELOG.md
-msgid "Internal performance work (release qualification pending)"
-msgstr "内部性能作業（リリース認定待ち）"
+msgid "**WAV and FLAC metadata**: Retain available audio tags in provenance."
+msgstr "**WAV と FLAC のメタデータ**：取得できる音声タグを来歴情報に保持します。"
 
 #: ../../../CHANGELOG.md
-msgid "**Multi-source merge (#582)**: Append each input once. The frozen wheel comparison preserves all 15 public result fingerprints and reduces non-inplace append calls from 63 to zero on the 64-input fixture; warm wall and CPU pass the predeclared noise-aware gate. No peak-memory improvement is claimed."
-msgstr "**複数ソースの結合（#582）**：各入力を1回ずつ追加します。凍結 wheel の比較では公開結果の fingerprint 15件を維持し、64入力の fixture における非 inplace の append 呼び出しを63回から0回に減らしました。warm wall と CPU は事前に定めたノイズを考慮した基準を満たします。ピークメモリの改善は主張しません。"
+msgid "**Optional I/O backends**: Supported Zarr and NetCDF4 routes identify a missing optional package with a backend-specific `ImportError`."
+msgstr "**オプションの I/O バックエンド**：対応する Zarr と NetCDF4 の経路では、任意パッケージがない場合にバックエンド固有の `ImportError` を送出します。"
 
 #: ../../../CHANGELOG.md
-msgid "**Single-channel WAV dispatch (#583)**: Avoid constructing the unselected channel's `TimeSeries` after the backend read. All 28 public result fingerprints match the frozen baseline; the large fixture's unselected construction count falls from one to zero. The SciPy backend still reads the full interleaved payload."
-msgstr "**単一チャネル WAV の振り分け（#583）**：バックエンドでの読み込み後、未選択チャネルの `TimeSeries` を構築しません。公開結果の fingerprint 28件は凍結 baseline と一致し、大きい fixture での未選択チャネルの構築回数は1回から0回になりました。SciPy バックエンドはインターリーブされたペイロード全体を引き続き読み込みます。"
+msgid "**CSV frequency-series reads**: Keep the frequency axis correct for supported two-column inputs, including nonuniform frequency spacing."
+msgstr "**CSV の周波数系列読み込み**：対応する2列入力では、不均一な周波数間隔を含めて周波数軸を正しく保ちます。"
 
 #: ../../../CHANGELOG.md
-msgid "**CSV reader and internal writer (#585)**: Reduce general parser work, push down supported column selection while retaining full-file validation, and stream output from the internal enhanced `write_timeseries_csv` helper. Public `TimeSeries.write(format=\"csv\")` uses GWpy's writer and is outside this writer performance claim. Both explicit-format and `.csv` auto-detected two-column `FrequencySeries` fast paths remain covered, including the nonuniform-frequency-axis contract. Frozen wheel evidence preserves 21 public fingerprints, and the measured general and selected CSV fixtures improve in wall time; the internal writer preserves bytes under fixed encoding and newline conditions."
-msgstr "**CSV 読み込みと内部 writer（#585）**：一般のパーサー処理を減らし、全ファイルの検証を維持しつつ対応する列選択を読み込みへ反映し、内部の拡張 `write_timeseries_csv` helper の出力をストリーム化します。公開 `TimeSeries.write(format=\"csv\")` は GWpy の writer を使い、この書き込み性能の主張には含めません。明示的な形式指定と `.csv` 自動判別の両方で、2列の `FrequencySeries` 高速経路と不均一な周波数軸の契約を維持します。凍結 wheel の証拠では公開 fingerprint 21件を維持し、計測した一般および選択 CSV fixture の wall time が改善しました。固定の encoding と改行条件では内部 writer の書き込みバイト列を維持します。"
+msgid "Read behavior"
+msgstr "読み込み動作"
 
 #: ../../../CHANGELOG.md
-msgid "**WIN decoder (#518)**: Use NumPy integer intermediates while preserving 12 bit-exact public fingerprints. The measured per-sample append count falls from 4,116 to zero and warm CPU passes the noise-aware gate."
-msgstr "**WIN デコーダー（#518）**：NumPy の整数中間値を使い、公開 fingerprint 12件の bit 単位の一致を維持します。計測したサンプルごとの append 回数は4,116回から0回になり、warm CPU はノイズを考慮した基準を満たします。"
+msgid "**Native DTTXML selection**: Reads using the native parser can skip decoding payloads wholly outside an accepted selection. XML structure and selected data remain validated; warnings and decode errors confined to omitted payloads are not surfaced. The external `dttxml` route is unchanged."
+msgstr "**ネイティブ DTTXML の選択読み込み**：ネイティブパーサーを使う読み込みでは、受け入れ済みの選択範囲から完全に外れたペイロードの decode を省略できます。XML構造と選択データの検証は引き続き行い、省略されたペイロードだけに起因する警告や decode error は表面化しません。外部 `dttxml` 経路は変更しません。"
 
 #: ../../../CHANGELOG.md
-msgid "**Native DTTXML PSD selection (#589)**: Large native PSD reads skip fully unselected payload decode, reducing measured Linux peak PSS by 19.63% with zero unselected decoded bytes. Small files retain the old parser. Large warm wall time increases 12.46% on the measured fixture; cold time is comparable. The scoped warning exception below remains subject to human approval."
-msgstr "**ネイティブ DTTXML PSD 選択（#589）**：大きいネイティブ PSD の読み込みでは完全に未選択のペイロードの decode を省き、未選択の decode バイト数を0にして、計測した Linux のピーク PSS を19.63%削減します。小さいファイルは従来のパーサーを使います。計測した fixture では大きい入力の warm wall time が12.46%増加し、cold time は同程度です。以下の限定的な警告の例外には、人による承認がなお必要です。"
+msgid "**SDB during concurrent writes**: Validation and selected-data reads use one SQLite snapshot. If another process commits during a read, the result comes from one consistent snapshot instead of mixing data from different points in time."
+msgstr "**同時書き込み中の SDB**：検証と選択データの読み込みには、同一の SQLite snapshot を使います。別プロセスが読み込み中に commit した場合も、異なる時点のデータを混在させず、一貫した snapshot の結果を返します。"
 
 #: ../../../CHANGELOG.md
-msgid "**GWF scalability (#588)**: Retain the R8 serial optimization. The optional parallel patch is deferred because its broad structural and valid process-tree PSS inclusion gates remain unmet. Earlier measurements and the single spawn-import diagnostic do not qualify the final source."
-msgstr "**GWF の拡張性（#588）**：R8 の直列最適化を保持します。任意の並列パッチは、広範な構造検証と有効なプロセスツリー PSS の収録条件が未達のため延期します。過去の計測や単独の spawn-import 診断は、最終ソースの認定にはなりません。"
+msgid "Performance and resource use"
+msgstr "性能とリソース使用量"
 
 #: ../../../CHANGELOG.md
-msgid "**SDB selected windows (#585)**: For an eligible 4,096-row SQLite source, full-source validation and the selected payload query share one read transaction while only 512 requested payload rows enter a DataFrame. Static-source public fingerprints match B1. The two small selected-read timing batches do not establish a regression under the frozen noise-aware gate, but are inconclusive for speed; no wall-time or PSS improvement is claimed. TDMS unselected payload reads are already zero in B1, so that subroute has no new performance claim."
-msgstr "**SDB の選択 window（#585）**：対象となる4,096行の SQLite ソースでは、全ソースの検証と選択ペイロードの query が1つの読み込み transaction を共有し、要求された512行のペイロードだけを DataFrame に格納します。静的ソースの公開 fingerprint は B1 と一致します。小さい選択読み込みの timing は独立した2 batch とも、凍結済みのノイズを考慮した基準で退行を立証しませんでしたが、高速化については結論を出せません。wall time や PSS の改善は主張しません。TDMS の未選択ペイロードの読み込みは B1 ですでに0回のため、この経路には新たな性能上の主張はありません。"
+msgid "Multi-source time-series merging and selected CSV, WAV, WIN, and NetCDF paths avoid some repeated parsing, object creation, or array copying while preserving tested public results. The measured benefit varies by workload; these changes do not promise a general speedup."
+msgstr "複数ソースの時系列結合と選択された CSV、WAV、WIN、NetCDF の経路では、重複する解析、オブジェクト生成、配列コピーの一部を避けながら、検証済みの公開結果を維持します。計測上の効果はワークロードによって異なり、全般的な高速化は保証しません。"
 
 #: ../../../CHANGELOG.md
-msgid "**Dtype-preserving copy reduction (#586)**: The frozen B-X comparison (baseline freeze commit `836e6f38`, candidate source `913ab6c77`, evidence commit `26ae634`, and append-only gate correction `bf258`) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload `ndarray.astype` calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` and sibling `candidate-v1-913ab6c-interpretation-v2/README.md`."
-msgstr "**dtype を保つコピー削減（#586）**：凍結済み B-X 比較（baseline freeze commit `836e6f38`、candidate source `913ab6c77`、evidence commit `26ae634`、追記のみの判定補正 `bf258`）では、公開結果の11/11 fingerprint がすべて一致し、dtype、値、警告に変化はありません。監査対象の全 payload に対する source-site `ndarray.astype` 呼び出しは ATS32 と ATS64 で各1回から0回に、16セルの NetCDF matrix で32回から0回になりました。測定 fixture の NetCDF warm wall time と CPU time の中央値は33.23%改善しました。ATS の wall/CPU と全 PSS 測定値は参考証拠にとどまり、改善は主張しません。補足の小入力3件はすべて非退行基準を満たしました。リリース適格性確認は未完了です。証拠は `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` および同階層の `candidate-v1-913ab6c-interpretation-v2/README.md` にあります。"
+msgid "Single-channel WAV selection avoids creating an unused channel object after decoding. The audio backend still reads the full interleaved file."
+msgstr "単一チャネルの WAV 選択では、デコード後に使用しないチャネルオブジェクトを作成しません。音声バックエンドはインターリーブされたファイル全体を引き続き読み込みます。"
 
 #: ../../../CHANGELOG.md
-msgid "**Range push-down (#584)**: The nine-path candidate-A overlay is deferred. Its primary performance gate remains unmet, and the new full 72-command campaign was not launched. Accepted physical-fetch and scoped remote Zarr results do not replace that gate."
-msgstr "**範囲指定の読出し（#584）**：9パスの candidate-A 追加変更を延期します。主要な性能基準は未達で、新たな72コマンドの全計測は開始していません。受け入れ済みの物理読出しと限定的な remote Zarr の結果は、この基準の代わりにはなりません。"
+msgid "On one measured large native DTTXML PSD fixture, peak memory was `19.6%` lower while warm processing time was `12.5%` higher; cold processing time was comparable. This is a workload-specific memory/throughput tradeoff."
+msgstr "計測した大規模なネイティブ DTTXML PSD fixture 1件では、ピークメモリが`19.6%`低下する一方、warm 処理時間は`12.5%`増加し、cold 処理時間は同程度でした。これは特定ワークロードにおけるメモリと処理速度のトレードオフです。"
 
 #: ../../../CHANGELOG.md
-msgid "**WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred."
-msgstr "**WIN とコピーの削減（#518、#586）**：公開 dtype と保存値を維持する NumPy ベースの WIN decode とコピー削減のみを含めます。Numba と残りの #518/#586 作業は延期します。"
-
-#: ../../../CHANGELOG.md
-msgid "**Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the reviewed baseline. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This proposed exception requires fresh human scientific/data-model approval bound to final `S` and does not expand #611's completely disjoint plain-HDF5-window safety exception."
-msgstr "**ネイティブ DTTXML の未選択ペイロード例外（#589）**：すでに受け入れている selector をパーサーで使うことで、完全に未選択のネイティブパーサーペイロードだけから生じる警告と decode error を抑制できます。XML 構造エラーと選択ペイロードの挙動は、レビュー対象の baseline と同等に保つ必要があります。外部 `dttxml` 経路は従来どおりで、性能上の主張の対象外です。この提案中の例外には最終 `S` に結び付いた新たな人による科学・データモデル承認が必要であり、#611 の完全に非交差な通常 HDF5 window に限る安全性例外を広げません。"
-
-#: ../../../CHANGELOG.md
-msgid "**SDB concurrent-write snapshot correction (#585)**: The proposed exception is limited to differences caused when a WAL writer commits after the reader pins one snapshot for validation and payload retrieval. It requires fresh human scientific/data-model approval bound to final `S`. The canonical release plan retains the historical matrix and required evidence; this changelog does not grant exception authority or claim final-source qualification. No other format gains a skipped-payload exception."
-msgstr "**SDB 同時書き込みスナップショット修正（#585）**：提案中の例外は、reader が検証とペイロード取得のために1つの snapshot を固定した後で WAL writer が commit した場合に生じる差異に限られます。最終 `S` に結び付いた新たな人による科学・データモデル承認が必要です。正規のリリース計画では履歴 matrix と必要な証拠を保持します。この変更履歴は例外の権限を付与せず、最終ソースの認定も主張しません。ほかの形式に未選択ペイロードを省く例外は認めません。"
-
-#: ../../../CHANGELOG.md
-msgid "**Excluded**: #587, #590, and #519 are outside v0.2.5."
-msgstr "**対象外**：#587、#590、#519 は v0.2.5 の対象外です。"
-
-#: ../../../CHANGELOG.md
-msgid "The 2026-09-27 S/R, 2026-09-28 S2/R2, and later September candidate records are historical evidence only. S3's scientific review approved its scoped dispositions, but its documentation review held that source because ROADMAP still described S2/R2 as current. S4's scientific review approved the bounded dispositions, but its documentation review held that source because the plan linked to a nonexistent pre-qualification path. S5's scientific and documentation reviews approved that source, but its release-security review held an incomplete generated-evidence whitespace exception. S7 had no R7 or owner approval. The September 29 record for reviewed source `9db47fe283052f0a8e45f94fb548f59b596bcfb9` and its approval are historical. The current cycle requires three fresh reviews and separate human approval bound to its own final `S`, followed by qualification of exact `R` before release GO."
-msgstr "2026-09-27 の S/R、2026-09-28 の S2/R2、および9月後半の候補記録は履歴証拠に限られます。S3 の科学・データモデルレビューは限定された処置を承認しましたが、ROADMAP が S2/R2 を現行として記していたため文書レビューはそのソースを保留しました。S4 の科学・データモデルレビューは範囲を定めた処置を承認しましたが、計画書が事前認定証拠の存在しないパスを指していたため文書レビューはそのソースを保留しました。S5 の科学・データモデルおよび文書レビューはそのソースを承認しましたが、release-security レビューは生成証拠の空白例外が不完全なため保留しました。S7 には R7 も責任者承認もありません。レビュー対象ソース `9db47fe283052f0a8e45f94fb548f59b596bcfb9` の9月29日記録とその承認は履歴扱いです。現行サイクルでは、独自の最終 `S` に結び付いた3つの新たなレビューと別個の人による承認を行い、その後、リリース GO 前に正確な `R` を認定する必要があります。"
+msgid "On one measured multi-cell NetCDF fixture, warm wall and CPU time medians improved about 33% after reducing full-array copies. Results depend on input size and format; no performance change is claimed for other paths."
+msgstr "計測した複数セルの NetCDF fixture 1件では、全配列のコピー削減後、warm wall time と CPU time の中央値が約33%改善しました。結果は入力サイズと形式に左右され、他の経路の性能変化は主張しません。"
 
 #: ../../../CHANGELOG.md
 msgid "[0.2.4] - 2026-09-26"
@@ -1633,7 +1617,7 @@ msgid ""
 "and `overlap` instead of defaulting to the constant `39`, which bore no relation to the data. The"
 " count is the number of periodogram segments GWpy averages per column, which is *not* `dt * df` "
 "whenever the segments overlap: GWpy chunks the series into `nstride + noverlap` samples, so "
-"`rayleigh_test()`'s default path -- which resolves `overlap=None` to the recommended 50% for the "
+"`rayleigh_test()`'s default path -- which resolves `overlap=None` to the recommended `50%` for the "
 "default hann window -- produces twice `dt * df`. Fixing only the null distribution above would "
 "have left the default path *worse* calibrated than before, because the stale `39` happened to "
 "compensate for the wrong distribution shape at some configurations. `n_samples` may still be "
@@ -1644,7 +1628,7 @@ msgstr ""
 "**統計**: `TimeSeries.rayleigh_test()` は、データに関係のない定数 `39` "
 "をデフォルトとするのではなく、`fftlength`、`stride`、`overlap` から `n_samples` を導出するようになりました。カウントは、GWpy "
 "が列ごとに平均するピリオドグラム セグメントの数であり、セグメントが重複する場合は常に `dt * df` ではありません。GWpy はシリーズを `nstride + noverlap` "
-"サンプルに分割するため、`rayleigh_test()` のデフォルトはパス -- `overlap=None` をデフォルトのハン ウィンドウに推奨される 50% に解決します -- は "
+"サンプルに分割するため、`rayleigh_test()` のデフォルトはパス -- `overlap=None` をデフォルトのハン ウィンドウに推奨される `50%` に解決します -- は "
 "`dt * df` を 2 回生成します。上記のヌル分布のみを修正すると、デフォルト パスが以前より *悪い* キャリブレーションのままになります。これは、一部の構成で古い `39` "
 "が偶然間違った分布形状を補正したためです。 `n_samples` は、下位互換性のために明示的に渡すことができます。という値派生したものと一致しない場合は、`UserWarning` "
 "が発行されます。デフォルト値が変更されたため、`inspect.signature()` は異なるデフォルト (#506) を報告することに注意してください。"
@@ -1653,15 +1637,15 @@ msgstr ""
 #, no-python-format
 msgid ""
 "**statistics**: `TimeSeries.rayleigh_test()` now raises `ValueError` when `overlap` resolves to "
-"anything other than `0` or GWpy's recommended overlap for the window (50% for the default hann), "
-"allowing one sample of slack for the truncating seconds-to-samples conversion. At 75% overlap "
-"GWpy previously returned without error or warning while using about 36% of the data, *and* the "
+"anything other than `0` or GWpy's recommended overlap for the window (`50%` for the default hann), "
+"allowing one sample of slack for the truncating seconds-to-samples conversion. At `75%` overlap "
+"GWpy previously returned without error or warning while using about `36%` of the data, *and* the "
 "per-segment powers stop being even approximately i.i.d. exponential there, so no segment-count "
 "correction can make the null distribution apply (#506)."
 msgstr ""
-"**統計**: `overlap` が `0` または GWpy が推奨するウィンドウのオーバーラップ (デフォルトのハンの 50%) "
+"**統計**: `overlap` が `0` または GWpy が推奨するウィンドウのオーバーラップ (デフォルトのハンの `50%`) "
 "以外に解決された場合、`TimeSeries.rayleigh_test()` は `ValueError` を生成するようになり、切り捨てられる秒からサンプルへの変換に 1 "
-"サンプルのスラックが許可されます。 75% のオーバーラップでは、GWpy はデータの約 36% を使用しながらエラーや警告なしで返され、*および* "
+"サンプルのスラックが許可されます。 `75%` のオーバーラップでは、GWpy はデータの約 `36%` を使用しながらエラーや警告なしで返され、*および* "
 "セグメントごとのパワーは均等でなくなりました。約内径指数関数的であるため、セグメント数の補正を行わないとヌル分布を適用できません (#506)。"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:607 92fc4e46f5184f2aab06d68d1f2e4d65
@@ -1671,16 +1655,16 @@ msgid ""
 " even, the Nyquist bin as `NaN`, and accepts an `nfft=` keyword so the Nyquist bin can be "
 "identified. A real-valued input's DC and Nyquist FFT coefficients are purely real, so their power"
 " follows chi2_1 rather than an exponential; scoring them against the exponential null fired on "
-"pure Gaussian noise about 77% of the time at nominal `alpha=0.05`, which alone pinned "
-"`to_segments()` near a 100% veto rate. An odd FFT length has no exact Nyquist bin and its last "
+"pure Gaussian noise about `77%` of the time at nominal `alpha=0.05`, which alone pinned "
+"`to_segments()` near a `100%` veto rate. An odd FFT length has no exact Nyquist bin and its last "
 "one-sided bin is left scored. This mirrors the DC/Nyquist handling added to "
 "`compute_student_t_nu()` in v0.1.11 (#465). Recovering detection power at these bins with a "
 "chi2_1 null is left for a future release (#506)."
 msgstr ""
 "**統計**: `rayleigh_pvalue()` は DC ビンを報告し、サンプルの FFT 長が偶数の場合はナイキスト ビンを `NaN` として報告し、ナイキスト "
 "ビンを識別できるように `nfft=` キーワードを受け入れるようになりました。実数値入力の DC 係数とナイキスト FFT 係数は純粋に実数であるため、そのパワーは指数関数ではなく "
-"chi2_1 に従います。約 77% の確率で純粋なガウス ノイズに対して発生した指数ヌルに対してスコアを付けます。名目上の `alpha=0.05` で、これだけでも "
-"`to_segments()` の拒否権率が 100% 近くに固定されています。奇数の FFT 長には正確なナイキスト "
+"chi2_1 に従います。約 `77%` の確率で純粋なガウス ノイズに対して発生した指数ヌルに対してスコアを付けます。名目上の `alpha=0.05` で、これだけでも "
+"`to_segments()` の拒否権率が `100%` 近くに固定されています。奇数の FFT 長には正確なナイキスト "
 "ビンがなく、最後の片側ビンがスコアリングされたままになります。これは、v0.1.11 (#465) で `compute_student_t_nu()` に追加された "
 "DC/ナイキスト処理を反映しています。 chi2_1 null を使用してこれらのビンでの検出パワーを回復することは、将来のリリースに残されています (#506)。"
 
@@ -1689,7 +1673,7 @@ msgstr ""
 msgid ""
 "**statistics**: `TimeSeries.rayleigh_spectrogram()` now derives its own per-segment averaging "
 "instead of delegating to GWpy's `rayleigh()`, which advances segment starts by `fftlength - "
-"overlap` but counts segments using `overlap`. Those agree only at exactly 50% overlap, so for an "
+"overlap` but counts segments using `overlap`. Those agree only at exactly `50%` overlap, so for an "
 "odd FFT length -- where the recommended Hann overlap is not `nfft // 2` -- or for any other "
 "explicit overlap, GWpy omits valid segments or requests short ones. The count and the slice "
 "starts now come from the same hop. **This changes the reported statistic values themselves**, not"
@@ -1701,7 +1685,7 @@ msgid ""
 msgstr ""
 "**統計**: `TimeSeries.rayleigh_spectrogram()` は、GWpy の `rayleigh()` "
 "に委任するのではなく、独自のセグメントごとの平均を取得するようになりました。これにより、セグメントの開始が `fftlength - overlap` によって進みますが、`overlap` "
-"を使用してセグメントがカウントされます。これらは正確に 50% のオーバーラップでのみ一致するため、奇数の FFT 長の場合 (推奨されるハン オーバーラップが `nfft // 2` "
+"を使用してセグメントがカウントされます。これらは正確に `50%` のオーバーラップでのみ一致するため、奇数の FFT 長の場合 (推奨されるハン オーバーラップが `nfft // 2` "
 "ではない場合)、またはその他の明示的なオーバーラップの場合、GWpy は有効なセグメントを省略するか、短いセグメントを要求します。のcount "
 "とスライスの開始は同じホップから行われるようになりました。 **これにより、正確にこれらの構成で、`gwpy` と GWexpy `<=v0.1.11` の両方に関連して、統計値から導出された "
 "p 値だけでなく、報告される統計値自体が変更されます**。 `rayleigh_test()` の推奨オーバーラップ パスは変更されていません。直接の "
@@ -1738,12 +1722,12 @@ msgstr "既知の制限事項"
 msgid ""
 "**statistics**: `to_segments()` still applies no multiple-comparison correction -- it flags a "
 "time when *any* frequency bin has `p < alpha`. With correctly calibrated p-values and 63 scored "
-"bins this vetoes about 96% of times at the default `alpha=0.05`, so the above is a fix to per-bin"
+"bins this vetoes about `96%` of times at the default `alpha=0.05`, so the above is a fix to per-bin"
 " calibration and **not** a fix to spurious vetoes. Choose `alpha` accordingly, or restrict the "
 "frequency range."
 msgstr ""
 "**統計**: `to_segments()` は依然として多重比較補正を適用しません。*任意の* 周波数ビンに `p < alpha` "
-"があるときにフラグを立てます。正しくキャリブレーションされた p 値と 63 のスコア付きビンでは、デフォルトの `alpha=0.05` で約 96% "
+"があるときにフラグを立てます。正しくキャリブレーションされた p 値と 63 のスコア付きビンでは、デフォルトの `alpha=0.05` で約 `96%` "
 "の確率で拒否されるため、上記はビンごとのキャリブレーションに対する修正であり、偽の拒否に対する修正ではありません**。それに応じて `alpha` を選択するか、周波数範囲を制限します。"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:653 f78d65f08e3c4970b0bb3879c95dc7f5
