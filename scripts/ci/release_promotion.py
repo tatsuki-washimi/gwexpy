@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
 import re
@@ -314,6 +315,40 @@ def _safe_filename(value: object) -> bool:
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise PromotionManifestError(message)
+
+
+def _parse_api_timestamp(value: object, field: str) -> datetime.datetime:
+    _require(isinstance(value, str), f"missing or invalid timestamp: {field}")
+    try:
+        parsed = datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise PromotionManifestError(f"invalid timestamp: {field}") from exc
+    _require(
+        parsed.tzinfo is not None and parsed.utcoffset() is not None,
+        f"timestamp must include a UTC offset: {field}",
+    )
+    return parsed.astimezone(datetime.UTC)
+
+
+def _validate_artifact_retention(
+    record: Mapping[str, Any],
+    run_started_at: datetime.datetime,
+    policy: Mapping[str, Any],
+) -> None:
+    created_at = _parse_api_timestamp(record.get("created_at"), "created_at")
+    expires_at = _parse_api_timestamp(record.get("expires_at"), "expires_at")
+    _require(
+        expires_at - run_started_at
+        >= datetime.timedelta(
+            seconds=policy["expires_at_after_run_started_at_seconds"]
+        ),
+        "artifact expiry must be at least 90 days after workflow run start",
+    )
+    _require(
+        expires_at - created_at
+        >= datetime.timedelta(seconds=policy["expires_at_after_created_at_seconds"]),
+        "artifact expiry must leave at least 89 days 23 hours after creation",
+    )
 
 
 def validate_manifest(
@@ -1477,7 +1512,6 @@ def verify_tag_candidate(
 
 def finalize_candidate(root: Path, version: str, output: Path) -> None:
     """Read existing current-run artifacts by ID and emit one validated manifest."""
-    import datetime
     import os
     import tempfile
 
@@ -1494,6 +1528,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
         run["event"] == "workflow_dispatch" and run["run_attempt"] == 1,
         "candidate must be a first-attempt dispatch",
     )
+    run_started_at = _parse_api_timestamp(run.get("run_started_at"), "run_started_at")
     _require(
         run["head_sha"] == os.environ["GITHUB_WORKFLOW_SHA"], "workflow SHA mismatch"
     )
@@ -1547,6 +1582,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
         repository, token, f"actions/runs/{run_id}/artifacts", "artifacts"
     )
     naming = contract["promotion"]["artifact_naming"]
+    retention_policy = contract["promotion"]["artifact_retention"]
     required = {"payload": naming["payload_prefix"] + source}
     required.update(
         {
@@ -1580,17 +1616,7 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
             }
             api.update(artifact_id=record["id"], run_id=record["workflow_run"]["id"])
             _require(api["run_id"] == run_id, "artifact belongs to another run")
-            if role.startswith("evidence:"):
-                created = datetime.datetime.fromisoformat(
-                    record["created_at"].replace("Z", "+00:00")
-                )
-                expires = datetime.datetime.fromisoformat(
-                    record["expires_at"].replace("Z", "+00:00")
-                )
-                _require(
-                    expires - created >= datetime.timedelta(days=90),
-                    "evidence retention must be 90 days",
-                )
+            _validate_artifact_retention(record, run_started_at, retention_policy)
             request = urllib.request.Request(
                 f"https://api.github.com/repos/{repository}/actions/artifacts/{record['id']}/zip",
                 headers={"Authorization": "Bearer " + token},

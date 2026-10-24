@@ -46,7 +46,7 @@ V0114_MANIFEST = (
     / "audit-manifest-v0.1.14-release-readiness.yaml"
 )
 PROMOTION_FIXTURE = (
-    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v1.json"
+    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v2.json"
 )
 V023_MANIFEST = (
     ROOT
@@ -725,13 +725,18 @@ def test_optional_promotion_contract_is_valid_and_fully_mapped(
     )
 
     promotion = contracts.release_contract("v0.2.6")["promotion"]
-    assert promotion["schema"] == "gwexpy-release-promotion-contract-v1"
+    assert promotion["schema"] == "gwexpy-release-promotion-contract-v2"
     assert promotion["workflow_path"] == ".github/workflows/publish-release.yml"
     assert promotion["release_go"]["issue_number"] > 0
     assert promotion["release_go"]["owner_login"] == "release-owner"
     assert promotion["source_approval"] == {
         "format": "GWEXPY-SOURCE-APPROVAL-v1",
         "approver": "source-approver",
+    }
+    assert promotion["artifact_retention"] == {
+        "configured_retention_days": 90,
+        "expires_at_after_run_started_at_seconds": 90 * 24 * 60 * 60,
+        "expires_at_after_created_at_seconds": (90 * 24 * 60 * 60) - (60 * 60),
     }
     assert promotion["qualification_profile"] == "gwexpy-standard-v1"
     assert promotion["required_jobs"] == [
@@ -787,6 +792,12 @@ def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
         "format": "GWEXPY-SOURCE-APPROVAL-v2",
         "approver": "tatsuki-washimi",
     }
+    assert contract["promotion"]["schema"] == "gwexpy-release-promotion-contract-v2"
+    assert contract["promotion"]["artifact_retention"] == {
+        "configured_retention_days": 90,
+        "expires_at_after_run_started_at_seconds": 90 * 24 * 60 * 60,
+        "expires_at_after_created_at_seconds": (90 * 24 * 60 * 60) - (60 * 60),
+    }
     assert set(contract["review_lanes"]) == {
         "documentation",
         "release-security",
@@ -802,6 +813,16 @@ def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
     "mutate",
     [
         lambda p: p.pop("workflow_path"),
+        lambda p: p.pop("artifact_retention"),
+        lambda p: p["artifact_retention"].update(
+            expires_at_after_run_started_at_seconds=1
+        ),
+        lambda p: p["artifact_retention"].update(
+            expires_at_after_created_at_seconds=7772401
+        ),
+        lambda p: p["artifact_retention"].update(configured_retention_days=91),
+        lambda p: p["artifact_retention"].update(configured_retention_days=True),
+        lambda p: p["artifact_retention"].update(unexpected=1),
         lambda p: p["release_go"].update(issue_number=0),
         lambda p: p["release_go"].update(issue_number="42"),
         lambda p: p["release_go"].update(owner_login="Bad Login"),
