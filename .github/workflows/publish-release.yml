@@ -71,7 +71,7 @@ jobs:
           fi
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
@@ -162,7 +162,7 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
@@ -191,7 +191,7 @@ jobs:
           sha256sum LICENSE.txt | awk '{print $1}' > release-sidecars/LICENSE.sha256
 
       - name: Upload PyPI payload only
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: source/release-payload
@@ -200,7 +200,7 @@ jobs:
 
       - name: Upload legacy sidecars
         if: needs.verify.outputs.promotion_enabled != 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars
@@ -209,7 +209,7 @@ jobs:
 
       - name: Upload promotion distribution sidecar
         if: needs.verify.outputs.promotion_enabled == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars/distribution-sha256.json
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload promotion license sidecar
         if: needs.verify.outputs.promotion_enabled == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars/LICENSE.sha256
@@ -246,18 +246,18 @@ jobs:
           path: control
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Download PyPI payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -314,7 +314,7 @@ jobs:
           PY
 
       - name: Upload fixed-name smoke report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-smoke-${{ needs.verify.outputs.source_sha }}-python-${{ matrix.python-version }}-${{ matrix.distribution }}
           path: ${{ runner.temp }}/python-${{ matrix.python-version }}-${{ matrix.distribution }}.json
@@ -366,7 +366,7 @@ jobs:
 
       - name: Set up Python
         if: matrix.runtime == 'pip'
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ matrix.python }}
 
@@ -380,13 +380,13 @@ jobs:
           generate-run-shell: false
 
       - name: Download PyPI payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -565,7 +565,7 @@ jobs:
             --junit "$JUNIT"
 
       - name: Upload qualification cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/qualification-report/qualification.json
@@ -590,18 +590,18 @@ jobs:
 
       - name: Set up Python
         if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.promotion_enabled == 'true'
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
       - name: Download all qualification cell evidence
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-qualification-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/qualification-cells
 
       - name: Download detached sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -724,7 +724,7 @@ jobs:
             --output "$OUTPUT"
 
       - name: Upload qualification manifest
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ steps.qualification_contract.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/qualification-manifest.json
@@ -755,18 +755,18 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
       - name: Download the candidate payload and sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached candidate manifest
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -844,7 +844,7 @@ jobs:
             --report "$REPORT"
 
       - name: Upload DiagGUI cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/diaggui-report/diaggui-qualification.json
@@ -873,20 +873,20 @@ jobs:
 
       - name: Set up Python for DiagGUI aggregate
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
       - name: Download all DiagGUI cell evidence
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/diaggui-cells
 
       - name: Download detached DiagGUI candidate manifest
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -909,7 +909,7 @@ jobs:
 
       - name: Upload DiagGUI qualification manifest
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-diaggui-qualification-evidence-v1' || (needs.verify.outputs.version == '0.2.4' && 'v024-diaggui-qualification-evidence' || 'v025-diaggui-qualification-evidence') }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/diaggui-qualification-manifest.json
@@ -944,18 +944,18 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ matrix.python }}
 
       - name: Download same-run candidate payload
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached candidate manifest
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -999,7 +999,7 @@ jobs:
             --artifact "$artifact" --junit "$JUNIT" --report "$REPORT"
 
       - name: Upload cross-format I/O cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/cross-format-io-report/cross-format-io.json
@@ -1028,14 +1028,14 @@ jobs:
 
       - name: Download all I/O cell reports
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/cross-format-io-cells
 
       - name: Download detached candidate manifest
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -1052,7 +1052,7 @@ jobs:
 
       - name: Upload I/O qualification manifest
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-cross-format-io-evidence-v1' || 'v025-cross-format-io-evidence' }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/cross-format-io-manifest.json
@@ -1077,7 +1077,7 @@ jobs:
 
       - name: Set up historical qualification Python
         if: needs.verify.outputs.version == '0.2.5'
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
@@ -1093,14 +1093,14 @@ jobs:
 
       - name: Download exact candidate payload
         if: needs.verify.outputs.version == '0.2.5'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached payload manifest
         if: needs.verify.outputs.version == '0.2.5'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -1135,7 +1135,7 @@ jobs:
 
       - name: Upload exact-candidate historical gate evidence
         if: needs.verify.outputs.version == '0.2.5'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: v025-historical-74-gate-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/historical-74/evidence
@@ -1144,7 +1144,7 @@ jobs:
 
       - name: Upload failed historical regression JUnit diagnostics
         if: failure() && needs.verify.outputs.version == '0.2.5'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: v025-historical-74-fixed-junit-diagnostics-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/historical-74/*/fixed.xml
@@ -1170,19 +1170,19 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
 
       - name: Download detached sidecars from this run
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Download smoke reports from this run
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-smoke-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/release-smoke
@@ -1223,7 +1223,7 @@ jobs:
             --aggregate "${{ runner.temp }}/release-evidence/aggregate.json"
 
       - name: Upload 90-day integration evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-integration-evidence-v1' || needs.verify.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-evidence/aggregate.json
@@ -1253,7 +1253,7 @@ jobs:
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
       - name: Observe original immutable artifact IDs and verify their API archives
@@ -1267,7 +1267,7 @@ jobs:
             --version "${{ needs.verify.outputs.version }}" --repo-root source \
             --output "${{ runner.temp }}/promotion-manifest/promotion-manifest.json"
       - name: Upload the sole new manifest artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: release-promotion-manifest-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/promotion-manifest/promotion-manifest.json
@@ -1302,7 +1302,7 @@ jobs:
           fetch-depth: 0
           path: source
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.11"
       - name: Read the exact annotated tag record
@@ -1380,28 +1380,28 @@ jobs:
           fetch-depth: 0
           path: source
       - name: Download exact candidate artifacts by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-payload
       - name: Download exact distribution sidecar by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.distribution_sidecar_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-distribution-sidecar
       - name: Download exact license sidecar by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.license_sidecar_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-license-sidecar
       - name: Download exact promotion manifest artifact by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
@@ -1537,28 +1537,28 @@ jobs:
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Download exact candidate payload by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-payload
       - name: Download exact distribution sidecar by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.distribution_sidecar_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-distribution-sidecar
       - name: Download exact license sidecar by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.license_sidecar_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-license-sidecar
       - name: Download exact promotion manifest artifact by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
@@ -1574,7 +1574,7 @@ jobs:
           python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:LICENSE.sha256 --directory "${{ runner.temp }}/release-license-sidecar"
           python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role promotion-manifest --directory "${{ runner.temp }}/release-manifest" --manifest-sha256 "${{ needs.promotion_verify.outputs.manifest_sha256 }}"
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
         with:
           packages-dir: ${{ runner.temp }}/release-payload
 
@@ -1621,13 +1621,13 @@ jobs:
           printf 'tag_object_sha=%s\n' "$actual_tag_object_sha" >> "$GITHUB_OUTPUT"
 
       - name: Download same-run payload and sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download same-run sidecars
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
@@ -1736,13 +1736,13 @@ jobs:
       id-token: write
     steps:
       - name: Download PyPI payload only
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
         with:
           packages-dir: ${{ runner.temp }}/release-payload
 
@@ -1763,14 +1763,14 @@ jobs:
           ref: ${{ needs.verify.outputs.source_sha }}
           path: source
       - name: Download exact candidate payload by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/release-payload
       - name: Download exact promotion manifest artifact by ID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
           run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
