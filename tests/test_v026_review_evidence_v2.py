@@ -247,6 +247,7 @@ def test_v026_v2_accepts_portable_execution_environment_description(tmp_path):
     "environment",
     [
         "Linux/bash; read-only checkout at /home/reviewer/work/gwexpy.",
+        "Linux/bash; checkout:/home/reviewer/work/gwexpy.",
         r"Windows; read-only checkout at C:\Users\reviewer\gwexpy.",
         r"Linux; read-only checkout at \\build-host\work\gwexpy.",
     ],

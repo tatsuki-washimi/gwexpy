@@ -20,7 +20,7 @@ TIMESTAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 FINDING_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
 LOCAL_ABSOLUTE_PATH = re.compile(
-    r"(?<![\w:/])/(?!/)\S+|(?<![\w])(?:[A-Za-z]:[\\/]|\\\\[^\\/\s]+\\)[^\s,;]+"
+    r"(?<![\w/])/(?!/)\S+|(?<![\w])(?:[A-Za-z]:[\\/]|\\\\[^\\/\s]+\\)[^\s,;]+"
 )
 EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 MAX_FINDING_IDS = 128
