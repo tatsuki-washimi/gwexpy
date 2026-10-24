@@ -1,0 +1,34 @@
+{
+  "promotion": {
+    "schema": "gwexpy-release-promotion-contract-v1",
+    "workflow_path": ".github/workflows/publish-release.yml",
+    "release_go": {
+      "issue_number": 2468,
+      "owner_login": "release-owner"
+    },
+    "source_approval": {
+      "format": "GWEXPY-SOURCE-APPROVAL-v1",
+      "approver": "source-approver"
+    },
+    "artifact_naming": {
+      "manifest_prefix": "release-promotion-manifest-",
+      "payload_prefix": "release-payload-",
+      "sidecar_names": ["distribution-sha256.json", "LICENSE.sha256"]
+    },
+    "qualification_profile": "gwexpy-standard-v1",
+    "qualification_profiles": {
+      "gwexpy-standard-v1": {
+        "required_jobs": ["build", "cross_format_io", "cross_format_io_evidence", "diaggui_qualification", "diaggui_qualification_evidence", "evidence", "qualification_evidence", "qualify", "smoke", "verify"],
+        "evidence_schema_ids": ["gwexpy-cross-format-io-evidence-v1", "gwexpy-diaggui-qualification-evidence-v1", "gwexpy-integration-evidence-v1", "gwexpy-qualification-evidence-v1"]
+      }
+    },
+    "evidence_schemas": {
+      "gwexpy-cross-format-io-evidence-v1": "gwexpy-cross-format-io-evidence-v1",
+      "gwexpy-diaggui-qualification-evidence-v1": "gwexpy-diaggui-qualification-evidence-v1",
+      "gwexpy-integration-evidence-v1": "gwexpy-integration-evidence-v1",
+      "gwexpy-qualification-evidence-v1": "gwexpy-qualification-evidence-v1"
+    },
+    "required_jobs": ["build", "cross_format_io", "cross_format_io_evidence", "diaggui_qualification", "diaggui_qualification_evidence", "evidence", "qualification_evidence", "qualify", "smoke", "verify"],
+    "evidence_schema_ids": ["gwexpy-cross-format-io-evidence-v1", "gwexpy-diaggui-qualification-evidence-v1", "gwexpy-integration-evidence-v1", "gwexpy-qualification-evidence-v1"]
+  }
+}

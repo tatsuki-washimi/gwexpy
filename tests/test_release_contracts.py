@@ -48,6 +48,9 @@ V0114_MANIFEST = (
 PROMOTION_FIXTURE = (
     ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v2.json"
 )
+LEGACY_PROMOTION_FIXTURE = (
+    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v1.json"
+)
 V023_MANIFEST = (
     ROOT
     / "docs"
@@ -757,6 +760,20 @@ def test_optional_promotion_contract_is_valid_and_fully_mapped(
         "gwexpy-integration-evidence-v1",
         "gwexpy-qualification-evidence-v1",
     ]
+
+
+def test_v026_rejects_legacy_promotion_contract_schema(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    legacy = json.loads(LEGACY_PROMOTION_FIXTURE.read_text(encoding="utf-8"))[
+        "promotion"
+    ]
+    contracts = _load_synthetic_promotion(monkeypatch, tmp_path, legacy)
+
+    with pytest.raises(
+        contracts.ReleaseContractError, match="invalid promotion contract for v0.2.6"
+    ):
+        contracts.release_contract("v0.2.6")
 
 
 def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
