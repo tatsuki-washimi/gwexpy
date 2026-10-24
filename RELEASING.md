@@ -24,6 +24,9 @@ path ledger, scope digest, findings, report text, and report SHA-256. These
 separate executions provide review separation for an individual maintainer;
 they are not equivalent to an external research audit or three human reviews.
 The Release Owner is the required human approver.
+Execution-environment descriptions must be portable and must not include local
+absolute filesystem paths; the evidence validator rejects POSIX, drive-letter,
+and UNC paths in that field.
 
 The review evidence binds one exact source SHA and the configured Review Base.
 Its lane-by-path map must match every changed path between those commits. The

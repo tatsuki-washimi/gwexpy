@@ -229,6 +229,42 @@ def test_v026_v2_accepts_explicit_model_observation_states(tmp_path, status):
     }
 
 
+def test_v026_v2_accepts_portable_execution_environment_description(tmp_path):
+    validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
+    for entry in data["entries"]:
+        entry["execution_environment"] = (
+            "Linux/bash; independent read-only review of the exact source SHA; "
+            "clean checkout; no repository files modified."
+        )
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    result = _validate(validator, repo, contract, source_sha, path)
+
+    assert result["source_sha"] == source_sha
+
+
+@pytest.mark.parametrize(
+    "environment",
+    [
+        "Linux/bash; read-only checkout at /home/reviewer/work/gwexpy.",
+        r"Windows; read-only checkout at C:\Users\reviewer\gwexpy.",
+        r"Linux; read-only checkout at \\build-host\work\gwexpy.",
+    ],
+)
+def test_v026_v2_rejects_local_absolute_paths_in_execution_environment(
+    tmp_path, environment
+):
+    validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
+    data["entries"][0]["execution_environment"] = environment
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError,
+        match="execution environment must not contain local absolute paths",
+    ):
+        _validate(validator, repo, contract, source_sha, path)
+
+
 def test_v026_v2_recomputes_embedded_report_hash(tmp_path):
     validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
     data["entries"][0]["report"] += "changed after review\n"

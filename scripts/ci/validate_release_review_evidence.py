@@ -19,6 +19,9 @@ SHA40 = re.compile(r"^[0-9a-f]{40}$")
 TIMESTAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 FINDING_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
+LOCAL_ABSOLUTE_PATH = re.compile(
+    r"(?<![\w:/])/(?!/)\S+|(?<![\w])(?:[A-Za-z]:[\\/]|\\\\[^\\/\s]+\\)[^\s,;]+"
+)
 EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 MAX_FINDING_IDS = 128
 MAX_REVIEW_DOCUMENT_BYTES = 64 * 1024
@@ -907,6 +910,10 @@ def _validate_v026_review_evidence(
             or SHA256.fullmatch(entry["scope_digest"]) is None
         ):
             raise ReleaseReviewEvidenceError("invalid v0.2.6 review execution record")
+        if LOCAL_ABSOLUTE_PATH.search(environment):
+            raise ReleaseReviewEvidenceError(
+                "execution environment must not contain local absolute paths"
+            )
         if not _validate_v026_model_observation(entry["model_observation"]):
             raise ReleaseReviewEvidenceError(
                 "invalid model observation; unverified values must not be presented as effective"
