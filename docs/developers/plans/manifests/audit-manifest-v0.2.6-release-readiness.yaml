@@ -1,24 +1,2634 @@
 review_evidence_json: |
   {
-    "schema": "gwexpy-v026-review-evidence-v2",
-    "source_sha": "",
-    "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
     "changed_path_map": {
-      "documentation": [],
-      "release-security": [],
-      "scientific-data-model": []
+      "documentation": [
+        "CHANGELOG.md",
+        "deliverables/agent-deliverables-20261017-175223.zip",
+        "deliverables/audit-appendix-artifacts-20261017/2026-10-17-audit-appendix-stage2-crosscheck.md",
+        "deliverables/audit-appendix-artifacts-20261017/README.md",
+        "deliverables/audit-appendix-artifacts-20261017/SHA256SUMS",
+        "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2.py",
+        "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2_results.json",
+        "deliverables/audit-appendix-artifacts-20261017/pass1-population.json",
+        "deliverables/audit-appendix-artifacts-20261017/pass2-api-status.jsonl",
+        "deliverables/audit-appendix-artifacts-20261017/pass2-module-functions.txt",
+        "deliverables/audit-appendix-artifacts-20261017/pass2-population-and-dispositions.json",
+        "deliverables/audit-b-n01-n02-probes/2026-10-17-b-n01-n02-runtime-notes.md",
+        "deliverables/audit-b-n01-n02-probes/README.md",
+        "deliverables/audit-b-n01-n02-probes/b_n01_n02_probe_results.json",
+        "deliverables/audit-b-n01-n02-probes/b_n01_n02_runtime_probe.py",
+        "deliverables/audit-c-coverage-c2898762/2026-10-17-c-coverage-c2898762.md",
+        "deliverables/audit-c-coverage-c2898762/2026-10-17-c-inherited-batch1-runtime.md",
+        "deliverables/audit-c-coverage-c2898762/README.md",
+        "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762-summary.json",
+        "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762.jsonl",
+        "deliverables/audit-c-coverage-c2898762/c-coverage-probe-stats.json",
+        "deliverables/audit-c-coverage-c2898762/c-coverage-runtime-probes.jsonl",
+        "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime-summary.json",
+        "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime.jsonl",
+        "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762-summary.json",
+        "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762.jsonl",
+        "deliverables/audit-c-coverage-c2898762/c_coverage_build_inherited_priority_slice.py",
+        "deliverables/audit-c-coverage-c2898762/c_coverage_build_ledger.py",
+        "deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py",
+        "deliverables/audit-c-coverage-c2898762/c_coverage_runtime_probes.py",
+        "deliverables/audit-c-coverage-c2898762/c_inherited_batch1_runtime.py",
+        "deliverables/warnings-crosswalk-c2898762/2026-10-17-warnings-crosswalk-c2898762.md",
+        "deliverables/warnings-crosswalk-c2898762/coupling_probe_result.json",
+        "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762-summary.json",
+        "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762.jsonl",
+        "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_probe_coupling.py",
+        "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_scan.py",
+        "docs/developers/adr/0001-gui-decoupling-and-project-boundaries.md",
+        "docs/developers/design/gui/implementation_map.md",
+        "docs/developers/design/gui/reference_analysis.md",
+        "docs/developers/guides/gui_testing.md",
+        "docs/developers/guides/testing.md",
+        "docs/developers/index.rst",
+        "docs/developers/plans/2026-10-06-local-branch-refresh.md",
+        "docs/developers/plans/20261019_v0.2.6_release_plan.md",
+        "docs/developers/plans/20261022_v026_gwosc_ci_responsibility_audit.md",
+        "docs/developers/plans/manifests/2026-10-18-spectrogram2-append-docs-agent-manifest.yaml",
+        "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-a-manifest.yaml",
+        "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-b-manifest.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
+        "docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv",
+        "docs/developers/reports/2026-10-18-error-audit-issue-pr-work-crosswalk.md",
+        "docs/superpowers/plans/2026-04-17-intersphinx-offline-fix.md",
+        "docs/superpowers/plans/2026-04-17-tutorials-section-14-3-reorg.md",
+        "docs/superpowers/plans/2026-10-05-release-artifact-build-once-promote.md",
+        "docs/superpowers/specs/2026-10-04-release-artifact-build-once-promote-design.md",
+        "docs/web/en/reference/TimeSeries.md",
+        "docs/web/en/reference/TimeSeriesDict.md",
+        "docs/web/en/reference/api/gui.rst",
+        "docs/web/en/reference/api/index.rst",
+        "docs/web/en/user_guide/changelog.md",
+        "docs/web/en/user_guide/gui.md",
+        "docs/web/en/user_guide/tutorials/case_noise_budget.ipynb",
+        "docs/web/en/user_guide/tutorials/case_segment_analysis.ipynb",
+        "docs/web/en/user_guide/tutorials/intro_interop.ipynb",
+        "docs/web/ja/reference/TimeSeries.md",
+        "docs/web/ja/reference/TimeSeriesDict.md",
+        "docs/web/ja/reference/api/gui.rst",
+        "docs/web/ja/reference/api/index.rst",
+        "docs/web/ja/user_guide/changelog.md",
+        "docs/web/ja/user_guide/gui.md",
+        "docs_redesign/_static/images/commissioner-asd.png",
+        "docs_redesign/_static/images/commissioner-coherence.png",
+        "docs_redesign/_static/images/first-analysis-timeseries.png",
+        "docs_redesign/_static/images/scientific-python-asd.png",
+        "docs_redesign/about/changelog.md",
+        "docs_redesign/conf.py",
+        "docs_redesign/explanation/roadmap.md",
+        "docs_redesign/how-to/case-studies/case_noise_budget.ipynb",
+        "docs_redesign/how-to/case-studies/case_segment_analysis.ipynb",
+        "docs_redesign/how-to/gui.md",
+        "docs_redesign/how-to/index.md",
+        "docs_redesign/how-to/interop/intro_interop.ipynb",
+        "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/ecosystem.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/calibration/index.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_segment_analysis.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/gui.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/monitoring/index.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/spectral/resonance_discovery_q.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/commissioner.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/first_analysis.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/scientific_python.po",
+        "docs_redesign/reference/api/gui.rst",
+        "docs_redesign/release_status.json",
+        "docs_redesign/tutorials/commissioner.md",
+        "docs_redesign/tutorials/first_analysis.md",
+        "docs_redesign/tutorials/installation.md",
+        "docs_redesign/tutorials/scientific_python.md",
+        "release_notes/v0.2.5.md",
+        "release_notes/v0.2.6.md",
+        "tests/docs/gwosc_timeseries_inventory.json",
+        "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
+        "tests/docs/test_audit_appendix_crosscheck.py",
+        "tests/docs/test_docs_conf_runtime.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_v024_publication_status.py"
+      ],
+      "release-security": [
+        ".github/actions/setup-gwexpy/action.yml",
+        ".github/workflows/actionlint.yml",
+        ".github/workflows/docs-pages.yml",
+        ".github/workflows/docs-redesign-preview.yml",
+        ".github/workflows/nds-live.yml",
+        ".github/workflows/ops-weekly.yml",
+        ".github/workflows/post-release-qualification.yml",
+        ".github/workflows/publish-release.yml",
+        ".github/workflows/test-compat-gwpy.yml",
+        ".gitignore",
+        ".zenodo.json",
+        "CITATION.cff",
+        "RELEASING.md",
+        "pyproject.toml",
+        "requirements-dev.txt",
+        "requirements/release-build.in",
+        "requirements/release-build.txt",
+        "scripts/check_repo_hygiene.py",
+        "scripts/ci/audit_gwosc_timeseries.py",
+        "scripts/ci/bootstrap_trusted_pip.py",
+        "scripts/ci/diaggui_qualification_evidence.py",
+        "scripts/ci/integrate_release_evidence.py",
+        "scripts/ci/qualification_evidence.py",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/release_promotion.py",
+        "scripts/ci/run_gate.py",
+        "scripts/ci/v025_cross_format_io_evidence.py",
+        "scripts/ci/validate_github_release_readback.py",
+        "scripts/ci/validate_pypi_readback.py",
+        "scripts/ci/validate_release_review_evidence.py",
+        "scripts/ci/verify_release_go.py",
+        "scripts/ci/verify_release_human_approval.py",
+        "scripts/notebook_gen/prepare_docs_notebook_tree.py",
+        "scripts/validate_release.py",
+        "scripts/verify_public_examples.py",
+        "tests/fixtures/release/promotion-contract-v1.json",
+        "tests/fixtures/release/promotion-contract-v2.json",
+        "tests/fixtures/release/promotion-manifest-v1.json",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_gate_workflow_contract.py",
+        "tests/test_release_go.py",
+        "tests/test_release_human_approval.py",
+        "tests/test_release_promotion.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_v026_review_evidence_v2.py"
+      ],
+      "scientific-data-model": [
+        "environment.yml",
+        "gwexpy/_version.py",
+        "gwexpy/analysis/response.py",
+        "gwexpy/gui/AGENTS.md",
+        "gwexpy/gui/CLAUDE.md",
+        "gwexpy/gui/README.md",
+        "gwexpy/gui/__init__.py",
+        "gwexpy/gui/__main__.py",
+        "gwexpy/gui/channel_handling.md",
+        "gwexpy/gui/data_sources.py",
+        "gwexpy/gui/engine.py",
+        "gwexpy/gui/excitation/generator.py",
+        "gwexpy/gui/excitation/params.py",
+        "gwexpy/gui/loaders/__init__.py",
+        "gwexpy/gui/loaders/loaders.py",
+        "gwexpy/gui/loaders/products.py",
+        "gwexpy/gui/nds/__init__.py",
+        "gwexpy/gui/nds/audio_thread.py",
+        "gwexpy/gui/nds/buffer.py",
+        "gwexpy/gui/nds/cache.py",
+        "gwexpy/gui/nds/nds_thread.py",
+        "gwexpy/gui/nds/sim_thread.py",
+        "gwexpy/gui/nds/util.py",
+        "gwexpy/gui/plotting/__init__.py",
+        "gwexpy/gui/plotting/normalize.py",
+        "gwexpy/gui/pyaggui.py",
+        "gwexpy/gui/streaming.py",
+        "gwexpy/gui/ui/__init__.py",
+        "gwexpy/gui/ui/_tab_builders.py",
+        "gwexpy/gui/ui/channel_browser.py",
+        "gwexpy/gui/ui/excitation_manager.py",
+        "gwexpy/gui/ui/graph_panel.py",
+        "gwexpy/gui/ui/main_window.py",
+        "gwexpy/gui/ui/plot_renderer.py",
+        "gwexpy/gui/ui/tabs.py",
+        "gwexpy/timeseries/_spectral_fourier.py",
+        "gwexpy/timeseries/collections.py",
+        "tests/analysis/test_response.py",
+        "tests/conftest.py",
+        "tests/docs/gwosc_timeseries_inventory.json",
+        "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
+        "tests/docs/test_audit_appendix_crosscheck.py",
+        "tests/docs/test_docs_conf_runtime.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_v024_publication_status.py",
+        "tests/e2e/test_gui_smoke.py",
+        "tests/fixtures/release/promotion-contract-v1.json",
+        "tests/fixtures/release/promotion-contract-v2.json",
+        "tests/fixtures/release/promotion-manifest-v1.json",
+        "tests/gui/archive/README.md",
+        "tests/gui/conftest.py",
+        "tests/gui/integration/test_channel_config.py",
+        "tests/gui/integration/test_excitation_controls.py",
+        "tests/gui/integration/test_main_window_flow.py",
+        "tests/gui/integration/test_measurement_params.py",
+        "tests/gui/integration/test_pyautogui_smoke.py",
+        "tests/gui/integration/test_simulation_acquisition.py",
+        "tests/gui/integration/test_simulation_partial_channels.py",
+        "tests/gui/test_accumulator_delay.py",
+        "tests/gui/test_channel_browser_dialog.py",
+        "tests/gui/test_excitation_manager.py",
+        "tests/gui/test_gui_data_backend.py",
+        "tests/gui/test_gui_main_window.py",
+        "tests/gui/test_gui_payload_contracts.py",
+        "tests/gui/test_gui_result_tab.py",
+        "tests/gui/test_main_window_channel_browser.py",
+        "tests/gui/test_main_window_excitation_integration.py",
+        "tests/gui/test_plot_renderer.py",
+        "tests/gui/test_pyqtgraph_deleted_guard.py",
+        "tests/gui/test_visual_stability.py",
+        "tests/io/test_io_contract.py",
+        "tests/io/test_pickle_direct_io.py",
+        "tests/io/test_sdb_public_io.py",
+        "tests/io/test_wav_public_io.py",
+        "tests/nds/conftest.py",
+        "tests/nds/test_gui_nds_smoke.py",
+        "tests/nds/test_nds_channel_list_live_smoke.py",
+        "tests/nds/test_nds_thread_live_smoke.py",
+        "tests/run_gui_nds_tests.sh",
+        "tests/run_gui_tests.sh",
+        "tests/test_check_release_metadata_script.py",
+        "tests/test_diaggui_qualification_evidence.py",
+        "tests/test_gui_boundary.py",
+        "tests/test_nds_live_workflow_retirement.py",
+        "tests/test_prepare_docs_notebook_tree_output_root.py",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_pypi_readback.py",
+        "tests/test_qualification_skip_evidence.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_gate_workflow_contract.py",
+        "tests/test_release_go.py",
+        "tests/test_release_human_approval.py",
+        "tests/test_release_promotion.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_trusted_pip_bootstrap.py",
+        "tests/test_v025_cross_format_io_evidence.py",
+        "tests/test_v025_historical_gate.py",
+        "tests/test_v026_local_path_exceptions.py",
+        "tests/test_v026_review_evidence_v2.py",
+        "tests/timeseries/test_gwpy_override_terminal_compat.py"
+      ]
     },
-    "entries": [],
-    "owner_risk_decisions": [],
+    "entries": [
+      {
+        "completed_at_utc": "2026-10-24T14:50:50Z",
+        "execution_context_id": "doc2-independent-docs-s5-59be3523-3cb0-4993-9d85-02fa733a3f79",
+        "execution_environment": "Linux; Bash shell; independent read-only source review of the exact frozen Git commit in a clean checkout; standard-library static inspection and Babel catalogue parsing; no tests or builds executed.",
+        "findings": [],
+        "lane": "documentation",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Current review execution tool surface",
+          "limitations": "No independently verifiable runtime record exposes the effective model or reasoning effort for this execution. Requested settings are not proof of effective settings.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unavailable"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Release summary, ten limitations, ASD-unit disclosure, nproc constraint and dated candidate text agree with release notes; percentage markup changes preserve claims. Blob SHA-256 9252a45e66173eb4be8e531b73227515d1c9a03222de6c957934fa91fc524d7d.",
+            "path": "CHANGELOG.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "archive-inspection",
+              "structured-validation"
+            ],
+            "note": "Read all eleven archive members; CRC and safe-name checks pass; parsed structured members and compared the D ledger against B, without executing archived probes. Blob SHA-256 58fe8f35ec181ecc5c2e907563e58576cf962e8617a134ceec38ff897c8d66ba.",
+            "path": "deliverables/agent-deliverables-20261017-175223.zip",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Historical dated stage-2 report distinguishes traceability from product QA; its older optional-D instructions are superseded by the adjacent current README. Blob SHA-256 794a5dffa428c545331436b52b573ae813efad7b63964b2fd9976fc7fda61bce.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/2026-10-17-audit-appendix-stage2-crosscheck.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Current reproduction instructions require D and preserve historical output by writing a separate TMPDIR result; no release authority is asserted. Blob SHA-256 a37fc6be6f93d058f77b84ec4266f47fa3b0b2a60dd6608439dfed8f72fd3135.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/README.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Independently recomputed all eight listed file hashes; each matches. Blob SHA-256 cd786aeb8aea26affc5619afb9b59ee5b92197b305359e252615860f6c83a6c6.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/SHA256SUMS",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Read complete crosscheck source; absent/unreadable explicit D fails without fallback, matching current README and static regression cases. Blob SHA-256 e5642846d648c29e7f8a58c3babc1c5bd538fcaf1bbb6b949fe22cc33252ef62.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed result and its baseline/check structure; historical passed value is not evidence of execution on S. Blob SHA-256 bed34b973dfdbd406f415fcc1fc1e299e53d9616a7770a845f1dea4cf919439e.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2_results.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed complete population: 396 files, 2357 API rows, 277 I/O rows and 155 handlers; baseline pin is historical. Blob SHA-256 d08cae94bb1ddef548d77881301db3510948e1ebb8a042383f5e49d4bb73995f.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/pass1-population.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed every JSONL row: 3046 rows; status labels preserve static, executed and unevaluated distinctions. Blob SHA-256 cbce96adc07ec8e8b2dfd4d3706b8ccf5fb71310b8d90212c617af87d8626b84.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/pass2-api-status.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read 162 function identifiers; linked list role to historical population and crosscheck source. Blob SHA-256 86c0969bdf260670a4e1835def2d58ecdcdfcca11462f0ab64a19225887ca99c.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/pass2-module-functions.txt",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed full JSON: 155 dispositions and 2650 public rows; B/D ordered id/candidate/disposition fields and B/C handler locations agree. Blob SHA-256 7c3dfb460632080399866ca033e59cd742b49254a71a8569ea281877f7fb74bc.",
+            "path": "deliverables/audit-appendix-artifacts-20261017/pass2-population-and-dispositions.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Dated probe notes preserve observed versus contract-pending distinctions; missing-file controls are not promoted to registration proof. Blob SHA-256 3f51c80fcf2e8d255d89b62de624dfe65e29ce0cf20f26607dd43f13f80fa154.",
+            "path": "deliverables/audit-b-n01-n02-probes/2026-10-17-b-n01-n02-runtime-notes.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "README limits results to initial diagnosis and documents provenance and reproduction; no source approval claim. Blob SHA-256 fd848ec365a1b3bf6e26a3778494b5269696c9dd98797c7a6f5395ecfb8d8742.",
+            "path": "deliverables/audit-b-n01-n02-probes/README.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed observation data, environment and B-N01/B-N02 cases; baseline/source commits and contract-pending results remain separate. Blob SHA-256 d85e5a5596b87a89823c9b67f7419549ea0debe4c60406b8da2e2d92b1aac9d3.",
+            "path": "deliverables/audit-b-n01-n02-probes/b_n01_n02_probe_results.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed probe and traced pin, runtime commit capture, output and pending-contract labels; did not execute it. Blob SHA-256 7a07fea6d6a644ff313216741b0196ea04c935f71b451a8e6f50d54ae6ade314.",
+            "path": "deliverables/audit-b-n01-n02-probes/b_n01_n02_runtime_probe.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read coverage report: 521 static records, limited runtime contact and deferred cases are explicitly separated from completed scientific QA. Blob SHA-256 b2715ca5a3cd3cb0e2c49f02a97bc34e57ed6f3a87ff2d0979da2b8b6f915a96.",
+            "path": "deliverables/audit-c-coverage-c2898762/2026-10-17-c-coverage-c2898762.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read batch report: 30 core trials plus optional reference rows, ten APIs and deferred ledger merge remain explicit. Blob SHA-256 f319fb4b82e9e0f3e9a7b1c67a02a4202c268df6e6a304d4ce22ed69e28157b9.",
+            "path": "deliverables/audit-c-coverage-c2898762/2026-10-17-c-inherited-batch1-runtime.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "README describes historical generator pipeline and 521-row inputs; its 30-row shorthand is bounded by the adjacent report's core/reference distinction and active plan follow-up. Blob SHA-256 f8ce9f8bf02c626b2c08f41f2d504840cee6a7360e90f808d0535b482b70deea.",
+            "path": "deliverables/audit-c-coverage-c2898762/README.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed summary; 361 inherited plus 160 conventional records, runtime source and before/after-merge counts are distinguished. Blob SHA-256 7f636750b6e9879f80b3af58b3899f760194fcb7fcad7f33536bea6406bb7152.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762-summary.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 521 records and common classification/evidence fields; no blanket product parity is inferred from static delegation. Blob SHA-256 8922b5862f52ffccc63c8fa74f115edd586c04e0e15376061ee6b749691824af.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-coverage-c2898762.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed statistics: 19 probes, 13 executed and six not run; new coverage and controls are separately identified. Blob SHA-256 360b7fb5bcb0e141438af87428e7124b3982f253a149913477d8b0cafe742293.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-coverage-probe-stats.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 19 probe rows including six deferred records; import provenance and outcome evidence remain historical. Blob SHA-256 6532b365ea332e691005de77e714812205db5e30269a3a185b39091e1f3f9190.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-coverage-runtime-probes.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed summary: 31 total trials, 30 core and one reference; ten planned/direct APIs and nine comparable matches are explicit. Blob SHA-256 db51cdb747ee7cad408d563077b540e3954d7e61bdc991e5db73b2f640d6de8e.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime-summary.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 31 runtime rows and their assertion/comparison field variants; not treated as current release tests. Blob SHA-256 8d2fe810a8864c41c1f6ec233a677192f29ac95a59458991cff0428c299cf7c3.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-inherited-batch1-runtime.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed 16-ID slice summary; execution_status is not_run and priority labels describe execution order. Blob SHA-256 87a220eb9aae2eaab8b2ff8b96564d56d6d89560b1103b3b57bd368da136a6a7.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762-summary.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 16 slice records and member kinds; planning evidence is not runtime acceptance. Blob SHA-256 b42581182148e67b680ae090fc037da924cfe8c1d71f71999ee523d79f2155ea.",
+            "path": "deliverables/audit-c-coverage-c2898762/c-inherited-priority-slice-c2898762.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed generator and traced baseline pin, current-ledger provenance, not_run records and summary outputs. Blob SHA-256 944b2e27043f72050cb3d03dd7ede348a9e50fa008e7ff0e83d5208ab0dc93e3.",
+            "path": "deliverables/audit-c-coverage-c2898762/c_coverage_build_inherited_priority_slice.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed classifier and traced fixed pin, runtime source capture and distinct contract/runtime classifications. Blob SHA-256 17b1a0d2aab53e4b206b496772342dec79253a83ef68363557298503de7b1ecf.",
+            "path": "deliverables/audit-c-coverage-c2898762/c_coverage_build_ledger.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed merge script and traced preservation of before/after labels and probe linkage into 521-row ledger. Blob SHA-256 25d84433a6ad3f0298a03da68f59d2bfd9507ab9ecf041e6ddeb66a72ad2157e.",
+            "path": "deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed runtime probes and traced recorded commit, deferred reasons, separate controls and output aggregates; not executed. Blob SHA-256 b64422c8ddd81c747b60b9b862810fff1c4082d5fa26bc60263dbf90e73e2edd.",
+            "path": "deliverables/audit-c-coverage-c2898762/c_coverage_runtime_probes.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed batch runner and traced planned APIs, import/source provenance, trials and summary/report output; not executed. Blob SHA-256 7011ae80be8ea111e23ef81695d335ea1899c4dffc5f50c8d84805a1e43d812b.",
+            "path": "deliverables/audit-c-coverage-c2898762/c_inherited_batch1_runtime.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read warning report: textual 100 versus AST 99 and window 59 versus actual 24 are reconciled without asserting 24 proven defects. Blob SHA-256 c074673e0308b92f4f39761149eae844ab54f05ff23d182fed50e4c259abe2d1.",
+            "path": "deliverables/warnings-crosswalk-c2898762/2026-10-17-warnings-crosswalk-c2898762.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed mocked coupling observation; warning evidence is explicitly helper/forced-nonconvergence evidence. Blob SHA-256 7649ad9e757a491977494b1b70f99330a1e4122f18d117329f3d968e217dfa93.",
+            "path": "deliverables/warnings-crosswalk-c2898762/coupling_probe_result.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed summary: fixed pin and 396 files; no A/B call-set mismatch and distinct line-window reconciliation are recorded. Blob SHA-256 fa40eed923733f5cc2630b8ab06fd374c27539619dc7ae00c6c5f9d039f43fb8.",
+            "path": "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762-summary.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed 199 JSONL records: 198 call records plus summary; warning-site evidence remains a historical inventory. Blob SHA-256 1d56a1cbf62150cf6e1f8cc8be1b0e1ff356b605b1c56164e1d6693d6979167b.",
+            "path": "deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762.jsonl",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed coupling probe and traced mock setup and result output; no scientific result was re-executed. Blob SHA-256 2c92739bbe0e81a1ec3af415a39676da23e2c17d0017a5e534edc2d48ee9cd60.",
+            "path": "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_probe_coupling.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "AST-parsed warning scanner and traced pinned Git source reads, AST/text classifications and JSONL/summary writes. Blob SHA-256 1e41ea9a8cb2d904813420cb6b73df3594df1a06f4871ed3e53bc21c1a787194.",
+            "path": "deliverables/warnings-crosswalk-c2898762/warnings_crosswalk_scan.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "ADR confines GUI ownership to companion projects and preserves scientific plotting, CLI and DiagGUI XML responsibilities. Blob SHA-256 a7ca5494a263b2da44ac9d273945d1762f6ae3efa19f664adc7cffdde923d7cc.",
+            "path": "docs/developers/adr/0001-gui-decoupling-and-project-boundaries.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Diff adds explicit historical-archive status before the legacy architecture description. Blob SHA-256 9fbc96989a414b41270a1e7a364159e9f4bd3b756ed0ca4b82e967551dfb4963.",
+            "path": "docs/developers/design/gui/implementation_map.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Diff adds explicit historical-archive status before the legacy reference analysis. Blob SHA-256 74452c006183ce0e82340f664d4c0481fe836179a3ec33f97ed6744954137966.",
+            "path": "docs/developers/design/gui/reference_analysis.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Current GUI testing guide points to standalone pyaggui and limits repository boundary tests to their actual role. Blob SHA-256 b46fdd4355d470c2691edfeb488fa4062b5991d48e6e2b8630a0ad80d96beda3.",
+            "path": "docs/developers/guides/gui_testing.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Guide uses declared extras and separates offline NDS support from unavailable live-workflow certification. Blob SHA-256 16860e3da3d67aefabcad20c0cc96f51eee9311a090ab5b9d707552763200d38.",
+            "path": "docs/developers/guides/testing.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "ADR navigation entry targets the new repository file and preserves existing developer navigation. Blob SHA-256 36eea235f11fbd1d7a2dd123a7b2e36cd820d16dbbc1f4cbecd3604e93dc80e5.",
+            "path": "docs/developers/index.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Dated local recovery record identifies fixed baselines and preserves adoption/approval/release boundaries. Blob SHA-256 36e4932fce346fca68784ba4d50106fd073366fcf97e2c08dc966c025ac69fed.",
+            "path": "docs/developers/plans/2026-10-06-local-branch-refresh.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Reviewed active plan and Candidate-R delta: DOC-2 chronology matches Git history; exact-S fresh reviews/approval, HOLD, conditional deadline and all six unchecked gates remain. Blob SHA-256 51976d66ea147c9be1987ae73cf125b4730b97cc39ae468c9a6ef7186d00448a.",
+            "path": "docs/developers/plans/20261019_v0.2.6_release_plan.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read audit chronology and source pins; GWOSC responsibility split, later pip/source follow-ups and portable temporary descriptions remain bounded historical evidence. Blob SHA-256 7011c6fa18f30c47676bb516a7df5f0e8f6cc3c103daae6bd58efd60727bafaa.",
+            "path": "docs/developers/plans/20261022_v026_gwosc_ci_responsibility_audit.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read source-base, documentation scope and pending validation in agent manifest; it grants neither release authorization nor issue closure. Blob SHA-256 4034c0f5d03fafaba7bc1ef939d7a0d7c6aaf11dc8fc6285e25910da5ed01435.",
+            "path": "docs/developers/plans/manifests/2026-10-18-spectrogram2-append-docs-agent-manifest.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read historical GUI-removal manifest; its existing 70-versus-69 breakdown discrepancy is disclosed in the active plan and unchanged by DOC-2. Blob SHA-256 d1e4672ac4fe345f55430bdd34929e4d7a33aaf102ad3c721eb2fa1eaa30c0cd.",
+            "path": "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-a-manifest.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read historical GUI cleanup manifest and tested boundary scope; earlier validation is not transferred to S. Blob SHA-256 8d18809f8d62d0a3c9b16ea9bc3f1e9cab08b2a6bbff2cbceb1ae38ee927471e.",
+            "path": "docs/developers/plans/manifests/2026-10-19-gui-removal-pr-b-manifest.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Parsed exact empty v2 placeholder: no source SHA, entries, owner decisions or approval; all lane maps empty and Review Base exact. Blob SHA-256 2528f1dc3b10300056273ed88f21a4c6f44c8b1652976079cdd3983c2dda9a12.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "921-row ledger is byte-identical to Candidate R; independently hashed every pinned file with zero mismatches; classes are 875 evidence, 32 historical records, 12 PO and two ZIP. Blob SHA-256 336852ce05e8de3c8a3a8c2b568f53ac0bf82f0bcf2d971d7bb804413353aea4.",
+            "path": "docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read dated crosswalk provenance, evidence levels, issue mapping and proposed-release boundary; historical contract-absence wording is not current release authority. Blob SHA-256 ffd2b2a18c6eff52be7da2c76a5ad187d156757416d2162ef770f82fbfe6f9ba.",
+            "path": "docs/developers/reports/2026-10-18-error-audit-issue-pr-work-crosswalk.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff changes local absolute links to repository-relative references in the historical intersphinx plan. Blob SHA-256 04ddbb2e122ad360bcef8493bf54096fd8bf0471adbbdba4d27c5ee4b10d285a.",
+            "path": "docs/superpowers/plans/2026-04-17-intersphinx-offline-fix.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff changes local absolute links to repository-relative references in the historical tutorial organization plan. Blob SHA-256 c3122ce20f11fb8b6c424a6277c947a8a223211eb4d01273e4a17faee3b010b3.",
+            "path": "docs/superpowers/plans/2026-04-17-tutorials-section-14-3-reorg.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Reviewed historical plan status and source/workflow contract references; implementation status does not authorize a real release or dispatch. Blob SHA-256 4e6f508bf0596e8ef3e2db191d4b30cf57e47cdaf2a4a16c664f65eebc79f450.",
+            "path": "docs/superpowers/plans/2026-10-05-release-artifact-build-once-promote.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Reviewed design status, S/R separation, exact artifact promotion, GO chronology and failure/HOLD boundaries; current contract supersedes historical draft details. Blob SHA-256 ea7d50bfbc3466db3fa3ed317f912a73f0ccf1b9f12ee0cb8210f4e373c2cfeb.",
+            "path": "docs/superpowers/specs/2026-10-04-release-artifact-build-once-promote-design.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "English spectrogram2 note describes periodograms, unsupported method forwarding and measured GWpy 4.0.1 nproc limitation. Blob SHA-256 823ab88276a29098587ee2464fa664f1bfded55b4c1af6bc7cbda7a1f5c1d0ef.",
+            "path": "docs/web/en/reference/TimeSeries.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "English append note accurately distinguishes dictionary mutation, self return and copying newly inserted series. Blob SHA-256 3d47300050a71f7f75f8724f45ce2bebc69a2789d98b47eb4f721bab5656a8f5.",
+            "path": "docs/web/en/reference/TimeSeriesDict.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "GUI API page removes removed-module autodoc and records removal in v0.2.6 with companion link. Blob SHA-256 c642366a3e8834f9a5ec8715faf3af44a3d71e4c0ba8c2424d7b171789329366.",
+            "path": "docs/web/en/reference/api/gui.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "API index records GUI removal rather than experimental support. Blob SHA-256 052b98ddd72fe8df1ad119cdcdce17c1469b3c1a8894c762e89de68884cae40b.",
+            "path": "docs/web/en/reference/api/index.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Published-history addition identifies v0.2.5 and does not claim v0.2.6 publication. Blob SHA-256 9fcde3807c54c8a72cbc9108a29f4593efa09c9f620904373a19d03ed0cd1492.",
+            "path": "docs/web/en/user_guide/changelog.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Read replacement English GUI guide; installation requires private-repository access and no public PyPI installation is promised. Blob SHA-256 2ab07eb419268fc72acd2ebb44c589963836946c8e5e65abe111c1a7b05b574d.",
+            "path": "docs/web/en/user_guide/gui.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed cells: attach MAIN/witness units only to bare dimensionless transfer functions; projection unit/frequency/scale checks are explicit; no execution claimed. Blob SHA-256 5f2c6445ad5e0d6e2af3d2cacdb4e0dc70cca56fa2e5b639b88e07decdb9c777.",
+            "path": "docs/web/en/user_guide/tutorials/case_noise_budget.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed cells: synthetic trigger metadata is distinguished from measured SNR; real plots replace dummy files and raw series are attached before apply. Blob SHA-256 4ff3fdf950adcb944164c416fd42dd610c18935443ff051b34bd5d6ee576880b.",
+            "path": "docs/web/en/user_guide/tutorials/case_segment_analysis.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed ROOT cells and guards; docs/TensorFlow skips are explicit and do not assert ROOT end-to-end verification. Blob SHA-256 319a767140703ee6484ab6141408e3b6a3803f2fedbe6910a74f3f767d8db785.",
+            "path": "docs/web/en/user_guide/tutorials/intro_interop.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Japanese spectrogram2 note matches the English forwarding and nproc constraints. Blob SHA-256 c3848230cf27c8968671846b894eb7fa5b82e3f91a3f3ff26d97c156531dd0e2.",
+            "path": "docs/web/ja/reference/TimeSeries.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Japanese append note matches mutation, self return and new-key copy semantics. Blob SHA-256 250eb908855fdda3363a8827a99f9441f03c1b4e5d26ce12eecca5a0eccc8bf1.",
+            "path": "docs/web/ja/reference/TimeSeriesDict.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Japanese GUI API page records removal and removes obsolete autodoc/launch instructions. Blob SHA-256 c641717f54ad48ea03a20fde1910091218a96bbb989add73f789096d0642d426.",
+            "path": "docs/web/ja/reference/api/gui.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Japanese API index records the same v0.2.6 GUI removal as English. Blob SHA-256 45f8c29036d210118fefebf1762405230ebf7ff6451dde6bb9f3e7f8c5ad3eea.",
+            "path": "docs/web/ja/reference/api/index.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Published-history addition identifies v0.2.5 without publishing the v0.2.6 candidate. Blob SHA-256 38611437a7041e0d627595162376ac85905a35300fb432c88805c3810988c7ea.",
+            "path": "docs/web/ja/user_guide/changelog.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Read replacement Japanese GUI guide; private-repository access requirement and source-install instructions match English. Blob SHA-256 008ceae090f974e5f4107560530abfc12461f64d5425d8b2ad17a6d8b52ca7d8.",
+            "path": "docs/web/ja/user_guide/gui.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "visual-inspection"
+            ],
+            "note": "Visually inspected ASD axes, units, channel labels and shared line against tutorial captions; no numerical regeneration claimed. Blob SHA-256 47c2d02493d3babfb2ec5d22a1088cb4427c160f483f2ef12ed4c329f9ed32c3.",
+            "path": "docs_redesign/_static/images/commissioner-asd.png",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "visual-inspection"
+            ],
+            "note": "Visually inspected dimensionless coherence axis and shared-line peak against caption; does not imply directional coupling. Blob SHA-256 aaee7b5ce5de6fbc85acc165ed56aa50f975f5d177fae15940a045438d3da2d9.",
+            "path": "docs_redesign/_static/images/commissioner-coherence.png",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "visual-inspection"
+            ],
+            "note": "Visually inspected one-second voltage traces and sensor labels against tutorial description. Blob SHA-256 c8fa56f4a5594f33693d536b8fadfc8c46e2a2107c737a7fca0aa3b4bcd0ff91.",
+            "path": "docs_redesign/_static/images/first-analysis-timeseries.png",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "visual-inspection"
+            ],
+            "note": "Visually inspected multi-channel ASD units, labels and peak against scientific-Python tutorial description. Blob SHA-256 2b9b291069ee000681d840cd4ec92e3364162c9e0469b2605e2606d57d86755c.",
+            "path": "docs_redesign/_static/images/scientific-python-asd.png",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Include anchor occurs after the final unpublished 0.2.6 bullet, keeping rendered included history at published v0.2.5 onward. Blob SHA-256 e12bf6320124458156ae98d2f480ec5a7ff5cef22b1f3cb0e83bf506f8f78982.",
+            "path": "docs_redesign/about/changelog.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Reviewed full configuration diff and surrounding fingerprint setup; headless environment precedes imports and source/data/settings enter execution cache identity. Blob SHA-256 5fc84a36a750120ed2e5d4a1fa91dac1d99577de9f3b08100662d9b37be85b08.",
+            "path": "docs_redesign/conf.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Roadmap updates published baseline to v0.2.5 and retains directional planning language. Blob SHA-256 45e66d1f53f73bfe7eabc90097a5f8bd5adf3788fb9c043c2b0e56591924de6d.",
+            "path": "docs_redesign/explanation/roadmap.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed notebook cells and parsed structure; explicit conditional transfer units and projection checks match legacy-tree notebook. Blob SHA-256 9a2aacfacf9876372c1c8ecfa7f462d34764fb639c2788102e56e5b7a66733e4.",
+            "path": "docs_redesign/how-to/case-studies/case_noise_budget.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed notebook cells and parsed structure; synthetic trigger/SNR distinction and actual event plots match legacy-tree notebook. Blob SHA-256 c87d58ff43046cbd5b157fe799601ae79ed07d317745983de967fe9e710b86dd.",
+            "path": "docs_redesign/how-to/case-studies/case_segment_analysis.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Current GUI guide has navigable companion-project instructions and explicitly requires private repository access. Blob SHA-256 1a22978abc5a9ccefeb65e0a98809e436362d8fa44ff0110f439d53b3550a7ff.",
+            "path": "docs_redesign/how-to/gui.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "GUI card and hidden toctree both point to the existing how-to guide. Blob SHA-256 c8d94af7e5f08a84894d4fccb18730a78d4618600526014d1090adc0251fdd95.",
+            "path": "docs_redesign/how-to/index.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "note": "Reviewed changed ROOT cells and parsed notebook structure; explicit execution guards avoid claiming a tested ROOT path. Blob SHA-256 92ccc0d70c32be2b147ff4f6333f3e7509746310255161a617403b13a23ebd33.",
+            "path": "docs_redesign/how-to/interop/intro_interop.ipynb",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed changed messages: candidate heading, ASD disclosure, limitations and published-history translations align; Babel catalogue diagnostics are zero. Blob SHA-256 92776172329a1bc782808e09934a3d8a06d68fd86dc747a8a082cdc473f4a50e.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed three translated ecosystem-link messages; diagnostics are zero. Blob SHA-256 6e69dff0c5af02a6bc6ac8b37ed0e58c9d865af8b857f1d6399c9642580d9aba.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/ecosystem.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed published v0.2.5 baseline/date translations; diagnostics are zero. Blob SHA-256 f8bb3106c06e7541669165886532001678d1aca40a5ea85b496f0618a3276abb.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed calibration-navigation translations and unit notation; diagnostics are zero. Blob SHA-256 480859affb0a5b8c9ddbe78ea52ed3a7fe0c762f5dd62a9dc50c7b2a3468266a.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/calibration/index.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed synthetic-data, SNR-metadata and SegmentTable role translations; diagnostics are zero. Blob SHA-256 c4c82f6d83779f18c02b0c313f9ac47599042d758aedf5c9d028bf222f5dac02.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_segment_analysis.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed replacement GUI translations including private access and installation scope; diagnostics are zero. Blob SHA-256 1957097e2a007254616ce6a8fda54f772d2e488c11b0490c70aba3b94edee808.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/gui.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed Chunked Streaming translation; diagnostics are zero. Blob SHA-256 b416aa2034fe0cd57ab7848d40b8190a436c15625711fa572412f1ab2e5dbce0.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/monitoring/index.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed complex-transfer/peak-candidate translation; diagnostics are zero. Blob SHA-256 1f0a71ff901b6f712bf6102a1feb98ce568648edf9fa5d6e7c7c2a5d1af15ae1.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/spectral/resonance_discovery_q.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed ASD/coherence captions against visually inspected figures; diagnostics are zero. Blob SHA-256 f649cb907e645ea8916cce10e2b09ad48cb9ccd2fa91993bd08a7be33e683924.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/commissioner.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed time-series/crop-copy translations against tutorial changes; diagnostics are zero. Blob SHA-256 6a0ba97c292419c8d0c989faaf0f7158c3ecdbf2e9d458594cf60cda197a38ef.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/first_analysis.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed explicit v0.2.4 Zenodo attribution and source-version distinction; diagnostics are zero. Blob SHA-256 0454c2b8c2fd19771befc89e91b4b7590ff9b03357603e7bd22c2d04acf5b70b.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed catalogue and reviewed multi-channel ASD captions and metadata statement; diagnostics are zero. Blob SHA-256 1fd3eb8c60d7d9890a9b7aa7ccffbea4ea3f68379da852c56e36be4da9e59f9c.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/scientific_python.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "GUI API orphan page removes obsolete module autodoc and points to companion repository. Blob SHA-256 bc51510f368ab7d8bab10cb4f9ef56c8ea12ce8cfc66ce7468612382a8ecaa9a.",
+            "path": "docs_redesign/reference/api/gui.rst",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed status object: latest published release remains 0.2.5 and example baseline 0.2.4. Blob SHA-256 6d7cdbc8e72648b16a355bb6e4964b5d670927d34f9fe8bd649295f67d9cd5f9.",
+            "path": "docs_redesign/release_status.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff adds ASD and coherence figures with explicit units and association caveat preserved in context. Blob SHA-256 80f63903035dbfc986f464b6c068f9419c8b442799423eb4363e6ce3b29c7129.",
+            "path": "docs_redesign/tutorials/commissioner.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff selects combined plotting/explicit legend and adds the corresponding time-series figure. Blob SHA-256 9cb05302841ca193c5caa45cbd44baea4495c1b3cb666778fa4e467010764e65.",
+            "path": "docs_redesign/tutorials/first_analysis.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff clarifies that Zenodo reference belongs to v0.2.4 while install channels can differ in version. Blob SHA-256 0473a3f130413b34e14c27d1a18b0e732508a5b7b148fd3acb88c326bffb721e.",
+            "path": "docs_redesign/tutorials/installation.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff adds multi-channel ASD figure consistent with tutorial text and units. Blob SHA-256 e32fe03588fab5e3d1094b8aeecab3519a497757e319bd216ee30cb2e18ee3c5.",
+            "path": "docs_redesign/tutorials/scientific_python.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Full diff only formats measured percentages as inline code without changing the published numerical claim. Blob SHA-256 5d769a661d4d037559c2b8feb28b235475c36974b7844a9962d4b3ba492089d5.",
+            "path": "release_notes/v0.2.5.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "note": "Release note preserves maintenance scope, explicit ASD correction, ten limitations and unverified-workaround boundaries; it is source content, not publication authorization. Blob SHA-256 30e758da210801d3f9ff167769ad72cc5c3d91b96e0effd2d703eb6ba4bde84c.",
+            "path": "release_notes/v0.2.6.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 92 candidate cases, 89 live-marker IDs and 256 inherited IDs; categories are A=8/C=84 and fixture distinctions match audit/test source. Blob SHA-256 00bc485347b36b3bc5d0305f11814bfd77da316ef84dddfa2a2fb4ea4addab3b.",
+            "path": "tests/docs/gwosc_timeseries_inventory.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Parsed all 84 C mappings; set matches inventory C cases and classifications are 83 upstream-only/one influenced. Blob SHA-256 58d82c744f7895a5f532c1ddd4fa5438d86f26c7b044d939c36dbdb37c27c315.",
+            "path": "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Read complete added test source: D present/absent/invalid explicit path/mismatch cases assert fail-closed audit behavior; tests not executed. Blob SHA-256 27f783e5005c37c94d749ee61f560406191c2ae96dacdbdb8ec2acc1aad79963.",
+            "path": "tests/docs/test_audit_appendix_crosscheck.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Read changed test source and AST: cache isolation and fingerprint inputs mirror conf changes; preview workflow is required to be manual-only; tests not executed. Blob SHA-256 852693fa4b85dfd4367ff2e4e38e7ec6db5e8b91150f70160b6a37ee7c59ff6a.",
+            "path": "tests/docs/test_docs_conf_runtime.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Read changed test source and AST: published/candidate date boundaries, include anchor, translations and known limitations are statically pinned; tests not executed. Blob SHA-256 2727f2a29796ae75fe44be33ab76bc452684412d8506ec488b173bf287617739.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Full diff updates only the expected latest published release to 0.2.5; tests not executed. Blob SHA-256 aaa211b7af818bbef6ebaea1f6f21a99dd2af76433e1a55bf2aaee027ff330d1.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Read changed test source and inventory mappings: certificate floors, exact live selections, C classification and metadata-drift guards match audit claims; tests not executed. Blob SHA-256 6c84fe559aa6da29823db1c73b1af890ab023ff05fd08de4ab3b4f1dbd6c7904.",
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Full diff updates published status expectation to 0.2.5 while preserving earlier publication distinction; tests not executed. Blob SHA-256 f50bd2319bd0ff5c61d6bc5b4013811609eb7deec449c26b7a2e711a7f29efb5.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "0df002c58521ba77e54b7745f7e9161cd6c4106705ab753f061364ae30d9e27a",
+        "report": "APPROVED: independent Documentation-lane source review of 0f07acfa7310c668972be7c3938d548147fde9e5 against frozen Review Base 3439fba41dcc644af12870d91bee794524098fb4. This review used its own source inspection and calculations; prior reviewer reports were not reused. Exact HEAD and a clean checkout were observed before formal review and again at completion.\n\nThe current v0.2.6 contract maps 111 changed paths to Documentation. Every path is recorded below with its actual inspection methods, observations and source-blob SHA-256. The seven exact scope prefixes are CHANGELOG.md, ROADMAP.md, deliverables, docs, docs_redesign, release_notes and tests/docs. SHA-256 of raw NUL-delimited git ls-tree -r --full-tree output for that scope is 8f83ee19c8f871131b2130af4ed5fa669e8e14f636c2a31252f67ab873f03f8a, independently recomputed and equal to the supplied checkpoint.\n\nDOC-2 chronology agrees with Git history: the portable-environment remediation and subsequent colon, root/UNC and ambiguous-drive refinements precede this frozen source. The active plan identifies a6f73cd and be133e8 as superseded review subjects and requires fresh reviews of final S and a new Source Human Approval. RELEASING describes portable environment evidence without local absolute paths. The validator/test source agrees with the documented path classes and the latest C:// ambiguity regression; this was source inspection, not test execution. Relative to Candidate R cae25bfc1a249b600876cae9f47a2cbf10b9f25a, only RELEASING, the active plan, readiness manifest, review validator and review-validator tests changed. No product or scientific source changed in the DOC-2 remediation.\n\nThe SHA-pinned DOC-2 exception ledger is byte-identical to that Candidate R, SHA-256 336852ce05e8de3c8a3a8c2b568f53ac0bf82f0bcf2d971d7bb804413353aea4. Its 921 records comprise 875 audit-evidence records, 32 historical records, 12 PO records and two ZIP records. Independently rehashing every pinned file found zero mismatches. The tracked readiness manifest is the exact empty v2 placeholder, with empty review entries, lane path maps, source identity, risk decisions and human approval. All six active release gates are unchecked. HOLD and the conditional 2026-10-24 UTC target remain; the stated deadline is 2026-10-25 09:00 JST. Approval of documentation does not grant Source Human Approval, candidate qualification, final Owner GO, tagging or publication.\n\nThe cumulative documentation scope was independently reviewed using text differences and context, complete structured-data parsing/counts/hash checks, archive inspection, notebook cell comparison, static Python/source traces and visual inspection of four new figures. B/D ledger fields agree in all 2650 ordered rows; B/C handler locations agree; audit SHA256SUMS all match. GWOSC inventory has 92 candidates, 89 marked live IDs, 84 Category C mappings and one influenced case, matching the dated responsibility audit. Historical audit evidence remains distinguished from current QA, and public release text discloses the existing ASD-unit correction and ten deferred limitations. GUI removal, private companion access, periodogram keyword forwarding and append semantics remain consistent across the changed source documents. Changed translation catalogues parsed with zero Babel catalogue diagnostics. Historical report limitations and active-plan follow-ups remain documented; no new required Documentation finding was identified.\n\nNo tests, builds, notebook execution, rendered-site build, network availability verification, package creation or publication action was performed. Existing test/build claims were treated as dated records rather than newly reproduced results. No repository files were changed. The evidence entry is saved outside the source tree. Requested model and effort are recorded only as requests: this execution exposes no independently verifiable effective-model or effective-effort evidence, so both are null with unavailable observation status and no self-reported substitute.",
+        "requested_effort": "medium",
+        "requested_model": "gpt-6.1-sol",
+        "reviewed_commit": "0f07acfa7310c668972be7c3938d548147fde9e5",
+        "reviewer_id": "doc2-documentation-0f07ac-67eedc0f-bf49-4646-9a07-ba74ce80d4a4",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "8f83ee19c8f871131b2130af4ed5fa669e8e14f636c2a31252f67ab873f03f8a",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "started_at_utc": "2026-10-24T14:46:52Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-10-24T14:52:46Z",
+        "execution_context_id": "doc2-release-security-context-f694e613-bb6e-425a-99f9-9f7e54d7d38c",
+        "execution_environment": "Linux; bash; independent Codex collaboration review context; read-only fixed source checkout; local deterministic probes.",
+        "findings": [],
+        "lane": "release-security",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Current collaboration execution interface and tool result schema",
+          "limitations": "The available execution interface exposes no verified runtime proof of effective model or effort. Requested routing values do not establish effective values.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unavailable"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed removal of Qt test/runtime installation and explicit cleanup of inherited GUI plugins.",
+            "path": ".github/actions/setup-gwexpy/action.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed protected pull-request targets, removal of PR path filtering, stable check name, pinned checkout and attested actionlint execution.",
+            "path": ".github/workflows/actionlint.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed pinned checkout and micromamba revisions and disabled checkout credential persistence before documentation execution.",
+            "path": ".github/workflows/docs-pages.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed retirement of automatic unprotected-branch publication, manual dispatch boundary and build environment changes.",
+            "path": ".github/workflows/docs-redesign-preview.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed deletion of the obsolete workflow that selected removed GUI/NDS test paths; no replacement publishing or credential path is introduced.",
+            "path": ".github/workflows/nds-live.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed full-SHA action pins and disabled credential persistence in the changed operational jobs.",
+            "path": ".github/workflows/ops-weekly.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed explicit Bash pipefail so attestation verification failure cannot be hidden by tee.",
+            "path": ".github/workflows/post-release-qualification.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Traced candidate-only build and qualification graph, approval rechecks, sole finalizer output, exact artifact-ID downloads, tag/GO validation, GitHub-before-PyPI publication and read-only PyPI readback.",
+            "path": ".github/workflows/publish-release.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed trusted pip bootstrap before installs, explicit Certifi floor, recorded dependency versions, source-bound GWOSC inventory audit and scoped upstream live-test selection.",
+            "path": ".github/workflows/test-compat-gwpy.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed removal of obsolete GUI exclusions and addition of generated case-study figure output exclusion.",
+            "path": ".gitignore",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed v0.2.6 and conditional 2026-10-24 release metadata; no credential or authority field is introduced.",
+            "path": ".zenodo.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed version/date synchronization with Zenodo and release guidance.",
+            "path": "CITATION.cff",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Traced exact-source v2 evidence requirements, portable environment rule, separate Source Approval and GO, immutable candidate promotion, retention thresholds and HOLD/date boundaries.",
+            "path": "RELEASING.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed GUI dependency/configuration removal and scoped upstream_gwosc_live marker declaration.",
+            "path": "pyproject.toml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed regenerated development dependency changes, GUI-plugin removal and Certifi floor; this is not the release-builder hash lock.",
+            "path": "requirements-dev.txt",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed exact pip/build requirements and Certifi minimum for the controlled CPython release-builder lock.",
+            "path": "requirements/release-build.in",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed hash-locked pip 26.2.2, Certifi update, binary-only installation and retained setuptools/build tool pins.",
+            "path": "requirements/release-build.txt",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed forbidden prefixes for the removed GUI source and test namespaces.",
+            "path": "scripts/check_repo_hygiene.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Traced upstream-only collection classification, exact source/version/module-hash binding, inventory comparison and rejection of unknown network fixtures.",
+            "path": "scripts/ci/audit_gwosc_timeseries.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed environment sanitation, official index selection, fixed wheel hash, no dependency resolution and post-install pip/vendor-CA assertions.",
+            "path": "scripts/ci/bootstrap_trusted_pip.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed contract-selected future schemas with preserved historical branches and rejection of nonlocal file-URL authorities for installed artifact evidence.",
+            "path": "scripts/ci/diaggui_qualification_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed bounded shared evidence loader, original-file SHA binding, source-root containment and duplicate aggregate-key rejection.",
+            "path": "scripts/ci/integrate_release_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed contract-selected schema profile, canonical future reports and zero-optional-skip baseline without weakening historical expected-skip contracts.",
+            "path": "scripts/ci/qualification_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed exact promotion contract keys, fixed job/evidence profile, authority syntax, names and dual artifact-retention thresholds.",
+            "path": "scripts/ci/release_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Validated exact Review Base and all current lane prefixes; independently recomputed the 47-path lane map and scope digest. Entire registry and exact two-path S-to-R allowlist match pre-remediation source.",
+            "path": "scripts/ci/release_contracts.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read and traced canonical manifest/tag parsing, exact run attempt/workflow/source binding, artifact IDs and archive hashes, aggregate reconstruction, origin-aware token redirects, retention finalizer and promotion download rehashing.",
+            "path": "scripts/ci/release_promotion.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed removal of deleted GUI/NDS directory arguments; surviving network/library I/O selection is retained.",
+            "path": "scripts/ci/run_gate.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed dynamic contract-selected future version/schema handling while preserving the v0.2.5 default and exact payload filenames.",
+            "path": "scripts/ci/v025_cross_format_io_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed unique exact-tag lookup, exact promoted five-asset set, source target, mandatory API digests and downloaded byte identity.",
+            "path": "scripts/ci/validate_github_release_readback.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read and traced exact two-distribution identity, approved HTTPS file host, duplicate-key rejection, no redirects, byte/hash/size checks and bounded retry/deadline behavior.",
+            "path": "scripts/ci/validate_pypi_readback.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Reviewed path classifier, v2 caller and unchanged hash/provenance/approval gates. A direct 20-case deterministic probe covered POSIX roots/colon forms, drive roots/children including C://, both UNC forms, relative paths, HTTPS/S3/git+ssh slash-valued queries and file URLs. AST comparison confirms all other validator behavior is unchanged by remediation.",
+            "path": "scripts/ci/validate_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace"
+            ],
+            "note": "Read and traced configured owner/issue identity, canonical GO digest/bytes binding, immutable comment, successful first-attempt candidate and strict post-completion/upload timing.",
+            "path": "scripts/ci/verify_release_go.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed exact-source configured approver and v2 canonical risk-decision digest tokens, retaining comment author and immutability checks.",
+            "path": "scripts/ci/verify_release_human_approval.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed resolved output-root containment rejection before recursive removal, covering repository descendants and ancestors.",
+            "path": "scripts/notebook_gen/prepare_docs_notebook_tree.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed exact empty v2 source placeholder, distinct S/R commits, ancestry, exact allowlist and checkbox-only plan transition validation.",
+            "path": "scripts/validate_release.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed local source import selection and deterministic figure copying; installed-package mode retains its import identity check.",
+            "path": "scripts/verify_public_examples.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected parsed legacy v1 fixture retained for explicit rejection coverage; it is not an active release contract.",
+            "path": "tests/fixtures/release/promotion-contract-v1.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected v2 synthetic authority, exact profile and dual-retention values against production validator expectations.",
+            "path": "tests/fixtures/release/promotion-contract-v2.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected canonical manifest fixture artifact roles, identities, files, contract digest and source/workflow descriptor shape.",
+            "path": "tests/fixtures/release/promotion-manifest-v1.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Traced source assertions and selected test bodies for action pins, permissions, candidate/tag graph, original-ID payloads, source approval, raw evidence bytes, exact Release/PyPI readbacks and unchanged historical lanes.",
+            "path": "tests/test_publish_release_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed changed contract tests covering v0.2.6, frozen historical source, v1 rejection, strict profile/retention mutation rejection and review-schema/authority mapping.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed changed tests for Actionlint PR targets, original payload/sidecar consumption, dispatch-only promotion graph and hash-pinned pip bootstrap ordering.",
+            "path": "tests/test_release_gate_workflow_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Traced rejection cases and selected bodies for wrong identity/issue, edited comment, malformed body, run attempts, mismatched raw manifest/artifact/hash and equal-or-earlier GO timing.",
+            "path": "tests/test_release_go.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed configured future authority tests and v2 risk-digest token mutation rejection.",
+            "path": "tests/test_release_human_approval.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "source-or-workflow-trace",
+              "structured-validation"
+            ],
+            "note": "Traced assertion and rejection coverage for canonical records, manifest provenance, exact API/archive metadata, unsafe files, downloaded bytes, dual retention bounds, all artifact roles and origin-aware redirects; inspected retention and redirect test bodies.",
+            "path": "tests/test_release_promotion.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed changed tests for raw YAML-wrapper bytes, exact empty S placeholder, bound R evidence, allowlist/checkbox rejection and ambiguous/oversized loader input.",
+            "path": "tests/test_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Read full test source: path guard rejects local path classes and accepts portable HTTPS query text; model observation hashes, embedded report hashes, complete ledgers, unique contexts, owner risk binding, recursion handling and strict approval chronology remain covered.",
+            "path": "tests/test_v026_review_evidence_v2.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "0cb10c9b4ac6a311bc34265e54e63e3ec2d26401d37c9b9ed41d88e2c1696561",
+        "report": "I independently reviewed frozen Source S 0f07acfa7310c668972be7c3938d548147fde9e5 against Review Base 3439fba41dcc644af12870d91bee794524098fb4 for the release-security lane. At the start and final invariant check, HEAD matched S and git status was clean. I recomputed the current contract-prefix map and reviewed all 47 mapped changed paths using the recorded per-path methods; no path exceptions remain. The independently computed scope digest is c67278f004eca031bf5cc1d9750b979d971145f5cc48bd92f232fad1365738bc. The DOC-2 execution-environment guard rejects POSIX absolute paths including root and colon-delimited forms, drive roots and children with slash or backslash, doubled-slash drive forms C:// and C://Users/reviewer/repo, backslash UNC and forward-slash UNC, and absolute file URLs. Relative paths and file:relative/repo remain relative by syntax; portable text and HTTPS, S3 and git+ssh URLs with slash-valued queries are accepted. A direct deterministic 20-case classifier probe passed. The one-letter URL-scheme exclusion preserves C:// for drive detection rather than removing it as a remote URL. I read the regression tests without running pytest. An AST comparison with the pre-remediation source cae25bfc1 confirms that, after excluding the new path regex constants, helper and its v2 environment-field check, all other validator logic is identical. Embedded report hashes, raw evidence-file hashes, scope/changed-path coverage, model-observation provenance limits, independent reviewer/context rules, owner risk binding and post-review approval timing remain intact. I also traced candidate artifact provenance, retained qualification gates, exact Release and PyPI readbacks, hash-locked bootstrap and origin-aware artifact token handling. The DOC-2 exception ledger remains byte-identical to pre-remediation source, with SHA-256 336852ce05e8de3c8a3a8c2b568f53ac0bf82f0bcf2d971d7bb804413353aea4. The release contract registry and its exact two-path S-to-R allowlist are unchanged. S contains the byte-exact empty readiness placeholder, no review entries, no owner risk decisions and no Source Human Approval; all current release checklist items remain unchecked. Prior reviews and approval are not transferred. The Review Base-to-S whitespace check passed. No required or new unresolved finding was identified. This review used local source inspection, structured invariants and the stated direct probe only; no broad tests, builds, remote workflow runs, protection readbacks, GitHub posts or publication were performed. Requested model gpt-6.1-sol and effort high are recorded as requests only. The available runtime interface provides no verified effective model/effort proof, so the observation is unavailable with null effective values and no self-report. This lane is APPROVED for exact S. Release status remains HOLD pending the other exact-S reviews, new Source Human Approval, exact-candidate qualification and separate Release Owner GO; this report authorizes no publication.",
+        "requested_effort": "high",
+        "requested_model": "gpt-6.1-sol",
+        "reviewed_commit": "0f07acfa7310c668972be7c3938d548147fde9e5",
+        "reviewer_id": "doc2-release-security-reviewer-0feda8af-a124-4492-8b54-4b97f94acdea",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "c67278f004eca031bf5cc1d9750b979d971145f5cc48bd92f232fad1365738bc",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "started_at_utc": "2026-10-24T14:46:47Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-10-24T14:49:38Z",
+        "execution_context_id": "doc2-sdm-s5-43402a96bd284593b0f2663448071793",
+        "execution_environment": "Linux; bash; independent Codex collaboration review context; clean frozen checkout; static source and structured-data inspection; no tests or builds executed; repository content unchanged.",
+        "findings": [],
+        "lane": "scientific-data-model",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Current collaboration tool result schema",
+          "limitations": "No verifiable runtime evidence exposing effective model or reasoning effort is available in this review context. Requested settings are not treated as observed effective settings.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unavailable"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Comment-only environment cache-bust addition; no dependency or scientific configuration change.",
+            "path": "environment.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Version-only change from 0.2.5 to 0.2.6.",
+            "path": "gwexpy/_version.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full runtime diff and surrounding row selection, stacking, axes, coupling-factor and Spectrogram construction; documented ASD unit correction and mixed-unit rejection preserve numerical expressions and accepted grid selection.",
+            "path": "gwexpy/analysis/response.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/AGENTS.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/CLAUDE.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/README.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/__init__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/__main__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/channel_handling.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/data_sources.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/engine.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/excitation/generator.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/excitation/params.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/loaders/__init__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/loaders/loaders.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/loaders/products.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/__init__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/audio_thread.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/buffer.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/cache.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/nds_thread.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/sim_thread.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/nds/util.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/plotting/__init__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/plotting/normalize.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/pyaggui.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/streaming.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/__init__.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/_tab_builders.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/channel_browser.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/excitation_manager.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/graph_panel.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/main_window.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/plot_renderer.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "gwexpy/gui/ui/tabs.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Docstring-only spectrogram2 clarification; implementation is unchanged.",
+            "path": "gwexpy/timeseries/_spectral_fourier.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Docstring-only append mutation/return clarification; implementation is unchanged.",
+            "path": "gwexpy/timeseries/collections.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected all added ASD-grid warning/accepted-row, ASD-output-unit and mixed-unit rejection tests, including numerical arrays and astropy unit objects; no tests executed.",
+            "path": "tests/analysis/test_response.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/conftest.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Inspected every JSON record and classification field; checked inventory/category-C scope, GWpy versions, fixtures, and upstream versus GWexpy influence against the marker and offline parity regression contract.",
+            "path": "tests/docs/gwosc_timeseries_inventory.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Inspected every JSON record and classification field; checked inventory/category-C scope, GWpy versions, fixtures, and upstream versus GWexpy influence against the marker and offline parity regression contract.",
+            "path": "tests/docs/gwosc_timeseries_phase_a2_category_c.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 6 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_audit_appendix_crosscheck.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 14 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_docs_conf_runtime.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 14 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/e2e/test_gui_smoke.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Inspected synthetic release fixture fields, artifact roles, member names, source/run identity, gate/schema mapping and retention thresholds; fixture does not represent actual scientific qualification.",
+            "path": "tests/fixtures/release/promotion-contract-v1.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Inspected synthetic release fixture fields, artifact roles, member names, source/run identity, gate/schema mapping and retention thresholds; fixture does not represent actual scientific qualification.",
+            "path": "tests/fixtures/release/promotion-contract-v2.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Inspected synthetic release fixture fields, artifact roles, member names, source/run identity, gate/schema mapping and retention thresholds; fixture does not represent actual scientific qualification.",
+            "path": "tests/fixtures/release/promotion-manifest-v1.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/archive/README.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/conftest.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_channel_config.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_excitation_controls.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_main_window_flow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_measurement_params.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_pyautogui_smoke.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_simulation_acquisition.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/integration/test_simulation_partial_channels.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_accumulator_delay.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_channel_browser_dialog.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_excitation_manager.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_gui_data_backend.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_gui_main_window.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_gui_payload_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_gui_result_tab.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_main_window_channel_browser.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_main_window_excitation_integration.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_plot_renderer.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_pyqtgraph_deleted_guard.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/gui/test_visual_stability.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/io/test_io_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/io/test_pickle_direct_io.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/io/test_sdb_public_io.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/io/test_wav_public_io.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/nds/conftest.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/nds/test_gui_nds_smoke.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/nds/test_nds_channel_list_live_smoke.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/nds/test_nds_thread_live_smoke.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/run_gui_nds_tests.sh",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Verified entire path is deleted, inspected base content structure and imports/symbols, and checked removal belongs to the legacy GUI or its GUI/NDS test harness. No replacement scientific implementation is introduced.",
+            "path": "tests/run_gui_tests.sh",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 22 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_check_release_metadata_script.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 14 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_diaggui_qualification_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_gui_boundary.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 5 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_nds_live_workflow_retirement.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_prepare_docs_notebook_tree_output_root.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 53 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_publish_release_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 57 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_pypi_readback.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 38 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_qualification_skip_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 44 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 7 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_gate_workflow_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 12 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_go.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 26 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_human_approval.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 64 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_promotion.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 29 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 3 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_trusted_pip_bootstrap.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 7 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_v025_cross_format_io_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 11 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_v025_historical_gate.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "structured-validation"
+            ],
+            "note": "Statically inspected changed test source and parsed all 5 function definitions, fixtures, assertions and parameterizations; assessed test-only scope and associated release, documentation, compatibility or I/O contract. Tests were not executed.",
+            "path": "tests/test_v026_local_path_exceptions.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected portable environment acceptance, POSIX/drive/UNC/file-URI rejection including roots and C:// ambiguity, model-observation/hash/path-ledger/source binding, parser recursion and Owner timestamp coverage. No tests executed.",
+            "path": "tests/test_v026_review_evidence_v2.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Inspected full diff and test context: GUI-specific removal, explicit registry bootstrap, narrow GWOSC fixture marking or synthetic multiprocessing parity; product scientific algorithms are not changed here. No tests executed.",
+            "path": "tests/timeseries/test_gwpy_override_terminal_compat.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "21d8889c96c27ffda429af56cab9047e5b0a82fd8da0b1314ac44cff1d981683",
+        "report": "APPROVED: independent static Scientific-Data-Model review of source 0f07acfa7310c668972be7c3938d548147fde9e5 against Review Base 3439fba41dcc644af12870d91bee794524098fb4. HEAD matched the frozen source and the checkout was clean. All 102 mapped changed paths were inspected using full diff/context for scientific and directly relevant changes and structured source/fixture/deletion inspection for the remaining paths; the complete ledger records the methods. The independently recomputed scope digest is 27678e9fb1190cd430dc29be449774001840d888e47b1cd96d9c0e5b8fa42037. The full release diff contains the disclosed ASD spectrogram unit correction and differing-ASD-unit rejection, diagnostic warning text, documentation-only TimeSeries changes, legacy GUI removal, and test/release qualification infrastructure. The DOC-2 remediation changes portable release-review environment validation and its regression coverage, documentation and readiness state; it introduces no scientific runtime behavior or scientific policy change. The active plan preserves all ten accepted scientific deferrals (#766, #767, #768, #769, #770, #771, #773, #774, #777, #778), their limitations, release HOLD, fresh exact-source review and human approval requirements, and the exact empty readiness placeholder. No new findings were identified. No prior review was reused. Tests and builds were not run; this static lane approval does not supply human scientific sign-off, qualification, final GO, or publication authorization. Effective model and effort metadata are unavailable.",
+        "requested_effort": "medium",
+        "requested_model": "gpt-6.1-sol",
+        "reviewed_commit": "0f07acfa7310c668972be7c3938d548147fde9e5",
+        "reviewer_id": "sdm-doc2-0f07ac-06de792026124e79a9e46caf5fc7f6cc",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "27678e9fb1190cd430dc29be449774001840d888e47b1cd96d9c0e5b8fa42037",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "started_at_utc": "2026-10-24T14:46:37Z",
+        "verdict": "APPROVED"
+      }
+    ],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0,
-      "risk_decisions_sha256": ""
-    }
+      "approver_login": "tatsuki-washimi",
+      "comment_id": 6386289974,
+      "reviewed_commit": "0f07acfa7310c668972be7c3938d548147fde9e5",
+      "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "release-owner",
+      "scope_digest": "27678e9fb1190cd430dc29be449774001840d888e47b1cd96d9c0e5b8fa42037",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "timestamp_utc": "2026-10-24T15:54:12Z",
+      "verdict": "APPROVED"
+    },
+    "owner_risk_decisions": [],
+    "review_base_sha": "3439fba41dcc644af12870d91bee794524098fb4",
+    "schema": "gwexpy-v026-review-evidence-v2",
+    "source_sha": "0f07acfa7310c668972be7c3938d548147fde9e5"
   }
