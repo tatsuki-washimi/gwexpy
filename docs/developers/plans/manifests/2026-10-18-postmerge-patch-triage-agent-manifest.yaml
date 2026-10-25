@@ -1,0 +1,44 @@
+schema: gwexpy-agent-work-manifest-v1
+date_utc: "2026-10-18"
+agent: "ChatGPT GitHub coordination"
+skill_names: []
+skill_note: "No repository-local agent skill invoked; documentation-only GitHub connector workflow following .agent/AGENTS.md."
+repository: tatsuki-washimi/gwexpy
+base_branch: main
+base_commit: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+work_type: "documentation / release-triage proposal, not release authorization"
+changed_files:
+  - docs/developers/plans/active/2026-10-18-patch-postmerge-triage-proposal.md
+  - docs/developers/plans/manifests/2026-10-18-postmerge-patch-triage-agent-manifest.yaml
+actions:
+  - "Read .agent/AGENTS.md project guidance from GitHub."
+  - "Read RELEASING.md, scripts/ci/release_contracts.json and prior 2026-10-18 audit crosswalk."
+  - "Read open issue summaries for #765, #790, #779, #640, #513, #784, #569 and scientific/native integrity cases."
+  - "Read merged PR #793, #794, #795 metadata, corresponding merge commit SHAs, and main SHA."
+  - "Read GitHub Actions workflow runs and job-level conclusions for exact main SHA."
+  - "Draft a new proposed patch-release triage document on an isolated branch."
+validation:
+  github_api_readback:
+    main_sha: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+    pr_fast:
+      run_id: 39126730149
+      conclusion: success
+      succeeded_jobs: 11
+    gwpy_compat:
+      run_id: 39126730126
+      conclusion: success
+      succeeded_jobs: 2
+    docs_pages:
+      run_id: 39126730197
+      conclusion_at_snapshot: in_progress
+      note: "Publication and deployed-page readback not claimed complete."
+    release_contracts:
+      v0_2_6_present: false
+  local_commands: []
+  omitted_checks:
+    - "No local pytest/Ruff/MyPy: only markdown and a YAML audit manifest are changed."
+    - "No full Sphinx build: plan is a developer coordination document outside public docs nav."
+    - "No release candidate or tag: version scope and human authorization have not been selected."
+  check_physics: "Not applicable: no physics/numeric code changed; high-risk issues remain for explicit human disposition."
+release_operations_performed: false
+issue_status_changes_performed: false
