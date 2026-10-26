@@ -1556,6 +1556,18 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
     actual_jobs = _api_pages(
         repository, token, f"actions/runs/{run_id}/attempts/1/jobs", "jobs"
     )
+    finalizer_jobs = [
+        job
+        for job in actual_jobs
+        if job.get("name") == "Finalize immutable candidate promotion manifest"
+    ]
+    _require(
+        len(finalizer_jobs) == 1,
+        "original candidate finalizer job is missing or ambiguous",
+    )
+    finalizer_started_at = _parse_api_timestamp(
+        finalizer_jobs[0].get("started_at"), "original finalizer started_at"
+    )
     prefixes = {
         "verify": "Verify immutable release source",
         "build": "Build and check release artifacts",
@@ -1630,6 +1642,13 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
             api.update(artifact_id=record["id"], run_id=record["workflow_run"]["id"])
             _require(api["run_id"] == run_id, "artifact belongs to another run")
             _validate_artifact_retention(record, run_started_at, retention_policy)
+            created_at = _parse_api_timestamp(
+                record.get("created_at"), "candidate artifact created_at"
+            )
+            _require(
+                created_at < finalizer_started_at,
+                "candidate artifact was not present before original finalization",
+            )
             request = urllib.request.Request(
                 f"https://api.github.com/repos/{repository}/actions/artifacts/{record['id']}/zip",
                 headers={"Authorization": "Bearer " + token},

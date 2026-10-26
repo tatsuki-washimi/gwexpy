@@ -1746,6 +1746,8 @@ def test_artifact_retention_accepts_exact_policy_boundaries(promotion) -> None:
         "failed_gate",
         "rerun",
         "rerun_with_existing_manifest",
+        "attempt2_replacement_artifacts",
+        "artifact_created_at_finalizer_start",
         "missing_artifact",
         "duplicate",
         "schema",
@@ -1793,7 +1795,10 @@ def test_finalizer_reads_original_ids_before_run_completion(
         "GITHUB_TOKEN": "fake",
         "GITHUB_RUN_ID": "987",
         "GITHUB_RUN_ATTEMPT": "2"
-        if isinstance(mutation, str) and mutation.startswith("rerun")
+        if isinstance(mutation, str)
+        and (
+            mutation.startswith("rerun") or mutation == "attempt2_replacement_artifacts"
+        )
         else "1",
         "SOURCE_SHA": source,
         "GITHUB_WORKFLOW_SHA": source,
@@ -1833,6 +1838,29 @@ def test_finalizer_reads_original_ids_before_run_completion(
         for job, prefix in prefixes.items()
         for index in range(counts.get(job, 1))
     ]
+    jobs.append(
+        {
+            "name": "Finalize immutable candidate promotion manifest",
+            "status": "completed"
+            if isinstance(mutation, str)
+            and (
+                mutation.startswith("rerun")
+                or mutation == "attempt2_replacement_artifacts"
+            )
+            else "in_progress",
+            "conclusion": "failure"
+            if mutation == "attempt2_replacement_artifacts"
+            else None,
+            "started_at": "2026-10-01T02:00:00Z",
+            "completed_at": "2026-10-01T02:15:00Z"
+            if isinstance(mutation, str)
+            and (
+                mutation.startswith("rerun")
+                or mutation == "attempt2_replacement_artifacts"
+            )
+            else None,
+        }
+    )
     run = {
         "workflow_id": 42,
         "head_sha": source,
@@ -1989,6 +2017,15 @@ def test_finalizer_reads_original_ids_before_run_completion(
             target["created_at"] = "2026-10-01T01:00:01Z"
     if mutation == "digest":
         artifacts[0]["digest"] = "sha256:" + "0" * 64
+    if mutation == "attempt2_replacement_artifacts":
+        for artifact in artifacts:
+            old_id = artifact["id"]
+            artifact["id"] = old_id + 1000
+            artifact["created_at"] = "2026-10-01T03:00:00Z"
+            archives[artifact["id"]] = archives[old_id]
+    if mutation == "artifact_created_at_finalizer_start":
+        for artifact in artifacts:
+            artifact["created_at"] = "2026-10-01T02:00:00Z"
     if mutation == "duplicate":
         artifacts.append(dict(artifacts[0]))
     monkeypatch.setattr(
