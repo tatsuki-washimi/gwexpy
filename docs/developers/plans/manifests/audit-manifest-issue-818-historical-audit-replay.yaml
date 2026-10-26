@@ -5,7 +5,6 @@ status: implementation-and-focused-verification
 skills:
   - gwexpy_conda_jobs
   - superpowers:systematic-debugging
-skill_source: /home/washimi/ai-harness/projects/gwexpy/skills/gwexpy_conda_jobs/SKILL.md
 selection:
   pr_fast_marker: "not network and not nds and not root and not historical_audit and not release_candidate_state"
   replay_mode: "historical-audit-replay"
@@ -108,6 +107,8 @@ commands:
     result: passed
   - command: "git diff --check"
     result: passed
+  - command: "conda run -n gwexpy python -m pytest -q tests/test_v026_local_path_exceptions.py"
+    result: "passed: all 3 frozen local-path ledger and hash checks"
   - command: "git diff --check origin/main...HEAD"
     result: "passed; note this range ends at the unchanged base HEAD, while git diff --check separately covered the working-tree diff"
   - command: "rtk conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/test_run_gate.py tests/test_release_review_evidence.py"
@@ -123,6 +124,7 @@ verification_notes:
   - initial Ruff format check requested formatting for tests/test_run_gate.py; formatted and rerun successfully
   - the final marker-boundary assertion required a focused formatting pass; the final format check covers the complete changed Python set
   - a broad historical marker run collected unrelated optional-dependency tests; the final gate runs only the four files that contain historical_audit decorators, and the selector regression test enforces this boundary
+  - hosted PR Fast run 40282365162 found the new replay manifest's machine-specific absolute `skill_source` path through the frozen v0.2.6 local-path exception test; removed that nonessential machine path and reran all three ledger/hash checks successfully without changing the ledger
 changed_files:
   - scripts/ci/run_gate.py
   - scripts/README.md
