@@ -3,7 +3,7 @@
   "issue": 816,
   "ruleset": 25554248,
   "protected_branches": ["main", "maint/0.2"],
-  "policy": "Every required check runs on every PR targeting either protected branch, regardless of changed paths. Push producers cover both protected branches where they support push events.",
+  "policy": "Every required check runs on every PR targeting either protected branch, regardless of changed paths. Required jobs and their steps do not use continue-on-error, so applicable failures remain failures. Push producers cover both protected branches where they support push events.",
   "cost_note": "Mandatory jobs now execute for every PR on either protected branch. CI cost rises intentionally so real job failures continue to block merging.",
   "producers": {
     "pr-fast.yml": {

@@ -109,3 +109,10 @@ def test_required_jobs_have_no_job_level_conditions_or_dependency_skips() -> Non
         job = workflow["jobs"][item["job"]]
         assert "if" not in job, item["context"]
         assert "needs" not in job, item["context"]
+        assert str(job.get("continue-on-error", "false")).lower() != "true", item[
+            "context"
+        ]
+        for step in job.get("steps", []):
+            assert str(step.get("continue-on-error", "false")).lower() != "true", item[
+                "context"
+            ]
