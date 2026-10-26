@@ -264,7 +264,9 @@ def _load_workflow(path: Path) -> dict:
 def test_required_docs_checks_run_for_every_pull_request_without_legacy_build():
     workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
     pull_request = workflow[True]["pull_request"]
-    assert pull_request == {"branches": ["main"]}
+    assert set(pull_request["branches"]) >= {"main", "maint/0.2"}
+    assert "paths" not in pull_request
+    assert "paths-ignore" not in pull_request
 
     legacy_context = workflow["jobs"]["docs-pr"]
     assert legacy_context["name"] == "Docs build and smoke checks"

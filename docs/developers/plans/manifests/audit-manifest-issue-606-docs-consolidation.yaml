@@ -99,6 +99,14 @@ checks:
       and post-merge Pages readback remain required.
   - command: git diff --cached --check
     result: exit 0; staged diff is whitespace-clean
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/docs/test_docs_conf_runtime.py tests/test_issue_816_required_checks.py
+    result: exit 0; 15 passed in 2.24s after merging main commit 8234272ffeddec4e3a252ed3bf2bec8c76b199ba
+  - command: rtk proxy conda run -n gwexpy ruff check tests/docs/test_docs_conf_runtime.py
+    result: exit 0; all checks passed
+  - command: rtk proxy conda run -n gwexpy ruff format --check tests/docs/test_docs_conf_runtime.py
+    result: exit 0; 1 file already formatted
 omitted:
   - >-
     Repository-wide pytest, Ruff, and MyPy were not run; checks were selected

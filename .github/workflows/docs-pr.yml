@@ -2,9 +2,9 @@ name: Docs PR
 
 on:
   pull_request:
-    branches: [main]
-# Both Docs PR check contexts are required on main. Keep this workflow free of
-# path filters so code-only and workflow-only PRs cannot leave them pending.
+    branches: [main, maint/0.2]
+# Both Docs PR check contexts are required on main and maint/0.2. Keep this
+# workflow free of path filters so every PR receives both required contexts.
 
 permissions:
   contents: read
