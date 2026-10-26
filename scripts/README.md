@@ -30,7 +30,14 @@ python scripts/ci/run_gate.py io-conformance
 
 # Full PR fast validation gate
 python scripts/ci/run_gate.py pr-fast
+
+# Replay pinned historical publication and audit evidence
+python scripts/ci/run_gate.py historical-audit-replay
 ```
+
+The historical replay is separate from ordinary PR Fast. It checks archived
+publication and audit evidence; current candidate and publication-status
+checks remain in PR Fast.
 
 ## Root-level utility scripts
 

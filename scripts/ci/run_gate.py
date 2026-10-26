@@ -16,6 +16,13 @@ import xml.etree.ElementTree as ET
 from collections.abc import Iterable
 from pathlib import Path
 
+HISTORICAL_AUDIT_TESTS = [
+    "tests/docs/test_v023_release_closure.py",
+    "tests/docs/test_v024_publication_status.py",
+    "tests/docs/test_docs_redesign_release_facts.py",
+    "tests/test_v025_historical_gate.py",
+]
+
 
 def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
     """Run one command and fail fast."""
@@ -141,7 +148,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "pytest",
                 "-q",
                 "-m",
-                "not network and not nds and not root",
+                "not network and not nds and not root and not historical_audit",
                 "--ignore=tests/docs/test_docs_notebooks.py",
                 "--ignore=tests/io/",
                 "--ignore=tests/io_conformance/",
@@ -155,6 +162,10 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "tests/",
             ]
         )
+        return
+
+    if gate == "historical-audit-replay":
+        run_cmd(["pytest", "-q", "-m", "historical_audit", *HISTORICAL_AUDIT_TESTS])
         return
 
     if gate == "io-contract":
@@ -328,6 +339,7 @@ def main(argv: list[str] | None = None) -> int:
         "gate",
         choices=[
             "pr-fast",
+            "historical-audit-replay",
             "io-contract",
             "io-conformance",
             "io-optional",

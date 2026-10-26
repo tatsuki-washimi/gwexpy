@@ -342,6 +342,7 @@ markers = [
     "network: tests requiring external network access (GWOSC, DataFind, etc.)",
     "upstream_gwosc_live: upstream GWpy test that requires a live GWOSC/DataFind request or a fixture fetched from that service",
     "root: tests requiring optional PyROOT/ROOT native bindings",
+    "historical_audit: immutable historical publication and audit replay checks",
 ]
 filterwarnings = [
     "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",
