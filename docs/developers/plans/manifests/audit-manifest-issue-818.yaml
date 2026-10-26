@@ -6,6 +6,8 @@ source_base_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
 skills_used:
   - name: superpowers:test-driven-development
     status: used for the normal-gate and replay selection regression tests
+  - name: gwexpy_conda_jobs
+    status: used; pytest and ruff ran under the gwexpy conda environment
 checks:
   - command: >-
       rtk conda run -n gwexpy python -m pytest -q tests/test_run_gate.py
@@ -21,8 +23,20 @@ checks:
       tests/docs/test_v024_publication_status.py
       tests/test_v025_historical_gate.py
     result: exit 0; all checks passed
-  - command: git diff --check origin/main...HEAD
-    result: exit 0; no whitespace errors in the committed base range
+  - command: >-
+      rtk conda run -n gwexpy ruff format --check scripts/ci/run_gate.py
+      tests/test_run_gate.py tests/docs/test_docs_redesign_release_facts.py
+      tests/docs/test_v023_release_closure.py
+      tests/docs/test_v024_publication_status.py
+      tests/test_v025_historical_gate.py
+    result: exit 0; six files already formatted
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: >-
+      rtk conda run -n gwexpy python -c "import yaml;
+      yaml.safe_load(open('docs/developers/plans/manifests/audit-manifest-issue-818.yaml',
+      encoding='utf-8')); print('YAML parsed')"
+    result: exit 0; YAML parsed
 physics:
   summary: not applicable; changes partition historical audit tests from current CI selection
 omitted:
