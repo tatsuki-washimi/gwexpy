@@ -32,6 +32,8 @@ DOCS_BUILD_GIT_PATHS = tuple(
     pattern[:-3] if pattern.endswith("/**") else pattern
     for pattern in DOCS_BUILD_INPUTS
 )
+PREVIEW_WORKFLOW_PATH = ".github/workflows/docs-redesign-preview.yml"
+PREVIEW_DOCS_BUILD_GIT_PATHS = DOCS_BUILD_GIT_PATHS + (PREVIEW_WORKFLOW_PATH,)
 LEGACY_PREVIEW_SUBJECT_RE = re.compile(
     r"^deploy\(preview\): docs_redesign ([0-9a-f]{40})$"
 )
@@ -245,6 +247,7 @@ def check_publication_order(
     candidate_revision: str,
     deployed_site: Path,
     main_ref: str = "HEAD",
+    preview_workflow: bool = False,
 ) -> str | None:
     """Reject stale Docs inputs before `rsync --delete`, allowing unrelated commits."""
     candidate_revision = _revision(candidate_revision, "candidate source revision")
@@ -271,6 +274,9 @@ def check_publication_order(
                 "candidate is not the current main commit or its ancestor; "
                 "refusing a stale publication"
             )
+        input_paths = (
+            PREVIEW_DOCS_BUILD_GIT_PATHS if preview_workflow else DOCS_BUILD_GIT_PATHS
+        )
         changed_inputs = subprocess.run(
             [
                 "git",
@@ -281,7 +287,7 @@ def check_publication_order(
                 candidate_revision,
                 current_main_revision,
                 "--",
-                *DOCS_BUILD_GIT_PATHS,
+                *input_paths,
             ],
             capture_output=True,
             check=False,
@@ -345,6 +351,7 @@ def main(argv: list[str] | None = None) -> int:
     order_parser.add_argument("--candidate-revision", required=True)
     order_parser.add_argument("--deployed-site", type=Path, required=True)
     order_parser.add_argument("--main-ref", default="HEAD")
+    order_parser.add_argument("--preview-workflow", action="store_true")
 
     args = parser.parse_args(argv)
     try:
@@ -368,6 +375,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.candidate_revision,
                 args.deployed_site,
                 args.main_ref,
+                args.preview_workflow,
             )
             print(
                 "Publication order verified: "

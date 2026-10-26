@@ -12,6 +12,8 @@ import yaml
 from scripts.ci.docs_publish_guard import (
     DOCS_BUILD_GIT_PATHS,
     DOCS_BUILD_INPUTS,
+    PREVIEW_DOCS_BUILD_GIT_PATHS,
+    PREVIEW_WORKFLOW_PATH,
     DocsPublishError,
     check_publication_order,
     create_artifact_manifest,
@@ -225,6 +227,28 @@ def test_docs_input_patterns_match_the_publisher_guard_pathspecs() -> None:
         pattern[:-3] if pattern.endswith("/**") else pattern
         for pattern in DOCS_BUILD_INPUTS
     )
+    assert PREVIEW_DOCS_BUILD_GIT_PATHS == (
+        DOCS_BUILD_GIT_PATHS + (PREVIEW_WORKFLOW_PATH,)
+    )
+
+
+def test_preview_candidate_is_stale_when_preview_workflow_changes(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    revision_a, _, _ = _init_history(repo)
+    preview_workflow = repo / PREVIEW_WORKFLOW_PATH
+    preview_workflow.parent.mkdir(parents=True, exist_ok=True)
+    preview_workflow.write_text("name: updated preview\n", encoding="utf-8")
+    _run_git(repo, "add", PREVIEW_WORKFLOW_PATH)
+    _run_git(repo, "commit", "-m", "update preview workflow")
+    revision_b = _run_git(repo, "rev-parse", "HEAD")
+    deployed_site = tmp_path / "gh-pages" / "preview-docs-redesign"
+
+    assert revision_a != revision_b
+    assert check_publication_order(repo, revision_a, deployed_site) is None
+    with pytest.raises(DocsPublishError, match="relevant Docs inputs changed"):
+        check_publication_order(repo, revision_a, deployed_site, preview_workflow=True)
 
 
 def test_publication_fails_closed_for_unbound_site_state(tmp_path: Path) -> None:

@@ -215,7 +215,8 @@ jobs:
             --repository "${GITHUB_WORKSPACE}" \
             --candidate-revision "${GITHUB_SHA}" \
             --deployed-site "${GITHUB_WORKSPACE}/.gh-pages-publish/preview-docs-redesign" \
-            --main-ref refs/remotes/origin/main
+            --main-ref refs/remotes/origin/main \
+            --preview-workflow
 
       - name: Prepare preview update
         id: prepare-publish
@@ -249,7 +250,8 @@ jobs:
             --repository "${GITHUB_WORKSPACE}" \
             --candidate-revision "${GITHUB_SHA}" \
             --deployed-site "${GITHUB_WORKSPACE}/.gh-pages-publish/preview-docs-redesign" \
-            --main-ref refs/remotes/origin/main
+            --main-ref refs/remotes/origin/main \
+            --preview-workflow
 
       - name: Publish preview to gh-pages
         if: steps.prepare-publish.outputs.changed == 'true'

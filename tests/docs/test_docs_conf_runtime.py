@@ -340,6 +340,7 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     assert download["with"]["digest-mismatch"] == "error"
     assert "docs_publish_guard.py verify-artifact" in verify["run"]
     assert "docs_publish_guard.py check-order" in order["run"]
+    assert "--preview-workflow" not in order["run"]
     assert "--expected-manifest" in readback_hashes["run"]
     assert "--manifest-only" in readback_hashes["run"]
     assert "--main-ref refs/remotes/origin/main" in order["run"]
@@ -405,6 +406,8 @@ def test_docs_preview_workflow_is_manual_dispatch_only():
     assert download["with"]["digest-mismatch"] == "error"
     assert "docs_publish_guard.py verify-artifact" in verify["run"]
     assert "docs_publish_guard.py check-order" in order["run"]
+    assert "--preview-workflow" in order["run"]
+    assert "--preview-workflow" in refresh_before_push["run"]
     assert "--expected-manifest" in readback_hashes["run"]
     assert "--manifest-only" in readback_hashes["run"]
     assert "--main-ref refs/remotes/origin/main" in order["run"]
