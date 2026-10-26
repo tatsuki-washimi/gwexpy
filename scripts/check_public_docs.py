@@ -322,9 +322,14 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
                 elif url.fragment and target.suffix == ".html":
                     if unquote(url.fragment) not in parse(target).ids:
                         errors.append(f"{language}{name}: missing anchor {href}")
+        public_notebooks = info.get("public_notebooks")
+        if public_notebooks is None:
+            # Read build metadata emitted before public notebooks became their
+            # own source of executable cells.
+            public_notebooks = info.get("notebook_sources", {}).keys()
         cases = [
             name.removesuffix(".ipynb")
-            for name in info.get("notebook_sources", {})
+            for name in public_notebooks
             if name.startswith("how-to/case-studies/")
         ]
         if not cases:

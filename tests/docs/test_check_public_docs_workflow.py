@@ -51,7 +51,7 @@ def _build_tree(root: Path) -> None:
         info = {
             "source_revision": REVISION,
             "language_baseurl": BASEURL,
-            "notebook_sources": {"how-to/case-studies/case_x.ipynb": "x"},
+            "public_notebooks": ["how-to/case-studies/case_x.ipynb"],
             "notebook_execution": {
                 "how-to/case-studies/case_x": {"succeeded": True, "runtime": 1.0}
             },

@@ -22,7 +22,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10002
 #: 0c0db946ab3349398a69456816c677b0
 msgid "Bruco: Bilinear Coupling and AM/FM Demodulation"
-msgstr "Bruco: バイリニアカップリングと AM/FM 復調"
+msgstr "BruCo: バイリニアカップリングと AM/FM 復調"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10004
 #: ed2374b16c8149be90ecd7d7088045cd
@@ -33,7 +33,7 @@ msgid ""
 " two common advanced patterns found in O4 commissioning data and distilled "
 "from the gwexpy usage catalog:"
 msgstr ""
-"標準的な Bruco スキャンは、DARM "
+"標準的な BruCo スキャンは、DARM "
 "と補助チャンネル間の**線形**コヒーレンスのみを検出します。実際の干渉計ノイズには、線形スキャンが完全に見逃す**非線形**結合メカニズムがしばしば関与します。このチュートリアルでは、O4"
 " コミッショニングデータで見られ、gwexpy のユースケースカタログから抽出された 2 つの一般的な高度なパターンを扱います："
 
@@ -43,7 +43,7 @@ msgid ""
 "**Bilinear coupling detection** — build a synthetic witness `fast × slow` "
 "and run Bruco on the extended channel set."
 msgstr ""
-"**双線形結合の検出** — 合成 witness `fast × slow` を構築し、拡張したチャンネルセットに対して Bruco を実行します。"
+"**双線形結合の検出** — 合成 witness `fast × slow` を構築し、拡張したチャンネルセットに対して BruCo を実行します。"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10011
 #: 998f6c26c09e47acb6dddf889b40de1e
@@ -62,7 +62,7 @@ msgid ""
 " how should we encode that hypothesis so Bruco can test it."
 msgstr ""
 "どちらの場合も物理的な問いは同じです。どのゆっくりした環境変数や制御変数が DARM に見られる高周波の特徴を変調しているのか、そしてその仮説を "
-"Bruco が検証できるようにどう符号化すべきか、ということです。"
+"BruCo が検証できるようにどう符号化すべきか、ということです。"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10016
 #: 16016ecdaaa14bad888fb7ebe27fccc2
@@ -72,12 +72,12 @@ msgstr "**前提条件**:"
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10017
 #: 09b881f532824eb1954d21189f0ba6eb
 msgid "[Noise Hunting with Bruco](../coupling/advanced_bruco.ipynb)"
-msgstr "[Bruco によるノイズハンティング](../coupling/advanced_bruco.ipynb)"
+msgstr "[BruCo によるノイズハンティング](../coupling/advanced_bruco.ipynb)"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10018
 #: 3a3d5e1f0295466083dfe9df26917c5c
 msgid "[Bruco + ICA End-to-End Denoising](case_bruco_ica_denoising.ipynb)"
-msgstr "[Bruco + ICA エンドツーエンドのノイズ除去](case_bruco_ica_denoising.ipynb)"
+msgstr "[BruCo + ICA エンドツーエンドのノイズ除去](case_bruco_ica_denoising.ipynb)"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:20002
 #: 3fd7c00b906b435483eba7f7000b6df0
@@ -148,7 +148,7 @@ msgid ""
 "witness channels are individually incoherent with DARM — only their "
 "*product* is."
 msgstr ""
-"線形 Bruco では個々のウィットネスチャンネルと DARM の直接コヒーレンスは低く、 バイリニアカップリングは**検出されません**。"
+"線形 BruCo では個々のウィットネスチャンネルと DARM の直接コヒーレンスは低く、 バイリニアカップリングは**検出されません**。"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:40014
 #: 7939b7594daf426aabdf8013d63bf0ed
@@ -163,7 +163,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:70002
 #: 6964521efc0d4508a46b05e86eb02199
 msgid "2. Linear Bruco Scan (Baseline)"
-msgstr "2\\. 線形 Bruco スキャン（ベースライン）"
+msgstr "2\\. 線形 BruCo スキャン（ベースライン）"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:70004
 #: 537f22e29a7944239c8780859e233c9b
@@ -379,7 +379,7 @@ msgid ""
 "**Linear Bruco is not sufficient** when coupling has the form `DARM ≈ f_fast"
 " × f_slow`. Building a synthetic `fast × slow` witness restores coherence."
 msgstr ""
-"結合が `DARM ≈ f_fast × f_slow` の形をとる場合、**線形 Bruco では不十分**です。合成 `fast × slow` "
+"結合が `DARM ≈ f_fast × f_slow` の形をとる場合、**線形 BruCo では不十分**です。合成 `fast × slow` "
 "witness を構築するとコヒーレンスが回復します。"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:160016
