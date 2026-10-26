@@ -2,9 +2,9 @@
   "schema_version": 1,
   "issue": 816,
   "base_commit": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
-  "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/issue-816",
-  "skills_used": [],
-  "skill_availability": "The .agent/skills links described by .agent/AGENTS.md are absent in this checkout; repository instructions were followed directly.",
+  "worktree": "external scratch worktree",
+  "skills_used": ["superpowers:test-driven-development"],
+  "skill_availability": "Repository instructions were followed; no project-local skill symlinks were present in this checkout.",
   "context_name_source": "Ruleset 25554248 uses exact job-name-only context strings; the evidence mapping and test compare those strings to rendered job names including matrix values.",
   "commands": [
     {
@@ -34,11 +34,19 @@
     {
       "command": "python -m json.tool docs/developers/plans/manifests/issue-816-required-checks-v1.json",
       "result": "Passed JSON syntax validation."
+    },
+    {
+      "command": "gh run view 40276499900 --job 121420252288 --log-failed",
+      "result": "Hosted PR Fast ran 11,415 passed, 397 skipped, 28 deselected, and 7 xfailed; six failed. Four failures asserted removed workflow path filters, one found the audit manifest's absolute local worktree path, and the active v0.2.6 S-to-R guard correctly rejected a source SHA different from its approved candidate. Updated the four stale workflow assertions and removed the absolute local path. The candidate-binding guard is retained."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python -m pytest -q <four workflow regressions> tests/test_v026_local_path_exceptions.py::test_local_path_hits_are_exactly_the_reviewed_exceptions tests/test_release_review_evidence.py::test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate",
+      "result": "Five passed; the sole remaining failure is the active v0.2.6 S-to-R binding rejecting this PR head beyond the approved R. This protected-release-source condition is not bypassed."
     }
   ],
   "checks_omitted": [
-    "actionlint because it is not installed in this worktree; the focused static test parsed the five edited workflow files with PyYAML and validated triggers, context/job/matrix mapping, and job-level skip conditions.",
-    "Full PR Fast, Docs PR, Repo Hygiene, GWpy compatibility, and Actionlint producer jobs because they are hosted CI workflows; only the focused local static regression test and Python style checks were run."
+    "Actionlint is not installed locally; hosted Actionlint passed on PR #823 run 40276499907.",
+    "Hosted Docs PR and Repo Hygiene passed on PR #823 run 40276499900/40276499959. GWpy compatibility 4.0.1 and 4.0.2 passed on run 40276499939. PR Fast must be rerun after the stale assertions were updated; its current-source review failure remains a protected v0.2.6 candidate binding."
   ],
   "check_physics": "Not applicable; workflow trigger and static-test changes only.",
   "changed_files": [
@@ -49,6 +57,10 @@
     ".github/workflows/test-compat-gwpy.yml",
     "docs/developers/plans/manifests/issue-816-required-checks-v1.json",
     "docs/developers/plans/manifests/issue-816-audit-v1.json",
-    "tests/test_issue_816_required_checks.py"
+    "tests/test_issue_816_required_checks.py",
+    "tests/docs/test_docs_conf_runtime.py",
+    "tests/docs/test_gwpy4_proxy_workflow.py",
+    "tests/test_gwpy_override_inventory.py",
+    "tests/test_release_gate_workflow_contract.py"
   ]
 }
