@@ -18,32 +18,10 @@ GWOSC_PHASE_A2 = ROOT / "tests/docs/gwosc_timeseries_phase_a2_category_c.json"
 
 def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
-    paths = set(workflow[True]["pull_request"]["paths"])
-    required_existing = {
-        "gwexpy/timeseries/**",
-        "gwexpy/frequencyseries/**",
-        "gwexpy/spectrogram/**",
-        "gwexpy/signal/**",
-        "gwexpy/types/**",
-        "gwexpy/interop/**",
-        "gwexpy/io/**",
-        "gwexpy/fitting/**",
-        "gwexpy/plot/**",
-        "gwexpy/utils/**",
-        "tests/timeseries/**",
-        "pyproject.toml",
-        "requirements*.txt",
-        "environment.yml",
-        ".github/workflows/test-compat-gwpy.yml",
-    }
-    required_new = {
-        "gwexpy/table/**",
-        "tests/table/**",
-        "tests/interop/**",
-        "tests/test_gwpy4_proxy_contract.py",
-        "docs/developers/contracts/public_io_contract.*",
-    }
-    assert required_existing | required_new <= paths
+    pull_request = workflow[True]["pull_request"]
+    assert set(pull_request["branches"]) >= {"main", "maint/0.2"}
+    assert "paths" not in pull_request
+    assert "paths-ignore" not in pull_request
 
     job = workflow["jobs"]["gwpy-compat"]
     strategy = job["strategy"]

@@ -22,12 +22,10 @@ def test_actionlint_required_check_runs_for_release_pr_targets_without_path_filt
 
     assert events["pull_request"]["branches"] == ["main", "maint/0.1", "maint/0.2"]
     assert "paths" not in events["pull_request"]
-    assert events["push"]["branches"] == ["main", "maint/0.1"]
-    assert events["push"]["paths"] == [
-        ".github/workflows/**",
-        ".github/actions/**",
-        ".github/actionlint.yaml",
-    ]
+    assert "paths-ignore" not in events["pull_request"]
+    assert events["push"]["branches"] == ["main", "maint/0.1", "maint/0.2"]
+    assert "paths" not in events["push"]
+    assert "paths-ignore" not in events["push"]
     assert "workflow_dispatch" in events
 
     job = workflow["jobs"]["actionlint"]
