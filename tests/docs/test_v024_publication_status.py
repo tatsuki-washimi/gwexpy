@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +18,7 @@ REPORT_PATH = (
 )
 
 
+@pytest.mark.historical_audit
 def test_v024_publication_status_binds_verified_source_and_channels() -> None:
     manifest = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
 
@@ -109,6 +111,7 @@ def test_v024_publication_status_binds_verified_source_and_channels() -> None:
     }
 
 
+@pytest.mark.historical_audit
 def test_v024_publication_record_preserves_example_and_docs_readback_state() -> None:
     manifest = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
     report = REPORT_PATH.read_text(encoding="utf-8")
