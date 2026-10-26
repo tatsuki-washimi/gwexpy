@@ -15,8 +15,10 @@ CSV_CADENCE_CONTRACT = (
     "CSV validates numeric and configured component-column cadence before "
     "resampling, using continuous GPS instants for UTC components. It rejects "
     "malformed or irregular input and any absolute float64 axis whose rounding "
-    "error or spacing is not strictly below half the cadence. `resample=` applies "
-    "only to requested channels; the 10,000,000-value cap covers all resampled "
+    "error or spacing is not strictly below half the cadence. `resample=` must be "
+    "finite and positive; requested-channel output values are evaluated on the "
+    "exact target-cadence grid instead of relabelling source samples. The "
+    "10,000,000-value cap covers all resampled "
     "values across a top-level single- or multi-file read before allocation."
 )
 
@@ -171,7 +173,9 @@ def test_csv_cadence_contract_has_japanese_translation() -> None:
         "CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、"
         "UTC component には連続 GPS instant を使います。不正または不規則な入力と、"
         "丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。"
-        "`resample=` は要求された channel だけに適用され、10,000,000個の上限は "
+        "`resample=` は有限かつ正でなければならず、要求された channel の出力値は厳密な "
+        "target cadence grid 上で評価します。source sample に異なる `dt` を付け替えません。"
+        "10,000,000個の上限は "
         "top-level の単一または multi-file read 全体で allocation 前に全 resampled value "
         "を数えます。"
     )

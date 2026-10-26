@@ -146,6 +146,17 @@ def test_japanese_guide_rows_match_contract():
                 for item in translations
                 if item["msgid"] == api_cell
             )
+        details_link = entry.get("details_link")
+        if details_link:
+            expected_target = details_link.removesuffix(".rst")
+            details_cell = cells[4]
+            assert any(
+                f"]({expected_target})" in item["msgstr"]
+                for item in translations
+                if item["msgid"] == details_cell
+            ), (
+                f"Japanese details link for {entry['name']!r} must target {expected_target!r}"
+            )
 
 
 def test_mth5_row_is_now_public_in_both_guides():
@@ -162,7 +173,8 @@ def test_mth5_row_is_now_public_in_both_guides():
     assert any("to_mth5()" in item["msgstr"] for item in ja_entries)
     assert any("from_mth5()" in item["msgstr"] for item in ja_entries)
     assert "[API](../reference/api/gwexpy.interop.mt_)" in en_line
-    assert any("gwexpy.interop.mt_" in item["msgid"] for item in ja_entries)
+    ja_mth5_target = contract["mth5"]["details_link"].removesuffix(".rst")
+    assert any(f"]({ja_mth5_target})" in item["msgstr"] for item in ja_entries)
 
 
 def test_contract_covers_all_documented_interop_rows():
