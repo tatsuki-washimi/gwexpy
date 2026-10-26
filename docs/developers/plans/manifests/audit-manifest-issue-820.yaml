@@ -2,20 +2,20 @@ schema: gwexpy-agent-audit-v1
 issue: 820
 date_utc: 2026-10-26
 status: ready_for_owner_adoption
-source_base_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 skills_used:
   - name: superpowers:brainstorming
     status: used to bound the report as advisory and leave active approval semantics unchanged
   - name: gwexpy_conda_jobs
     status: used; focused pytest, ruff, and mypy ran under the gwexpy conda environment
 checks:
-  - command: rtk conda run -n gwexpy python -m pytest -q tests/test_release_change_impact.py
-    result: exit 0; 15 passed
-  - command: rtk conda run -n gwexpy ruff check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
+  - command: rtk proxy conda run -n gwexpy python -m pytest -q tests/test_release_change_impact.py
+    result: exit 0; 38 passed, including release-control path and science-digest regressions
+  - command: rtk proxy conda run -n gwexpy ruff check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
     result: exit 0; all checks passed
-  - command: rtk conda run -n gwexpy ruff format --check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
+  - command: rtk proxy conda run -n gwexpy ruff format --check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
     result: exit 0; both files already formatted
-  - command: rtk conda run -n gwexpy mypy scripts/ci/release_change_impact.py
+  - command: rtk proxy conda run -n gwexpy mypy scripts/ci/release_change_impact.py
     result: exit 0; no issues found in one source file
   - command: git diff --check
     result: exit 0; no whitespace errors
@@ -45,9 +45,11 @@ omitted:
     action was performed.
   - >-
     Synthetic git repositories exercise product, build, workflow, documentation,
-    metadata, deletion, malformed record, unknown path, and current-lane cases.
-    The real candidate check used the existing v0.2.6 contract at its approved
-    source without a source diff.
+    metadata, deletion, malformed record, unknown path, current-lane, and
+    release-control test classification cases. Direct release orchestration,
+    qualification-evidence, metadata, artifact, notes, and PyPI-readback tests
+    are excluded from the scientific-input digest. The real candidate check used
+    the existing v0.2.6 contract at its approved source without a source diff.
 physics:
   summary: not applicable; no scientific runtime or numerical behavior changed
 files_changed:

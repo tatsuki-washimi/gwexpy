@@ -192,10 +192,31 @@ def test_unmapped_path_fails_closed_and_disables_reuse_candidate(tmp_path: Path)
     )
 
 
-def test_release_test_change_is_not_misclassified_as_scientific_test():
-    categories = impact.classify_path("tests/test_release_promotion.py")
-    assert "release_control" in categories
-    assert "scientific_tests" not in categories
+@pytest.mark.parametrize("path", impact.RELEASE_TEST_PATHS)
+def test_release_control_test_paths_are_not_misclassified_as_scientific(path: str):
+    assert impact.classify_path(path) == ["release_control"]
+
+
+def test_pypi_readback_test_change_maps_to_release_review_without_science_digest(
+    tmp_path: Path,
+):
+    repo, base = repository(tmp_path)
+    candidate = commit_change(
+        repo,
+        "tests/test_pypi_readback.py",
+        "def test_readback(): assert '0.2.6'\n",
+    )
+
+    report = impact.analyze_change_impact(
+        repo, tag="v0.2.6", base=base, candidate=candidate
+    )
+
+    assert report["current_contract_affected_lanes"] == ["scientific-data-model"]
+    assert report["proposed_impact_review_lanes"] == ["release-security"]
+    assert report["scientific_inputs"]["unchanged"] is True
+    assert report["proposed_local_validation_scopes"] == [
+        "workflow_and_release_control_checks"
+    ]
 
 
 def test_build_input_change_impacts_science_and_release_security(tmp_path: Path):

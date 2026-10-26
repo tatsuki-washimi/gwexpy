@@ -19,8 +19,19 @@ from release_contract import release_contract
 SCHEMA = "gwexpy-release-change-impact-v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 RELEASE_TEST_PATHS = (
+    "tests/test_check_forbidden_artifacts_script.py",
+    "tests/test_check_release_artifacts_script.py",
+    "tests/test_check_release_metadata_script.py",
+    "tests/test_gen_release_notes.py",
+    "tests/test_generate_evidence_pack_script.py",
+    "tests/test_post_release_qualification_workflow.py",
+    "tests/test_pypi_readback.py",
+    "tests/test_qualification_skip_evidence.py",
+    "tests/test_diaggui_qualification_evidence.py",
     "tests/test_publish_release_workflow.py",
     "tests/test_release_contracts.py",
+    "tests/test_release_change_impact.py",
+    "tests/test_v025_cross_format_io_evidence.py",
     "tests/test_release_evidence.py",
     "tests/test_release_gate_workflow_contract.py",
     "tests/test_release_go.py",
@@ -30,6 +41,7 @@ RELEASE_TEST_PATHS = (
     "tests/test_release_review_evidence.py",
     "tests/test_validate_release_script.py",
     "tests/test_v026_review_evidence_v2.py",
+    "tests/qualification/test_qualify_published_release.py",
 )
 PROPOSED_LANE_NAMES = frozenset(
     {"scientific-data-model", "release-security", "documentation"}
