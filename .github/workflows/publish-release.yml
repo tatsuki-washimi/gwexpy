@@ -1257,6 +1257,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Observe original immutable artifact IDs and verify their API archives
+        id: finalize
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
@@ -1267,6 +1268,7 @@ jobs:
             --version "${{ needs.verify.outputs.version }}" --repo-root source \
             --output "${{ runner.temp }}/promotion-manifest/promotion-manifest.json"
       - name: Upload the sole new manifest artifact
+        if: steps.finalize.outputs.upload_manifest == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-promotion-manifest-${{ needs.verify.outputs.source_sha }}
@@ -1420,6 +1422,32 @@ jobs:
           cp "${{ runner.temp }}/release-distribution-sidecar/distribution-sha256.json" "${{ runner.temp }}/release-sidecars/"
           cp "${{ runner.temp }}/release-license-sidecar/LICENSE.sha256" "${{ runner.temp }}/release-sidecars/"
           cp "$MANIFEST" "${{ runner.temp }}/release-sidecars/promotion-manifest.json"
+      - name: Recheck annotated tag before Release writes
+        working-directory: source
+        env:
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
+        run: |
+          git ls-remote origin "refs/tags/$EXPECTED_TAG" "refs/tags/$EXPECTED_TAG^{}" > "$RUNNER_TEMP/tag-before-release.txt"
+          python - "$EXPECTED_TAG" "$EXPECTED_SOURCE_SHA" "$EXPECTED_TAG_OBJECT_SHA" "$RUNNER_TEMP/tag-before-release.txt" <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts/ci")
+          from validate_github_release_readback import validate_tag_identity
+
+          refs = {}
+          for line in Path(sys.argv[4]).read_text(encoding="utf-8").splitlines():
+              object_sha, ref = line.split("\t", 1)
+              refs[ref] = object_sha
+          tag = sys.argv[1]
+          validate_tag_identity(
+              tag_object_sha=refs.get(f"refs/tags/{tag}", ""),
+              peeled_sha=refs.get(f"refs/tags/{tag}^{{}}", ""),
+              expected_tag_object_sha=sys.argv[3],
+              expected_source_sha=sys.argv[2],
+          )
+          PY
       - name: Use committed notes and check for an existing exact Release
         id: existing
         working-directory: source
@@ -1473,6 +1501,51 @@ jobs:
             --notes-file "${{ runner.temp }}/release-notes.md" \
             --target "$EXPECTED_SOURCE_SHA" \
             --verify-tag
+      - name: Verify existing Release assets and upload only missing candidate files
+        if: steps.existing.outputs.existing == 'true'
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXISTING_RELEASE_PATH: ${{ runner.temp }}/existing-release.json
+        run: |
+          mkdir -p "$RUNNER_TEMP/existing-release-assets"
+          if [[ "$(jq '.assets | length' "$EXISTING_RELEASE_PATH")" -gt 0 ]]; then
+            gh release download "$EXPECTED_TAG" --repo "$GITHUB_REPOSITORY" --dir "$RUNNER_TEMP/existing-release-assets"
+          fi
+          python scripts/ci/validate_github_release_readback.py \
+            --readback "$EXISTING_RELEASE_PATH" \
+            --tag "$EXPECTED_TAG" \
+            --source-sha "$EXPECTED_SOURCE_SHA" \
+            --notes "${{ runner.temp }}/release-notes.md" \
+            --payload-dir "${{ runner.temp }}/release-payload" \
+            --sidecars-dir "${{ runner.temp }}/release-sidecars" \
+            --downloaded-dir "$RUNNER_TEMP/existing-release-assets" \
+            --existing-release > "$RUNNER_TEMP/release-missing-assets.json"
+          python - "$RUNNER_TEMP/release-missing-assets.json" "$EXPECTED_TAG" "$GITHUB_REPOSITORY" "${{ runner.temp }}/release-payload" "${{ runner.temp }}/release-sidecars" <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          missing = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["missing"]
+          payload = Path(sys.argv[4])
+          sidecars = Path(sys.argv[5])
+          files = {path.name: path for path in payload.iterdir()}
+          files.update({path.name: path for path in sidecars.iterdir()})
+          if len(files) != len(list(payload.iterdir())) + len(list(sidecars.iterdir())):
+              raise SystemExit("candidate payload and sidecar filenames overlap")
+          for name in missing:
+              path = files.get(name)
+              if path is None:
+                  raise SystemExit("missing Release asset is not in the candidate: " + name)
+              subprocess.run(
+                  ["gh", "release", "upload", sys.argv[2], str(path), "--repo", sys.argv[3]],
+                  check=True,
+              )
+          PY
       - name: Verify exact five Release assets and annotated tag readback
         working-directory: source
         env:
@@ -1528,6 +1601,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      issues: read
       id-token: write
     steps:
       - name: Check out release validator
@@ -1573,10 +1647,43 @@ jobs:
           python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:distribution-sha256.json --directory "${{ runner.temp }}/release-distribution-sidecar"
           python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:LICENSE.sha256 --directory "${{ runner.temp }}/release-license-sidecar"
           python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role promotion-manifest --directory "${{ runner.temp }}/release-manifest" --manifest-sha256 "${{ needs.promotion_verify.outputs.manifest_sha256 }}"
+      - name: Reconcile PyPI state against the exact candidate manifest
+        id: reconcile_pypi
+        working-directory: source
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
+        run: |
+          python scripts/ci/reconcile_pypi_upload.py \
+            --version "$EXPECTED_VERSION" \
+            --manifest "$MANIFEST" \
+            --payload-dir "${{ runner.temp }}/release-payload" \
+            --output-dir "${{ runner.temp }}/pypi-missing"
+      - name: Verify Release Owner decision for partial PyPI recovery
+        if: steps.reconcile_pypi.outputs.partial_upload == 'true'
+        working-directory: source
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          CANDIDATE_RUN_ID: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
+        run: |
+          python scripts/ci/verify_release_pypi_recovery.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --version "$EXPECTED_VERSION" \
+            --tag "$EXPECTED_TAG" \
+            --source-sha "$EXPECTED_SOURCE_SHA" \
+            --candidate-run-id "$CANDIDATE_RUN_ID" \
+            --manifest "$MANIFEST" \
+            --missing-dir "${{ runner.temp }}/pypi-missing"
       - name: Publish distribution to PyPI
+        if: steps.reconcile_pypi.outputs.publish_required == 'true'
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
         with:
-          packages-dir: ${{ runner.temp }}/release-payload
+          packages-dir: ${{ runner.temp }}/pypi-missing
 
   github_release_legacy:
     name: Create verified GitHub Release for frozen legacy contract
