@@ -290,23 +290,33 @@ def test_idempotent(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Test 10: bulk mode generates present legacy versions without erroring
+# Test 10: omitting --version fails without writing any files
 # ---------------------------------------------------------------------------
 
 
-def test_bulk_mode_generates_present_versions(tmp_path: Path) -> None:
-    """Bulk mode (no --version) must succeed for present versions even if 0.1.12 is not yet in CHANGELOG."""
-    changelog_text = _minimal_changelog(
-        [
-            ("0.1.11", "v0.1.11 body."),
-            ("0.1.10", "v0.1.10 body."),
-        ]
-    )
-    (tmp_path / "CHANGELOG.md").write_text(changelog_text, encoding="utf-8")
-    (tmp_path / "release_notes").mkdir()
+def test_version_required_without_writing_files(tmp_path: Path) -> None:
+    """Omitting --version must fail before changing any release note bytes."""
+    changelog_src = Path(__file__).resolve().parents[1] / "CHANGELOG.md"
+    (tmp_path / "CHANGELOG.md").write_bytes(changelog_src.read_bytes())
+    out_dir = tmp_path / "release_notes"
+    out_dir.mkdir()
+    existing_notes = list(RELEASE_NOTES_DIR.glob("*.md"))
+    for note in existing_notes:
+        (out_dir / note.name).write_bytes(note.read_bytes())
+    before = {note.name: note.read_bytes() for note in out_dir.glob("*.md")}
 
     result = _run(["--root", str(tmp_path)])
-    assert result.returncode == 0, f"Bulk mode failed: {result.stderr}"
-    assert (tmp_path / "release_notes" / "v0.1.11.md").exists()
-    assert (tmp_path / "release_notes" / "v0.1.10.md").exists()
-    assert not (tmp_path / "release_notes" / "v0.1.12.md").exists()
+
+    assert result.returncode != 0, "Expected non-zero exit when --version is omitted"
+    assert "--version" in result.stderr
+    assert {note.name: note.read_bytes() for note in out_dir.glob("*.md")} == before
+
+
+def test_obsolete_publisher_is_absent_from_active_instructions() -> None:
+    """The unsafe publisher is removed and the active README has no invocation."""
+    repo = Path(__file__).resolve().parents[1]
+    readme = (repo / "release_notes" / "README.md").read_text(encoding="utf-8")
+
+    assert not (repo / "tools" / "publish_releases.sh").exists()
+    assert "publish_releases.sh" not in readme
+    assert re.search(r"(?m)^\s*(?:bash\s+)?tools/publish_releases\.sh", readme) is None
