@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import hashlib
 import io
 import json
@@ -22,55 +21,21 @@ from scripts.check_public_docs import (
     check_remote,
     check_remote_manifest,
 )
-from scripts.prepare_public_docs import canonicalize, code_cells, prepare
+from scripts.prepare_public_docs import code_cells, prepare
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
 
 
-def test_canonical_code_replaces_stale_execution_without_changing_prose() -> None:
-    public = {
-        "cells": [
-            {"cell_type": "markdown", "source": ["Translated lesson identity"]},
-            {
-                "cell_type": "code",
-                "source": ["old()"],
-                "outputs": ["stale"],
-                "execution_count": 8,
-            },
-        ]
-    }
-    canonical = {
-        "cells": [
-            {"cell_type": "code", "source": ["%pip install legacy-bootstrap"]},
-            {"cell_type": "code", "source": ["corrected()"]},
-        ]
-    }
-    result = canonicalize(copy.deepcopy(public), canonical)
-    assert result["cells"][0] == public["cells"][0]
-    assert code_cells(result)[0]["source"] == ["corrected()"]
-    assert code_cells(result)[0]["outputs"] == []
-    assert code_cells(result)[0]["execution_count"] is None
-
-
-def test_mismatched_lesson_structure_stops_preparation() -> None:
-    with pytest.raises(ValueError, match="reconcile lesson structure"):
-        canonicalize(
-            {"cells": []}, {"cells": [{"cell_type": "code", "source": ["x = 1"]}]}
-        )
-
-
-def test_all_public_notebook_execution_cells_have_one_canonical_source() -> None:
+def test_all_public_notebooks_embed_clean_execution_cells() -> None:
     for path in DOCS.rglob("*.ipynb"):
         if "_build" in path.parts:
             continue
-        canonical = ROOT / "docs/web/en/user_guide/tutorials" / path.name
-        actual = code_cells(json.loads(path.read_text()))
-        expected = code_cells(json.loads(canonical.read_text()))
-        assert len(actual) == len(expected), path
-        assert ["".join(c["source"]) for c in actual] == [
-            "".join(c["source"]) for c in expected
-        ], path
+        cells = code_cells(json.loads(path.read_text()))
+        assert cells, path
+        for cell in cells:
+            assert cell.get("outputs", []) == [], path
+            assert cell.get("execution_count") is None, path
 
 
 def test_quickstart_generates_reproducible_voltage_spectra(
@@ -140,6 +105,65 @@ def test_preparation_preserves_changelog_and_records_source_commit(tmp_path) -> 
         prepare(output, root=repository)
     with pytest.raises(ValueError, match="outside"):
         prepare(repository / "generated", root=repository)
+
+
+def test_preparation_uses_redesign_notebook_code_without_legacy_docs_tree(tmp_path):
+    repository = tmp_path / "repository"
+    source = repository / "docs_redesign" / "tutorials"
+    source.mkdir(parents=True)
+    notebook = {
+        "cells": [
+            {"cell_type": "markdown", "source": ["Translated lesson"]},
+            {
+                "cell_type": "code",
+                "source": ["value = 42\n", "print(value)"],
+                "outputs": [
+                    {
+                        "output_type": "stream",
+                        "name": "stdout",
+                        "text": ["stale output\n"],
+                    }
+                ],
+                "execution_count": 3,
+                "metadata": {"execution": {"iopub.execute_input": "stale"}},
+            },
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    path = source / "lesson.ipynb"
+    path.write_text(json.dumps(notebook), encoding="utf-8")
+    (repository / "CHANGELOG.md").write_text("Release history", encoding="utf-8")
+    subprocess.run(["git", "init", "-q", str(repository)], check=True)
+    subprocess.run(["git", "add", "."], cwd=repository, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=Docs test",
+            "-c",
+            "user.email=docs@example.invalid",
+            "commit",
+            "-qm",
+            "test fixture",
+        ],
+        cwd=repository,
+        check=True,
+    )
+
+    output = tmp_path / "prepared/docs_redesign"
+    prepare(output, root=repository)
+
+    prepared = json.loads((output / "tutorials/lesson.ipynb").read_text())
+    assert prepared["cells"][0]["source"] == ["Translated lesson"]
+    assert prepared["cells"][1]["source"] == ["value = 42\n", "print(value)"]
+    assert prepared["cells"][1]["outputs"] == []
+    assert prepared["cells"][1]["execution_count"] is None
+    assert "execution" not in prepared["cells"][1]["metadata"]
+    identity = json.loads((output / "_build_identity.json").read_text())
+    assert "notebook_sources" not in identity
+    assert identity["public_notebooks"] == ["tutorials/lesson.ipynb"]
 
 
 @pytest.mark.parametrize(

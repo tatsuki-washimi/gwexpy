@@ -5,9 +5,16 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    from scripts.po_utils import read_po
+except (
+    ModuleNotFoundError
+):  # Support direct execution as `python scripts/check_terms.py`.
+    from po_utils import read_po
+
 # Constants for directory and file paths
-# DOCS_DIR: root for Japanese documentation
-DOCS_DIR = Path("docs/web/ja")
+# DOCS_DIR: root for Japanese gettext catalogs used by the published site
+DOCS_DIR = Path("docs_redesign/locales/ja/LC_MESSAGES")
 # TERMS_CSV: CSV file defining canonical terms and their forbidden variants
 TERMS_CSV = Path("scripts/terms.csv")
 
@@ -46,6 +53,33 @@ def load_terms():
                 variants = [v.strip() for v in row[1].split("|") if v.strip()]
             terms[canonical] = variants
     return terms
+
+
+def scan_po_catalog(path, terms):
+    """Find forbidden terminology variants in translated Japanese PO strings."""
+    hits = []
+    for entry in read_po(path):
+        if "fuzzy" in entry["flags"]:
+            continue
+        translated = [entry["msgstr"], *entry["plural"]]
+        for text in translated:
+            clean_text = strip_code(text)
+            for canonical, variants in terms.items():
+                for variant in variants:
+                    for match in re.finditer(variant, clean_text, flags=re.IGNORECASE):
+                        matched_text = match.group(0)
+                        if matched_text == canonical:
+                            continue
+                        hits.append(
+                            {
+                                "path": path,
+                                "canonical": canonical,
+                                "variant_rule": variant,
+                                "matched": matched_text,
+                                "line": entry["line"],
+                            }
+                        )
+    return hits
 
 
 def strip_code(text):
@@ -116,37 +150,19 @@ def main():
         print("No terms to check.")
         return 0
 
-    # Collect markdown and rST files
-    files = list(DOCS_DIR.rglob("*.md")) + list(DOCS_DIR.rglob("*.rst"))
+    # API reference and glossary catalogs intentionally contain names and term
+    # definitions that are exempt from editorial terminology rules.
+    files = sorted(DOCS_DIR.rglob("*.po"))
     hits = []
     for p in files:
-        # Skip auto-generated API reference and Glossary (which contains variants as definitions)
-        if "reference/api" in str(p) or "glossary" in str(p):
+        relative = p.relative_to(DOCS_DIR).as_posix()
+        if relative.startswith("reference/api/") or "glossary" in relative:
             continue
         try:
-            txt = p.read_text(encoding="utf-8")
-            txt_no_code = strip_code(txt)
-            for canonical, variants in terms.items():
-                for v in variants:
-                    # Use case-insensitive word matching for the variant
-                    # Note: We use the variant regex directly from the CSV
-                    for m in re.finditer(v, txt_no_code, flags=re.IGNORECASE):
-                        # Ensure we are not matching the canonical term itself if it overlaps
-                        matched_text = m.group(0)
-                        if matched_text == canonical:
-                            continue
-                        # Record the hit details
-                        hits.append(
-                            {
-                                "path": p,
-                                "canonical": canonical,
-                                "variant_rule": v,
-                                "matched": matched_text,
-                                "line": txt.count("\n", 0, m.start()) + 1,
-                            }
-                        )
+            hits.extend(scan_po_catalog(p, terms))
         except Exception as e:
             print(f"Error reading {p}: {e}")
+            return 1
 
     if hits:
         print("Found potential term mismatches (Forbidden variants used):")
@@ -160,7 +176,7 @@ def main():
         print(f"Total mismatches: {len(hits)}")
         sys.exit(1)
     else:
-        print("Success: No suspicious variants found in Japanese documentation.")
+        print("Success: No suspicious variants found in Japanese translations.")
         return 0
 
 

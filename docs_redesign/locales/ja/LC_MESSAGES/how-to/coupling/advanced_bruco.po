@@ -22,7 +22,7 @@ msgstr ""
 #: ../../how-to/coupling/advanced_bruco.ipynb:10002
 #: 4c6e25c042844685904dcfb5a7997d3e
 msgid "Bruco: Coherence Analysis"
-msgstr "Bruco: コヒーレンス解析"
+msgstr "BruCo: コヒーレンス解析"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10004
 #: 43cfa745810b42c89d19c29daee7efcf
@@ -35,7 +35,7 @@ msgid ""
 " DARM power in a specific frequency band and therefore point to an "
 "actionable coupling path."
 msgstr ""
-"Brucoは**「総当たりコヒーレンス（Brute force "
+"BruCoは**「総当たりコヒーレンス（Brute force "
 "coherence）」**を計算するためのツールです。重力波検出器（LIGOやVirgo）の主チャンネル（ターゲット）と、多数の補助チャンネルとの間のコヒーレンスを計算し、ノイズ源を特定することを目的としています。"
 " 物理的な狙いは、単に相関ランキングを作ることではなく、特定の周波数帯の DARM "
 "過剰パワーを説明できる補助チャンネル候補を見つけ、実際に対処可能な結合経路へ結び付けることです。"
@@ -167,7 +167,7 @@ msgstr "この実装は、大量のチャンネルデータを効率的に処理
 #: ../../how-to/coupling/advanced_bruco.ipynb:10031
 #: a7bd906283d94fe8b5b5de18f685fc3f
 msgid "The original Bruco implementation is available at:"
-msgstr "オリジナルのBruco実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。"
+msgstr "オリジナルのBruCo実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10032
 #: 9beb6bf8e0b54955afc60633fc8289af
@@ -231,13 +231,13 @@ msgid ""
 "actual operations, data is acquired from NDS or frames, but being able to"
 " freely design signals in a notebook accelerates hypothesis testing."
 msgstr ""
-"**何をするか**: ターゲット/補助チャンネルの擬似データを作り、Brucoに食わせるための `TimeSeries` を準備します。 "
+"**何をするか**: ターゲット/補助チャンネルの擬似データを作り、BruCoに食わせるための `TimeSeries` を準備します。 "
 "**なぜ重要か**: 実運用ではNDSやフレームから取得しますが、ノートブック上で自由に信号を設計できると仮説検証が加速します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:50002
 #: f0c4776ccc11426097fb42847e618ad5
 msgid "Section 1: Running Basic Bruco Analysis (Reproduction in Jupyter)"
-msgstr "Section 1: 基本的なBruco解析の実行 (Jupyter上での再現)"
+msgstr "Section 1: 基本的なBruCo解析の実行 (Jupyter上での再現)"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:50004
 #: 825a334baf7c4ca3966e040550f8f01a
@@ -326,7 +326,7 @@ msgid ""
 "connect them to sensitivity improvement and noise subtraction workflows."
 msgstr ""
 "**何をするか**: もっとも寄与が大きいノイズ仮説を用いて残差スペクトルを推定し、BNS Rangeの改善量を見積もります。 "
-"**なぜ重要か**: Bruco結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。"
+"**なぜ重要か**: BruCo結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:140007
 #: 62e5b166e48f41c6b7b411aa530c97ad
