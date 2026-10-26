@@ -378,6 +378,7 @@ def _assert_v026_candidate_record(validator, path: Path) -> None:
     )
 
 
+@pytest.mark.release_candidate_state
 def test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate():
     """Fail closed: S must be the exact placeholder; any other state must be R."""
     validator = load_validator()
