@@ -21,11 +21,18 @@ implementation:
     - pinned same-run artifact ID
     - upload/download digest mismatch fails the job
     - per-file SHA-256 inventory verified before gh-pages checkout
+    - post-publication readback hashes every bilingual site file against the same manifest
   publication_order:
-    - current fetched main tip must equal the candidate SHA
+    - candidate must be current main or its ancestor with unchanged Docs build inputs
+    - path-filter patterns and Git ancestry pathspecs share one tested input list
+    - reject an older candidate when relevant Docs inputs changed on current main
     - deployed source SHA must be an ancestor of the candidate
     - intentional rollback is a new descendant commit with reverted Docs content
     - source tip is rechecked before gh-pages push
+  publisher_queue:
+    - production and preview share one gh-pages-publish concurrency group
+    - queue: max retains up to 100 pending workflow runs instead of replacing the pending run
+    - above GitHub's queue limit, new runs can be canceled and require a manual rerun
   legacy_preview_binding: >-
     Existing preview output predates build-info.json. Its latest gh-pages path
     commit has the historical deploy(preview): docs_redesign <source-SHA> subject;
@@ -35,30 +42,42 @@ checks:
   - command: >-
       rtk proxy conda run -n gwexpy python -m pytest -q
       tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
-    result: exit 0; 18 passed
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 39 passed, including unrelated-main freshness, queued-publisher policy, and per-file EN/JA readback hash regressions
   - command: >-
-      ruff check scripts/ci/docs_publish_guard.py
+      rtk proxy conda run -n gwexpy ruff check scripts/ci/docs_publish_guard.py
+      scripts/check_public_docs.py
       tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_public_docs_pipeline.py
     result: exit 0; all checks passed
   - command: >-
-      ruff format --check scripts/ci/docs_publish_guard.py
+      rtk proxy conda run -n gwexpy ruff format --check
+      scripts/ci/docs_publish_guard.py scripts/check_public_docs.py
       tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
-    result: exit 0; 3 files already formatted
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 5 files already formatted
   - command: >-
       rtk proxy conda run -n gwexpy mypy scripts/ci/docs_publish_guard.py
-      --ignore-missing-imports
-    result: exit 0; success, no issues found in 1 source file
+      scripts/check_public_docs.py --ignore-missing-imports
+    result: exit 0; success, no issues found in 2 source files
   - command: git diff --check
     result: exit 0
   - command: >-
       isolated A-to-B-to-stale-A, idempotent B, descendant rollback C, legacy
       preview commit binding, unknown legacy state, artifact tampering, and
-      bilingual source mismatch regression tests
-    result: exit 0 within the 18 focused tests; no production gh-pages write
+      bilingual source mismatch tests pass. Additional cases allow an older
+      artifact only across non-Docs main commits, preserve pending publisher
+      runs, and reject altered EN/JA bytes by manifest hash.
+    result: exit 0 within the 39 focused tests; no production gh-pages write
+  - command: actionlint --version
+    result: unavailable locally; required hosted Actionlint check runs on the PR
 omitted:
   - >-
     No Docs Pages workflow_dispatch, gh-pages push, or deployed-site mutation
     was run. The isolated repository tests exercise publication order.
+  - >-
+    Live EN/JA manifest readback awaits an adopted Docs publication PR; the
+    regression uses synthetic HTTP responses and does not claim live Pages verification.
   - >-
     No new security-boundary policy is adopted by this PR. Owner adoption is
     required before merge because merge runs the existing automatic Docs publisher.
@@ -67,6 +86,8 @@ files_changed:
   - .github/workflows/docs-pages.yml
   - .github/workflows/docs-redesign-preview.yml
   - scripts/ci/docs_publish_guard.py
+  - scripts/check_public_docs.py
   - tests/docs/test_docs_pages_publish.py
   - tests/docs/test_docs_conf_runtime.py
+  - tests/docs/test_public_docs_pipeline.py
   - docs/developers/plans/manifests/audit-manifest-issue-822-docs-publication-isolation.yaml

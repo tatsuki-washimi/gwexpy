@@ -20,12 +20,11 @@ on:
 permissions:
   contents: read
 
-# Shared with docs-redesign-preview.yml so a preview build and a production
-# deploy never update gh-pages at the same time. Queue rather than cancel:
-# cancel-in-progress could discard a production update midway through publish.
+# Shared with docs-redesign-preview.yml. Preserve queued production work even
+# when a later preview dispatch waits behind a running gh-pages publisher.
 concurrency:
   group: gh-pages-publish
-  cancel-in-progress: false
+  queue: max
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -163,7 +162,7 @@ jobs:
     needs: build-pages
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     permissions:
       actions: read
       contents: write
@@ -290,3 +289,13 @@ jobs:
           done
           echo "Pages did not serve the verified EN/JA artifact within the verification window"
           exit 1
+
+      - name: Verify published EN and JA artifact hashes
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          python scripts/check_public_docs.py \
+            --url "${GWEXPY_DOCS_LANG_BASEURL}" \
+            --expected-revision "${GITHUB_SHA}" \
+            --expected-manifest "${RUNNER_TEMP}/gwexpy-docs-pages-artifact/manifest.json" \
+            --manifest-only

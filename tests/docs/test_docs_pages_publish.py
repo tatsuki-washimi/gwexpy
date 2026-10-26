@@ -10,6 +10,8 @@ import pytest
 import yaml
 
 from scripts.ci.docs_publish_guard import (
+    DOCS_BUILD_GIT_PATHS,
+    DOCS_BUILD_INPUTS,
     DocsPublishError,
     check_publication_order,
     create_artifact_manifest,
@@ -38,9 +40,10 @@ def _init_history(repo: Path) -> tuple[str, str, str]:
     _run_git(repo, "config", "user.name", "Docs test")
     _run_git(repo, "config", "user.email", "docs@example.invalid")
 
-    source = repo / "published-source.txt"
+    source = repo / "docs_redesign" / "published-source.txt"
+    source.parent.mkdir()
     source.write_text("version A\n", encoding="utf-8")
-    _run_git(repo, "add", "published-source.txt")
+    _run_git(repo, "add", "docs_redesign/published-source.txt")
     _run_git(repo, "commit", "-m", "publish A")
     revision_a = _run_git(repo, "rev-parse", "HEAD")
 
@@ -200,6 +203,28 @@ def test_publication_order_uses_refreshed_main_ref(tmp_path: Path) -> None:
             deployed_site,
             main_ref="refs/remotes/origin/main",
         )
+
+
+def test_docs_candidate_survives_an_unrelated_newer_main_commit(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    revision_a, _, _ = _init_history(repo)
+    _run_git(repo, "checkout", "main")
+    unrelated = repo / "README.md"
+    unrelated.write_text("not a Docs build input\n", encoding="utf-8")
+    _run_git(repo, "add", "README.md")
+    _run_git(repo, "commit", "-m", "unrelated main update")
+    revision_b = _run_git(repo, "rev-parse", "HEAD")
+    deployed_site = tmp_path / "gh-pages" / "docs"
+
+    assert revision_a != revision_b
+    assert check_publication_order(repo, revision_a, deployed_site) is None
+
+
+def test_docs_input_patterns_match_the_publisher_guard_pathspecs() -> None:
+    assert DOCS_BUILD_GIT_PATHS == tuple(
+        pattern[:-3] if pattern.endswith("/**") else pattern
+        for pattern in DOCS_BUILD_INPUTS
+    )
 
 
 def test_publication_fails_closed_for_unbound_site_state(tmp_path: Path) -> None:

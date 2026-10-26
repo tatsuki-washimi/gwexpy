@@ -9,7 +9,7 @@ permissions:
 
 concurrency:
   group: gh-pages-publish
-  cancel-in-progress: false
+  queue: max
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -151,7 +151,7 @@ jobs:
     needs: build-preview
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     permissions:
       actions: read
       contents: write
@@ -272,3 +272,13 @@ jobs:
           done
           echo "Preview did not serve the verified EN/JA artifact within the verification window"
           exit 1
+
+      - name: Verify published EN and JA preview hashes
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          python scripts/check_public_docs.py \
+            --url "${GWEXPY_DOCS_LANG_BASEURL}" \
+            --expected-revision "${GITHUB_SHA}" \
+            --expected-manifest "${RUNNER_TEMP}/gwexpy-docs-preview-artifact/manifest.json" \
+            --manifest-only

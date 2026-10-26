@@ -3,6 +3,8 @@ from pathlib import Path
 
 import yaml
 
+from scripts.ci.docs_publish_guard import DOCS_BUILD_INPUTS
+
 ROOT = Path(__file__).resolve().parents[2]
 CONF_PATH = ROOT / "docs" / "conf.py"
 REDESIGN_CONF_PATH = ROOT / "docs_redesign" / "conf.py"
@@ -284,9 +286,12 @@ def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():
 
 def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs():
     workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
-    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
-    assert "docs/web/en/user_guide/tutorials/**" not in workflow[True]["push"]["paths"]
+    assert workflow[True]["push"]["paths"] == list(DOCS_BUILD_INPUTS)
     assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"] == {
+        "group": "gh-pages-publish",
+        "queue": "max",
+    }
 
     build = workflow["jobs"]["build-pages"]
     publish = workflow["jobs"]["publish-pages"]
@@ -326,6 +331,7 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     download = publish_steps["Download exact same-run Docs artifact"]
     verify = publish_steps["Verify exact EN and JA artifact contents"]
     order = publish_steps["Reject stale or unapproved source ordering"]
+    readback_hashes = publish_steps["Verify published EN and JA artifact hashes"]
     prepare_publish = publish_steps["Prepare the gh-pages update"]
     gh_pages_checkout = publish_steps["Checkout gh-pages for the isolated publisher"]
     refresh_before_publish = publish_steps["Refresh main before Docs publication"]
@@ -334,6 +340,8 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     assert download["with"]["digest-mismatch"] == "error"
     assert "docs_publish_guard.py verify-artifact" in verify["run"]
     assert "docs_publish_guard.py check-order" in order["run"]
+    assert "--expected-manifest" in readback_hashes["run"]
+    assert "--manifest-only" in readback_hashes["run"]
     assert "--main-ref refs/remotes/origin/main" in order["run"]
     assert "fetch-depth" in gh_pages_checkout["with"]
     assert gh_pages_checkout["with"]["fetch-depth"] == 0
@@ -366,6 +374,10 @@ def test_docs_preview_workflow_is_manual_dispatch_only():
     assert "push" not in workflow[True]
     assert "workflow_dispatch" in workflow[True]
     assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"] == {
+        "group": "gh-pages-publish",
+        "queue": "max",
+    }
     build = workflow["jobs"]["build-preview"]
     publish = workflow["jobs"]["publish-preview"]
     assert build["permissions"] == {"contents": "read"}
@@ -384,6 +396,7 @@ def test_docs_preview_workflow_is_manual_dispatch_only():
     download = publish_steps["Download exact same-run preview artifact"]
     verify = publish_steps["Verify exact EN and JA artifact contents"]
     order = publish_steps["Reject stale or unapproved source ordering"]
+    readback_hashes = publish_steps["Verify published EN and JA preview hashes"]
     update = publish_steps["Prepare preview update"]
     refresh_before_publish = publish_steps["Refresh main before preview publication"]
     refresh_before_push = publish_steps["Recheck main before preview push"]
@@ -392,6 +405,8 @@ def test_docs_preview_workflow_is_manual_dispatch_only():
     assert download["with"]["digest-mismatch"] == "error"
     assert "docs_publish_guard.py verify-artifact" in verify["run"]
     assert "docs_publish_guard.py check-order" in order["run"]
+    assert "--expected-manifest" in readback_hashes["run"]
+    assert "--manifest-only" in readback_hashes["run"]
     assert "--main-ref refs/remotes/origin/main" in order["run"]
     assert gh_pages_checkout["with"]["fetch-depth"] == 0
     assert "git fetch --no-tags origin" in refresh_before_publish["run"]

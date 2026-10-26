@@ -15,6 +15,23 @@ from typing import Any
 
 SCHEMA = "gwexpy-docs-pages-artifact-v1"
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
+DOCS_BUILD_INPUTS = (
+    "CHANGELOG.md",
+    "docs_redesign/**",
+    "scripts/prepare_public_docs.py",
+    "scripts/check_public_docs.py",
+    "scripts/verify_public_examples.py",
+    "scripts/ci/docs_publish_guard.py",
+    "gwexpy/**",
+    "pyproject.toml",
+    "scripts/generate_docs_redirect_stubs.py",
+    "environment.yml",
+    ".github/workflows/docs-pages.yml",
+)
+DOCS_BUILD_GIT_PATHS = tuple(
+    pattern[:-3] if pattern.endswith("/**") else pattern
+    for pattern in DOCS_BUILD_INPUTS
+)
 LEGACY_PREVIEW_SUBJECT_RE = re.compile(
     r"^deploy\(preview\): docs_redesign ([0-9a-f]{40})$"
 )
@@ -229,15 +246,56 @@ def check_publication_order(
     deployed_site: Path,
     main_ref: str = "HEAD",
 ) -> str | None:
-    """Reject stale runs before `rsync --delete`; accept only main's current tip."""
+    """Reject stale Docs inputs before `rsync --delete`, allowing unrelated commits."""
     candidate_revision = _revision(candidate_revision, "candidate source revision")
     repository = repository.resolve()
     deployed_site = Path(os.path.abspath(deployed_site))
     current_main_revision = _git(repository, "rev-parse", main_ref)
     if current_main_revision != candidate_revision:
-        raise DocsPublishError(
-            "candidate is not the current main commit; refusing a stale publication"
+        ancestry = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(repository),
+                "merge-base",
+                "--is-ancestor",
+                candidate_revision,
+                current_main_revision,
+            ],
+            capture_output=True,
+            check=False,
+            text=True,
         )
+        if ancestry.returncode != 0:
+            raise DocsPublishError(
+                "candidate is not the current main commit or its ancestor; "
+                "refusing a stale publication"
+            )
+        changed_inputs = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(repository),
+                "diff",
+                "--quiet",
+                candidate_revision,
+                current_main_revision,
+                "--",
+                *DOCS_BUILD_GIT_PATHS,
+            ],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        if changed_inputs.returncode == 1:
+            raise DocsPublishError(
+                "candidate is not the current main commit: relevant Docs inputs "
+                "changed; refusing a stale publication"
+            )
+        if changed_inputs.returncode != 0:
+            raise DocsPublishError(
+                "cannot compare candidate and current main Docs inputs"
+            )
     _git(repository, "cat-file", "-e", f"{candidate_revision}^{{commit}}")
 
     if deployed_site.is_symlink():
