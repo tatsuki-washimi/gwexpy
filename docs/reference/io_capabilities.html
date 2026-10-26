@@ -561,7 +561,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.6</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/fd567f3cfacfdc5beaa1589c20588add832b7eb8">fd567f3c</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/877f5146933c39ca887ff2d5aa14a8aacb9446f4">877f5146</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -938,7 +938,7 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 <td class="text-center"><p>○ / ×</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code></p></td>
 <td><p>Single MTH5-backed path</p></td>
-<td><p>Partial support</p></td>
+<td><p>Partial support; requires <code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>MTH5 standalone</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>)</p></td>
 <td class="text-center"><p>In progress</p></td>
@@ -965,7 +965,10 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 <ul class="simple">
 <li><p><strong>MiniSEED</strong> pads gaps with <code class="docutils literal notranslate"><span class="pre">NaN</span></code> by default. Use <code class="docutils literal notranslate"><span class="pre">gap=&quot;raise&quot;</span></code> if you want failures instead.</p></li>
 <li><p><strong>K-NET</strong> and <strong>WIN / WIN32</strong> are intentionally read-only.</p></li>
-<li><p><strong>ATS.MTH5</strong> is the limited current direct path.</p></li>
+<li><p>ObsPy normalizes the K-NET header time from JST to UTC and applies the logger correction, so <code class="docutils literal notranslate"><span class="pre">t0</span></code> is 15 seconds earlier than the K-NET header Record Time. At the gwexpy boundary, K-NET timestamps are absolute UTC.</p></li>
+<li><p>WIN header times are interpreted as UTC because the format header is timezone-naive; each top-level read reports that interpretation once. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p>WIN channels may start after the first packet or end before the last. Each channel keeps the <code class="docutils literal notranslate"><span class="pre">t0</span></code> of its first packet; internal gaps followed by reappearance, duplicate blocks in one packet, or sample-rate changes raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. Packet and channel payload lengths and decoded sample counts are bounded; cumulative deltas do not wrap at int32 bounds, and only a BCD year transition from <code class="docutils literal notranslate"><span class="pre">99</span></code> to <code class="docutils literal notranslate"><span class="pre">00</span></code> advances the century.</p></li>
+<li><p><strong>ATS.MTH5</strong> is the limited current direct path and requires <code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code>. It uses <code class="docutils literal notranslate"><span class="pre">mth5.read_file(...,</span> <span class="pre">file_type=&quot;metronix&quot;)</span></code>, requires non-empty one-dimensional channel data and valid start/rate/component/unit metadata, preserves raw values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>; <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> is rejected. Source timing and units are authoritative, so reader overrides are rejected rather than ignored.</p></li>
 <li><p><strong>MTH5 standalone</strong> is still in design/publication cleanup. Read this as <strong>“<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> has partial support”</strong>, not as <strong>“MTH5 direct I/O is generally complete.”</strong></p></li>
 </ul>
 <span id="io-formats-ja-c"></span><p><a id="io-formats-en-c"></a></p>
@@ -1040,9 +1043,11 @@ relative; both ignore <code class="docutils literal notranslate"><span class="pr
 <li><p>CSV validates numeric and configured component-column cadence before
 resampling, using continuous GPS instants for UTC components. It rejects
 malformed or irregular input and any absolute float64 axis whose rounding
-error or spacing is not strictly below half the cadence. <code class="docutils literal notranslate"><span class="pre">resample=</span></code> applies
-only to requested channels; the 10,000,000-value cap covers all resampled
-values across a top-level single- or multi-file read before allocation.</p></li>
+error or spacing is not strictly below half the cadence. <code class="docutils literal notranslate"><span class="pre">resample=</span></code> must be
+finite and positive; requested-channel output values are evaluated on the
+exact target-cadence grid instead of relabelling source samples. The
+10,000,000-value cap covers all resampled values across a top-level single-
+or multi-file read before allocation.</p></li>
 <li><p>Malformed source rows include their physical line number. A finite, positive
 <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> declares source cadence and is used for single-row input;
 without it, the legacy one-second fallback remains. Component streams that
@@ -1123,6 +1128,7 @@ Time handling, units, and audio <code class="docutils literal notranslate"><span
 <li><p><strong>TDMS</strong> requires the optional <code class="docutils literal notranslate"><span class="pre">nptdms</span></code> dependency.</p></li>
 <li><p><strong>MP3 / FLAC / OGG / M4A</strong> require the optional <code class="docutils literal notranslate"><span class="pre">pydub</span></code> dependency. MP3/M4A commonly also need <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code>.</p></li>
 <li><p><strong>SDB</strong> uses the canonical <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> extension and <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> name.</p></li>
+<li><p>SDB <code class="docutils literal notranslate"><span class="pre">dateTime</span></code> values are integer Unix seconds with regular cadence in database storage order. Duplicate, backward, missing, or overlarge gaps raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. SQLite rowid tables use rowid/B-tree order, not insertion chronology; WITHOUT ROWID tables use declared primary-key order, including direction and collation.</p></li>
 <li><p><strong>WAV / compressed-audio formats</strong> do not preserve absolute timestamps. Reading with <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> is a convenience convention, not a claim that the source had an absolute epoch.</p></li>
 </ul>
 <span id="io-formats-ja-dev"></span><p><a id="io-formats-en-dev"></a></p>

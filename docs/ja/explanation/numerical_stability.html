@@ -454,7 +454,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.6</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/fd567f3cfacfdc5beaa1589c20588add832b7eb8">fd567f3c</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/877f5146933c39ca887ff2d5aa14a8aacb9446f4">877f5146</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -477,7 +477,7 @@
 <li><p>解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code>）を調整したい場合</p></li>
 </ul>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、whitening や対数変換などの操作向けに、限定された安定化ユーティリティを提供します。動作と限界は使用する API に依存します。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、ホワイトニング や対数変換などの操作向けに、限定された安定化ユーティリティを提供します。動作と限界は使用する API に依存します。</p>
 <section id="tl-dr">
 <span id="numerical-stability-en-tldr"></span><h2>まず結論だけ知りたい方へ<a class="headerlink" href="#tl-dr" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -504,7 +504,7 @@
 </tr>
 <tr class="row-odd"><td class="text-left"><p><strong>小さい分母</strong></p></td>
 <td class="text-left"><p>固定の <code class="docutils literal notranslate"><span class="pre">eps</span></code> はデータスケールに適さない場合があります</p></td>
-<td class="text-left"><p>ドキュメントに記載した whitening エントリポイントは <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> を受け付けます</p></td>
+<td class="text-left"><p>ドキュメントに記載した ホワイトニング エントリポイントは <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> を受け付けます</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><strong>非有限の入力</strong></p></td>
 <td class="text-left"><p>数値演算が未定義になる場合があります</p></td>
@@ -597,7 +597,7 @@
 <span id="numerical-stability-en-recommendations"></span><h2>ユーザーへの推奨事項<a class="headerlink" href="#recommendations-for-users" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>dB 変換では明示的な下限を使う</strong>：ゼロ値や静かな領域を含み得るデータを変換するときは、<code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> を呼び出します。</p></li>
-<li><p><strong>whitening パラメータは API 境界で選ぶ</strong>：<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> は、これを文書化した whitening エントリポイントだけで使用し、科学的用途に照らして結果を確認します。</p></li>
+<li><p><strong>ホワイトニング パラメータは API 境界で選ぶ</strong>：<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> は、これを文書化した ホワイトニング エントリポイントだけで使用し、科学的用途に照らして結果を確認します。</p></li>
 <li><p><strong>API 契約を確認する</strong>：検証、有限値の扱い、許容誤差は、単一の全体方針ではなく操作ごとに実装されています。</p></li>
 </ul>
 </section>
