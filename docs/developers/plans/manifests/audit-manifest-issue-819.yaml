@@ -1,7 +1,7 @@
 schema: gwexpy-agent-audit-v1
 issue: 819
 date_utc: 2026-10-26
-status: ready_for_owner_adoption
+status: draft_pending_hosted_checks_and_owner_adoption
 source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 skills_used:
   - name: superpowers:test-driven-development
@@ -13,7 +13,13 @@ checks:
       rtk proxy conda run -n gwexpy python -m pytest -q
       tests/test_release_promotion.py tests/test_publish_release_workflow.py
       tests/test_reconcile_pypi_upload.py tests/test_release_pypi_recovery.py
-    result: exit 0; 253 passed, including successful current attempt 2 with attempt-one evidence and attempt-one job endpoint/failure regressions
+    result: exit 0; 255 passed, including attempt-one provenance, attempt-two replacement-artifact rejection, and same-second timestamp fail-closed regressions
+  - command: >-
+      rtk proxy conda run -n gwexpy pytest -q tests/test_release_promotion.py
+      tests/test_release_go.py tests/test_publish_release_workflow.py
+    result: >-
+      exit 0; 274 passed, including successful recovery using intact attempt-one
+      evidence and exact existing-manifest reuse
   - command: >-
       rtk proxy conda run -n gwexpy ruff check scripts/ci/release_promotion.py
       scripts/ci/validate_github_release_readback.py
@@ -56,7 +62,8 @@ owner_adoption:
   current_tag_or_candidate_modified: false
 omitted:
   - >-
-    Hosted required CI awaits the refreshed PR; no hosted result is claimed.
+    Hosted required checks on current head dd2aed82a89abc9229d2243de0907eddf662f845
+    are still running; no final hosted result is claimed.
   - >-
     No GitHub Release, PyPI write, tag creation, deletion, or modification was
     performed. PyPI and GitHub Release readback indicated no published v0.2.6
@@ -65,8 +72,10 @@ omitted:
     The helper tests use synthetic/offline metadata; they do not exercise a real
     PyPI upload or GitHub Release mutation.
   - >-
-    No full-package or full-release-module mypy result is claimed; the two new
-    helpers pass focused mypy.
+    No full-package mypy result is claimed. Standalone mypy on
+    scripts/ci/release_promotion.py reports the same 31 diagnostics on the parent
+    and current head, with none on changed lines; the two new helpers pass
+    focused mypy.
 physics:
   summary: not applicable; changes affect release orchestration and evidence only
 files_changed:
