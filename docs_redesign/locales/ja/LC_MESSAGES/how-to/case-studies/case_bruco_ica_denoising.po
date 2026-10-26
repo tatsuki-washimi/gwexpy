@@ -22,7 +22,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10002
 #: ac33064789484dbaa120cf7e022dce4a
 msgid "Case Study: Bruco and ICA Noise Reduction"
-msgstr "ケーススタディ: Bruco と ICA によるノイズ削減"
+msgstr "ケーススタディ: BruCo と ICA によるノイズ削減"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10004
 #: 62fee693038c40f49edaeeb198fc97ad
@@ -36,7 +36,7 @@ msgstr "このノートブックでは、実際の干渉計コミッショニン
 msgid ""
 "**Bruco** – brute-force coherence scan to identify the most correlated "
 "auxiliary channels."
-msgstr "**Bruco** — ブルートフォースコヒーレンス スキャンで最相関の補助チャンネルを特定"
+msgstr "**BruCo** — ブルートフォースコヒーレンス スキャンで最相関の補助チャンネルを特定"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10007
 #: 8fbaa1bc29bc4fa2adddec06f1c09966
@@ -69,7 +69,7 @@ msgstr "**前提条件**：以下に慣れていること"
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10014
 #: 4749261f3edb4a75aa401c6f2e9cc592
 msgid "[Bruco tutorial](../coupling/advanced_bruco.ipynb) — Bruco basics"
-msgstr "[Bruco チュートリアル](../coupling/advanced_bruco.ipynb) — Bruco の基礎"
+msgstr "[BruCo チュートリアル](../coupling/advanced_bruco.ipynb) — BruCo の基礎"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10015
 #: 2aa59253b750455ea73abe0d14617e94
@@ -116,7 +116,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70002
 #: cef1967e74f049f0bdcf895620cc7c91
 msgid "2. Bruco: Identify Correlated Auxiliary Channels"
-msgstr "2\\. Bruco: 相関補助チャンネルの特定"
+msgstr "2\\. BruCo: 相関補助チャンネルの特定"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70004
 #: 295749949c684af995072aec021dc683
@@ -135,7 +135,7 @@ msgid ""
 "here as a physics filter so the decomposition focuses on channels that "
 "plausibly share the 116 Hz contamination."
 msgstr ""
-"**よくある誤り**：利用可能なすべての witness を ICA に投入すること。ここでは Bruco を物理的なフィルタとして用い、116 Hz "
+"**よくある誤り**：利用可能なすべての witness を ICA に投入すること。ここでは BruCo を物理的なフィルタとして用い、116 Hz "
 "の汚染をもっともらしく共有するチャンネルに分解を集中させます。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110002
@@ -150,7 +150,7 @@ msgid ""
 "near 116 Hz. We now stack these channels into a `TimeSeriesMatrix` and apply"
 " **ICA** to unmix the underlying independent sources."
 msgstr ""
-"Bruco スキャンから、DARM と 116 Hz 付近で高いコヒーレンスを持つチャンネルが分かりました。 次にこれらのチャンネルを "
+"BruCo スキャンから、DARM と 116 Hz 付近で高いコヒーレンスを持つチャンネルが分かりました。 次にこれらのチャンネルを "
 "`TimeSeriesMatrix` に積み上げ、**ICA** を適用して 独立したノイズ源を分離します。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110008
@@ -295,7 +295,7 @@ msgstr "重要なポイント"
 msgid ""
 "**Bruco** efficiently narrows down thousands of channels to the few that "
 "matter."
-msgstr "**Bruco** は数千のチャンネルを、重要な少数へと効率的に絞り込みます。"
+msgstr "**BruCo** は数千のチャンネルを、重要な少数へと効率的に絞り込みます。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180013
 #: f7d12b45f4824e4b877e2edb65694d12
@@ -333,7 +333,7 @@ msgstr "モックデータを実データ（`TimeSeries.read()` や NDS2）に�
 #: a8c19f5db9fe4751b3746d1faed448af
 msgid ""
 "Run on longer segments and cross-validate with Bruco's projection estimate."
-msgstr "より長いセグメントで解析し、Bruco の投影推定と照合する。"
+msgstr "より長いセグメントで解析し、BruCo の投影推定と照合する。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180022
 #: b6cf310493ea4bab8d0d0c9cf34318a9

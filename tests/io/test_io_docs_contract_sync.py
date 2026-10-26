@@ -7,11 +7,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_io_contract.json"
-EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
-JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
+EN_GUIDE = ROOT / "docs_redesign/reference/io_capabilities.md"
+JA_GUIDE = ROOT / "docs_redesign/locales/ja/LC_MESSAGES/reference/io_capabilities.po"
 REDESIGN_EN_GUIDE = ROOT / "docs_redesign/reference/io_capabilities.md"
-EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
-JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
+EN_INSTALL = ROOT / "docs_redesign/tutorials/installation.md"
+JA_INSTALL = ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
 CONTRACT_MD = ROOT / "docs/developers/contracts/public_io_contract.md"
 
 
@@ -21,6 +21,15 @@ def _load_contract() -> dict[str, dict]:
 
 
 def _read(path: Path) -> str:
+    if path.suffix == ".po":
+        from scripts.po_utils import read_po
+
+        return "\n".join(
+            str(value)
+            for entry in read_po(path)
+            if "fuzzy" not in entry["flags"]
+            for value in (entry["msgstr"], *entry["plural"])
+        )
     return path.read_text(encoding="utf-8")
 
 
@@ -51,7 +60,7 @@ def test_docs_loggers_table_matches_current_public_boundary():
 
     assert contract["wav"]["public_api"]["write"] == ["TimeSeries"]
     assert "Public write is single-series only" in en
-    assert "public write は単一路のみ" in ja
+    assert "公開の書き込み API は単一時系列のみ対応" in ja
 
     for fmt in ("flac", "ogg", "mp3", "m4a"):
         assert contract[fmt]["public_api"]["write"] == ["TimeSeries", "TimeSeriesDict"]
@@ -100,11 +109,11 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
     assert "top-level single- or multi-file read" in normalized_contract_md
     assert "rowid/B-tree order" in normalized_contract_md
     assert "insertion order" not in normalized_contract_md
-    assert "malformed source rows include their physical line" in en
-    assert "exact grid instead of" in en
+    assert "Malformed source rows include their physical line number" in en
+    assert "exact target-cadence grid instead of relabelling source samples" in en
     assert "10,000,000-value cap" in en
-    assert "不正な source row には物理 CSV 行番号" in ja
-    assert "厳密なtarget grid上" in ja
+    assert "不正な source row には物理行番号" in ja
+    assert "厳密な target cadence grid 上" in ja
     assert "10,000,000個の上限" in ja
     assert "database storage order" in en
     assert "database storage order" in ja
@@ -231,10 +240,11 @@ def test_optional_dependency_matrix_matches_contract():
     assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
     assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
     assert (
-        "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+        "`.read(..., extract_metadata=True)` は警告を出してメタデータをスキップします"
+        in ja
     )
     assert "install with the `audio` or `all` extra" in en
-    assert "`audio` または `all` extra で追加してください" in ja
+    assert "`audio` または `all` extra でインストールしてください" in ja
 
 
 def test_gwf_contract_describes_canonical_and_explicit_framel_routes() -> None:
@@ -271,15 +281,21 @@ def test_docs_describe_machine_readable_time_contract() -> None:
     for canonical in time_bearing:
         assert f"`{canonical}`" in contract_md
 
-    assert "numeric and generated sample-index routes ignore `timezone`" in en
-    assert "数値時刻と生成 sample-index 経路では `timezone` を無視" in ja
+    assert (
+        "Numeric timestamps are absolute and the generated sample-index route remains"
+        in en
+    )
+    assert (
+        "numeric timestamp は absolute、生成された sample-index route は relative" in ja
+    )
+    assert "`timezone` を無視" in ja
     assert "15 seconds earlier than the K-NET header Record Time" in en
-    assert "K-NET ヘッダの Record Time より 15 秒早い" in ja
+    assert "ヘッダの Record Time より 15 秒早くなります" in ja
     assert "At the gwexpy boundary, K-NET timestamps are absolute UTC" in en
-    assert "gwexpy 境界で K-NET の時刻は absolute UTC" in ja
+    assert "gwexpy 境界で K-NET 時刻は absolute UTC" in ja
     assert "| `knet` | absolute | override | epoch localize only |" in contract_md
-    assert "WIN header time is interpreted as UTC" in en
-    assert "WIN ヘッダ時刻は UTC として解釈" in ja
+    assert "WIN header times are interpreted as UTC" in en
+    assert "WIN ヘッダ時刻は timezone-naive のため UTC として解釈" in ja
     assert "Ambiguous daylight-saving folds and nonexistent gaps" in en
-    assert "ambiguous fold と nonexistent gap" in ja
+    assert "曖昧な fold と存在しない gap" in ja
     assert "ambiguous daylight-saving fold or a nonexistent gap" in contract_md

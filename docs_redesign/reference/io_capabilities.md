@@ -193,7 +193,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
-| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support |
+| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support; requires `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
 
 - Purpose: compare common seismic and geophysical readers without overstating MTH5 support
@@ -211,7 +211,10 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 
 - **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
 - **K-NET** and **WIN / WIN32** are intentionally read-only.
-- **ATS.MTH5** is the limited current direct path.
+- ObsPy normalizes the K-NET header time from JST to UTC and applies the logger correction, so `t0` is 15 seconds earlier than the K-NET header Record Time. At the gwexpy boundary, K-NET timestamps are absolute UTC.
+- WIN header times are interpreted as UTC because the format header is timezone-naive; each top-level read reports that interpretation once. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`.
+- WIN channels may start after the first packet or end before the last. Each channel keeps the `t0` of its first packet; internal gaps followed by reappearance, duplicate blocks in one packet, or sample-rate changes raise `ValueError`. Packet and channel payload lengths and decoded sample counts are bounded; cumulative deltas do not wrap at int32 bounds, and only a BCD year transition from `99` to `00` advances the century.
+- **ATS.MTH5** is the limited current direct path and requires `mth5>=0.6.8`. It uses `mth5.read_file(..., file_type="metronix")`, requires non-empty one-dimensional channel data and valid start/rate/component/unit metadata, preserves raw values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use `TimeSeries.read`; `TimeSeriesDict` is rejected. Source timing and units are authoritative, so reader overrides are rejected rather than ignored.
 - **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 
 :::{raw} html
@@ -255,9 +258,11 @@ events = EventTable.read("events.root")
 - CSV validates numeric and configured component-column cadence before
   resampling, using continuous GPS instants for UTC components. It rejects
   malformed or irregular input and any absolute float64 axis whose rounding
-  error or spacing is not strictly below half the cadence. `resample=` applies
-  only to requested channels; the 10,000,000-value cap covers all resampled
-  values across a top-level single- or multi-file read before allocation.
+  error or spacing is not strictly below half the cadence. `resample=` must be
+  finite and positive; requested-channel output values are evaluated on the
+  exact target-cadence grid instead of relabelling source samples. The
+  10,000,000-value cap covers all resampled values across a top-level single-
+  or multi-file read before allocation.
 - Malformed source rows include their physical line number. A finite, positive
   `sample_rate` declares source cadence and is used for single-row input;
   without it, the legacy one-second fallback remains. Component streams that
@@ -307,6 +312,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 - **TDMS** requires the optional `nptdms` dependency.
 - **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
 - **SDB** uses the canonical `.sdb` extension and `format="sdb"` name.
+- SDB `dateTime` values are integer Unix seconds with regular cadence in database storage order. Duplicate, backward, missing, or overlarge gaps raise `ValueError`. SQLite rowid tables use rowid/B-tree order, not insertion chronology; WITHOUT ROWID tables use declared primary-key order, including direction and collation.
 - **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
 
 :::{raw} html

@@ -7,10 +7,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_interop_contract.json"
-EN_GUIDE = ROOT / "docs/web/en/user_guide/interop.md"
-JA_GUIDE = ROOT / "docs/web/ja/user_guide/interop.md"
-EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
-JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
+EN_GUIDE = ROOT / "docs_redesign/reference/interop_capabilities.md"
+JA_GUIDE = (
+    ROOT / "docs_redesign/locales/ja/LC_MESSAGES/reference/interop_capabilities.po"
+)
+EN_INSTALL = ROOT / "docs_redesign/tutorials/installation.md"
+JA_INSTALL = ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
 
 STATUS_LABELS_EN = {
     "public": "Public",
@@ -35,14 +37,55 @@ def _load_contract() -> list[dict]:
 
 
 def _read(path: Path) -> str:
+    if path.suffix == ".po":
+        from scripts.po_utils import read_po
+
+        return "\n".join(
+            str(value)
+            for entry in read_po(path)
+            if "fuzzy" not in entry["flags"]
+            for value in (entry["msgstr"], *entry["plural"])
+        )
     return path.read_text(encoding="utf-8")
 
 
-def _find_row(text: str, marker: str) -> str:
-    for line in text.splitlines():
-        if marker in line:
+def _find_row(text: str, marker: str, required: tuple[str, ...] = ()) -> str:
+    candidates = [
+        line for line in text.splitlines() if line.startswith("| ") and marker in line
+    ]
+    for line in candidates:
+        if all(part in line for part in required):
             return line
     raise AssertionError(f"Could not find guide row containing {marker!r}")
+
+
+def _find_contract_row(text: str, entry: dict) -> str:
+    status = STATUS_LABELS_EN[entry["status"]]
+    candidates = [
+        line
+        for line in text.splitlines()
+        if line.startswith("| ") and entry["row_match_en"] in line and status in line
+    ]
+    for line in candidates:
+        if all(
+            f"`{name}()`" in line or f"`{name}`" in line for name in entry["guide_api"]
+        ):
+            return line
+    raise AssertionError(f"Could not find contract row for {entry['name']!r}")
+
+
+def _row_cells(line: str) -> list[str]:
+    return [cell.strip() for cell in line.strip("|").split("|")]
+
+
+def _po_entries() -> list[dict]:
+    from scripts.po_utils import read_po
+
+    return [
+        entry
+        for entry in read_po(JA_GUIDE)
+        if "fuzzy" not in entry["flags"] and entry["msgstr"]
+    ]
 
 
 def _collect_contract_rows(text: str, labels: set[str]) -> set[str]:
@@ -64,30 +107,45 @@ def test_english_guide_rows_match_contract():
     guide = _read(EN_GUIDE)
 
     for entry in _load_contract():
-        line = _find_row(guide, entry["row_match_en"])
-        assert STATUS_LABELS_EN[entry["status"]] in line
+        line = _find_contract_row(guide, entry)
         for func_name in entry["guide_api"]:
             assert f"`{func_name}()`" in line or f"`{func_name}`" in line, (
                 f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
             )
         details_link = entry.get("details_link")
         if details_link:
-            assert f"[API]({details_link})" in line
+            redesigned_link = details_link.removesuffix(".rst")
+            assert f"[API]({redesigned_link})" in line
 
 
 def test_japanese_guide_rows_match_contract():
-    guide = _read(JA_GUIDE)
+    english = _read(EN_GUIDE)
+    translations = _po_entries()
 
     for entry in _load_contract():
-        line = _find_row(guide, entry["row_match_ja"])
-        assert STATUS_LABELS_JA[entry["status"]] in line
+        cells = _row_cells(_find_contract_row(english, entry))
+        assert len(cells) == 5
+        for cell in cells:
+            matches = [
+                translation
+                for translation in translations
+                if translation["msgid"] == cell
+            ]
+            assert matches, f"No Japanese catalog entry for source cell {cell!r}"
+        status = cells[2]
+        assert any(
+            STATUS_LABELS_JA[entry["status"]] in item["msgstr"]
+            for item in translations
+            if item["msgid"] == status
+        )
+        api_cell = cells[1]
         for func_name in entry["guide_api"]:
-            assert f"`{func_name}()`" in line or f"`{func_name}`" in line, (
-                f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
+            assert func_name in api_cell
+            assert any(
+                func_name in item["msgstr"]
+                for item in translations
+                if item["msgid"] == api_cell
             )
-        details_link = entry.get("details_link")
-        if details_link:
-            assert f"[API]({details_link})" in line
 
 
 def test_mth5_row_is_now_public_in_both_guides():
@@ -95,32 +153,30 @@ def test_mth5_row_is_now_public_in_both_guides():
 
     assert contract["mth5"]["status"] == "public"
 
-    en_line = _find_row(_read(EN_GUIDE), contract["mth5"]["row_match_en"])
-    ja_line = _find_row(_read(JA_GUIDE), contract["mth5"]["row_match_ja"])
+    mth5 = contract["mth5"]
+    en_line = _find_contract_row(_read(EN_GUIDE), mth5)
+    ja_entries = _po_entries()
 
     assert "Public" in en_line
-    assert "公開済み" in ja_line
-    assert "[API](../reference/api/gwexpy.interop.mt_.rst)" in en_line
-    assert "[API](../reference/api/gwexpy.interop.mt_.rst)" in ja_line
+    assert any(item["msgstr"] == "公開済み" for item in ja_entries)
+    assert any("to_mth5()" in item["msgstr"] for item in ja_entries)
+    assert any("from_mth5()" in item["msgstr"] for item in ja_entries)
+    assert "[API](../reference/api/gwexpy.interop.mt_)" in en_line
+    assert any("gwexpy.interop.mt_" in item["msgid"] for item in ja_entries)
 
 
 def test_contract_covers_all_documented_interop_rows():
     contract = _load_contract()
     en_guide = _read(EN_GUIDE)
-    ja_guide = _read(JA_GUIDE)
+    ja_translations = _po_entries()
 
-    contract_en_rows = {
-        _find_row(en_guide, entry["row_match_en"]) for entry in contract
-    }
-    contract_ja_rows = {
-        _find_row(ja_guide, entry["row_match_ja"]) for entry in contract
-    }
+    contract_en_rows = {_find_contract_row(en_guide, entry) for entry in contract}
 
     expected_en_rows = _collect_contract_rows(en_guide, set(STATUS_LABELS_EN.values()))
-    expected_ja_rows = _collect_contract_rows(ja_guide, set(STATUS_LABELS_JA.values()))
-
     assert contract_en_rows == expected_en_rows
-    assert contract_ja_rows == expected_ja_rows
+    for row in contract_en_rows:
+        for cell in _row_cells(row):
+            assert any(item["msgid"] == cell for item in ja_translations), cell
 
 
 def test_optional_dependency_policy_matches_contract():
@@ -144,9 +200,9 @@ def test_optional_dependency_policy_matches_contract():
     mth5 = {entry["name"]: entry for entry in contract}["mth5"]
     assert mth5["optional_dependencies"] == ["mth5"]
     assert mth5["extras"] == ["seismic"]
-    assert "Install the required extra from PyPI" in en_docs
+    assert "Install the matching extra from PyPI" in en_docs
     assert 'pip install "gwexpy[control]"' in en_docs
-    assert "必要な extra を PyPI から導入" in ja_docs
+    assert "対応する extra を PyPI からインストール" in ja_docs
     assert 'pip install "gwexpy[control]"' in ja_docs
 
     en_normalized = " ".join(en_docs.split())

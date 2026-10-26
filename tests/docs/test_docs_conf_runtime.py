@@ -261,12 +261,29 @@ def _load_workflow(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def test_docs_pr_workflow_executes_notebooks_by_default_in_github_actions():
+def test_required_docs_checks_run_for_every_pull_request_without_legacy_build():
     workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
-    assert "CHANGELOG.md" in workflow[True]["pull_request"]["paths"]
-    env = workflow["jobs"]["docs-pr"]["env"]
-    assert env["NBS_EXECUTE"] == "never"
-    assert env["NBS_ALLOW_ERRORS"] == "0"
+    pull_request = workflow[True]["pull_request"]
+    assert pull_request == {"branches": ["main"]}
+
+    legacy_context = workflow["jobs"]["docs-pr"]
+    assert legacy_context["name"] == "Docs build and smoke checks"
+    assert legacy_context["timeout-minutes"] == 10
+    step_names = [step.get("name") for step in legacy_context["steps"]]
+    assert step_names == [
+        "Checkout repository",
+        "Check terminology consistency",
+        "Check forbidden generated artifacts",
+    ]
+    assert "docs/web" not in str(legacy_context)
+
+
+def test_docs_pages_workflow_does_not_rebuild_for_legacy_notebook_sources():
+    workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
+    push_paths = workflow[True]["push"]["paths"]
+
+    assert "docs_redesign/**" in push_paths
+    assert not any(path.startswith("docs/web/") for path in push_paths)
 
 
 def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():

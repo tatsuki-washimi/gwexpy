@@ -984,11 +984,11 @@ msgid ""
 "files expose compatible channels."
 msgstr ""
 "**GWF** は `TimeSeries` と `TimeSeriesDict` で `.gwf` ファイルの list / tuple "
-"入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` または "
+"入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad= <値>` または "
 "`gap=\"pad\"` で埋められ、`gap=\"ignore\"` では埋めずに連結します。オーバーラップする span は既定または "
 "`gap=\"raise\"` で失敗しますが、`gap=\"ignore\"` では span "
 "順に連結し、オーバーラップの連結を許可します。`start` / `end` が実データの外側に伸びる場合も、既定の `gap=\"raise\"` "
-"では失敗します。外側区間を埋めるには `pad=<値>` または `gap=\"pad\"` を使ってください。`gap=\"ignore\"` "
+"では失敗します。外側区間を埋めるには `pad= <値>` または `gap=\"pad\"` を使ってください。`gap=\"ignore\"` "
 "は内部ギャップも外側の `start` / `end` 区間も padding しません。複数ファイル読み込みで channel "
 "名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel がある前提です。"
 
@@ -1185,8 +1185,8 @@ msgstr "MTH5 経由の単一路"
 
 #: ../docs_redesign/reference/io_capabilities.md:16
 #: debef2ad8d0146c8b5668258b559b0b3
-msgid "Partial support"
-msgstr "一部対応"
+msgid "Partial support; requires `mth5>=0.6.8`"
+msgstr "対応を限定した経路。`mth5>=0.6.8` が必要"
 
 #: ../docs_redesign/reference/io_capabilities.md:16
 #: 59d9134de7c8419788d0ba2e1e5626da
@@ -1950,3 +1950,27 @@ msgstr "<a href=\"#io-formats-en-basic\">基本的な使い方へ戻る</a>"
 #: 018a0d6a11cf44c2abf8f10238c98a74
 msgid "<a href=\"#io-formats-en-top\">Back to Top</a>"
 msgstr "<a href=\"#io-formats-en-top\">トップへ戻る</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "ObsPy normalizes the K-NET header time from JST to UTC and applies the logger correction, so `t0` is 15 seconds earlier than the K-NET header Record Time. At the gwexpy boundary, K-NET timestamps are absolute UTC."
+msgstr "ObsPy は K-NET ヘッダ時刻を JST から UTC へ正規化し、logger correction も適用します。そのため `t0` はヘッダの Record Time より 15 秒早くなります。gwexpy 境界で K-NET 時刻は absolute UTC です。"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "WIN header times are interpreted as UTC because the format header is timezone-naive; each top-level read reports that interpretation once. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`."
+msgstr "WIN ヘッダ時刻は timezone-naive のため UTC として解釈し、top-level read ごとにこの解釈を 1 回警告します。WIN packet 時刻は 1 秒ずつ連続する必要があり、重複・逆行・global gap は `ValueError` になります。"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "WIN channels may start after the first packet or end before the last. Each channel keeps the `t0` of its first packet; internal gaps followed by reappearance, duplicate blocks in one packet, or sample-rate changes raise `ValueError`. Packet and channel payload lengths and decoded sample counts are bounded; cumulative deltas do not wrap at int32 bounds, and only a BCD year transition from `99` to `00` advances the century."
+msgstr "WIN channel は最初の packet より遅く始まることも最後より早く終わることもあります。各 channel は最初に現れた packet の `t0` を保ちます。開始後の内部 gap と再出現、同一 packet 内の重複 block、sample rate の変更は `ValueError` になります。packet と channel の payload 長、decode 後の sample 数は上限内で検証します。累積 delta は int32 境界で wrap せず、BCD 年は `99` から `00` への遷移だけで century を進めます。"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "**ATS.MTH5** is the limited current direct path and requires `mth5>=0.6.8`. It uses `mth5.read_file(..., file_type=\"metronix\")`, requires non-empty one-dimensional channel data and valid start/rate/component/unit metadata, preserves raw values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use `TimeSeries.read`; `TimeSeriesDict` is rejected. Source timing and units are authoritative, so reader overrides are rejected rather than ignored."
+msgstr "**ATS.MTH5** は限定された現行 direct path で、`mth5>=0.6.8` が必要です。`mth5.read_file(..., file_type=\"metronix\")` を使い、空でない 1 次元 channel data と有効な start/rate/component/unit metadata を要求します。raw value は変更せず、Ex/Ey は mV/km、Hx/Hy/Hz は nT として扱います。入口は `TimeSeries.read` のみで、`TimeSeriesDict` は拒否します。source の時刻と単位を正本とし、reader override は無視せず拒否します。"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "CSV validates numeric and configured component-column cadence before resampling, using continuous GPS instants for UTC components. It rejects malformed or irregular input and any absolute float64 axis whose rounding error or spacing is not strictly below half the cadence. `resample=` must be finite and positive; requested-channel output values are evaluated on the exact target-cadence grid instead of relabelling source samples. The 10,000,000-value cap covers all resampled values across a top-level single- or multi-file read before allocation."
+msgstr "CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、UTC component には連続 GPS instant を使います。不正または不規則な入力と、丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。`resample=` は有限かつ正でなければならず、要求された channel の出力値は厳密な target cadence grid 上で評価します。source sample に異なる `dt` を付け替えません。10,000,000個の上限は top-level の単一または multi-file read 全体で allocation 前に全 resampled value を数えます。"
+
+#: ../docs_redesign/reference/io_capabilities.md
+msgid "SDB `dateTime` values are integer Unix seconds with regular cadence in database storage order. Duplicate, backward, missing, or overlarge gaps raise `ValueError`. SQLite rowid tables use rowid/B-tree order, not insertion chronology; WITHOUT ROWID tables use declared primary-key order, including direction and collation."
+msgstr "SDB の `dateTime` は database storage order 上で regular cadence を持つ整数 Unix 秒です。重複、逆行、欠落、過大な gap は `ValueError` になります。SQLite rowid table は挿入順ではなく rowid/B-tree order を使い、WITHOUT ROWID table は direction と collation を含む宣言済み primary-key order を使います。"
