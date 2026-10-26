@@ -1,7 +1,7 @@
 schema: gwexpy-agent-audit-v1
 issue: 819
 date_utc: 2026-10-26
-status: draft_pending_hosted_checks_and_owner_adoption
+status: draft_pending_owner_adoption
 source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 skills_used:
   - name: superpowers:test-driven-development
@@ -62,8 +62,8 @@ owner_adoption:
   current_tag_or_candidate_modified: false
 omitted:
   - >-
-    Hosted required checks on current head dd2aed82a89abc9229d2243de0907eddf662f845
-    are still running; no final hosted result is claimed.
+    Hosted required-check status is tracked on PR #826; this manifest does not
+    snapshot a moving CI state.
   - >-
     No GitHub Release, PyPI write, tag creation, deletion, or modification was
     performed. PyPI and GitHub Release readback indicated no published v0.2.6
