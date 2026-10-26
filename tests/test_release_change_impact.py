@@ -219,6 +219,28 @@ def test_pypi_readback_test_change_maps_to_release_review_without_science_digest
     ]
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        "tests/test_reconcile_pypi_upload.py",
+        "tests/test_release_pypi_recovery.py",
+    ],
+)
+def test_release_recovery_test_changes_do_not_enter_science_digest(
+    tmp_path: Path, path: str
+):
+    repo, base = repository(tmp_path)
+    candidate = commit_change(repo, path, "def test_recovery(): assert True\n")
+
+    report = impact.analyze_change_impact(
+        repo, tag="v0.2.6", base=base, candidate=candidate
+    )
+
+    assert report["changed_paths"][0]["categories"] == ["release_control"]
+    assert report["proposed_impact_review_lanes"] == ["release-security"]
+    assert report["scientific_inputs"]["unchanged"] is True
+
+
 def test_build_input_change_impacts_science_and_release_security(tmp_path: Path):
     repo, base = repository(tmp_path)
     candidate = commit_change(repo, "pyproject.toml", "[build-system]\nrequires=[]\n")
