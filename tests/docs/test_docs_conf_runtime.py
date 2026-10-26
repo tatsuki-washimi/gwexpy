@@ -263,7 +263,10 @@ def _load_workflow(path: Path) -> dict:
 
 def test_docs_pr_workflow_executes_notebooks_by_default_in_github_actions():
     workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
-    assert "CHANGELOG.md" in workflow[True]["pull_request"]["paths"]
+    pull_request = workflow[True]["pull_request"]
+    assert set(pull_request["branches"]) >= {"main", "maint/0.2"}
+    assert "paths" not in pull_request
+    assert "paths-ignore" not in pull_request
     env = workflow["jobs"]["docs-pr"]["env"]
     assert env["NBS_EXECUTE"] == "never"
     assert env["NBS_ALLOW_ERRORS"] == "0"

@@ -1,0 +1,43 @@
+schema: gwexpy-agent-audit-v1
+issue: 817
+date_utc: 2026-10-26
+status: ready_for_review
+source_base_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+skills_used:
+  - name: prep_release
+    status: read; release publishing and package upload were outside this task
+checks:
+  - command: conda run -n gwexpy pytest -q tests/test_gen_release_notes.py
+    result: exit 0; 12 passed
+  - command: >-
+      conda run -n gwexpy
+      pytest -q
+      tests/test_gen_release_notes.py::test_obsolete_publisher_is_absent_from_active_instructions
+    result: exit 0; 1 passed after the README approval-boundary clarification
+  - command: conda run -n gwexpy ruff check tools/gen_release_notes.py tests/test_gen_release_notes.py
+    result: exit 0; all checks passed
+  - command: >-
+      conda run -n gwexpy ruff format --check
+      tools/gen_release_notes.py tests/test_gen_release_notes.py
+    result: exit 0; two files already formatted
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: git diff --check origin/main...HEAD
+    result: exit 0; no whitespace errors in the committed base range
+  - command: >-
+      conda run -n gwexpy python -c "import yaml;
+      yaml.safe_load(open('docs/developers/plans/manifests/audit-manifest-issue-817.yaml',
+      encoding='utf-8')); print('YAML parsed')"
+    result: exit 0; YAML parsed
+physics:
+  summary: not applicable; changes affect release-note tooling and instructions only
+omitted:
+  - Full test suite and broader release workflow tests were not run; focused release-note tests cover the changed behavior.
+  - Full Ruff suite, MyPy, documentation build, and package build were not run; no relevant production API, rendered documentation, or packaging configuration changed.
+  - No GitHub Release operations, tag creation, or package uploads were performed; commit and PR activity is tracked separately.
+files_changed:
+  - tools/publish_releases.sh
+  - tools/gen_release_notes.py
+  - release_notes/README.md
+  - tests/test_gen_release_notes.py
+  - docs/developers/plans/manifests/audit-manifest-issue-817.yaml

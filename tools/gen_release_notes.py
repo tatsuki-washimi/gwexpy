@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 """Generate GitHub release notes from CHANGELOG.md.
 
-The CHANGELOG is the single source of truth. This script extracts the stable
-release sections and writes Markdown files that can be pasted into GitHub
-Releases or consumed by tools/publish_releases.sh.
+The CHANGELOG is the single source of truth. This script extracts one stable
+release section and writes a Markdown file for its GitHub Release.
 
 Usage
 -----
 Generate a *single* version (preferred for release workflows)::
 
     python tools/gen_release_notes.py --version 0.1.12
-
-Generate *all* configured versions (legacy bulk mode)::
-
-    python tools/gen_release_notes.py
 
 Flags
 -----
@@ -49,24 +44,6 @@ FOOTER_TEMPLATE = """\
 **Install:** `pip install gwexpy=={version}`
 **Full changelog:** https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md
 """
-
-# Legacy bulk-mode version list (kept for backward compatibility).
-_LEGACY_VERSIONS = (
-    "0.1.0",
-    "0.1.1",
-    "0.1.2",
-    "0.1.3",
-    "0.1.4",
-    "0.1.5",
-    "0.1.6",
-    "0.1.7",
-    "0.1.8",
-    "0.1.9",
-    "0.1.10",
-    "0.1.11",
-    "0.1.12",
-)
-
 
 # ---------------------------------------------------------------------------
 # Core extraction logic
@@ -168,49 +145,6 @@ def generate_one(version: str, root: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Legacy bulk mode (backward-compatible)
-# ---------------------------------------------------------------------------
-
-
-def _parse_sections_bulk(changelog_text: str) -> dict[str, str]:
-    """Return release-note bodies keyed by stable semantic version (bulk mode)."""
-    # Normalise CRLF → LF.
-    text = changelog_text.replace("\r\n", "\n").replace("\r", "\n")
-    matches = _parse_all_matches(text)
-    sections: dict[str, str] = {}
-
-    for index, match in enumerate(matches):
-        version = match.group("version")
-        if version not in _LEGACY_VERSIONS:
-            continue
-        start = match.end()
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        sections[version] = text[start:end].strip()
-
-    if not sections:
-        raise SystemExit("error: no valid release sections found in CHANGELOG.md")
-
-    return sections
-
-
-def generate_all(root: Path) -> None:
-    """Generate release notes for every version present in CHANGELOG.md matching _LEGACY_VERSIONS."""
-    changelog = root / "CHANGELOG.md"
-    if not changelog.exists():
-        raise SystemExit(f"error: CHANGELOG.md not found at {changelog}")
-
-    changelog_text = changelog.read_text(encoding="utf-8")
-    sections = _parse_sections_bulk(changelog_text)
-
-    output_dir = root / "release_notes"
-    output_dir.mkdir(exist_ok=True)
-    for version, body in sections.items():
-        path = output_dir / f"v{version}.md"
-        path.write_bytes(build_release_note(version, body).encode("utf-8"))
-        print(path.relative_to(root))
-
-
-# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
@@ -222,6 +156,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--version",
         metavar="VERSION",
+        required=True,
         help=(
             "Generate release notes for this single version only "
             "(e.g. '0.1.12').  Cannot be 'Unreleased'."
@@ -237,14 +172,10 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> None:
-    """CLI entry point: parse arguments and dispatch to generate_one or generate_all."""
+    """CLI entry point: generate release notes for one explicitly selected version."""
     args = _parse_args(argv)
     root = _build_root(args.root)
-
-    if args.version is not None:
-        generate_one(args.version, root)
-    else:
-        generate_all(root)
+    generate_one(args.version, root)
 
 
 if __name__ == "__main__":

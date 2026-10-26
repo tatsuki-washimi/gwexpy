@@ -2,28 +2,7 @@ name: Docs PR
 
 on:
   pull_request:
-    branches: [main]
-    paths:
-      - "CHANGELOG.md"
-      - "docs/**"
-      - "docs_redesign/**"
-      - "scripts/prepare_public_docs.py"
-      - "scripts/check_public_docs.py"
-      - "scripts/verify_public_examples.py"
-      - "gwexpy/**"
-      - "pyproject.toml"
-      - "scripts/check_terms.py"
-      - "scripts/check_docs_sync.py"
-      - "scripts/check_forbidden_artifacts.py"
-      - "scripts/run_quickstart_test.py"
-      - "scripts/notebook_gen/check_changed_notebooks.py"
-      - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
-      - "scripts/verify_workflow_notebooks.py"
-      - "docs_redesign/workflow_notebooks.json"
-      - "tests/docs/**"
-      - "docs/requirements.txt"
-      - "environment.yml"
-      - ".github/workflows/docs-pr.yml"
+    branches: [main, maint/0.2]
 
 permissions:
   contents: read

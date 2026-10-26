@@ -4,28 +4,19 @@ Standardized GitHub Release notes, one file per tagged version
 (`vX.Y.Z.md`). **`CHANGELOG.md` is the source of truth** — these files are
 generated from it, not edited by hand.
 
-## Workflow
+## Prepare a version's notes
 
-1. Regenerate from CHANGELOG (after editing it or cutting a new release):
+Generate only the version being prepared, after its dated section has been
+finalized in `CHANGELOG.md`:
 
-   ```bash
-   python tools/gen_release_notes.py
-   ```
+```bash
+python tools/gen_release_notes.py --version 0.2.6
+```
 
-   To add a new version, append it to `VERSIONS` in
-   `tools/gen_release_notes.py`.
+The version must appear exactly once as a dated stable section in the
+changelog. The command writes only `release_notes/vVERSION.md`; it does not
+publish or edit a GitHub Release. Omitting `--version` is an error.
 
-2. Publish/standardize the GitHub Releases (needs `gh` + write access):
-
-   ```bash
-   DRY_RUN=1 bash tools/publish_releases.sh   # preview
-   bash tools/publish_releases.sh             # apply
-   ```
-
-   Existing releases are edited, missing ones (e.g. `v0.1.1`, `v0.1.5`) are
-   created against the existing tag. Only `v0.1.6` is marked as `latest`.
-
-Alternatively, paste a file's contents into the GitHub web UI
-(*Releases → Draft a new release → choose the existing tag*), set the title to
-`vX.Y.Z`, and leave *"Set as the latest release"* unchecked for anything older
-than the newest version.
+Review the generated file as release-note preparation only. Publication,
+tag creation, and **Latest** changes remain governed by `RELEASING.md` and the
+approved release decision.
