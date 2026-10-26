@@ -1,7 +1,7 @@
 schema: gwexpy-agent-audit-v1
 issue: 820
 date_utc: 2026-10-26
-status: draft_pending_hosted_checks_and_owner_adoption
+status: draft_pending_owner_adoption
 source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 skills_used:
   - name: superpowers:brainstorming
@@ -43,7 +43,8 @@ owner_adoption:
   active_contract_modified: false
 omitted:
   - >-
-    Hosted PR checks on the updated head are still pending.
+    Hosted required-check status is tracked on PR #827; this manifest does not
+    snapshot a moving CI state.
   - >-
     No full suite or Sphinx build was run; changes are limited to an advisory
     repository-root release guide and a read-only impact-report utility.
