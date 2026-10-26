@@ -1,0 +1,66 @@
+schema_version: 1
+issue: 816
+scope: Required-check workflow coverage for protected maint/0.2
+base_commit: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+worktree: external scratch worktree
+skills_used:
+  - gwexpy_conda_jobs
+  - superpowers:using-git-worktrees
+context_name_source: >-
+  Repository Ruleset 25554248 is active for refs/heads/main and
+  refs/heads/maint/0.2. Its 23 exact job-name-only required contexts are
+  mapped to workflow jobs in issue-816-required-checks-v1.json.
+commands:
+  - command: gh api -X GET repos/tatsuki-washimi/gwexpy/rulesets/25554248
+    result: >-
+      Passed readback: active ruleset protects main and maint/0.2, requires
+      strict status checks, and lists the same 23 contexts as the evidence map.
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/test_issue_816_required_checks.py
+      tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_gwpy4_proxy_workflow.py
+      tests/test_gwpy_override_inventory.py
+      tests/test_release_gate_workflow_contract.py
+    result: "Passed: 231 passed in 103.35s."
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff check
+      tests/test_issue_816_required_checks.py
+      tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_gwpy4_proxy_workflow.py
+      tests/test_gwpy_override_inventory.py
+      tests/test_release_gate_workflow_contract.py
+    result: "Passed: All checks passed."
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff format --check
+      tests/test_issue_816_required_checks.py
+      tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_gwpy4_proxy_workflow.py
+      tests/test_gwpy_override_inventory.py
+      tests/test_release_gate_workflow_contract.py
+    result: "Passed: 5 files already formatted."
+  - command: git diff --check
+    result: "Passed with no whitespace errors."
+  - command: command -v actionlint
+    result: "Unavailable locally; hosted Actionlint is required before merge."
+checks_omitted:
+  - >-
+    Actionlint and the complete 23-context required-check suite are deferred to
+    hosted PR CI. No branch protection bypass or required-check success
+    fabrication was used.
+  - >-
+    Physics checks are not applicable; this change adjusts workflow triggers
+    and static workflow contracts only.
+changed_files:
+  - .github/workflows/actionlint.yml
+  - .github/workflows/docs-pr.yml
+  - .github/workflows/pr-fast.yml
+  - .github/workflows/repo-hygiene.yml
+  - .github/workflows/test-compat-gwpy.yml
+  - docs/developers/plans/manifests/issue-816-required-checks-v1.json
+  - docs/developers/plans/manifests/audit-manifest-issue-816-maint-02.yaml
+  - tests/test_issue_816_required_checks.py
+  - tests/docs/test_docs_conf_runtime.py
+  - tests/docs/test_gwpy4_proxy_workflow.py
+  - tests/test_gwpy_override_inventory.py
+  - tests/test_release_gate_workflow_contract.py

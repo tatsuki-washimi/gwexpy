@@ -2,15 +2,9 @@ name: PR Fast
 
 on:
   pull_request:
-    branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "**/*.md"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/PULL_REQUEST_TEMPLATE.md"
-      - ".github/pull_request_template.md"
+    branches: [main, maint/0.2]
   push:
-    branches: [main]
+    branches: [main, maint/0.2]
 
 permissions:
   contents: read
