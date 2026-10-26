@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare disposable public docs with canonical notebook code and build identity."""
+"""Prepare disposable public docs with clean embedded notebooks and build identity."""
 
 from __future__ import annotations
 
@@ -23,23 +23,8 @@ def code_cells(notebook: dict) -> list[dict]:
     ]
 
 
-def canonicalize(public: dict, canonical: dict) -> dict:
-    """Keep public prose/gettext identities while deriving execution cells."""
-    targets, sources = code_cells(public), code_cells(canonical)
-    if len(targets) != len(sources):
-        raise ValueError(
-            "Canonical/public code-cell count differs; reconcile lesson structure first"
-        )
-    for target, source in zip(targets, sources):
-        target["source"] = source["source"]
-        target["outputs"] = []
-        target["execution_count"] = None
-        target.get("metadata", {}).pop("execution", None)
-    return public
-
-
 def prepare(output: Path, root: Path = ROOT) -> None:
-    """Copy sources outside the checkout, then resolve canonical code and revision."""
+    """Copy sources outside the checkout, clean notebooks, and record source identity."""
     output = output.resolve()
     if output == root or root in output.parents:
         raise ValueError("Use an output directory outside the repository")
@@ -50,15 +35,15 @@ def prepare(output: Path, root: Path = ROOT) -> None:
         source, output, ignore=shutil.ignore_patterns("_build", "__pycache__", "*.mo")
     )
     shutil.copy2(root / "CHANGELOG.md", output.parent / "CHANGELOG.md")
-    notebooks = {}
+    notebooks = []
     for path in sorted(output.rglob("*.ipynb")):
-        canonical = root / "docs/web/en/user_guide/tutorials" / path.name
         public = json.loads(path.read_text())
-        public = canonicalize(public, json.loads(canonical.read_text()))
+        for cell in code_cells(public):
+            cell["outputs"] = []
+            cell["execution_count"] = None
+            cell.get("metadata", {}).pop("execution", None)
         path.write_text(json.dumps(public, ensure_ascii=False, indent=1) + "\n")
-        notebooks[path.relative_to(output).as_posix()] = canonical.relative_to(
-            root
-        ).as_posix()
+        notebooks.append(path.relative_to(output).as_posix())
     revision = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=root, text=True
     ).strip()
@@ -75,10 +60,10 @@ def prepare(output: Path, root: Path = ROOT) -> None:
         "source_revision": revision,
         "source_ref": source_ref,
         "dirty": dirty,
-        "notebook_sources": notebooks,
+        "public_notebooks": notebooks,
     }
     (output / "_build_identity.json").write_text(json.dumps(info, indent=2) + "\n")
-    print(f"Prepared {len(notebooks)} canonical notebooks at {output}")
+    print(f"Prepared {len(notebooks)} public notebooks at {output}")
 
 
 if __name__ == "__main__":

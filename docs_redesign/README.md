@@ -7,17 +7,20 @@ orphan: true
 `docs_redesign` is the published PyData/MyST-NB site, built in English and Japanese
 under `/docs/` and `/docs/ja/`.
 
-Notebook execution cells are authoritative in `docs/web/en/user_guide/tutorials`.
-English public narrative and cell identities live in this tree; Japanese public
-prose uses gettext catalogs. The legacy bilingual markdown cells remain in the
-canonical tree for the legacy docs. `scripts/prepare_public_docs.py` copies this
-tree outside the checkout, replaces every execution cell from its canonical
-notebook, and records the source mapping and Git revision. Structural changes
-must update the matching lesson cell slots together; count mismatches fail.
+English narrative and executable notebook cells are maintained together in
+this tree; Japanese prose uses gettext catalogs. `scripts/prepare_public_docs.py`
+copies the tree outside the checkout, clears notebook outputs and execution
+counts, and records the public notebook paths with the Git revision. The
+notebooks here are the source used by preview, production, and pull-request
+builds.
 
-The September 2026 reconciliation incorporated the fifteen published code-cell
-differences into the canonical notebooks before enabling this derivation.
-Do not repair a public execution cell without repairing its canonical source.
+The repository still retains `docs/web/` as legacy input for older tutorial
+generators and as source material referenced by historical release evidence.
+It is not built or published as a second site. Production Pages generates the
+supported old `/docs/web/` URL redirects from
+`scripts/generate_docs_redirect_stubs.py`; that deployed path contains
+redirects, while this source tree remains available until its remaining tools
+and historical references no longer need it.
 
 MyST-NB executes prepared notebooks into an untracked cache, with a 600-second
 per-cell timeout and errors raised. Full tracebacks are retained on failure.

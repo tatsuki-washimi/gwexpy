@@ -44,3 +44,58 @@ def test_strip_code_masks_toctree_targets_and_anchor_labels():
 
     assert "advanced_bruco" not in stripped
     assert "validated-ja-adaptive-whitening" not in stripped
+
+
+def test_term_scan_checks_japanese_po_translations_not_sources_or_fuzzy_entries(
+    tmp_path,
+):
+    module = _load_module("gwexpy_check_terms_po")
+    catalog = tmp_path / "guide.po"
+    catalog.write_text(
+        'msgid "bad variant"\n'
+        'msgstr "canonical"\n'
+        "\n"
+        'msgid "safe source"\n'
+        'msgstr "bad variant"\n'
+        "\n"
+        "#, fuzzy\n"
+        'msgid "draft"\n'
+        'msgstr "bad variant"\n',
+        encoding="utf-8",
+    )
+
+    hits = module.scan_po_catalog(catalog, {"canonical": ["bad variant"]})
+
+    assert len(hits) == 1
+    assert hits[0]["path"] == catalog
+    assert hits[0]["matched"] == "bad variant"
+
+
+def test_physical_alignment_drift_is_not_misclassified_as_estimation(tmp_path):
+    module = _load_module("gwexpy_check_terms_alignment")
+    catalog = tmp_path / "guide.po"
+    catalog.write_text(
+        'msgid "physical drift"\n'
+        'msgstr "低周波のアライメント変動"\n'
+        "\n"
+        'msgid "bad translation"\n'
+        'msgstr "整数秒アライメント"\n',
+        encoding="utf-8",
+    )
+
+    hits = module.scan_po_catalog(catalog, module.load_terms())
+
+    assert [hit["matched"] for hit in hits] == ["アライメント"]
+
+
+def test_canonical_term_matching_is_case_insensitive(tmp_path):
+    module = _load_module("gwexpy_check_terms_canonical_case")
+    catalog = tmp_path / "guide.po"
+    catalog.write_text(
+        'msgid "name"\nmsgstr "BruCo"\n',
+        encoding="utf-8",
+    )
+
+    hits = module.scan_po_catalog(catalog, {"BruCo": ["Bruco"]})
+
+    assert hits == []
