@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 CONF_PATH = ROOT / "docs" / "conf.py"
 REDESIGN_CONF_PATH = ROOT / "docs_redesign" / "conf.py"
 DOCS_PR_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pr.yml"
-DOCS_PAGES_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pages.yml"
+DOCS_PAGES_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pages-isolated.yml"
 DOCS_PREVIEW_WORKFLOW_PATH = (
-    ROOT / ".github" / "workflows" / "docs-redesign-preview.yml"
+    ROOT / ".github" / "workflows" / "docs-redesign-preview-isolated.yml"
 )
 
 
@@ -288,6 +288,14 @@ def test_docs_pages_workflow_does_not_rebuild_for_legacy_notebook_sources():
 
     assert "docs_redesign/**" in push_paths
     assert not any(path.startswith("docs/web/") for path in push_paths)
+
+
+def test_privileged_docs_workflows_use_new_github_workflow_paths():
+    workflow_dir = ROOT / ".github" / "workflows"
+    assert DOCS_PAGES_WORKFLOW_PATH.is_file()
+    assert DOCS_PREVIEW_WORKFLOW_PATH.is_file()
+    assert not (workflow_dir / "docs-pages.yml").exists()
+    assert not (workflow_dir / "docs-redesign-preview.yml").exists()
 
 
 def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():

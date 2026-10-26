@@ -26,13 +26,13 @@ DOCS_BUILD_INPUTS = (
     "pyproject.toml",
     "scripts/generate_docs_redirect_stubs.py",
     "environment.yml",
-    ".github/workflows/docs-pages.yml",
+    ".github/workflows/docs-pages-isolated.yml",
 )
 DOCS_BUILD_GIT_PATHS = tuple(
     pattern[:-3] if pattern.endswith("/**") else pattern
     for pattern in DOCS_BUILD_INPUTS
 )
-PREVIEW_WORKFLOW_PATH = ".github/workflows/docs-redesign-preview.yml"
+PREVIEW_WORKFLOW_PATH = ".github/workflows/docs-redesign-preview-isolated.yml"
 PREVIEW_DOCS_BUILD_GIT_PATHS = DOCS_BUILD_GIT_PATHS + (PREVIEW_WORKFLOW_PATH,)
 LEGACY_PREVIEW_SUBJECT_RE = re.compile(
     r"^deploy\(preview\): docs_redesign ([0-9a-f]{40})$"

@@ -25,7 +25,7 @@ implementation:
   publication_order:
     - candidate must be current main or its ancestor with unchanged Docs build inputs
     - production path-filter patterns and Git ancestry pathspecs share one tested input list
-    - preview ordering additionally binds .github/workflows/docs-redesign-preview.yml
+    - preview ordering additionally binds .github/workflows/docs-redesign-preview-isolated.yml
     - reject an older candidate when relevant Docs inputs changed on current main
     - deployed source SHA must be an ancestor of the candidate
     - intentional rollback is a new descendant commit with reverted Docs content
@@ -93,8 +93,8 @@ omitted:
 check_physics: not_applicable; no scientific algorithm or data model changed
 files_changed:
   - .github/actionlint.yaml
-  - .github/workflows/docs-pages.yml
-  - .github/workflows/docs-redesign-preview.yml
+  - .github/workflows/docs-pages-isolated.yml
+  - .github/workflows/docs-redesign-preview-isolated.yml
   - scripts/ci/docs_publish_guard.py
   - scripts/check_public_docs.py
   - tests/docs/test_docs_pages_publish.py
