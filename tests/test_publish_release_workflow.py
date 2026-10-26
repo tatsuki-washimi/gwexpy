@@ -218,9 +218,11 @@ def test_releasing_documents_future_build_once_promotion_contract():
         "`distribution-sha256.json`",
         "`LICENSE.sha256`",
         "`promotion-manifest.json`",
-        "Release is idempotent only when its target, notes, exact assets, and bytes "
-        "all match",
-        "exactly two PyPI files",
+        "For a pre-existing Release, the recovery path first checks its target, notes, "
+        "and every asset that is present against the exact candidate bytes",
+        "It uploads only absent assets from that candidate, without clobbering an existing asset",
+        "Final readback still requires exactly the five expected assets and their exact downloaded bytes",
+        "exactly two files",
         "without a publishing credential",
         "bounded retry window",
         "identity or hash mismatch fails immediately",
@@ -332,7 +334,7 @@ def test_release_and_pypi_jobs_have_separate_least_permissions():
     assert "    permissions:\n      contents: write" in release
     assert "id-token: write" not in release
     assert (
-        "    permissions:\n      contents: read\n      actions: read\n      id-token: write"
+        "    permissions:\n      contents: read\n      actions: read\n      issues: read\n      id-token: write"
         in publish
     )
     assert "contents: write" not in publish
@@ -579,6 +581,33 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
         with pytest.raises(validator.ReleaseReadbackError):
             validator.validate_release_readback(**conflict, existing_release=True)
 
+    partial_downloaded = tmp_path / "partial-downloaded"
+    partial_downloaded.mkdir()
+    missing_asset = assets[-1]["name"]
+    for path in downloaded.iterdir():
+        if path.name != missing_asset:
+            (partial_downloaded / path.name).write_bytes(path.read_bytes())
+    partial_release = {**release, "assets": assets[:-1]}
+    missing = validator.validate_release_readback(
+        **{**kwargs, "release": partial_release, "downloaded_dir": partial_downloaded},
+        existing_release=True,
+    )
+    assert missing == [missing_asset]
+
+    wrong_partial_asset = {
+        **partial_release,
+        "assets": [{**assets[0], "digest": "sha256:" + "0" * 64}, *assets[1:-1]],
+    }
+    with pytest.raises(validator.ReleaseReadbackError, match="digest"):
+        validator.validate_release_readback(
+            **{
+                **kwargs,
+                "release": wrong_partial_asset,
+                "downloaded_dir": partial_downloaded,
+            },
+            existing_release=True,
+        )
+
     (sidecars / "promotion-manifest.json").unlink()
     (downloaded / "promotion-manifest.json").unlink()
     legacy_assets = [
@@ -588,6 +617,87 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
     validator.validate_release_readback(
         **{**kwargs, "release": legacy_release}, existing_release=True
     )
+
+
+def test_finalizer_upload_is_skipped_only_when_exact_existing_manifest_is_reused():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    finalizer = jobs["promotion_manifest"]
+    finalize = next(step for step in finalizer["steps"] if step.get("id") == "finalize")
+    upload = next(
+        step
+        for step in finalizer["steps"]
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    )
+    assert "release_promotion.py finalize" in finalize["run"]
+    assert upload["if"] == "steps.finalize.outputs.upload_manifest == 'true'"
+
+
+def test_existing_release_recovery_checks_tag_identity_before_any_release_write():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    steps = jobs["github_release"]["steps"]
+    guard_index = next(
+        index
+        for index, step in enumerate(steps)
+        if step.get("name") == "Recheck annotated tag before Release writes"
+    )
+    write_indexes = [
+        index
+        for index, step in enumerate(steps)
+        if "gh release create" in step.get("run", "")
+        or '"release", "upload"' in step.get("run", "")
+    ]
+    assert write_indexes and guard_index < min(write_indexes)
+    guard = steps[guard_index]
+    assert "validate_tag_identity" in guard["run"]
+    assert "refs/tags/$EXPECTED_TAG^{}" in guard["run"]
+    assert "git push" not in "\n".join(step.get("run", "") for step in steps)
+    release_uploads = [
+        step for step in steps if '"release", "upload"' in step.get("run", "")
+    ]
+    assert release_uploads
+    assert all("--clobber" not in step["run"] for step in release_uploads)
+
+
+def test_pypi_promotion_reconciles_only_missing_manifest_bound_files():
+    import yaml
+
+    script = WORKFLOW.parents[2] / "scripts/ci/reconcile_pypi_upload.py"
+    assert script.is_file()
+
+    workflow = read_workflow()
+    jobs = yaml.safe_load(workflow)["jobs"]
+    publish = jobs["publish"]
+    reconcile = next(
+        step for step in publish["steps"] if step.get("id") == "reconcile_pypi"
+    )
+    publisher = next(
+        step
+        for step in publish["steps"]
+        if step.get("uses", "").startswith("pypa/gh-action-pypi-publish@")
+    )
+    assert "reconcile_pypi_upload.py" in reconcile["run"]
+    assert publisher["if"] == "steps.reconcile_pypi.outputs.publish_required == 'true'"
+    assert (
+        publisher["uses"]
+        == "pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33"
+    )
+    assert publisher["with"]["packages-dir"].endswith("/pypi-missing")
+    assert "skip-existing" not in publisher.get("with", {})
+    recovery = next(
+        step
+        for step in publish["steps"]
+        if "verify_release_pypi_recovery.py" in step.get("run", "")
+    )
+    assert recovery["if"] == "steps.reconcile_pypi.outputs.partial_upload == 'true'"
+    assert "--candidate-run-id" in recovery["run"]
+    assert "--manifest" in recovery["run"]
+    assert "--missing-dir" in recovery["run"]
+    assert publish["permissions"]["issues"] == "read"
+    assert publish["permissions"]["id-token"] == "write"
 
 
 def test_release_readback_validator_rejects_conflict_api_errors_and_changed_annotated_tag():
@@ -1405,38 +1515,24 @@ def test_partial_pypi_upload_recovery_requires_same_run_bytes_and_review():
     normalized = re.sub(r"\s+", " ", procedure)
 
     for required in (
-        "stop release acceptance",
-        "decision on HOLD",
-        "failed PyPI publisher run ID separately from the original `workflow_dispatch` candidate run ID",
-        "source `R`",
-        "final tag and peeled SHA",
-        "`release-payload-<R>`",
-        "`release-sidecar-distribution-sha256.json-<R>`",
-        "`release-sidecar-LICENSE.sha256-<R>`",
-        "promotion manifest SHA-256 and artifact ID",
-        "manifest-bound payload and sidecar artifact IDs, names, GitHub digests, and sizes",
-        "failed publisher run does not create payload or sidecar artifacts",
-        "all gate reports and aggregate evidence",
-        "`urls[].filename` and `urls[].digests.sha256`",
-        "`files.wheel` and `files.sdist`",
-        "manifest's source SHA is `R`",
-        "preserved original candidate payload",
-        "explicit reviewed release-owner decision",
-        "only the missing file from that verified original candidate payload",
-        "both expected files and hashes are present",
-        "Normal successful closure requires exactly two PyPI files",
-        "Do not blindly rerun the strict publish job",
-        "the tag publisher reuses the same manifest-bound candidate payload bytes",
-        "does not build a new payload",
-        "A new candidate dispatch builds a different payload",
+        "A failed job is not proof that neither file was published",
+        "retry preflight automatically reads PyPI's exact-version JSON and checks its filenames and SHA-256 values against the manifest-bound candidate",
+        "It stages only missing candidate files",
+        "Release Owner must post this exact record on Issue #797",
+        "GWEXPY-PYPI-RECOVERY-v1",
+        "candidate_run_id=<original-candidate-run-ID>",
+        "promotion_manifest_sha256=<64-character-manifest-SHA-256>",
+        "approved_files=<filename>:<sha256>[,<filename>:<sha256>]",
+        "decision=GO",
+        "Record the failed PyPI publisher run ID separately from the original `workflow_dispatch` candidate run ID",
+        "every one must belong to the original candidate run and remain unexpired",
+        "rerun only the failed tag workflow job",
+        "preflight rechecks PyPI, stages only currently missing files from the manifest-bound payload",
         "Do not rebuild the missing file",
-        "`skip-existing`",
+        "closure rule after an approved partial-upload recovery; a missing final file or any extra file keeps acceptance on HOLD",
     ):
         assert required in normalized
-    assert "a new run builds a new payload" not in normalized
-    assert normalized.index("Compare it with both") < normalized.index(
-        "explicit reviewed release-owner decision"
-    )
+    assert "mismatched hash" in normalized
 
 
 def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():

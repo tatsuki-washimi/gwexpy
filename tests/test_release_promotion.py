@@ -1652,6 +1652,8 @@ def test_artifact_retention_accepts_exact_policy_boundaries(promotion) -> None:
         "missing_gate",
         "failed_gate",
         "rerun",
+        "rerun_with_existing_manifest",
+        "missing_artifact",
         "duplicate",
         "schema",
         "approval_binding",
@@ -1697,7 +1699,9 @@ def test_finalizer_reads_original_ids_before_run_completion(
         "GITHUB_REPOSITORY": "example/gwexpy",
         "GITHUB_TOKEN": "fake",
         "GITHUB_RUN_ID": "987",
-        "GITHUB_RUN_ATTEMPT": "2" if mutation == "rerun" else "1",
+        "GITHUB_RUN_ATTEMPT": "2"
+        if isinstance(mutation, str) and mutation.startswith("rerun")
+        else "1",
         "SOURCE_SHA": source,
         "GITHUB_WORKFLOW_SHA": source,
         "GITHUB_WORKFLOW_REF": "example/gwexpy/.github/workflows/publish-release.yml@refs/heads/main",
@@ -1751,7 +1755,21 @@ def test_finalizer_reads_original_ids_before_run_completion(
         run["run_started_at"] = "2026-10-01T00:00:00"
     elif mutation == "bad_run_start":
         run["run_started_at"] = "not-a-timestamp"
-    monkeypatch.setattr(module, "_api_json", lambda *args: run)
+    current_run = {
+        **run,
+        "run_attempt": 2
+        if isinstance(mutation, str) and mutation.startswith("rerun")
+        else 1,
+    }
+    run_queries = []
+
+    def api_json(repository, token, path):
+        run_queries.append(path)
+        if path.endswith("/attempts/1"):
+            return run
+        return current_run
+
+    monkeypatch.setattr(module, "_api_json", api_json)
     payload = {
         f"gwexpy-{version}-py3-none-any.whl": b"synthetic wheel",
         f"gwexpy-{version}.tar.gz": b"synthetic sdist",
@@ -1775,6 +1793,8 @@ def test_finalizer_reads_original_ids_before_run_completion(
             "LICENSE.sha256": license_digest.encode() + b"\n"
         },
     }
+    if mutation == "missing_artifact":
+        del required["release-payload-" + source]
     if mutation == "license_syntax":
         required["release-sidecar-LICENSE.sha256-" + source]["LICENSE.sha256"] = (
             b"garbage\n"
@@ -1892,13 +1912,20 @@ def test_finalizer_reads_original_ids_before_run_completion(
 
     monkeypatch.setattr(module, "_open_github_request", download)
     output = tmp_path / "promotion-manifest.json"
-    if mutation:
+    github_output = tmp_path / "github-output.txt"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(github_output))
+    successful = mutation in (None, "rerun", "rerun_with_existing_manifest")
+    if mutation and not successful:
         with pytest.raises(module.PromotionManifestError):
             module.finalize_candidate(tmp_path, version, output)
         assert not output.exists()
     else:
         module.finalize_candidate(tmp_path, version, output)
         manifest = module.load_manifest(output.read_bytes())
+        assert manifest["run_attempt"] == 1
+        assert ("actions/runs/987/attempts/1" in run_queries) is (
+            current_run["run_attempt"] > 1
+        )
         assert set(downloads) == set(archives)
         assert len(downloads) == len(archives)
         assert {a["artifact_id"] for a in manifest["artifacts"]} == set(archives)
@@ -1910,6 +1937,42 @@ def test_finalizer_reads_original_ids_before_run_completion(
             a["name"] != "release-promotion-manifest-" + source
             for a in manifest["artifacts"]
         )
+        assert "upload_manifest=true" in github_output.read_text(encoding="utf-8")
+        if isinstance(mutation, str) and mutation.startswith("rerun"):
+            assert current_run["run_attempt"] == 2
+            assert run["run_attempt"] == 1
+        if mutation == "rerun_with_existing_manifest":
+            import io
+            import zipfile
+
+            manifest_id = max(archives) + 1
+            archive_stream = io.BytesIO()
+            with zipfile.ZipFile(archive_stream, "w") as archive:
+                archive.writestr("promotion-manifest.json", output.read_bytes())
+            manifest_archive = archive_stream.getvalue()
+            archives[manifest_id] = manifest_archive
+            artifacts.append(
+                {
+                    "id": manifest_id,
+                    "name": "release-promotion-manifest-" + source,
+                    "workflow_run": {"id": 987},
+                    "expired": False,
+                    "digest": "sha256:" + module.sha256(manifest_archive),
+                    "size_in_bytes": len(manifest_archive),
+                    "created_at": "2026-10-01T00:00:01Z",
+                    "expires_at": "2026-12-30T00:00:00Z",
+                }
+            )
+            reused_output = tmp_path / "reused-promotion-manifest.json"
+            reused_github_output = tmp_path / "reused-github-output.txt"
+            monkeypatch.setenv("GITHUB_OUTPUT", str(reused_github_output))
+            downloads.clear()
+            module.finalize_candidate(tmp_path, version, reused_output)
+            assert reused_output.read_bytes() == output.read_bytes()
+            assert manifest_id in downloads
+            assert "upload_manifest=false" in reused_github_output.read_text(
+                encoding="utf-8"
+            )
 
 
 class _RedirectingRecorder(http.server.BaseHTTPRequestHandler):

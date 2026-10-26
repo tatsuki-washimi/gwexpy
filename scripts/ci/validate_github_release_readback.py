@@ -111,7 +111,7 @@ def validate_release_readback(
     sidecars_dir: Path,
     downloaded_dir: Path,
     existing_release: bool = False,
-) -> None:
+) -> list[str]:
     """Check final Release metadata and the exact historical or promoted asset set."""
     if not isinstance(release, dict):
         raise ReleaseReadbackError("GitHub Release API readback is not an object")
@@ -159,9 +159,14 @@ def validate_release_readback(
         )
 
     assets = release.get("assets")
-    if not isinstance(assets, list) or len(assets) != expected_count:
+    if not isinstance(assets, list) or (
+        len(assets) > expected_count
+        or (not existing_release and len(assets) != expected_count)
+    ):
         raise ReleaseReadbackError(
-            f"GitHub Release must contain exactly {expected_count} assets"
+            f"GitHub Release must contain no more than {expected_count} assets"
+            if existing_release
+            else f"GitHub Release must contain exactly {expected_count} assets"
         )
     by_name: dict[str, dict[str, Any]] = {}
     for asset in assets:
@@ -173,18 +178,20 @@ def validate_release_readback(
                 "GitHub Release asset names are missing or duplicated"
             )
         by_name[name] = asset
-    if set(by_name) != expected_names:
+    if not set(by_name).issubset(expected_names) or (
+        not existing_release and set(by_name) != expected_names
+    ):
         raise ReleaseReadbackError(
             "GitHub Release assets do not match the same-run file set"
         )
 
     local_files = {**payload, **sidecars}
     downloaded = _regular_files(downloaded_dir)
-    if set(downloaded) != expected_names:
+    if set(downloaded) != set(by_name):
         raise ReleaseReadbackError(
-            "downloaded GitHub Release asset set is incomplete or unexpected"
+            "downloaded GitHub Release asset set does not match API readback"
         )
-    for name in sorted(expected_names):
+    for name in sorted(by_name):
         asset = by_name[name]
         local = local_files[name]
         uploaded_size = local.stat().st_size
@@ -208,6 +215,7 @@ def validate_release_readback(
             raise ReleaseReadbackError(
                 f"downloaded GitHub Release asset bytes mismatch: {name}"
             )
+    return sorted(expected_names - set(by_name))
 
 
 def _parse_args() -> argparse.Namespace:
@@ -219,6 +227,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--payload-dir", type=Path, required=True)
     parser.add_argument("--sidecars-dir", type=Path, required=True)
     parser.add_argument("--downloaded-dir", type=Path, required=True)
+    parser.add_argument(
+        "--existing-release",
+        action="store_true",
+        help="allow a verified subset and print the exact missing assets",
+    )
     return parser.parse_args()
 
 
@@ -226,7 +239,7 @@ def main() -> int:
     args = _parse_args()
     try:
         readback = json.loads(args.readback.read_text(encoding="utf-8"))
-        validate_release_readback(
+        missing = validate_release_readback(
             release=readback,
             expected_tag=args.tag,
             expected_source_sha=args.source_sha,
@@ -234,10 +247,12 @@ def main() -> int:
             payload_dir=args.payload_dir,
             sidecars_dir=args.sidecars_dir,
             downloaded_dir=args.downloaded_dir,
+            existing_release=args.existing_release,
         )
     except (OSError, json.JSONDecodeError, ReleaseReadbackError) as exc:
         print(f"release readback rejected: {exc}", file=sys.stderr)
         return 1
+    print(json.dumps({"missing": missing}, sort_keys=True))
     return 0
 
 

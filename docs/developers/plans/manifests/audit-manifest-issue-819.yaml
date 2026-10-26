@@ -1,0 +1,83 @@
+schema: gwexpy-agent-audit-v1
+issue: 819
+date_utc: 2026-10-26
+status: ready_for_owner_adoption
+source_base_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+skills_used:
+  - name: superpowers:test-driven-development
+    status: used for finalizer retry, Release subset readback, PyPI reconciliation, and recovery authorization tests
+  - name: gwexpy_conda_jobs
+    status: used; pytest, ruff, and mypy ran under the gwexpy conda environment
+checks:
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/test_release_promotion.py tests/test_publish_release_workflow.py
+      tests/test_reconcile_pypi_upload.py tests/test_release_pypi_recovery.py
+    result: exit 0; 246 passed
+  - command: >-
+      rtk conda run -n gwexpy ruff check scripts/ci/release_promotion.py
+      scripts/ci/validate_github_release_readback.py
+      scripts/ci/reconcile_pypi_upload.py
+      scripts/ci/verify_release_pypi_recovery.py
+      tests/test_release_promotion.py tests/test_publish_release_workflow.py
+      tests/test_reconcile_pypi_upload.py tests/test_release_pypi_recovery.py
+    result: exit 0; all checks passed
+  - command: >-
+      rtk conda run -n gwexpy ruff format --check
+      scripts/ci/release_promotion.py
+      scripts/ci/validate_github_release_readback.py
+      scripts/ci/reconcile_pypi_upload.py
+      scripts/ci/verify_release_pypi_recovery.py
+      tests/test_release_promotion.py tests/test_publish_release_workflow.py
+      tests/test_reconcile_pypi_upload.py tests/test_release_pypi_recovery.py
+    result: exit 0; eight files already formatted
+  - command: >-
+      rtk conda run -n gwexpy mypy scripts/ci/reconcile_pypi_upload.py
+      scripts/ci/verify_release_pypi_recovery.py
+    result: exit 0; no issues found in two new source files
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: >-
+      rtk conda run -n gwexpy python scripts/validate_release.py
+      --repo-root . --release-ref v0.2.6 --expected-tag v0.2.6
+      --review-evidence docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml
+      --frozen-tip
+    result: >-
+      Read-only check against the existing tag failed closed with
+      "annotated tagger date does not match release metadata". The tagger's UTC
+      date is 2026-10-25; the version metadata date is 2026-10-24.
+owner_adoption:
+  required_before_merge_or_use: true
+  reason: >-
+    The proposal changes failed-promotion recovery behavior and adds a
+    candidate-bound Owner decision format for continuing a partial PyPI upload.
+    These semantics are not authorized by the existing v0.2.6 Release GO.
+  publication_performed: false
+  current_tag_or_candidate_modified: false
+omitted:
+  - >-
+    Actionlint and hosted required CI await the PR; no hosted result is claimed.
+  - >-
+    No GitHub Release, PyPI write, tag creation, deletion, or modification was
+    performed. PyPI and GitHub Release readback indicated no published v0.2.6
+    files or Release object.
+  - >-
+    The helper tests use synthetic/offline metadata; they do not exercise a real
+    PyPI upload or GitHub Release mutation.
+  - >-
+    No full-package or full-release-module mypy result is claimed; the two new
+    helpers pass focused mypy.
+physics:
+  summary: not applicable; changes affect release orchestration and evidence only
+files_changed:
+  - .github/workflows/publish-release.yml
+  - RELEASING.md
+  - scripts/ci/release_promotion.py
+  - scripts/ci/validate_github_release_readback.py
+  - scripts/ci/reconcile_pypi_upload.py
+  - scripts/ci/verify_release_pypi_recovery.py
+  - tests/test_publish_release_workflow.py
+  - tests/test_release_promotion.py
+  - tests/test_reconcile_pypi_upload.py
+  - tests/test_release_pypi_recovery.py
+  - docs/developers/plans/manifests/audit-manifest-issue-819.yaml

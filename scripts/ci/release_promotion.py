@@ -1511,7 +1511,7 @@ def verify_tag_candidate(
 
 
 def finalize_candidate(root: Path, version: str, output: Path) -> None:
-    """Read existing current-run artifacts by ID and emit one validated manifest."""
+    """Read first-attempt evidence and create or verify its immutable manifest."""
     import os
     import tempfile
 
@@ -1521,16 +1521,28 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
     token = os.environ["GITHUB_TOKEN"]
     run_id = int(os.environ["GITHUB_RUN_ID"])
     attempt = int(os.environ["GITHUB_RUN_ATTEMPT"])
-    _require(attempt == 1, "promotion manifest requires run attempt 1")
+    _require(_positive_int(attempt), "workflow run attempt must be positive")
     source = os.environ["SOURCE_SHA"]
     run = _api_json(repository, token, f"actions/runs/{run_id}")
     _require(
-        run["event"] == "workflow_dispatch" and run["run_attempt"] == 1,
-        "candidate must be a first-attempt dispatch",
+        run["event"] == "workflow_dispatch" and run["run_attempt"] == attempt,
+        "finalizer attempt does not match the dispatch run",
     )
-    run_started_at = _parse_api_timestamp(run.get("run_started_at"), "run_started_at")
+    original_run = (
+        run
+        if attempt == 1
+        else _api_json(repository, token, f"actions/runs/{run_id}/attempts/1")
+    )
     _require(
-        run["head_sha"] == os.environ["GITHUB_WORKFLOW_SHA"], "workflow SHA mismatch"
+        original_run["event"] == "workflow_dispatch"
+        and original_run["run_attempt"] == 1
+        and original_run["head_sha"] == source
+        and original_run["head_sha"] == os.environ["GITHUB_WORKFLOW_SHA"]
+        and run["head_sha"] == original_run["head_sha"],
+        "original candidate source or workflow identity mismatch",
+    )
+    run_started_at = _parse_api_timestamp(
+        original_run.get("run_started_at"), "original run_started_at"
     )
     needs = json.loads(os.environ["GATE_RESULTS"])
     _require(
@@ -1691,7 +1703,9 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
             "source_sha": source,
             "release_sha": source,
             "run_id": run_id,
-            "run_attempt": attempt,
+            # Qualification and all reusable evidence remain bound to attempt 1.
+            # A later attempt can only re-finalize those same immutable artifacts.
+            "run_attempt": 1,
             "gates": [
                 {"job": job, "conclusion": "success"}
                 for job in profile["required_jobs"]
@@ -1736,14 +1750,44 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
             manifest,
             contract,
             expected,
-            run_attempt=attempt,
+            run_attempt=1,
             jobs=jobs,
             artifact_api=observations,
             observed_files=observed,
             declared_package_hashes=declared,
         )
+        manifest_bytes = serialize_manifest(manifest)
+        manifest_name = naming["manifest_prefix"] + source
+        prior_manifests = [
+            item for item in available if item.get("name") == manifest_name
+        ]
+        upload_manifest = not prior_manifests
+        if prior_manifests:
+            _require(
+                len(prior_manifests) == 1,
+                "candidate has multiple promotion manifest artifacts",
+            )
+            prior = prior_manifests[0]
+            prior_api = _artifact_observation(prior)
+            validate_manifest_artifact_metadata(prior_api, source, run_id)
+            _validate_artifact_retention(prior, run_started_at, retention_policy)
+            prior_archive = _download_artifact_archive(
+                repository, token, prior_api["artifact_id"]
+            )
+            validate_manifest_artifact(
+                prior_api,
+                prior_archive,
+                manifest_bytes,
+                source,
+                run_id,
+                sha256(manifest_bytes),
+            )
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(serialize_manifest(manifest))
+        output.write_bytes(manifest_bytes)
+        github_output = os.environ.get("GITHUB_OUTPUT")
+        if github_output:
+            with Path(github_output).open("a", encoding="utf-8") as stream:
+                stream.write(f"upload_manifest={str(upload_manifest).lower()}\n")
 
 
 def main() -> None:
