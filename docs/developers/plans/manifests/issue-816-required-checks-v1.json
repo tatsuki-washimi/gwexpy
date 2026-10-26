@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "issue": 816,
+  "ruleset": 25554248,
+  "protected_branches": ["main", "maint/0.2"],
+  "policy": "Every required check runs on every PR targeting either protected branch, regardless of changed paths. Push producers cover both protected branches where they support push events.",
+  "cost_note": "Mandatory jobs now execute for every PR on either protected branch. CI cost rises intentionally so real job failures continue to block merging.",
+  "producers": {
+    "pr-fast.yml": {
+      "workflow": "PR Fast",
+      "pull_request_branches": ["main", "maint/0.2"],
+      "push_branches": ["main", "maint/0.2"],
+      "old_pull_request_path_behavior": "main only; docs/**, Markdown, and selected issue/PR templates ignored.",
+      "new_pull_request_path_behavior": "No path filter; all PR changes run these jobs."
+    },
+    "docs-pr.yml": {
+      "workflow": "Docs PR",
+      "pull_request_branches": ["main", "maint/0.2"],
+      "push_branches": [],
+      "old_pull_request_path_behavior": "main only; only the enumerated documentation, source, configuration, and docs-test paths ran.",
+      "new_pull_request_path_behavior": "No path filter; all PR changes run these jobs."
+    },
+    "repo-hygiene.yml": {
+      "workflow": "Repo Hygiene",
+      "pull_request_branches": ["main", "maint/0.2"],
+      "push_branches": [],
+      "old_pull_request_path_behavior": "main only; no path filter.",
+      "new_pull_request_path_behavior": "No path filter; all PR changes run this job."
+    },
+    "test-compat-gwpy.yml": {
+      "workflow": "Test (gwpy-compat)",
+      "pull_request_branches": ["main", "maint/0.2"],
+      "push_branches": ["main", "maint/0.2"],
+      "old_pull_request_path_behavior": "main only; only the listed Python, test, compatibility-contract, and dependency paths ran.",
+      "new_pull_request_path_behavior": "No path filter; all PR changes run both compatibility matrix jobs."
+    },
+    "actionlint.yml": {
+      "workflow": "Actionlint",
+      "pull_request_branches": ["main", "maint/0.1", "maint/0.2"],
+      "push_branches": ["main", "maint/0.1", "maint/0.2"],
+      "old_pull_request_path_behavior": "main and maint/0.1 only; PR runs required workflow/actionlint paths to match. maint/0.2 was absent.",
+      "old_push_path_behavior": "main and maint/0.1 only; pushes required workflow/actionlint paths to match.",
+      "new_pull_request_path_behavior": "No path filter; all PR changes run this job."
+    }
+  },
+  "required_contexts": [
+    {"context": "Ruff, mypy, pytest, and smoke build", "workflow_file": "pr-fast.yml", "job": "validate", "matrix": null},
+    {"context": "Core I/O contract gate", "workflow_file": "pr-fast.yml", "job": "io-contract-gate", "matrix": null},
+    {"context": "I/O conformance gate", "workflow_file": "pr-fast.yml", "job": "io-conformance-gate", "matrix": null},
+    {"context": "Optional dependency gate", "workflow_file": "pr-fast.yml", "job": "io-optional-gate", "matrix": null},
+    {"context": "GWF I/O release gate", "workflow_file": "pr-fast.yml", "job": "io-gwf-gate", "matrix": null},
+    {"context": "NetCDF I/O release gate", "workflow_file": "pr-fast.yml", "job": "io-netcdf-gate", "matrix": null},
+    {"context": "MTH5 I/O gate (mth5==0.6.8)", "workflow_file": "pr-fast.yml", "job": "io-mth5-gate", "matrix": {"mth5-spec": "mth5==0.6.8"}},
+    {"context": "MTH5 I/O gate (mth5)", "workflow_file": "pr-fast.yml", "job": "io-mth5-gate", "matrix": {"mth5-spec": "mth5"}},
+    {"context": "ROOT interoperability release gate", "workflow_file": "pr-fast.yml", "job": "interop-root-gate", "matrix": null},
+    {"context": "Interop contract gate", "workflow_file": "pr-fast.yml", "job": "interop-contract-gate", "matrix": null},
+    {"context": "Interop MNE gate", "workflow_file": "pr-fast.yml", "job": "interop-mne-gate", "matrix": null},
+    {"context": "Docs build and smoke checks", "workflow_file": "docs-pr.yml", "job": "docs-pr", "matrix": null},
+    {"context": "docs_redesign build smoke check", "workflow_file": "docs-pr.yml", "job": "docs-redesign-pr", "matrix": null},
+    {"context": "Workflow [py3.11 / core]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.11", "group": "core"}},
+    {"context": "Workflow [py3.11 / fitting]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.11", "group": "fitting"}},
+    {"context": "Workflow [py3.11 / control]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.11", "group": "control"}},
+    {"context": "Workflow [py3.12 / core]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.12", "group": "core"}},
+    {"context": "Workflow [py3.12 / fitting]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.12", "group": "fitting"}},
+    {"context": "Workflow [py3.12 / control]", "workflow_file": "docs-pr.yml", "job": "minimal-dependency-workflow", "matrix": {"python-version": "3.12", "group": "control"}},
+    {"context": "Check repo hygiene", "workflow_file": "repo-hygiene.yml", "job": "repo-hygiene", "matrix": null},
+    {"context": "GWpy compatibility (4.0.1)", "workflow_file": "test-compat-gwpy.yml", "job": "gwpy-compat", "matrix": {"gwpy": "4.0.1"}},
+    {"context": "GWpy compatibility (4.0.2)", "workflow_file": "test-compat-gwpy.yml", "job": "gwpy-compat", "matrix": {"gwpy": "4.0.2"}},
+    {"context": "Release workflow static analysis", "workflow_file": "actionlint.yml", "job": "actionlint", "matrix": null}
+  ]
+}

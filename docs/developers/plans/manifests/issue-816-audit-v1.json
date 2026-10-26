@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "issue": 816,
+  "base_commit": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
+  "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/issue-816",
+  "skills_used": [],
+  "skill_availability": "The .agent/skills links described by .agent/AGENTS.md are absent in this checkout; repository instructions were followed directly.",
+  "context_name_source": "Ruleset 25554248 uses exact job-name-only context strings; the evidence mapping and test compare those strings to rendered job names including matrix values.",
+  "commands": [
+    {
+      "command": "conda run -n gwexpy python -m pytest -q tests/test_issue_816_required_checks.py",
+      "result": "Initial run failed because the static test included matrix.include as an axis; corrected the test. A later run caught an obsolete exact-branch-set assertion after preserving Actionlint maint/0.1; changed it to assert protected-branch inclusion and producer-declared branch equality. Final run: 3 passed in 0.42s."
+    },
+    {
+      "command": "conda run -n gwexpy ruff check tests/test_issue_816_required_checks.py",
+      "result": "Passed: All checks passed."
+    },
+    {
+      "command": "conda run -n gwexpy ruff format tests/test_issue_816_required_checks.py",
+      "result": "Passed; formatted the new static regression test after the initial format check reported changes needed."
+    },
+    {
+      "command": "conda run -n gwexpy ruff format --check tests/test_issue_816_required_checks.py",
+      "result": "Initial check reported the new test needed formatting; ran ruff format on that file. Final check passed: 1 file already formatted."
+    },
+    {
+      "command": "command -v actionlint",
+      "result": "No executable found; actionlint validation unavailable locally."
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed with no whitespace errors."
+    },
+    {
+      "command": "python -m json.tool docs/developers/plans/manifests/issue-816-required-checks-v1.json",
+      "result": "Passed JSON syntax validation."
+    }
+  ],
+  "checks_omitted": [
+    "actionlint because it is not installed in this worktree; the focused static test parsed the five edited workflow files with PyYAML and validated triggers, context/job/matrix mapping, and job-level skip conditions.",
+    "Full PR Fast, Docs PR, Repo Hygiene, GWpy compatibility, and Actionlint producer jobs because they are hosted CI workflows; only the focused local static regression test and Python style checks were run."
+  ],
+  "check_physics": "Not applicable; workflow trigger and static-test changes only.",
+  "changed_files": [
+    ".github/workflows/actionlint.yml",
+    ".github/workflows/docs-pr.yml",
+    ".github/workflows/pr-fast.yml",
+    ".github/workflows/repo-hygiene.yml",
+    ".github/workflows/test-compat-gwpy.yml",
+    "docs/developers/plans/manifests/issue-816-required-checks-v1.json",
+    "docs/developers/plans/manifests/issue-816-audit-v1.json",
+    "tests/test_issue_816_required_checks.py"
+  ]
+}
