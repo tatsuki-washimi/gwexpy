@@ -36,7 +36,7 @@ implementation:
     - above GitHub's queue limit, new runs can be canceled and require a manual rerun
     - >-
       Actionlint 1.7.12 does not recognize GitHub's documented concurrency.queue
-      key; a path-scoped exact-message exception is limited to the two workflows
+      key; a path-scoped message-prefix exception is limited to the two workflows
       using it. GitHub validates the actual workflow syntax and queue value.
   legacy_preview_binding: >-
     Existing preview output predates build-info.json. Its latest gh-pages path
@@ -78,7 +78,7 @@ checks:
   - command: actionlint --version
     result: >-
       Actionlint 1.7.12 is the pinned hosted version and reports the valid queue
-      key as unknown. A narrow per-file exact-message ignore is configured;
+      key as unknown. A narrow per-file message-prefix ignore is configured;
       hosted Actionlint must pass on the updated PR head.
 omitted:
   - >-
