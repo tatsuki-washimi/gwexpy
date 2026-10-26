@@ -1,0 +1,139 @@
+schema: gwexpy-issue-818-historical-audit-replay-v1
+issue: 818
+base: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+status: implementation-and-focused-verification
+skills:
+  - gwexpy_conda_jobs
+  - superpowers:systematic-debugging
+selection:
+  pr_fast_marker: "not network and not nds and not root and not historical_audit and not release_candidate_state"
+  replay_mode: "historical-audit-replay"
+  replay_marker: historical_audit
+  replay_command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
+  release_candidate_state_marker: release_candidate_state
+  release_candidate_state_test: tests/test_release_review_evidence.py::test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate
+  release_candidate_state_reason: >-
+    This assertion binds the frozen v0.2.6 S-to-R readiness snapshot to its exact
+    candidate source. Ordinary PR HEADs are not that candidate; the publish
+    workflow separately validates its explicit release_ref before build/publish.
+  replay_files:
+    - tests/docs/test_v023_release_closure.py
+    - tests/docs/test_v024_publication_status.py
+    - tests/docs/test_docs_redesign_release_facts.py
+    - tests/test_v025_historical_gate.py
+marked_checks:
+  - function: tests/docs/test_v023_release_closure.py::test_v023_closure_manifest_binds_immutable_release_and_distributions
+    fixed_assertion: release source, tag, immutable payload hashes, publication IDs and readback bind to the v0.2.3 closure record
+    current_guarantee: closure record remains covered by explicit historical-audit replay
+  - function: tests/docs/test_v023_release_closure.py::test_v023_closure_manifest_records_issue_and_scope_boundary
+    fixed_assertion: closed/deferred/separate issue inventory and runtime/API/scientific-scope boundary remain exact
+    current_guarantee: issue disposition and scope remain replayable
+  - function: tests/docs/test_v023_release_closure.py::test_v023_closure_report_states_the_runtime_boundary
+    fixed_assertion: report source, publication counts, deferrals and runtime boundary remain present
+    current_guarantee: human-readable v0.2.3 closure remains replayable
+  - function: tests/docs/test_v024_publication_status.py::test_v024_publication_status_binds_verified_source_and_channels
+    fixed_assertion: v0.2.4 source/tag and PyPI, GitHub, Zenodo, conda-forge publication evidence remain pinned
+    current_guarantee: v0.2.4 publication evidence remains replayable
+  - function: tests/docs/test_v024_publication_status.py::test_v024_publication_record_preserves_example_and_docs_readback_state
+    fixed_assertion: example verification and pending docs deployment/readback state remain exact
+    current_guarantee: partial publication status cannot silently become closure-complete
+  - function: tests/docs/test_docs_redesign_release_facts.py::test_changelog_preserves_the_historical_v022_activity_snapshot
+    fixed_assertion: v0.2.2 activity CSV hash, SVG provenance and source/handover links remain pinned
+    current_guarantee: archived v0.2.2 activity record remains replayable
+  - function: tests/docs/test_docs_redesign_release_facts.py::test_published_v023_activity_snapshot_and_hash_are_immutable
+    fixed_assertion: v0.2.3 CSV digest, English/Japanese SVG provenance and publication links remain pinned
+    current_guarantee: split candidate test retains candidate CSV/SVG checks in normal PR Fast
+  - function: tests/docs/test_docs_redesign_release_facts.py::test_current_activity_matches_the_published_v024_tag
+    fixed_assertion: v0.2.4 CSV digest, tag/SHA rows, total counts and bilingual SVG provenance remain pinned
+    current_guarantee: current public release status test remains in normal PR Fast
+  - function: tests/docs/test_docs_redesign_release_facts.py::test_v022_activity_snapshot_has_japanese_public_copy
+    fixed_assertion: v0.2.2 release DOI and Japanese public-copy translations remain exact
+    current_guarantee: Japanese historical translation assertions remain replayable
+  - function: tests/docs/test_docs_redesign_release_facts.py::test_v022_release_closure_manifest_binds_distribution_channels
+    fixed_assertion: v0.2.2 closure manifest retains source, distribution, publication and deployment evidence
+    current_guarantee: v0.2.2 closure manifest remains replayable
+  - function: tests/test_v025_historical_gate.py::test_aggregate_accounts_for_62_runtime_and_12_dispositions
+    fixed_assertion: historical aggregation yields 62 runtime passes and 12 dispositions with disjoint IDs
+    current_guarantee: aggregation accounting remains replayable
+  - function: tests/test_v025_historical_gate.py::test_aggregate_rejects_incomplete_or_unbound_evidence
+    fixed_assertion: nine tampered, incomplete, or unbound evidence variants raise HistoricalGateError
+    current_guarantee: negative aggregation cases remain replayable
+  - function: tests/test_v025_historical_gate.py::test_junit_skip_error_identifies_testcase_and_reason
+    fixed_assertion: skipped JUnit testcase identity and backend reason are preserved in the error
+    current_guarantee: skip/error diagnostics remain replayable
+  - function: tests/test_v025_historical_gate.py::test_failed_pytest_reports_skipped_junit_details
+    fixed_assertion: failed historical pytest with skipped testcase reports node identity and reason
+    current_guarantee: historical replay diagnostic handling remains replayable
+  - function: tests/test_v025_historical_gate.py::test_failed_pytest_preserves_original_error_when_junit_passes
+    fixed_assertion: original historical pytest error is re-raised when JUnit has no skip detail
+    current_guarantee: original-error propagation remains replayable
+normal_selection_guarantees:
+  - tests/docs/test_v024_publication_status.py::test_public_release_sources_distinguish_published_and_pending_channels
+  - tests/docs/test_docs_redesign_release_facts.py::test_candidate_activity_uses_the_same_data_in_both_languages
+  - tests/docs/test_docs_redesign_release_facts.py::test_published_history_and_v026_candidate_metadata_remain_distinct
+  - tests/test_v025_historical_gate.py::test_publish_workflow_requires_historical_gate_before_upload
+  - tests/docs/test_docs_redesign_release_status.py
+  - tests/test_v025_cross_format_io_evidence.py
+  - tests/io/test_v025_*
+  - release contract, approval, promotion and workflow tests
+  - GWpy compatibility tests
+  - public release status tests
+commands:
+  - command: "conda run -n gwexpy python -m pytest --collect-only -q tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py -m historical_audit"
+    result: "via tests/test_run_gate.py collection subprocess: selected set contains exactly 23 items; paired with normal selector, sets partition all 35 items"
+  - command: "conda run -n gwexpy python -m pytest --collect-only -q tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py -m 'not network and not nds and not root and not historical_audit and not release_candidate_state'"
+    result: "via tests/test_run_gate.py collection subprocess: selected set contains exactly 12 items; replay/normal are disjoint and cover all 35 items"
+  - command: "conda run -n gwexpy python -m pytest --collect-only -q -m release_candidate_state tests/test_release_review_evidence.py"
+    result: "via tests/test_run_gate.py: exactly the one frozen v0.2.6 readiness snapshot assertion is selected and excluded from normal PR Fast"
+  - command: "conda run -n gwexpy python -m pytest -q tests/test_run_gate.py"
+    result: "passed: 4 tests"
+  - command: "conda run -n gwexpy python -m pytest -q -m historical_audit tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
+    result: "passed: 23; 12 deselected"
+  - command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
+    result: "passed after replay gate was narrowed to the four marked files; 23 passed, 12 deselected, no skips"
+  - command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
+    result: "exit 0: 23 passed, 7 unrelated optional-dependency tests skipped, 14164 deselected; the seven skips were from JAX, MNE, Neo, Torch, Zarr, and PyCBC tests outside the historical replay files. Narrowed the gate to avoid collecting unrelated tests."
+  - command: "conda run -n gwexpy python -m pytest -q -m 'not network and not nds and not root and not historical_audit and not release_candidate_state' tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
+    result: "passed: 12; 23 deselected"
+  - command: "conda run -n gwexpy python -m pytest -q -m 'not release_candidate_state' tests/test_release_review_evidence.py"
+    result: "passed: 37; the one exact-source readiness snapshot assertion is intentionally selected by its dedicated marker"
+  - command: "conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py tests/test_run_gate.py"
+    result: "passed after correcting three import-order findings"
+  - command: "conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py tests/test_run_gate.py"
+    result: "passed: 6 files already formatted"
+  - command: "conda run -n gwexpy python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml', encoding='utf-8'))\""
+    result: "passed: audit manifest parses as YAML"
+  - command: "python -m py_compile scripts/ci/run_gate.py tests/test_run_gate.py tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
+    result: passed
+  - command: "git diff --check"
+    result: passed
+  - command: "conda run -n gwexpy python -m pytest -q tests/test_v026_local_path_exceptions.py"
+    result: "passed: all 3 frozen local-path ledger and hash checks"
+  - command: "git diff --check origin/main...HEAD"
+    result: "passed; note this range ends at the unchanged base HEAD, while git diff --check separately covered the working-tree diff"
+  - command: "rtk conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/test_run_gate.py tests/test_release_review_evidence.py"
+    result: "passed"
+  - command: "rtk conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/test_run_gate.py tests/test_release_review_evidence.py"
+    result: "passed: all 3 changed Python files already formatted"
+omitted_checks:
+  - full PR Fast gate and repository-wide tests, lint, and type checks were not run
+  - specialized scientific, GWpy compatibility, release authorization, and publication gates were not run
+verification_notes:
+  - Hosted PR Fast run 40279454169 exposed that the v0.2.6 snapshot assertion passed ordinary PR HEAD to validate_s_to_r as candidate R, causing unrelated product diffs to be rejected by the exact candidate S-to-R policy; only that source-bound assertion is separated.
+  - initial Ruff check found three import-order issues from the added pytest imports; corrected and rerun successfully
+  - initial Ruff format check requested formatting for tests/test_run_gate.py; formatted and rerun successfully
+  - the final marker-boundary assertion required a focused formatting pass; the final format check covers the complete changed Python set
+  - a broad historical marker run collected unrelated optional-dependency tests; the final gate runs only the four files that contain historical_audit decorators, and the selector regression test enforces this boundary
+  - hosted PR Fast run 40282365162 found the new replay manifest's machine-specific absolute `skill_source` path through the frozen v0.2.6 local-path exception test; removed that nonessential machine path and reran all three ledger/hash checks successfully without changing the ledger
+changed_files:
+  - scripts/ci/run_gate.py
+  - scripts/README.md
+  - pyproject.toml
+  - tests/docs/test_v023_release_closure.py
+  - tests/docs/test_v024_publication_status.py
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_v025_historical_gate.py
+  - tests/test_run_gate.py
+  - tests/test_release_review_evidence.py
+  - docs/developers/plans/manifests/audit-manifest-issue-818.yaml
+  - docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml

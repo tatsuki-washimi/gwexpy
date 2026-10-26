@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -22,6 +23,7 @@ def _manifest() -> dict:
     return yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
 
 
+@pytest.mark.historical_audit
 def test_v023_closure_manifest_binds_immutable_release_and_distributions() -> None:
     """The closure record must remain tied to the published bytes."""
     manifest = _manifest()
@@ -73,6 +75,7 @@ def test_v023_closure_manifest_binds_immutable_release_and_distributions() -> No
     )
 
 
+@pytest.mark.historical_audit
 def test_v023_closure_manifest_records_issue_and_scope_boundary() -> None:
     """Closure is bounded and does not silently absorb deferred work."""
     manifest = _manifest()
@@ -113,6 +116,7 @@ def test_v023_closure_manifest_records_issue_and_scope_boundary() -> None:
     }
 
 
+@pytest.mark.historical_audit
 def test_v023_closure_report_states_the_runtime_boundary() -> None:
     """The human-readable record preserves the same closure boundary."""
     report = REPORT_PATH.read_text(encoding="utf-8")
