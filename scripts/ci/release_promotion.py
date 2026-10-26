@@ -222,7 +222,7 @@ def validate_candidate_run(
     tag: str,
     source_sha: str,
 ) -> None:
-    """Bind a completed dispatch run to its manifest and annotated release tag."""
+    """Bind the latest successful run attempt to attempt-one candidate evidence."""
     promotion = release_contract.get("promotion")
     _require(isinstance(promotion, Mapping), "release contract has no promotion block")
     workflow_path = promotion.get("workflow_path")
@@ -289,10 +289,9 @@ def validate_candidate_run(
         "candidate run must be completed successfully",
     )
     _require(
-        type(candidate_run.get("run_attempt")) is int
-        and candidate_run["run_attempt"] == 1
+        _positive_int(candidate_run.get("run_attempt"))
         and manifest.get("run_attempt") == 1,
-        "candidate run must use attempt 1",
+        "candidate run must have a positive current attempt and attempt-one evidence",
     )
 
 
@@ -1397,7 +1396,9 @@ def verify_tag_candidate(
         manifest,
         contract,
         expected,
-        run_attempt=candidate_run.get("run_attempt"),
+        # Qualification jobs and immutable artifacts are bound to attempt 1;
+        # the run-level API record above may describe a successful finalizer retry.
+        run_attempt=1,
         jobs=jobs,
         artifact_api=api_records,
         observed_files=observed_files,

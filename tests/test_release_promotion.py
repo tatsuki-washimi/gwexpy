@@ -1132,8 +1132,9 @@ def test_candidate_validation_keeps_legacy_review_document_size_limit(
         module.load_candidate_review_document(path, version="0.2.5")
 
 
+@pytest.mark.parametrize("current_attempt", [1, 2])
 def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
-    promotion, tmp_path: Path, monkeypatch
+    promotion, tmp_path: Path, monkeypatch, current_attempt: int
 ) -> None:
     from types import SimpleNamespace
 
@@ -1254,7 +1255,7 @@ def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
         "workflow_id": 42,
         "head_sha": source,
         "head_branch": "main",
-        "run_attempt": 1,
+        "run_attempt": current_attempt,
         "status": "completed",
         "conclusion": "success",
     }
@@ -1269,6 +1270,7 @@ def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
 
     def stop_after_manifest(manifest_arg, contract_arg, expected_arg, **kwargs):
         captured.update(expected_arg)
+        captured["run_attempt"] = kwargs["run_attempt"]
 
     tag_body = "\n".join(
         [
@@ -1339,6 +1341,7 @@ def test_tag_candidate_validation_accepts_v026_yaml_review_evidence(
 
     assert result["manifest_sha256"] == manifest_sha256
     assert captured["review_evidence_sha256"] == module.sha256(review_raw)
+    assert captured["run_attempt"] == 1
 
 
 def test_future_profile_selects_every_required_gate_and_schema(promotion):
@@ -1403,6 +1406,95 @@ def test_candidate_run_is_bound_to_tag_contract_and_manifest(promotion):
     )
 
 
+def test_candidate_run_accepts_successful_retry_with_attempt_one_manifest(promotion):
+    module, manifest, contract = promotion
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"],
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 2,
+    }
+
+    module.validate_candidate_run(
+        manifest,
+        contract,
+        run,
+        repository=manifest["repository"],
+        tag=manifest["tag"],
+        source_sha=manifest["source_sha"],
+    )
+
+    assert manifest["run_attempt"] == 1
+
+
+def test_candidate_gate_jobs_reads_attempt_one(promotion, monkeypatch):
+    module, manifest, _contract = promotion
+    requested = []
+    monkeypatch.setattr(
+        module,
+        "_api_pages",
+        lambda repository, token, endpoint, key: (
+            requested.append((repository, token, endpoint, key))
+            or [
+                {
+                    "name": "Verify immutable release source",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ]
+        ),
+    )
+
+    result = module._candidate_gate_jobs(
+        manifest["repository"], "token", manifest["run_id"], ["verify"]
+    )
+
+    assert requested == [
+        (
+            manifest["repository"],
+            "token",
+            f"actions/runs/{manifest['run_id']}/attempts/1/jobs",
+            "jobs",
+        )
+    ]
+    assert result == [
+        {"name": "verify", "status": "completed", "conclusion": "success"}
+    ]
+
+
+@pytest.mark.parametrize(
+    ("status", "conclusion"),
+    [("in_progress", None), ("completed", "failure"), ("completed", "skipped")],
+)
+def test_candidate_gate_jobs_rejects_unsuccessful_attempt_one(
+    promotion, monkeypatch, status, conclusion
+):
+    module, manifest, _contract = promotion
+    monkeypatch.setattr(
+        module,
+        "_api_pages",
+        lambda *_: [
+            {
+                "name": "Verify immutable release source",
+                "status": status,
+                "conclusion": conclusion,
+            }
+        ],
+    )
+
+    with pytest.raises(
+        module.PromotionManifestError, match="did not complete successfully"
+    ):
+        module._candidate_gate_jobs(
+            manifest["repository"], "token", manifest["run_id"], ["verify"]
+        )
+
+
 def test_candidate_run_rejects_path_with_branch_suffix(promotion):
     module, manifest, contract = promotion
     run = {
@@ -1438,7 +1530,8 @@ def test_candidate_run_rejects_path_with_branch_suffix(promotion):
         ("head_sha", "f" * 40),
         ("status", "in_progress"),
         ("conclusion", "failure"),
-        ("run_attempt", 2),
+        ("run_attempt", 0),
+        ("run_attempt", True),
     ],
 )
 def test_candidate_run_rejects_wrong_api_identity_or_state(promotion, field, value):
