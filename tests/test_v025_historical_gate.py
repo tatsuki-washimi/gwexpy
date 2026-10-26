@@ -138,6 +138,7 @@ def write_approval(path: Path, digest: str) -> None:
     path.write_text("review_evidence_json: |\n  " + payload + "\n")
 
 
+@pytest.mark.historical_audit
 def test_aggregate_accounts_for_62_runtime_and_12_dispositions(tmp_path):
     module, manifest, reports, approval, source = fixture(tmp_path)
     result = module.aggregate(manifest, reports, approval, source, "f" * 64)
@@ -163,6 +164,7 @@ def test_aggregate_accounts_for_62_runtime_and_12_dispositions(tmp_path):
         "missing_qualification",
     ],
 )
+@pytest.mark.historical_audit
 def test_aggregate_rejects_incomplete_or_unbound_evidence(tmp_path, change):
     module, manifest, reports, approval, source = fixture(tmp_path)
     path = reports / "wheel.json"
@@ -194,6 +196,7 @@ def test_aggregate_rejects_incomplete_or_unbound_evidence(tmp_path, change):
         module.aggregate(manifest, reports, approval, source, "f" * 64)
 
 
+@pytest.mark.historical_audit
 def test_junit_skip_error_identifies_testcase_and_reason(tmp_path):
     module = gate()
     junit = tmp_path / "fixed.xml"
@@ -219,6 +222,7 @@ def test_junit_skip_error_identifies_testcase_and_reason(tmp_path):
     assert "ffmpeg unavailable" in message
 
 
+@pytest.mark.historical_audit
 def test_failed_pytest_reports_skipped_junit_details(tmp_path, monkeypatch):
     module = gate()
     junit = tmp_path / "fixed.xml"
@@ -256,6 +260,7 @@ def test_failed_pytest_reports_skipped_junit_details(tmp_path, monkeypatch):
     assert str(exc_info.value.__cause__) == "pytest exited 1"
 
 
+@pytest.mark.historical_audit
 def test_failed_pytest_preserves_original_error_when_junit_passes(
     tmp_path, monkeypatch
 ):

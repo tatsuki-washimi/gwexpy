@@ -2,39 +2,9 @@ name: Test (gwpy-compat)
 
 on:
   pull_request:
-    branches: [main]
-    # Limit PR runs to the TimeSeries dependency cone (verified via import grep):
-    # interop/io/types are core deps; plot is reached via gwexpy/types' plot mixin.
-    # Unrelated PRs outside this dependency and proxy-contract cone skip this
-    # gate; main push and manual dispatch keep full coverage.
-    paths:
-      - "gwexpy/**"
-      - "gwexpy/timeseries/**"
-      - "gwexpy/frequencyseries/**"
-      - "gwexpy/spectrogram/**"
-      - "gwexpy/signal/**"
-      - "gwexpy/types/**"
-      - "gwexpy/interop/**"
-      - "gwexpy/io/**"
-      - "gwexpy/fitting/**"
-      - "gwexpy/plot/**"
-      - "gwexpy/utils/**"
-      - "gwexpy/table/**"
-      - "tests/timeseries/**"
-      - "tests/**"
-      - "tests/table/**"
-      - "tests/interop/**"
-      - "tests/test_gwpy4_proxy_contract.py"
-      - "tests/test_gwpy_override_inventory.py"
-      - "scripts/audit_gwpy_overrides.py"
-      - "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json"
-      - "docs/developers/contracts/public_io_contract.*"
-      - "pyproject.toml"
-      - "requirements*.txt"
-      - "environment.yml"
-      - ".github/workflows/test-compat-gwpy.yml"
+    branches: [main, maint/0.2]
   push:
-    branches: [main]
+    branches: [main, maint/0.2]
   workflow_dispatch:
 
 permissions:

@@ -11,6 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 from babel.messages import mofile, pofile
 
@@ -60,6 +61,7 @@ flowchart LR
 """
 
 
+@pytest.mark.historical_audit
 def test_changelog_preserves_the_historical_v022_activity_snapshot() -> None:
     """Keep the earlier published snapshot and its provenance available."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
@@ -118,8 +120,15 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
     assert "The candidate has not been tagged or published." not in source
     assert CANDIDATE_ACTIVITY_SHA in source
 
-    # Preserve the earlier published and candidate assets as immutable
-    # historical snapshots after the current figure advances to v0.2.4.
+
+@pytest.mark.historical_audit
+def test_published_v023_activity_snapshot_and_hash_are_immutable() -> None:
+    static = REPO_ROOT / "docs_redesign/_static"
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    # Preserve the published asset as an immutable snapshot after the current
+    # figure advances to v0.2.4.
     published_sha = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
     published_csv = static / "downloads/development-activity-v0.2.3-weekly.csv"
     digest = hashlib.sha256(published_csv.read_bytes()).hexdigest()
@@ -139,6 +148,7 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
     assert "https://pypi.org/project/gwexpy/0.2.3/" in historical_changelog
 
 
+@pytest.mark.historical_audit
 def test_current_activity_matches_the_published_v024_tag() -> None:
     static = REPO_ROOT / "docs_redesign/_static"
     release_status = json.loads(
@@ -178,6 +188,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
             assert "Commits per week" not in svg
 
 
+@pytest.mark.historical_audit
 def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
     """Keep the changelog figure readable on the Japanese docs site."""
     source_text = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
@@ -428,6 +439,7 @@ def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
     assert RELEASE_DOI_URL in japanese
 
 
+@pytest.mark.historical_audit
 def test_v022_release_closure_manifest_binds_distribution_channels() -> None:
     """Keep the post-publication audit tied to the accepted release bytes."""
     manifest = yaml.safe_load(RELEASE_CLOSURE_MANIFEST.read_text(encoding="utf-8"))

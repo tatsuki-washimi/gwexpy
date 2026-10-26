@@ -2520,14 +2520,10 @@ def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -
         "4.0.1",
         "4.0.2",
     ]
-    paths = set(workflow["on"]["pull_request"]["paths"])
-    assert {
-        "gwexpy/**",
-        "tests/**",
-        "scripts/audit_gwpy_overrides.py",
-        "tests/test_gwpy_override_inventory.py",
-        "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
-    } <= paths
+    pull_request = workflow["on"]["pull_request"]
+    assert set(pull_request["branches"]) >= {"main", "maint/0.2"}
+    assert "paths" not in pull_request
+    assert "paths-ignore" not in pull_request
     steps = workflow["jobs"]["gwpy-compat"]["steps"]
     inventory = next(
         step for step in steps if step.get("name") == "Check GWpy override inventory"
