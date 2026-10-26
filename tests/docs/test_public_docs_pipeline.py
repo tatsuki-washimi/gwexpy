@@ -7,7 +7,9 @@ import io
 import json
 import runpy
 import subprocess
+import time
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 
 import numpy as np
@@ -267,6 +269,48 @@ def test_manifest_readback_checks_exact_bytes_for_both_languages(monkeypatch, de
         assert errors == []
     else:
         assert errors == [f"{defect}: deployed bytes differ from the verified artifact"]
+
+
+def test_manifest_readback_retries_transient_http_503(monkeypatch):
+    revision = "b" * 40
+    build_info = json.dumps(
+        {"source_revision": revision, "dirty": False}, sort_keys=True
+    ).encode()
+    contents = {
+        "build-info.json": build_info,
+        "index.html": b"<!doctype html>english\n",
+        "ja/build-info.json": build_info,
+        "ja/index.html": b"<!doctype html>japanese\n",
+    }
+    attempts = dict.fromkeys(contents, 0)
+    manifest = {
+        "schema": DOCS_ARTIFACT_SCHEMA,
+        "source_revision": revision,
+        "files": {
+            path: hashlib.sha256(data).hexdigest() for path, data in contents.items()
+        },
+    }
+
+    def response(request, timeout):
+        path = urlsplit(request.full_url).path.removeprefix("/docs/")
+        attempts[path] += 1
+        if path == "ja/index.html" and attempts[path] == 1:
+            raise HTTPError(
+                request.full_url,
+                503,
+                "Service Unavailable",
+                {},
+                io.BytesIO(b"temporary Pages response"),
+            )
+        return io.BytesIO(contents[path])
+
+    monkeypatch.setattr("scripts.check_public_docs.urlopen", response)
+    monkeypatch.setattr(time, "sleep", lambda _delay: None)
+
+    errors = check_remote_manifest("https://docs.example.test/docs", revision, manifest)
+
+    assert errors == []
+    assert attempts["ja/index.html"] == 2
 
 
 def test_manifest_readback_rejects_unsafe_paths_before_network_access(monkeypatch):

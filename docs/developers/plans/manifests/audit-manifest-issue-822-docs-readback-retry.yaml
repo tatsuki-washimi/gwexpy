@@ -1,0 +1,79 @@
+schema: gwexpy-issue-822-docs-readback-retry-v1
+date_utc: 2026-10-26
+issue: 822
+related_issues:
+  - 821
+source_base_sha: ffca3feb7fcd640ceaf032332fc7d7512a5c8a2d
+status: awaiting_required_ci_and_production_readback
+root_cause: >-
+  The production Docs publisher deployed the verified artifact and passed the
+  EN/JA build-identity readback. The subsequent per-file SHA-256 readback used a
+  single HTTP request per file. Two runs returned transient HTTP 503 responses
+  for different image files even though both URLs later returned HTTP 200 and
+  EN/JA build-info matched the deployed source. The second failed publisher
+  attempt reused the same attempt-1 artifact ID and digest.
+implementation:
+  retryable_http_statuses:
+    - 408
+    - 425
+    - 429
+    - 5xx
+  maximum_attempts_per_file: 4
+  backoff_seconds:
+    - 1
+    - 2
+    - 4
+  integrity_contract: >-
+    Retry only transient HTTP responses. A final transport/HTTP error or any
+    successful response whose bytes do not match the expected SHA-256 fails
+    readback; source SHA and the exact build artifact remain unchanged.
+evidence:
+  production_run: https://github.com/tatsuki-washimi/gwexpy/actions/runs/40324222091
+  publisher_attempts: 1_and_2_failed_on_distinct_transient_503_responses
+  deployed_source_revision: ffca3feb7fcd640ceaf032332fc7d7512a5c8a2d
+  en_ja_build_info: source_ref=main; dirty=false
+  reused_artifact:
+    id: 12651263926
+    digest: sha256:61a5c864c096afd104094299dd345fd87cc4cff5c3fdd8e46af444bdfd63eab7
+checks:
+  - command: >-
+      conda run -n gwexpy pytest -q
+      tests/docs/test_public_docs_pipeline.py -k manifest_readback
+    result: >-
+      exit 0; 5 passed. The new transient-503 regression failed before the
+      implementation and passes after retry was added.
+  - command: >-
+      conda run -n gwexpy pytest -q tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 18 passed
+  - command: >-
+      conda run -n gwexpy ruff check scripts/check_public_docs.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; all checks passed
+  - command: >-
+      conda run -n gwexpy ruff format --check scripts/check_public_docs.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; both files already formatted
+  - command: >-
+      conda run -n gwexpy mypy scripts/check_public_docs.py
+      --ignore-missing-imports
+    result: exit 0; no issues found in 1 source file
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: >-
+      conda run -n gwexpy python scripts/check_public_docs.py --url
+      https://tatsuki-washimi.github.io/gwexpy/docs/ --expected-revision
+      ffca3feb7fcd640ceaf032332fc7d7512a5c8a2d --expected-manifest
+      <attempt-1 artifact manifest> --manifest-only
+    result: >-
+      exit 0; every deployed EN/JA file matched the exact same-run attempt-1
+      artifact manifest, artifact ID 12651263926, SHA-256 digest
+      61a5c864c096afd104094299dd345fd87cc4cff5c3fdd8e46af444bdfd63eab7
+omitted:
+  - Required hosted PR checks are pending.
+  - A production run on the fix commit, including exact manifest readback, is pending merge.
+  - No release, tag, GitHub Release, or PyPI action was performed.
+check_physics: not_applicable; no scientific algorithm or data model changed
+files_changed:
+  - scripts/check_public_docs.py
+  - tests/docs/test_public_docs_pipeline.py
+  - docs/developers/plans/manifests/audit-manifest-issue-822-docs-readback-retry.yaml
