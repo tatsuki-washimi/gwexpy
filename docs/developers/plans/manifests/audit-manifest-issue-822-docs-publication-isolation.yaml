@@ -34,6 +34,10 @@ implementation:
     - production and preview share one gh-pages-publish concurrency group
     - queue: max retains up to 100 pending workflow runs instead of replacing the pending run
     - above GitHub's queue limit, new runs can be canceled and require a manual rerun
+    - >-
+      Actionlint 1.7.12 does not recognize GitHub's documented concurrency.queue
+      key; a path-scoped exact-message exception is limited to the two workflows
+      using it. GitHub validates the actual workflow syntax and queue value.
   legacy_preview_binding: >-
     Existing preview output predates build-info.json. Its latest gh-pages path
     commit has the historical deploy(preview): docs_redesign <source-SHA> subject;
@@ -72,7 +76,10 @@ checks:
       EN/JA bytes by manifest hash.
     result: exit 0 within the 40 focused tests; no production gh-pages write
   - command: actionlint --version
-    result: unavailable locally; required hosted Actionlint check runs on the PR
+    result: >-
+      Actionlint 1.7.12 is the pinned hosted version and reports the valid queue
+      key as unknown. A narrow per-file exact-message ignore is configured;
+      hosted Actionlint must pass on the updated PR head.
 omitted:
   - >-
     No Docs Pages workflow_dispatch, gh-pages push, or deployed-site mutation
@@ -85,6 +92,7 @@ omitted:
     required before merge because merge runs the existing automatic Docs publisher.
 check_physics: not_applicable; no scientific algorithm or data model changed
 files_changed:
+  - .github/actionlint.yaml
   - .github/workflows/docs-pages.yml
   - .github/workflows/docs-redesign-preview.yml
   - scripts/ci/docs_publish_guard.py
