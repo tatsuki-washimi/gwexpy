@@ -4,7 +4,7 @@ issue: 822
 related_issues:
   - 821
 source_base_sha: 9f4eb04b9bdf21ce6693680e90c5635b58891b90
-status: awaiting_required_ci_and_production_readback
+status: completed_production_and_independent_readback
 root_cause: >-
   Production run 40332937262 reported an EN/JA manifest byte mismatch for
   ja/how-to/calibration/index.html. The attempt-1 artifact file and the
@@ -36,6 +36,12 @@ evidence:
   artifact_id: 12656047833
   artifact_digest: sha256:f7fdc4cbb1375fc03d2be2fbad98d9097ec1ac58cd1896bb10eb000f0ae06f86
   mismatched_file_expected_sha256: da233d37e0152364e66cf5509a2951038146017882d390a26b5290406b185194
+  final_docs_pages_run: 40341921165
+  final_source_revision: a62808cf78b1060443365c23552129dd779b923c
+  final_artifact_id: 12662520886
+  final_artifact_digest: sha256:3bcf7c0c9e60c24ba49f606ac22da065b53936f135d9f81554f8984bebd92927
+  final_published_gh_pages_commit: 95854a4cf17d749116249b88b96836288ba82e26
+  final_manifest_file_count: 1995
 checks:
   - command: >-
       rtk proxy conda run -n gwexpy python -m pytest -q
@@ -69,10 +75,27 @@ checks:
     result: >-
       exit 0; every deployed EN/JA file matches the exact run artifact manifest
       from production run 40332937262.
-omitted:
-  - Required hosted PR checks are pending.
-  - A fresh production Docs run on the fix commit is pending merge.
-  - No release, tag, GitHub Release, or PyPI action was performed.
+  - command: >-
+      python scripts/check_public_docs.py --url
+      https://tatsuki-washimi.github.io/gwexpy/docs/ --expected-revision
+      a62808cf78b1060443365c23552129dd779b923c --expected-manifest
+      <artifact 12662520886 manifest> --manifest-only
+    result: >-
+      exit 0; the workflow and an independent readback using the exact script
+      from source a62808cf78b1060443365c23552129dd779b923c both matched all
+      1,995 EN/JA files to the production artifact manifest.
+final_status:
+  pr: 833
+  required_checks: 23/23 passed
+  docs_pages_run: 40341921165
+  release_actions: none
+limitations:
+  - >-
+    The exact bytes returned during the failed request in run 40332937262 were
+    not retained; a transient Pages edge response remains consistent with the
+    later matching artifact, gh-pages blob, uncached read, and successful retry.
+  - >-
+    No release, tag, GitHub Release, or PyPI action was performed.
 check_physics: not_applicable; no scientific algorithm or data model changed
 files_changed:
   - scripts/check_public_docs.py

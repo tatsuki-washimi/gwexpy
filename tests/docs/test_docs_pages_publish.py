@@ -75,13 +75,14 @@ def test_audit_manifest_records_issue_and_owner_boundary() -> None:
     manifest = yaml.safe_load(AUDIT_MANIFEST.read_text(encoding="utf-8"))
 
     assert manifest["issue"] == 822
-    assert manifest["status"] == "draft_pending_owner_adoption"
+    assert manifest["status"] == "completed_owner_adopted_and_live_verified"
     assert manifest["source_base_sha"] == "fd567f3cfacfdc5beaa1589c20588add832b7eb8"
-    assert any(
-        "owner adoption" in item.lower()
-        for item in manifest["omitted"]
-        if isinstance(item, str)
-    )
+    assert "workflow_dispatch-only preview" in manifest["owner_decision"]["disposition"]
+    assert "No gh-pages ruleset exists" in manifest["owner_decision"]["branch_ruleset"]
+    verification = manifest["production_verification"]
+    assert verification["docs_pages_run"] == 40341921165
+    assert verification["source_revision"] == "a62808cf78b1060443365c23552129dd779b923c"
+    assert verification["independent_manifest_readback"]["file_count"] == 1995
 
 
 def test_artifact_manifest_binds_both_languages_and_every_file(tmp_path: Path) -> None:
