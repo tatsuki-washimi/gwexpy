@@ -66,6 +66,58 @@ This review gate does not replace Candidate Qualification or the separate
 Release Owner GO. Prior review reports and approvals remain historical and
 cannot be transferred to the new schema or source.
 
+## Change-impact analysis proposal (#820)
+
+The path-aware evidence-reuse work is a proposal, not an active release rule.
+`scripts/ci/release_change_impact.py` compares two full commit SHAs and reports
+path effect categories, the review lanes covered by the current versioned
+contract, proposed impact lanes, and content-tree digests for each current lane
+and the scientific product/test/build inputs. Example:
+
+```bash
+python scripts/ci/release_change_impact.py \
+  --release-tag vX.Y.Z \
+  --base <previous-reviewed-full-SHA> \
+  --candidate <new-candidate-full-SHA>
+```
+
+The command is read-only and advisory. It does not transfer reports, skip a
+check, issue Source Approval or Release Owner GO, or authorize publication.
+An unmapped path fails closed by reporting every configured lane as affected.
+The active versioned contract still requires every configured review lane for
+the exact source, a new exact-source Source Approval, candidate qualification
+on the exact newly built artifacts, and a separate Release Owner GO bound to
+that candidate's run, manifest, and distribution hashes. A different source
+commit does not qualify for the same-run finalizer recovery in [#819](https://github.com/tatsuki-washimi/gwexpy/issues/819).
+
+The report distinguishes three common changes:
+
+| Change | Affected review/test input | Evidence that may remain a reuse candidate after formal contract adoption |
+| --- | --- | --- |
+| Product or scientific-test change under `gwexpy/`, `tests/`, or `benchmarks/` | Scientific input digest changes; the scientific/data-model lane and relevant tests need fresh evidence. | None of the changed scientific evidence. Security or documentation evidence is considered separately by its own unchanged scope digest. |
+| Publishing workflow or release-control change under `.github/` or `scripts/` | Release-security scope changes; workflow/static/security checks and its substantive review need fresh evidence. | Scientific test results only if the exact scientific product, test, dependency, and build-input digest is unchanged. Exact candidate artifacts and their qualification are still new. |
+| Administrative evidence correction under `docs/developers/plans/` or `docs/developers/reports/` | The current contract still counts the path in its configured lane. The proposal parses structured records and keeps path-specific schema/hash checks; it adds no reviewer lane for structured admin-only data. Public prose changes also affect the documentation build and documentation review. | Scientific results when their complete input digest is unchanged and the prior evidence's source, artifacts, reviewer report hashes, and provenance validate under an adopted contract. |
+
+For example, changing only an audit-manifest YAML file under
+`docs/developers/plans/manifests/` changes the current contract's documentation
+lane tree digest, but leaves the scientific-input digest unchanged. The report
+parses the new YAML syntax; existing path-specific schema and digest checks
+remain necessary. The proposed impact lanes do not add a new reviewer for this
+admin-only edit, while the current contract still requires its configured
+documentation lane. Under today's contract this does **not** transfer the old
+Source Approval, candidate qualification, or GO. It only identifies unchanged
+scientific evidence as a possible reuse candidate for a future, explicitly
+adopted contract. Updating a public `.md` document also requires the relevant
+docs build and public-claim review.
+
+An impact report or a BLOCKED finding stops merge/publication eligibility; it
+does not stop independent read-only reviewers from completing their assigned
+checks and recording findings. Continue those reviews where they can still
+provide useful evidence. This report does not replace any reviewer or create a
+new review tier. The current release remains governed by its recorded review
+and approval rules until the Release Owner explicitly adopts a revised
+contract.
+
 ## Future build-once candidate and promotion procedure
 
 Use this procedure for v0.2.6 and for any later version whose contract selects
