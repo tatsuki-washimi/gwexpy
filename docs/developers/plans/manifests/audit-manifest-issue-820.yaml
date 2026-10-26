@@ -1,0 +1,57 @@
+schema: gwexpy-agent-audit-v1
+issue: 820
+date_utc: 2026-10-26
+status: ready_for_owner_adoption
+source_base_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+skills_used:
+  - name: superpowers:brainstorming
+    status: used to bound the report as advisory and leave active approval semantics unchanged
+  - name: gwexpy_conda_jobs
+    status: used; focused pytest, ruff, and mypy ran under the gwexpy conda environment
+checks:
+  - command: rtk conda run -n gwexpy python -m pytest -q tests/test_release_change_impact.py
+    result: exit 0; 15 passed
+  - command: rtk conda run -n gwexpy ruff check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
+    result: exit 0; all checks passed
+  - command: rtk conda run -n gwexpy ruff format --check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
+    result: exit 0; both files already formatted
+  - command: rtk conda run -n gwexpy mypy scripts/ci/release_change_impact.py
+    result: exit 0; no issues found in one source file
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: >-
+      conda run -n gwexpy python scripts/ci/release_change_impact.py
+      --release-tag v0.2.6 --base a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+      --candidate a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+    result: >-
+      exit 0; real-contract no-change report parsed as advisory, with zero
+      changed paths, three configured lanes, and publication_authorized false
+owner_adoption:
+  required_before_reuse_or_release_use: true
+  reason: >-
+    Impact-based reuse would change release review and approval semantics. The
+    report is not wired to CI and cannot transfer evidence or suppress checks.
+  publication_authorized: false
+  active_contract_modified: false
+omitted:
+  - >-
+    Hosted PR checks were not yet available when this manifest was prepared.
+  - >-
+    No full suite or Sphinx build was run; changes are limited to an advisory
+    repository-root release guide and a read-only impact-report utility.
+  - >-
+    No Source Approval, Release Owner GO, branch protection, release contract,
+    or publication workflow was changed. No release, tag, or distribution
+    action was performed.
+  - >-
+    Synthetic git repositories exercise product, build, workflow, documentation,
+    metadata, deletion, malformed record, unknown path, and current-lane cases.
+    The real candidate check used the existing v0.2.6 contract at its approved
+    source without a source diff.
+physics:
+  summary: not applicable; no scientific runtime or numerical behavior changed
+files_changed:
+  - RELEASING.md
+  - scripts/ci/release_change_impact.py
+  - tests/test_release_change_impact.py
+  - docs/developers/plans/manifests/audit-manifest-issue-820.yaml
