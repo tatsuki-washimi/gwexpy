@@ -1,7 +1,7 @@
 schema: gwexpy-agent-audit-v1
 issue: 820
 date_utc: 2026-10-26
-status: ready_for_owner_adoption
+status: draft_pending_hosted_checks_and_owner_adoption
 source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 skills_used:
   - name: superpowers:brainstorming
@@ -10,7 +10,7 @@ skills_used:
     status: used; focused pytest, ruff, and mypy ran under the gwexpy conda environment
 checks:
   - command: rtk proxy conda run -n gwexpy python -m pytest -q tests/test_release_change_impact.py
-    result: exit 0; 38 passed, including release-control path and science-digest regressions
+    result: exit 0; 42 passed, including release recovery tests classified as release-control and excluded from the science-input digest
   - command: rtk proxy conda run -n gwexpy ruff check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
     result: exit 0; all checks passed
   - command: rtk proxy conda run -n gwexpy ruff format --check scripts/ci/release_change_impact.py tests/test_release_change_impact.py
@@ -19,6 +19,14 @@ checks:
     result: exit 0; no issues found in one source file
   - command: git diff --check
     result: exit 0; no whitespace errors
+  - command: >-
+      python scripts/ci/release_change_impact.py --release-tag v0.2.5
+      --base 877f5146933c39ca887ff2d5aa14a8aacb9446f4
+      --candidate dd2aed82a89abc9229d2243de0907eddf662f845
+    result: >-
+      exit 0; #819 recovery head keeps scientific_inputs unchanged and proposes
+      release-security only. Current-contract lanes remain fail-closed because
+      the newly added recovery-test paths are not covered by existing lane scopes.
   - command: >-
       conda run -n gwexpy python scripts/ci/release_change_impact.py
       --release-tag v0.2.6 --base a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
@@ -35,7 +43,7 @@ owner_adoption:
   active_contract_modified: false
 omitted:
   - >-
-    Hosted PR checks were not yet available when this manifest was prepared.
+    Hosted PR checks on the updated head are still pending.
   - >-
     No full suite or Sphinx build was run; changes are limited to an advisory
     repository-root release guide and a read-only impact-report utility.
