@@ -7,10 +7,11 @@ import argparse
 import hashlib
 import json
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.parse import quote, unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
@@ -82,6 +83,8 @@ WORKFLOW_NOTEBOOK_PAGES = {
 
 DOCS_ARTIFACT_SCHEMA = "gwexpy-docs-pages-artifact-v1"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+MANIFEST_READBACK_MAX_ATTEMPTS = 4
+MANIFEST_READBACK_RETRY_DELAY_SECONDS = 1.0
 ARTIFACT_REQUIRED_FILES = frozenset(
     {"index.html", "build-info.json", "ja/index.html", "ja/build-info.json"}
 )
@@ -545,13 +548,21 @@ def check_remote_manifest(
             root_url + quote(path, safe="/") + "?revision=" + expected_revision,
             headers={"Cache-Control": "no-cache", "Accept-Encoding": "identity"},
         )
-        try:
-            with urlopen(request, timeout=20) as response:
-                digest = hashlib.sha256()
-                while chunk := response.read(1024 * 64):
-                    digest.update(chunk)
-        except (URLError, TimeoutError, OSError, ValueError) as exc:
-            return path, f"{path}: deployed artifact readback failed: {exc}"
+        for attempt in range(1, MANIFEST_READBACK_MAX_ATTEMPTS + 1):
+            try:
+                with urlopen(request, timeout=20) as response:
+                    digest = hashlib.sha256()
+                    while chunk := response.read(1024 * 64):
+                        digest.update(chunk)
+                break
+            except HTTPError as exc:
+                retryable = exc.code in {408, 425, 429} or 500 <= exc.code <= 599
+                exc.close()
+                if not retryable or attempt == MANIFEST_READBACK_MAX_ATTEMPTS:
+                    return path, f"{path}: deployed artifact readback failed: {exc}"
+                time.sleep(MANIFEST_READBACK_RETRY_DELAY_SECONDS * 2 ** (attempt - 1))
+            except (URLError, TimeoutError, OSError, ValueError) as exc:
+                return path, f"{path}: deployed artifact readback failed: {exc}"
         actual_digest = digest.hexdigest()
         if actual_digest != expected_digest:
             return path, f"{path}: deployed bytes differ from the verified artifact"
