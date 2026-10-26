@@ -13,13 +13,18 @@ FILES = [
     "tests/docs/test_docs_redesign_release_facts.py",
     "tests/test_v025_historical_gate.py",
 ]
+NORMAL_SELECTOR = (
+    "not network and not nds and not root and not historical_audit "
+    "and not release_candidate_state"
+)
+RELEASE_CANDIDATE_STATE_FILE = "tests/test_release_review_evidence.py"
 
 
-def _collect(marker: str | None) -> set[str]:
+def _collect(marker: str | None, files: list[str] = FILES) -> set[str]:
     command = [sys.executable, "-m", "pytest", "--collect-only", "-q"]
     if marker is not None:
         command.extend(["-m", marker])
-    command.extend(FILES)
+    command.extend(files)
     result = subprocess.run(
         command,
         cwd=ROOT,
@@ -49,9 +54,7 @@ def test_gate_commands_select_pr_fast_and_historical_replay(monkeypatch):
 
     module.run_gate("pr-fast", with_fixtures=False)
     fast_pytest = next(command for command in commands if command[0] == "pytest")
-    assert fast_pytest[fast_pytest.index("-m") + 1] == (
-        "not network and not nds and not root and not historical_audit"
-    )
+    assert fast_pytest[fast_pytest.index("-m") + 1] == NORMAL_SELECTOR
 
     commands.clear()
     module.run_gate("historical-audit-replay", with_fixtures=False)
@@ -70,12 +73,25 @@ def test_historical_markers_are_confined_to_replay_files():
     assert marked_files == set(FILES)
 
 
+def test_frozen_candidate_snapshot_is_not_a_normal_pr_requirement():
+    all_items = _collect(None, [RELEASE_CANDIDATE_STATE_FILE])
+    candidate_items = _collect(
+        "release_candidate_state", [RELEASE_CANDIDATE_STATE_FILE]
+    )
+    normal_items = _collect(NORMAL_SELECTOR, [RELEASE_CANDIDATE_STATE_FILE])
+
+    assert len(candidate_items) == 1
+    assert next(iter(candidate_items)).endswith(
+        "::test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate"
+    )
+    assert candidate_items.isdisjoint(normal_items)
+    assert candidate_items | normal_items == all_items
+
+
 def test_pytest_collection_partitions_only_immutable_audit_replays():
     all_items = _collect(None)
     replay_items = _collect("historical_audit")
-    normal_items = _collect(
-        "not network and not nds and not root and not historical_audit"
-    )
+    normal_items = _collect(NORMAL_SELECTOR)
 
     assert replay_items.isdisjoint(normal_items)
     assert replay_items | normal_items == all_items

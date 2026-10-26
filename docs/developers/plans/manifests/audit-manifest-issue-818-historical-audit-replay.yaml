@@ -4,12 +4,19 @@ base: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
 status: implementation-and-focused-verification
 skills:
   - gwexpy_conda_jobs
+  - superpowers:systematic-debugging
 skill_source: /home/washimi/ai-harness/projects/gwexpy/skills/gwexpy_conda_jobs/SKILL.md
 selection:
-  pr_fast_marker: "not network and not nds and not root and not historical_audit"
+  pr_fast_marker: "not network and not nds and not root and not historical_audit and not release_candidate_state"
   replay_mode: "historical-audit-replay"
   replay_marker: historical_audit
   replay_command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
+  release_candidate_state_marker: release_candidate_state
+  release_candidate_state_test: tests/test_release_review_evidence.py::test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate
+  release_candidate_state_reason: >-
+    This assertion binds the frozen v0.2.6 S-to-R readiness snapshot to its exact
+    candidate source. Ordinary PR HEADs are not that candidate; the publish
+    workflow separately validates its explicit release_ref before build/publish.
   replay_files:
     - tests/docs/test_v023_release_closure.py
     - tests/docs/test_v024_publication_status.py
@@ -75,18 +82,22 @@ normal_selection_guarantees:
 commands:
   - command: "conda run -n gwexpy python -m pytest --collect-only -q tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py -m historical_audit"
     result: "via tests/test_run_gate.py collection subprocess: selected set contains exactly 23 items; paired with normal selector, sets partition all 35 items"
-  - command: "conda run -n gwexpy python -m pytest --collect-only -q tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py -m 'not network and not nds and not root and not historical_audit'"
+  - command: "conda run -n gwexpy python -m pytest --collect-only -q tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py -m 'not network and not nds and not root and not historical_audit and not release_candidate_state'"
     result: "via tests/test_run_gate.py collection subprocess: selected set contains exactly 12 items; replay/normal are disjoint and cover all 35 items"
+  - command: "conda run -n gwexpy python -m pytest --collect-only -q -m release_candidate_state tests/test_release_review_evidence.py"
+    result: "via tests/test_run_gate.py: exactly the one frozen v0.2.6 readiness snapshot assertion is selected and excluded from normal PR Fast"
   - command: "conda run -n gwexpy python -m pytest -q tests/test_run_gate.py"
-    result: "passed: 3 tests"
+    result: "passed: 4 tests"
   - command: "conda run -n gwexpy python -m pytest -q -m historical_audit tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
     result: "passed: 23; 12 deselected"
   - command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
     result: "passed after replay gate was narrowed to the four marked files; 23 passed, 12 deselected, no skips"
   - command: "conda run -n gwexpy python scripts/ci/run_gate.py historical-audit-replay"
     result: "exit 0: 23 passed, 7 unrelated optional-dependency tests skipped, 14164 deselected; the seven skips were from JAX, MNE, Neo, Torch, Zarr, and PyCBC tests outside the historical replay files. Narrowed the gate to avoid collecting unrelated tests."
-  - command: "conda run -n gwexpy python -m pytest -q -m 'not network and not nds and not root and not historical_audit' tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
+  - command: "conda run -n gwexpy python -m pytest -q -m 'not network and not nds and not root and not historical_audit and not release_candidate_state' tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py"
     result: "passed: 12; 23 deselected"
+  - command: "conda run -n gwexpy python -m pytest -q -m 'not release_candidate_state' tests/test_release_review_evidence.py"
+    result: "passed: 37; the one exact-source readiness snapshot assertion is intentionally selected by its dedicated marker"
   - command: "conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py tests/test_run_gate.py"
     result: "passed after correcting three import-order findings"
   - command: "conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py tests/docs/test_v024_publication_status.py tests/docs/test_docs_redesign_release_facts.py tests/test_v025_historical_gate.py tests/test_run_gate.py"
@@ -99,10 +110,15 @@ commands:
     result: passed
   - command: "git diff --check origin/main...HEAD"
     result: "passed; note this range ends at the unchanged base HEAD, while git diff --check separately covered the working-tree diff"
+  - command: "rtk conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/test_run_gate.py tests/test_release_review_evidence.py"
+    result: "passed"
+  - command: "rtk conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/test_run_gate.py tests/test_release_review_evidence.py"
+    result: "passed: all 3 changed Python files already formatted"
 omitted_checks:
   - full PR Fast gate and repository-wide tests, lint, and type checks were not run
   - specialized scientific, GWpy compatibility, release authorization, and publication gates were not run
 verification_notes:
+  - Hosted PR Fast run 40279454169 exposed that the v0.2.6 snapshot assertion passed ordinary PR HEAD to validate_s_to_r as candidate R, causing unrelated product diffs to be rejected by the exact candidate S-to-R policy; only that source-bound assertion is separated.
   - initial Ruff check found three import-order issues from the added pytest imports; corrected and rerun successfully
   - initial Ruff format check requested formatting for tests/test_run_gate.py; formatted and rerun successfully
   - the final marker-boundary assertion required a focused formatting pass; the final format check covers the complete changed Python set
@@ -116,4 +132,6 @@ changed_files:
   - tests/docs/test_docs_redesign_release_facts.py
   - tests/test_v025_historical_gate.py
   - tests/test_run_gate.py
+  - tests/test_release_review_evidence.py
+  - docs/developers/plans/manifests/audit-manifest-issue-818.yaml
   - docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml

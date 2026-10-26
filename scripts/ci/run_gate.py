@@ -148,7 +148,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "pytest",
                 "-q",
                 "-m",
-                "not network and not nds and not root and not historical_audit",
+                "not network and not nds and not root and not historical_audit and not release_candidate_state",
                 "--ignore=tests/docs/test_docs_notebooks.py",
                 "--ignore=tests/io/",
                 "--ignore=tests/io_conformance/",
