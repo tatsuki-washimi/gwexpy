@@ -30,7 +30,45 @@ python scripts/ci/run_gate.py io-conformance
 
 # Full PR fast validation gate
 python scripts/ci/run_gate.py pr-fast
+
+# Replay pinned historical publication and audit evidence
+python scripts/ci/run_gate.py historical-audit-replay
 ```
+
+The historical replay is separate from ordinary PR Fast. It checks archived
+publication and audit evidence. PR Fast continues to run current product and
+publication-status regressions; only the source-bound v0.2.6 snapshot assertion
+is selected separately.
+
+The exact v0.2.6 readiness snapshot assertion in
+`tests/test_release_review_evidence.py` is marked `release_candidate_state`.
+It binds the checked-out `HEAD` to the frozen S-to-R candidate and is therefore
+only meaningful when run on that exact release source, not on a later
+maintenance PR. Ordinary PR Fast excludes this snapshot assertion. The active
+release workflow still validates its explicit `release_ref` with
+`scripts/validate_release.py` before building or publishing. To inspect the
+snapshot test manually, run it at the exact candidate source:
+
+```bash
+python -m pytest -q -m release_candidate_state tests/test_release_review_evidence.py
+```
+
+The test and the validator remain in the repository; this selection change
+does not relax the candidate's release validation.
+
+### Historical audit replay scope
+
+| Test path | Former normal-gate dependency | Disposition |
+| --- | --- | --- |
+| `tests/docs/test_v023_release_closure.py` | Immutable v0.2.3 publication, distribution, and scope records | Marked `historical_audit`; retained in the explicit replay. |
+| `tests/docs/test_v024_publication_status.py` | Published v0.2.4 source, channels, and docs-readback state | Marked `historical_audit`; retained in the explicit replay. |
+| `tests/docs/test_docs_redesign_release_facts.py` | v0.2.2/v0.2.3 snapshots and v0.2.4 publication binding | Historical assertions are marked for replay; EN/JA candidate consistency remains in normal PR Fast. |
+| `tests/test_v025_historical_gate.py` | Archived v0.2.5 runtime and owner-disposition evidence | Marked `historical_audit`; retained in the explicit replay. |
+
+These tests validate immutable records whose truth does not change with a
+current product PR. Their fixtures and hashes remain unchanged. Current
+candidate checks and scientific, data-integrity, and security regressions stay
+in ordinary PR Fast.
 
 ## Root-level utility scripts
 
