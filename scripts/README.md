@@ -39,6 +39,20 @@ The historical replay is separate from ordinary PR Fast. It checks archived
 publication and audit evidence; current candidate and publication-status
 checks remain in PR Fast.
 
+### Historical audit replay scope
+
+| Test path | Former normal-gate dependency | Disposition |
+| --- | --- | --- |
+| `tests/docs/test_v023_release_closure.py` | Immutable v0.2.3 publication, distribution, and scope records | Marked `historical_audit`; retained in the explicit replay. |
+| `tests/docs/test_v024_publication_status.py` | Published v0.2.4 source, channels, and docs-readback state | Marked `historical_audit`; retained in the explicit replay. |
+| `tests/docs/test_docs_redesign_release_facts.py` | v0.2.2/v0.2.3 snapshots and v0.2.4 publication binding | Historical assertions are marked for replay; EN/JA candidate consistency remains in normal PR Fast. |
+| `tests/test_v025_historical_gate.py` | Archived v0.2.5 runtime and owner-disposition evidence | Marked `historical_audit`; retained in the explicit replay. |
+
+These tests validate immutable records whose truth does not change with a
+current product PR. Their fixtures and hashes remain unchanged. Current
+candidate checks and scientific, data-integrity, and security regressions stay
+in ordinary PR Fast.
+
 ## Root-level utility scripts
 
 Repository-wide checks and maintenance utilities.
