@@ -5,7 +5,19 @@ related_issues:
   - 606
   - 821
 source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
-status: draft_pending_owner_adoption
+status: completed_owner_adopted_and_live_verified
+owner_decision:
+  date_utc: 2026-10-26
+  disposition: >-
+    Adopt workflow-scoped isolation for production Docs and the retained
+    workflow_dispatch-only preview. Read-only build jobs receive contents:read;
+    only the constrained publisher receives contents:write.
+  release_boundary: >-
+    No release approval semantics changed. Release, tag, GitHub Release, and
+    PyPI actions remain governed by #797 and are not authorized by this work.
+  branch_ruleset: >-
+    No gh-pages ruleset exists. Direct collaborator pushes remain possible and
+    are an acknowledged limitation outside the Actions workflow boundary.
 change_summary: >-
   Separate read-only EN/JA Docs builds from write-capable gh-pages publishers.
   Bind same-run artifacts to the source SHA and full file-hash manifest; reject
@@ -79,17 +91,31 @@ checks:
     result: >-
       Actionlint 1.7.12 is the pinned hosted version and reports the valid queue
       key as unknown. A narrow per-file message-prefix ignore is configured;
-      hosted Actionlint must pass on the updated PR head.
-omitted:
+      the required Actionlint check passed on PR #828. GitHub also validated the
+      actual workflow syntax and queue value.
+production_verification:
+  docs_pages_run: 40341921165
+  source_revision: a62808cf78b1060443365c23552129dd779b923c
+  source_ref: main
+  dirty: false
+  artifact_id: 12662520886
+  artifact_digest: sha256:3bcf7c0c9e60c24ba49f606ac22da065b53936f135d9f81554f8984bebd92927
+  published_gh_pages_commit: 95854a4cf17d749116249b88b96836288ba82e26
+  workflow_readback: passed
+  independent_manifest_readback:
+    result: passed
+    file_count: 1995
+  n001_regression: >-
+    Isolated A-to-B-to-stale-A, ordinary/duplicate B, and deliberate descendant
+    rollback tests passed; the production workflow checked source ordering
+    before and after publication.
+limitations:
   - >-
-    No Docs Pages workflow_dispatch, gh-pages push, or deployed-site mutation
-    was run. The isolated repository tests exercise publication order.
+    No gh-pages branch ruleset exists, so a collaborator with direct write
+    permission can still bypass the Actions publisher. The adopted scope
+    isolates GitHub Actions credentials and triggers only.
   - >-
-    Live EN/JA manifest readback awaits an adopted Docs publication PR; the
-    regression uses synthetic HTTP responses and does not claim live Pages verification.
-  - >-
-    No new security-boundary policy is adopted by this PR. Owner adoption is
-    required before merge because merge runs the existing automatic Docs publisher.
+    No release, tag, GitHub Release, or PyPI action was performed.
 check_physics: not_applicable; no scientific algorithm or data model changed
 files_changed:
   - .github/actionlint.yaml
