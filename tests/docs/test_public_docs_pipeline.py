@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import runpy
 import subprocess
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import numpy as np
 import pytest
@@ -14,8 +16,10 @@ from astropy import units as u
 
 from scripts.check_public_docs import (
     AUDIENCE_ROUTES,
+    DOCS_ARTIFACT_SCHEMA,
     WORKFLOW_NOTEBOOK_PAGES,
     check_remote,
+    check_remote_manifest,
 )
 from scripts.prepare_public_docs import code_cells, prepare
 
@@ -224,6 +228,66 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
     assert bool(errors) == (defect is not None)
     assert any("/ja/build-info.json" in request for request in requests)
     assert any("/ja/_static/downloads/commissioner.xml" in item for item in requests)
+
+
+@pytest.mark.parametrize("defect", [None, "index.html", "ja/index.html"])
+def test_manifest_readback_checks_exact_bytes_for_both_languages(monkeypatch, defect):
+    revision = "a" * 40
+    build_info = json.dumps(
+        {"source_revision": revision, "dirty": False}, sort_keys=True
+    ).encode()
+    contents = {
+        "build-info.json": build_info,
+        "index.html": b"<!doctype html>english\n",
+        "ja/build-info.json": build_info,
+        "ja/index.html": b"<!doctype html>japanese\n",
+    }
+    requested = []
+    manifest = {
+        "schema": DOCS_ARTIFACT_SCHEMA,
+        "source_revision": revision,
+        "files": {
+            path: hashlib.sha256(data).hexdigest() for path, data in contents.items()
+        },
+    }
+
+    def response(request, timeout):
+        path = urlsplit(request.full_url).path.removeprefix("/docs/")
+        requested.append(path)
+        payload = contents[path]
+        if path == defect:
+            payload = b"valid but substituted public content\n"
+        return io.BytesIO(payload)
+
+    monkeypatch.setattr("scripts.check_public_docs.urlopen", response)
+    errors = check_remote_manifest("https://docs.example.test/docs", revision, manifest)
+
+    assert sorted(requested) == sorted(contents)
+    if defect is None:
+        assert errors == []
+    else:
+        assert errors == [f"{defect}: deployed bytes differ from the verified artifact"]
+
+
+def test_manifest_readback_rejects_unsafe_paths_before_network_access(monkeypatch):
+    revision = "a" * 40
+    manifest = {
+        "schema": DOCS_ARTIFACT_SCHEMA,
+        "source_revision": revision,
+        "files": {
+            "index.html": "a" * 64,
+            "build-info.json": "b" * 64,
+            "ja/index.html": "c" * 64,
+            "ja/build-info.json": "d" * 64,
+            "../other": "e" * 64,
+        },
+    }
+    monkeypatch.setattr(
+        "scripts.check_public_docs.urlopen",
+        lambda *_args, **_kwargs: pytest.fail("unsafe path must not be fetched"),
+    )
+
+    assert check_remote_manifest("https://docs.example.test/docs", revision, manifest)
 
 
 def _lesson_cell(relative: str, marker: str) -> str:

@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
+from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import URLError
-from urllib.parse import unquote, urljoin, urlsplit
+from urllib.parse import quote, unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 ENTRY_PAGES = (
@@ -76,6 +79,12 @@ WORKFLOW_NOTEBOOK_PAGES = {
     "how-to/calibration/calibration_units_contract.html": "calibration_units_contract.ipynb",
     "how-to/interop/root_to_python_migration.html": "root_to_python_migration.ipynb",
 }
+
+DOCS_ARTIFACT_SCHEMA = "gwexpy-docs-pages-artifact-v1"
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+ARTIFACT_REQUIRED_FILES = frozenset(
+    {"index.html", "build-info.json", "ja/index.html", "ja/build-info.json"}
+)
 
 
 LEGACY_ANCHORS = {
@@ -498,20 +507,101 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
     return errors
 
 
+def check_remote_manifest(
+    base_url: str, expected_revision: str, manifest: dict
+) -> list[str]:
+    """Compare every deployed EN/JA site file with the verified build manifest."""
+    if (
+        not isinstance(manifest, dict)
+        or set(manifest) != {"schema", "source_revision", "files"}
+        or manifest.get("schema") != DOCS_ARTIFACT_SCHEMA
+        or manifest.get("source_revision") != expected_revision
+        or not isinstance(manifest.get("files"), dict)
+    ):
+        return ["expected artifact manifest is malformed or bound to another revision"]
+
+    files = manifest["files"]
+    if not ARTIFACT_REQUIRED_FILES.issubset(files):
+        missing = sorted(ARTIFACT_REQUIRED_FILES - set(files))
+        return [f"expected artifact manifest is missing required files: {missing}"]
+    for path, digest in files.items():
+        if (
+            not isinstance(path, str)
+            or path.startswith("/")
+            or "\\" in path
+            or "?" in path
+            or "#" in path
+            or any(part in {"", ".", ".."} for part in path.split("/"))
+        ):
+            return ["expected artifact manifest contains an unsafe relative path"]
+        if not isinstance(digest, str) or SHA256_RE.fullmatch(digest) is None:
+            return [f"expected artifact manifest has an invalid SHA-256 for {path}"]
+
+    root_url = base_url.rstrip("/") + "/"
+
+    def verify_file(item: tuple[str, str]) -> tuple[str, str | None]:
+        path, expected_digest = item
+        request = Request(
+            root_url + quote(path, safe="/") + "?revision=" + expected_revision,
+            headers={"Cache-Control": "no-cache", "Accept-Encoding": "identity"},
+        )
+        try:
+            with urlopen(request, timeout=20) as response:
+                digest = hashlib.sha256()
+                while chunk := response.read(1024 * 64):
+                    digest.update(chunk)
+        except (URLError, TimeoutError, OSError, ValueError) as exc:
+            return path, f"{path}: deployed artifact readback failed: {exc}"
+        actual_digest = digest.hexdigest()
+        if actual_digest != expected_digest:
+            return path, f"{path}: deployed bytes differ from the verified artifact"
+        return path, None
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        failures = [
+            error
+            for _path, error in executor.map(verify_file, files.items())
+            if error is not None
+        ]
+    return failures
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("html_root", type=Path, nargs="?")
     parser.add_argument("--url", help="Read back a deployed site instead of local HTML")
     parser.add_argument("--expected-revision")
+    parser.add_argument("--expected-manifest", type=Path)
+    parser.add_argument(
+        "--manifest-only",
+        action="store_true",
+        help="Compare every deployed file with --expected-manifest without route checks",
+    )
     args = parser.parse_args()
     if args.url:
         if not args.expected_revision:
             parser.error("--url requires --expected-revision")
-        failures = check_remote(args.url, args.expected_revision)
+        if args.manifest_only:
+            if not args.expected_manifest:
+                parser.error("--manifest-only requires --expected-manifest")
+            try:
+                manifest = json.loads(
+                    args.expected_manifest.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError) as exc:
+                parser.error(f"cannot read expected artifact manifest: {exc}")
+            failures = check_remote_manifest(args.url, args.expected_revision, manifest)
+        else:
+            failures = check_remote(args.url, args.expected_revision)
     else:
+        if args.manifest_only or args.expected_manifest:
+            parser.error("--expected-manifest and --manifest-only require --url")
         if not args.html_root:
             parser.error("provide html_root or --url")
         failures = check(args.html_root, args.expected_revision)
     if failures:
         raise SystemExit("\n".join(failures))
-    print("Public docs: requested EN/JA checks passed")
+    if args.manifest_only:
+        print("Public docs: all EN/JA artifact files match the verified manifest")
+    else:
+        print("Public docs: requested EN/JA checks passed")

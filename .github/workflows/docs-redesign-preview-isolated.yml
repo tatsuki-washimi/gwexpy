@@ -1,0 +1,286 @@
+name: Docs Redesign Preview
+
+# Retain the public preview as a manual-only publisher per the #821 disposition.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gh-pages-publish
+  queue: max
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  MPLBACKEND: "module://matplotlib_inline.backend_inline"
+  CUDA_VISIBLE_DEVICES: ""
+  GWEXPY_DOCS_BUILD: "1"
+
+jobs:
+  build-preview:
+    name: Build Docs preview (read-only)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      MPLCONFIGDIR: /tmp/matplotlib
+      GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+      GWEXPY_DOCS_NOINDEX: "1"
+    outputs:
+      artifact_id: ${{ steps.upload-site.outputs.artifact-id }}
+      artifact_digest: ${{ steps.upload-site.outputs.artifact-digest }}
+    steps:
+      - name: Checkout source commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc fonts-noto-cjk
+
+      - name: Provision docs_redesign build environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[all]"
+          python -m pip install -r docs_redesign/requirements.txt
+
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
+        run: |
+          docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-preview"
+          docs_src="${docs_root}/docs_redesign"
+          mkdir -p "${docs_root}"
+          python scripts/prepare_public_docs.py "${docs_src}"
+          python scripts/verify_public_examples.py "${docs_src}"
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify introductory examples on their target release
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          release_env="${RUNNER_TEMP}/gwexpy-intro-release"
+          release_version=$(python -c 'import json; print(json.load(open("docs_redesign/release_status.json"))["intro_examples_release"])')
+          python -m venv "${release_env}"
+          "${release_env}/bin/python" -m pip install "gwexpy==${release_version}"
+          cd "${RUNNER_TEMP}"
+          env -u PYTHONPATH "${release_env}/bin/python" \
+            "${GITHUB_WORKSPACE}/scripts/verify_public_examples.py" "${docs_src}" \
+            --expected-version "${release_version}"
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/verify_public_examples.py "${docs_src}"
+
+      - name: Build EN HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          python -m sphinx -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
+
+      - name: Build JA HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/"
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          python -m sphinx -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"
+
+      - name: Check rendered EN and JA paths
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          python scripts/check_public_docs.py "${docs_src}/_build/html" \
+            --expected-revision "${GITHUB_SHA}"
+
+      - name: Package and hash the exact preview tree
+        id: package-site
+        run: |
+          set -euo pipefail
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          artifact_root="${RUNNER_TEMP}/gwexpy-docs-preview-artifact"
+          mkdir -p "${artifact_root}/site"
+          cp -a "${docs_src}/_build/html/." "${artifact_root}/site/"
+          python scripts/ci/docs_publish_guard.py create-manifest \
+            --site-dir "${artifact_root}/site" \
+            --manifest "${artifact_root}/manifest.json" \
+            --expected-revision "${GITHUB_SHA}"
+          echo "artifact_root=${artifact_root}" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload exact preview site
+        id: upload-site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        with:
+          name: docs-preview-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.package-site.outputs.artifact_root }}/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7
+
+      - name: Retain preview build diagnostics
+        if: failure() && steps.prepare_docs_redesign.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        with:
+          name: docs-preview-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/**
+            /tmp/sphinx-err-*.log
+          retention-days: 7
+
+  publish-preview:
+    name: Publish verified Docs preview artifact
+    needs: build-preview
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+    steps:
+      - name: Checkout current main history (read-only)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: refs/heads/main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download exact same-run preview artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4
+        with:
+          artifact-ids: ${{ needs.build-preview.outputs.artifact_id }}
+          path: ${{ runner.temp }}/gwexpy-docs-preview-artifact
+          merge-multiple: true
+          digest-mismatch: error
+
+      - name: Require artifact identity and digest
+        env:
+          DOCS_ARTIFACT_ID: ${{ needs.build-preview.outputs.artifact_id }}
+          DOCS_ARTIFACT_DIGEST: ${{ needs.build-preview.outputs.artifact_digest }}
+        run: |
+          set -euo pipefail
+          [[ "${DOCS_ARTIFACT_ID}" =~ ^[0-9]+$ ]] || {
+            echo "Missing upload-artifact identity" >&2
+            exit 1
+          }
+          [[ "${DOCS_ARTIFACT_DIGEST}" =~ ^[[:xdigit:]]{64}$ ]] || {
+            echo "Missing or malformed upload-artifact SHA-256 digest" >&2
+            exit 1
+          }
+
+      - name: Verify exact EN and JA artifact contents
+        run: |
+          set -euo pipefail
+          python scripts/ci/docs_publish_guard.py verify-artifact \
+            --artifact-root "${RUNNER_TEMP}/gwexpy-docs-preview-artifact" \
+            --expected-revision "${GITHUB_SHA}"
+
+      - name: Checkout gh-pages for the isolated publisher
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: gh-pages
+          path: .gh-pages-publish
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Refresh main before preview publication
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+
+      - name: Reject stale or unapproved source ordering
+        run: |
+          set -euo pipefail
+          python scripts/ci/docs_publish_guard.py check-order \
+            --repository "${GITHUB_WORKSPACE}" \
+            --candidate-revision "${GITHUB_SHA}" \
+            --deployed-site "${GITHUB_WORKSPACE}/.gh-pages-publish/preview-docs-redesign" \
+            --main-ref refs/remotes/origin/main \
+            --preview-workflow
+
+      - name: Prepare preview update
+        id: prepare-publish
+        run: |
+          set -euo pipefail
+          publish_dir="${GITHUB_WORKSPACE}/.gh-pages-publish"
+          artifact_site="${RUNNER_TEMP}/gwexpy-docs-preview-artifact/site"
+          preview_dir="${publish_dir}/preview-docs-redesign"
+
+          mkdir -p "${preview_dir}"
+          rsync -a --delete "${artifact_site}/" "${preview_dir}/"
+          touch "${publish_dir}/.nojekyll"
+
+          git -C "${publish_dir}" add -A
+          if git -C "${publish_dir}" diff --cached --quiet; then
+            echo "No preview changes to publish"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+          else
+            git -C "${publish_dir}" -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "deploy(preview): docs_redesign ${GITHUB_SHA}"
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Recheck main before preview push
+        if: steps.prepare-publish.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          python scripts/ci/docs_publish_guard.py check-order \
+            --repository "${GITHUB_WORKSPACE}" \
+            --candidate-revision "${GITHUB_SHA}" \
+            --deployed-site "${GITHUB_WORKSPACE}/.gh-pages-publish/preview-docs-redesign" \
+            --main-ref refs/remotes/origin/main \
+            --preview-workflow
+
+      - name: Publish preview to gh-pages
+        if: steps.prepare-publish.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git -C "${GITHUB_WORKSPACE}/.gh-pages-publish" push origin HEAD:gh-pages
+
+      - name: Verify published EN and JA preview
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            echo "Preview readback attempt ${attempt}/18"
+            if python scripts/check_public_docs.py \
+              --url "${GWEXPY_DOCS_LANG_BASEURL}" \
+              --expected-revision "${GITHUB_SHA}"; then
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "Preview did not serve the verified EN/JA artifact within the verification window"
+          exit 1
+
+      - name: Verify published EN and JA preview hashes
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          python scripts/check_public_docs.py \
+            --url "${GWEXPY_DOCS_LANG_BASEURL}" \
+            --expected-revision "${GITHUB_SHA}" \
+            --expected-manifest "${RUNNER_TEMP}/gwexpy-docs-preview-artifact/manifest.json" \
+            --manifest-only

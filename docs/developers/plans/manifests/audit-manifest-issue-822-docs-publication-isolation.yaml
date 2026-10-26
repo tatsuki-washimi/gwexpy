@@ -1,0 +1,103 @@
+schema: gwexpy-issue-822-docs-publication-isolation-v1
+date_utc: 2026-10-26
+issue: 822
+related_issues:
+  - 606
+  - 821
+source_base_sha: fd567f3cfacfdc5beaa1589c20588add832b7eb8
+status: draft_pending_owner_adoption
+change_summary: >-
+  Separate read-only EN/JA Docs builds from write-capable gh-pages publishers.
+  Bind same-run artifacts to the source SHA and full file-hash manifest; reject
+  stale publication ordering before replacing either production or preview site.
+implementation:
+  artifact_schema: gwexpy-docs-pages-artifact-v1
+  build_job_permissions: contents:read
+  publish_job_permissions:
+    - actions:read
+    - contents:write
+  source_binding: exact full commit SHA with clean bilingual build-info.json
+  artifact_integrity:
+    - pinned same-run artifact ID
+    - upload/download digest mismatch fails the job
+    - per-file SHA-256 inventory verified before gh-pages checkout
+    - post-publication readback hashes every bilingual site file against the same manifest
+  publication_order:
+    - candidate must be current main or its ancestor with unchanged Docs build inputs
+    - production path-filter patterns and Git ancestry pathspecs share one tested input list
+    - preview ordering additionally binds .github/workflows/docs-redesign-preview-isolated.yml
+    - reject an older candidate when relevant Docs inputs changed on current main
+    - deployed source SHA must be an ancestor of the candidate
+    - intentional rollback is a new descendant commit with reverted Docs content
+    - source tip is rechecked before gh-pages push
+  publisher_queue:
+    - production and preview share one gh-pages-publish concurrency group
+    - queue: max retains up to 100 pending workflow runs instead of replacing the pending run
+    - above GitHub's queue limit, new runs can be canceled and require a manual rerun
+    - >-
+      Actionlint 1.7.12 does not recognize GitHub's documented concurrency.queue
+      key; a path-scoped message-prefix exception is limited to the two workflows
+      using it. GitHub validates the actual workflow syntax and queue value.
+  legacy_preview_binding: >-
+    Existing preview output predates build-info.json. Its latest gh-pages path
+    commit has the historical deploy(preview): docs_redesign <source-SHA> subject;
+    only that exact format is accepted, and the source SHA must exist in main
+    history and be an ancestor of the candidate. Unknown state fails closed.
+checks:
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 40 passed, including unrelated-main freshness, preview-workflow freshness, queued-publisher policy, and per-file EN/JA readback hash regressions
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff check scripts/ci/docs_publish_guard.py
+      scripts/check_public_docs.py
+      tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; all checks passed
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff format --check
+      scripts/ci/docs_publish_guard.py scripts/check_public_docs.py
+      tests/docs/test_docs_pages_publish.py tests/docs/test_docs_conf_runtime.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 5 files already formatted
+  - command: >-
+      rtk proxy conda run -n gwexpy mypy scripts/ci/docs_publish_guard.py
+      scripts/check_public_docs.py --ignore-missing-imports
+    result: exit 0; success, no issues found in 2 source files
+  - command: git diff --check
+    result: exit 0
+  - command: >-
+      isolated A-to-B-to-stale-A, idempotent B, descendant rollback C, legacy
+      preview commit binding, unknown legacy state, artifact tampering, and
+      bilingual source mismatch tests pass. Additional cases allow an older
+      artifact only across non-Docs main commits, bind preview publication to
+      its workflow revision, preserve pending publisher runs, and reject altered
+      EN/JA bytes by manifest hash.
+    result: exit 0 within the 40 focused tests; no production gh-pages write
+  - command: actionlint --version
+    result: >-
+      Actionlint 1.7.12 is the pinned hosted version and reports the valid queue
+      key as unknown. A narrow per-file message-prefix ignore is configured;
+      hosted Actionlint must pass on the updated PR head.
+omitted:
+  - >-
+    No Docs Pages workflow_dispatch, gh-pages push, or deployed-site mutation
+    was run. The isolated repository tests exercise publication order.
+  - >-
+    Live EN/JA manifest readback awaits an adopted Docs publication PR; the
+    regression uses synthetic HTTP responses and does not claim live Pages verification.
+  - >-
+    No new security-boundary policy is adopted by this PR. Owner adoption is
+    required before merge because merge runs the existing automatic Docs publisher.
+check_physics: not_applicable; no scientific algorithm or data model changed
+files_changed:
+  - .github/actionlint.yaml
+  - .github/workflows/docs-pages-isolated.yml
+  - .github/workflows/docs-redesign-preview-isolated.yml
+  - scripts/ci/docs_publish_guard.py
+  - scripts/check_public_docs.py
+  - tests/docs/test_docs_pages_publish.py
+  - tests/docs/test_docs_conf_runtime.py
+  - tests/docs/test_public_docs_pipeline.py
+  - docs/developers/plans/manifests/audit-manifest-issue-822-docs-publication-isolation.yaml
