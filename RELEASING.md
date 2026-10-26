@@ -187,21 +187,42 @@ before tagging, complete a new candidate qualification and obtain a new
 exact-candidate GO bound to that candidate run, manifest, and distribution
 hashes before creating a tag.
 
-Before accepting the GitHub Release, check the exact tag and target `R`,
-committed release notes, exact five assets, and downloaded bytes. The asset set is
-exactly the manifest's sdist filename, wheel filename,
-`distribution-sha256.json`, `LICENSE.sha256`, and `promotion-manifest.json`;
-extra, missing, substituted, or hash-mismatched assets fail. An existing
-Release is idempotent only when its target, notes, exact assets, and bytes all
-match; any conflict or extra asset fails.
+If only the finalizer fails after every required lane succeeds, rerun the failed
+finalizer job in the same candidate run. It reads the first attempt's jobs,
+artifact IDs, and original run start time again; it does not rebuild or rerun
+qualification. The manifest continues to record `run_attempt: 1`, because that
+is the attempt containing the qualified artifacts. A retry may reuse an
+existing promotion-manifest artifact only after its API identity, retention,
+archive digest, and canonical manifest bytes match the newly verified manifest.
+Missing, expired, ambiguous, or changed candidate artifacts still fail closed
+and require a new candidate run and exact-candidate approval. Rerunning all
+candidate jobs is not the recovery procedure.
 
-The publish job starts only after GitHub Release verification succeeds.
-After that job succeeds, the readback job checks exactly two PyPI files: the
-manifest's wheel and sdist filenames with their exact SHA-256 values. PyPI
-readback runs after publishing without a publishing credential. Transient
-lookup and network failures use a bounded retry window; identity or hash
-mismatch fails immediately. Do not accept the release until both GitHub and
-PyPI readbacks pass.
+Before accepting the GitHub Release, check the exact tag and target `R`,
+committed release notes, exact five assets, and downloaded bytes. The asset set
+is exactly the manifest's sdist filename, wheel filename,
+`distribution-sha256.json`, `LICENSE.sha256`, and `promotion-manifest.json`.
+For a pre-existing Release, the recovery path first checks its target, notes,
+and every asset that is present against the exact candidate bytes. It uploads
+only absent assets from that candidate, without clobbering an existing asset.
+Unexpected, incomplete, substituted, or hash-mismatched assets fail closed.
+Final readback still requires exactly the five expected assets and their exact
+downloaded bytes; the tag and Latest setting are never moved by this recovery.
+
+The publish job starts only after GitHub Release verification succeeds. Before
+upload, it compares the exact PyPI version's filenames and SHA-256 values with
+the same candidate manifest. Matching files are reported as already published;
+only missing original candidate files are sent to the Trusted Publisher. A
+partial version also requires a current Release Owner recovery decision on
+Issue #797, bound to the candidate run, manifest, and approved file hashes. The
+workflow rejects a conflicting or extra PyPI file and never rebuilds or
+overwrites a distribution. If the full exact set already exists, the publishing
+action is skipped. Afterward the readback job checks exactly two files: the
+manifest's wheel and sdist filenames with their exact SHA-256 values. Do not
+accept the release until both GitHub and PyPI readbacks pass.
+PyPI readback runs without a publishing credential. Transient lookup and
+network failures use the existing bounded retry window; an identity or hash
+mismatch fails immediately.
 
 ## Legacy contract behavior and historical planning records
 
@@ -319,6 +340,25 @@ accepts the files individually. If that job fails after either file appears
 on PyPI, stop release acceptance and keep the decision on HOLD. A failed job
 is not proof that neither file was published.
 
+The retry preflight automatically reads PyPI's exact-version JSON and checks
+its filenames and SHA-256 values against the manifest-bound candidate. It
+stages only missing candidate files. Before a partial upload can continue, the
+Release Owner must post this exact record on Issue #797; list the approved
+missing filenames and hashes in sorted order. A newer bound `HOLD` blocks a
+retry, and an approval covering two files can resume after one of those files
+has already arrived.
+
+```text
+GWEXPY-PYPI-RECOVERY-v1
+version=0.2.6
+tag=v0.2.6
+source_sha=<40-character-source-SHA>
+candidate_run_id=<original-candidate-run-ID>
+promotion_manifest_sha256=<64-character-manifest-SHA-256>
+approved_files=<filename>:<sha256>[,<filename>:<sha256>]
+decision=GO
+```
+
 1. Record the failed PyPI publisher run ID separately from the original
    `workflow_dispatch` candidate run ID. Record source `R`, the final tag and
    peeled SHA. The failed publisher run does not create payload or sidecar
@@ -357,10 +397,11 @@ wheel and sdist with their exact filenames and SHA-256 values. This remains
 the closure rule after an approved partial-upload recovery; a missing final
 file or any extra file keeps acceptance on HOLD.
 
-Do not blindly rerun the strict publish job: the tag publisher reuses the same
-manifest-bound candidate payload bytes and does not build a new payload. PyPI
-will reject an already-published filename, so a rerun is not a substitute for
-the explicit missing-file recovery above. A new candidate dispatch builds a
+Do not rerun the strict publish job before the explicit missing-file recovery
+decision above. After the Release Owner authorizes the exact missing candidate
+file hashes, rerun only the failed tag workflow job. Its preflight rechecks
+PyPI, stages only currently missing files from the manifest-bound payload, and
+uses the existing Trusted Publisher. A new candidate dispatch builds a
 different payload and cannot repair a partial publication for this candidate.
 Do not rebuild the missing file or use `skip-existing` to substitute a fresh
 distribution. Neither action proves that the published wheel and sdist came
