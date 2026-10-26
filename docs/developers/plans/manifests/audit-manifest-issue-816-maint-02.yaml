@@ -1,11 +1,15 @@
 schema_version: 1
 issue: 816
-scope: Required-check workflow coverage for protected maint/0.2
+related_issues:
+  - 818
+scope: Required-check coverage and historical-audit isolation for maint/0.2
 base_commit: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
 worktree: external scratch worktree
 skills_used:
   - gwexpy_conda_jobs
   - superpowers:using-git-worktrees
+  - superpowers:systematic-debugging
+backported_issue_818_commit: fd567f3cfacfdc5beaa1589c20588add832b7eb8
 context_name_source: >-
   Repository Ruleset 25554248 is active for refs/heads/main and
   refs/heads/maint/0.2. Its 23 exact job-name-only required contexts are
@@ -43,6 +47,47 @@ commands:
     result: "Passed with no whitespace errors."
   - command: command -v actionlint
     result: "Unavailable locally; hosted Actionlint is required before merge."
+  - command: gh run view 40295949042 --job 121481921505 --log-failed
+    result: >-
+      Initial hosted PR Fast failed after 11,420 passed, 397 skipped, 28
+      deselected, and 7 xfailed. The sole failure was the frozen v0.2.6
+      readiness snapshot test treating the ordinary PR HEAD as candidate R.
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/test_release_review_evidence.py::test_v026_readiness_manifest_is_exact_source_placeholder_or_bound_candidate
+    result: >-
+      Reproduced locally on the pre-#818 maint/0.2 tree: the candidate snapshot
+      validator rejects ordinary PR HEAD changes outside coordinator audit paths.
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      -m 'not release_candidate_state' tests/test_run_gate.py
+      tests/test_release_review_evidence.py
+    result: "Passed after #818 selector backport: 41 passed, 1 deselected in 31.36s."
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      -m 'not release_candidate_state' tests/test_run_gate.py
+      tests/test_release_review_evidence.py tests/test_issue_816_required_checks.py
+    result: "Passed after combined backport: 44 passed, 1 deselected in 31.71s."
+  - command: >-
+      rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py
+      historical-audit-replay
+    result: "Passed: 23 historical replay tests; 12 current tests deselected."
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff check
+      scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py
+      tests/docs/test_v024_publication_status.py
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/test_v025_historical_gate.py tests/test_run_gate.py
+      tests/test_release_review_evidence.py
+    result: "Passed: All checks passed."
+  - command: >-
+      rtk proxy conda run -n gwexpy ruff format --check
+      scripts/ci/run_gate.py tests/docs/test_v023_release_closure.py
+      tests/docs/test_v024_publication_status.py
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/test_v025_historical_gate.py tests/test_run_gate.py
+      tests/test_release_review_evidence.py
+    result: "Passed: 7 files already formatted."
 checks_omitted:
   - >-
     Actionlint and the complete 23-context required-check suite are deferred to
@@ -64,3 +109,14 @@ changed_files:
   - tests/docs/test_gwpy4_proxy_workflow.py
   - tests/test_gwpy_override_inventory.py
   - tests/test_release_gate_workflow_contract.py
+  - pyproject.toml
+  - scripts/README.md
+  - scripts/ci/run_gate.py
+  - tests/docs/test_v023_release_closure.py
+  - tests/docs/test_v024_publication_status.py
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_v025_historical_gate.py
+  - tests/test_run_gate.py
+  - tests/test_release_review_evidence.py
+  - docs/developers/plans/manifests/audit-manifest-issue-818.yaml
+  - docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml
