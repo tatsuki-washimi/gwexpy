@@ -19,6 +19,7 @@ from astropy import units as u
 from scripts.check_public_docs import (
     AUDIENCE_ROUTES,
     DOCS_ARTIFACT_SCHEMA,
+    MANIFEST_READBACK_MAX_ATTEMPTS,
     WORKFLOW_NOTEBOOK_PAGES,
     check_remote,
     check_remote_manifest,
@@ -262,9 +263,12 @@ def test_manifest_readback_checks_exact_bytes_for_both_languages(monkeypatch, de
         return io.BytesIO(payload)
 
     monkeypatch.setattr("scripts.check_public_docs.urlopen", response)
+    monkeypatch.setattr(time, "sleep", lambda _delay: None)
     errors = check_remote_manifest("https://docs.example.test/docs", revision, manifest)
 
-    assert sorted(requested) == sorted(contents)
+    for path in contents:
+        expected_attempts = MANIFEST_READBACK_MAX_ATTEMPTS if path == defect else 1
+        assert requested.count(path) == expected_attempts
     if defect is None:
         assert errors == []
     else:
@@ -311,6 +315,45 @@ def test_manifest_readback_retries_transient_http_503(monkeypatch):
 
     assert errors == []
     assert attempts["ja/index.html"] == 2
+
+
+def test_manifest_readback_retries_stale_bytes_until_exact_artifact_is_served(
+    monkeypatch,
+):
+    revision = "c" * 40
+    build_info = json.dumps(
+        {"source_revision": revision, "dirty": False}, sort_keys=True
+    ).encode()
+    contents = {
+        "build-info.json": build_info,
+        "index.html": b"<!doctype html>english\n",
+        "ja/build-info.json": build_info,
+        "ja/index.html": b"<!doctype html>japanese\n",
+        "ja/how-to/calibration/index.html": b"exact artifact bytes\n",
+    }
+    attempts = dict.fromkeys(contents, 0)
+    manifest = {
+        "schema": DOCS_ARTIFACT_SCHEMA,
+        "source_revision": revision,
+        "files": {
+            path: hashlib.sha256(data).hexdigest() for path, data in contents.items()
+        },
+    }
+
+    def response(request, timeout):
+        path = urlsplit(request.full_url).path.removeprefix("/docs/")
+        attempts[path] += 1
+        if path == "ja/how-to/calibration/index.html" and attempts[path] == 1:
+            return io.BytesIO(b"stale edge-cache bytes\n")
+        return io.BytesIO(contents[path])
+
+    monkeypatch.setattr("scripts.check_public_docs.urlopen", response)
+    monkeypatch.setattr(time, "sleep", lambda _delay: None)
+
+    errors = check_remote_manifest("https://docs.example.test/docs", revision, manifest)
+
+    assert errors == []
+    assert attempts["ja/how-to/calibration/index.html"] == 2
 
 
 def test_manifest_readback_rejects_unsafe_paths_before_network_access(monkeypatch):

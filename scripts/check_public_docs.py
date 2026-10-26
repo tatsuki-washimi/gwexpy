@@ -554,19 +554,23 @@ def check_remote_manifest(
                     digest = hashlib.sha256()
                     while chunk := response.read(1024 * 64):
                         digest.update(chunk)
-                break
             except HTTPError as exc:
                 retryable = exc.code in {408, 425, 429} or 500 <= exc.code <= 599
                 exc.close()
                 if not retryable or attempt == MANIFEST_READBACK_MAX_ATTEMPTS:
                     return path, f"{path}: deployed artifact readback failed: {exc}"
                 time.sleep(MANIFEST_READBACK_RETRY_DELAY_SECONDS * 2 ** (attempt - 1))
+                continue
             except (URLError, TimeoutError, OSError, ValueError) as exc:
                 return path, f"{path}: deployed artifact readback failed: {exc}"
-        actual_digest = digest.hexdigest()
-        if actual_digest != expected_digest:
-            return path, f"{path}: deployed bytes differ from the verified artifact"
-        return path, None
+            if digest.hexdigest() == expected_digest:
+                return path, None
+            # A Pages edge can briefly serve the prior file after a deploy.
+            # Retry against the same digest; stale or altered bytes never pass.
+            if attempt == MANIFEST_READBACK_MAX_ATTEMPTS:
+                return path, f"{path}: deployed bytes differ from the verified artifact"
+            time.sleep(MANIFEST_READBACK_RETRY_DELAY_SECONDS * 2 ** (attempt - 1))
+        return path, f"{path}: deployed bytes differ from the verified artifact"
 
     with ThreadPoolExecutor(max_workers=8) as executor:
         failures = [

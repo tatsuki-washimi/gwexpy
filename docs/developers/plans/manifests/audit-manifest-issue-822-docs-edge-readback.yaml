@@ -1,0 +1,80 @@
+schema: gwexpy-issue-822-docs-edge-readback-v1
+date_utc: 2026-10-26
+issue: 822
+related_issues:
+  - 821
+source_base_sha: 9f4eb04b9bdf21ce6693680e90c5635b58891b90
+status: awaiting_required_ci_and_production_readback
+root_cause: >-
+  Production run 40332937262 reported an EN/JA manifest byte mismatch for
+  ja/how-to/calibration/index.html. The attempt-1 artifact file and the
+  gh-pages blob both had SHA-256 da233d37e0152364e66cf5509a2951038146017882d390a26b5290406b185194.
+  A later uncached read from the public URL returned the same digest, and the
+  full deployed manifest readback passed with the bounded retry implementation.
+  The exact bytes returned during the failed request were not retained; a
+  transient Pages edge response is consistent with the observed change.
+implementation:
+  retryable_http_statuses:
+    - 408
+    - 425
+    - 429
+    - 5xx
+  retry_on_sha256_mismatch: true
+  maximum_attempts_per_file: 4
+  backoff_seconds:
+    - 1
+    - 2
+    - 4
+  integrity_contract: >-
+    Every attempt uses the same expected digest from the source-bound artifact
+    manifest. A file passes only when a response's SHA-256 equals that digest.
+    Exhausted mismatches, nonretryable HTTP errors, and transport errors fail.
+evidence:
+  failed_production_run: https://github.com/tatsuki-washimi/gwexpy/actions/runs/40332937262
+  deployed_source_revision: 9f4eb04b9bdf21ce6693680e90c5635b58891b90
+  published_gh_pages_commit: a3d6c1dc46d5c3d5741aced26052c6793f4ac0e1
+  artifact_id: 12656047833
+  artifact_digest: sha256:f7fdc4cbb1375fc03d2be2fbad98d9097ec1ac58cd1896bb10eb000f0ae06f86
+  mismatched_file_expected_sha256: da233d37e0152364e66cf5509a2951038146017882d390a26b5290406b185194
+checks:
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/docs/test_public_docs_pipeline.py -k manifest_readback
+    result: >-
+      exit 0; 6 passed. New stale-byte case fails before the implementation;
+      persistent mismatches still exhaust all four attempts and fail.
+  - command: >-
+      rtk proxy conda run -n gwexpy python -m pytest -q
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; 19 passed
+  - command: >-
+      conda run -n gwexpy ruff check scripts/check_public_docs.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; all checks passed
+  - command: >-
+      conda run -n gwexpy ruff format --check scripts/check_public_docs.py
+      tests/docs/test_public_docs_pipeline.py
+    result: exit 0; both files already formatted
+  - command: >-
+      conda run -n gwexpy mypy scripts/check_public_docs.py
+      --ignore-missing-imports
+    result: exit 0; no issues found in 1 source file
+  - command: git diff --check
+    result: exit 0; no whitespace errors
+  - command: >-
+      conda run -n gwexpy python scripts/check_public_docs.py --url
+      https://tatsuki-washimi.github.io/gwexpy/docs/ --expected-revision
+      9f4eb04b9bdf21ce6693680e90c5635b58891b90 --expected-manifest
+      <artifact 12656047833 manifest> --manifest-only
+    result: >-
+      exit 0; every deployed EN/JA file matches the exact run artifact manifest
+      from production run 40332937262.
+omitted:
+  - Required hosted PR checks are pending.
+  - A fresh production Docs run on the fix commit is pending merge.
+  - No release, tag, GitHub Release, or PyPI action was performed.
+check_physics: not_applicable; no scientific algorithm or data model changed
+files_changed:
+  - scripts/check_public_docs.py
+  - tests/docs/test_public_docs_pipeline.py
+  - docs/developers/plans/manifests/audit-manifest-issue-822-docs-edge-readback.yaml
