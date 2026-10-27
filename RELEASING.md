@@ -2,7 +2,7 @@
 
 ## Current scope
 
-The only release workflow is `publish-release.yml`. Candidate qualification
+The publication workflow is `publish-release.yml`. Candidate qualification
 dispatches must run from `main`, which the workflow enforces. The v0.2.6
 recovery mode runs from its contract-selected protected control tag and
 requires the exact Release Owner recovery authorization described below.
@@ -10,8 +10,9 @@ Release contracts determine the version-specific validation and publication
 policies.
 
 v0.2.5 is published and immutable. v0.2.6 is the selected maintenance release
-candidate and has a registered promotion contract in
-`scripts/ci/release_contracts.json`; it has not been published. The v0.2.6
+source and has a registered promotion contract in
+`scripts/ci/release_contracts.json`. Its successful publication run is
+`40439962941`; post-release reconciliation is separate. The v0.2.6
 contract uses the build-once promotion procedure below. Other versions use the
 historical path or build-once promotion only when their own contract selects
 that behavior. Historical contract entries remain unchanged.
@@ -276,6 +277,124 @@ accept the release until both GitHub and PyPI readbacks pass.
 PyPI readback runs without a publishing credential. Transient lookup and
 network failures use the existing bounded retry window; an identity or hash
 mismatch fails immediately.
+
+## Post-release completion contract
+
+PyPI publication success and post-release completion are separate outcomes.
+After successful exact-hash `pypi_readback` in `publish-release.yml`, the
+post-release controller may start automatically. The controller workflow in
+this branch introduces the dispatch inputs `release_run_id` and `release_tag`;
+its automatic `workflow_run` trigger uses the same identity resolver. Until
+that interface is available, follow this contract without inventing a dispatch
+command. The existing `post-release-qualification.yml` is a separate
+qualification process, not the recurring completion controller.
+
+For backfill, supply the successful publish workflow run ID and release tag.
+For v0.2.6 use run `40439962941` and tag `v0.2.6`. Verify the workflow identity,
+successful exact-hash readback, tag object and peeled source, promotion manifest,
+and distribution hashes before adopting its evidence. Reconcile that existing
+run; do not rerun publication, rebuild/reupload, recreate the tag, or edit the
+frozen candidate, release notes, or Release payload. Reuse successful
+qualification/smoke evidence bound to those exact bytes; a fresh local venv
+smoke test is not a new post-release prerequisite. A missing evidence binding
+remains explicit rather than being inferred from a green run summary.
+
+### Durable per-version record
+
+Continue the evidence conventions in
+[`audit-manifest-v0.2.3-release-closure.yaml`](docs/developers/plans/manifests/audit-manifest-v0.2.3-release-closure.yaml).
+The durable source of truth for the recurring process is
+`docs/developers/plans/manifests/audit-manifest-vX.Y.Z-post-release.yaml`,
+updated through one stable PR per version. Historical closure manifests retain
+their original schemas and are not rewritten. Workflow artifacts and logs are
+evidence inputs, not substitutes for the versioned record.
+
+The controller's machine-readable schema must express these proposed fields:
+
+- `schema: gwexpy-post-release-v1`, `version`, `recorded_at_utc`: record format,
+  package version, and latest record update time.
+- `post_release_status`: overall completion status, separate from publication
+  success and the PyPI item's status. It is `complete` only when all required
+  items are complete; otherwise use the most actionable outstanding state in
+  order `blocked`, `retryable_failure`, `pending_review`, `pending_external`.
+  This summary never replaces individual item statuses.
+- `release`: tag, tag object SHA, peeled source SHA, promotion-manifest SHA-256,
+  and exact wheel/sdist filenames and SHA-256 values.
+- `publication`: workflow path, successful publish run ID/attempt, readback job
+  evidence, and service-reported publication timestamps. Keep candidate source
+  dates and tagger timestamps in separate named fields; neither is a proxy for
+  a GitHub/PyPI publication timestamp or Zenodo record date.
+- `items`: independent named objectives, each with `status`, `actor`,
+  `objective`, `evidence` entries (`url`, `sha256`, `observed_at_utc`, and a
+  concrete `observation`), `pending_reason`, and `resume_condition`. A hash may
+  be null for a service observation that has no byte artifact; URLs and UTC
+  observation times still identify its evidence. Non-complete items must state
+  what is missing and the event/action that permits resumption.
+
+The five item statuses have distinct meanings:
+
+| Status | Meaning and transition requirement |
+| --- | --- |
+| `complete` | The item's stated objective has been verified with its required evidence. A workflow starting, a PR opening/merging, or another item's success is insufficient. |
+| `pending_external` | Waiting for an external service, channel package, or deployment to become observable; record the actual state, last observation, and next readback condition. |
+| `pending_review` | Prepared work or a decision awaits the named human reviewer/owner; record the PR/decision and approval condition. |
+| `retryable_failure` | An attempted operation failed transiently; record the failure evidence and bounded retry/resume condition. Retries do not authorize publication or mutation of frozen artifacts. |
+| `blocked` | An identity/hash mismatch, invalid evidence, unavailable required capability, or policy conflict prevents safe continuation; record the required repair or owner decision. Repeated retries alone cannot clear it. |
+
+A legacy boolean or `pass`/`fail` value cannot represent all five states; map
+only supported evidence explicitly and leave unresolved objectives in the
+appropriate non-complete state. Other independent work continues while one
+item is pending, failed, or blocked unless it depends on that item.
+
+### Independent objectives and resumption
+
+1. **Public identity and service readbacks.** Verify the exact public tag/source,
+   GitHub Release notes and five manifest-bound assets, and exact PyPI version
+   filenames/hashes independently. Record GitHub Release URL/ID and timestamp,
+   PyPI URL and upload times, and downloaded-byte hashes. Observe Zenodo's
+   version-specific record, DOI, version, publication date and archived source
+   identity; record missing records as `pending_external` and mismatches as
+   `blocked`. Preserve the approved Zenodo date disposition and frozen source
+   dates. Readbacks must distinguish observed success from a queued integration.
+2. **Conda-forge.** Independently record feedstock PR URL/state/checks, recipe
+   version/source hash, and actual channel package version/build/hash/upload
+   time. PR creation or merge alone is not package availability. Do not assume
+   bot timing or bot merge authority. Use `pending_external` while waiting for
+   external publication, `pending_review` for human review, and failure states
+   where appropriate. This item never blocks otherwise eligible docs work.
+3. **EN/JA docs and history.** Once GitHub, PyPI and Zenodo observations have
+   been recorded, prepare the separate docs PR, even while conda is pending.
+   Verified service evidence supports published claims; a pending Zenodo record
+   is described as pending, and an identity conflict blocks dependent claims.
+   Update `docs_redesign/release_status.json`, both EN/JA release/history views,
+   changelog visibility and relevant roadmap/history summaries together, using
+   actual observed conda status. Keep this work separate from frozen release
+   source and payload. Reconcile the existing version PR on resume, preserving
+   human edits. PR readiness/merge is intermediate evidence; docs completion
+   also requires the next objective.
+4. **Pages readback.** After human review/merge, use the existing isolated
+   `.github/workflows/docs-pages-isolated.yml` publishing path. Record the docs
+   source revision, workflow run, artifact manifest/digest and deployed revision.
+   Both EN and JA live pages must pass the existing
+   `scripts/check_public_docs.py` expected-revision and expected-manifest hash
+   checks. A green build, branch push, or merge without live revision/hash
+   readback cannot complete docs. Keep deployment wait/failure explicit.
+5. **Cleanup assessment.** Use separate items/actors: GitHub Actions assesses
+   remote branches for merged ancestry, open PRs and protected refs; a local
+   host/maintainer assesses local worktrees, dirty/untracked files and active
+   sessions. Actions cannot inspect or remove a user's local worktrees. Each
+   item completes on an evidenced retain/remove/no-action assessment; any
+   deletion is a separate authorized action. Missing local-host evidence stays
+   pending with a named actor and resume condition. Protect release/control
+   tags, candidate evidence and active work.
+
+Resume idempotently by version and exact publication identity: refresh missing
+or stale observations and update the existing record/PR without duplicating
+work or overwriting human changes. Use normal PR checks and human review.
+Automatic start is allowed; automatic merge is not. A failed readback records
+its own status and evidence; it does not authorize artifact deletion, tag
+replacement, or automatic package withdrawal. Product corrections follow a
+separately approved release process.
 
 ## Legacy contract behavior and historical planning records
 
