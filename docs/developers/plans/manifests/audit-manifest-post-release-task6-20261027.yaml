@@ -1,0 +1,49 @@
+schema: gwexpy-agent-audit-v1
+task: post-release-task-6-7-cleanup-assessment-v0.2.6
+date: 2026-10-27
+scope:
+  - Read-only per-branch GitHub inventory and recommendation
+  - Separate read-only local worktree inventory and recommendation by the maintainer local-host actor
+  - Preserve individual evidence, holds, and the explicit authorization boundary for any future deletion/removal
+files:
+  - docs/developers/plans/reports/post-release-cleanup-assessment-20261027.json
+actors:
+  remote: GitHub API read-only assessment actor (this run)
+  local: maintainer local-host assessment actor (this run)
+  separation: Remote branch assessment used GitHub API data; local worktree assessment used the local Git registry, per-path status, and process current-directory snapshot.
+remote_snapshot:
+  source:
+    - command: gh api -X GET --paginate repos/tatsuki-washimi/gwexpy/branches?per_page=100
+    - command: gh api -X GET --paginate repos/tatsuki-washimi/gwexpy/pulls?state=open&per_page=100
+    - command: gh api -X GET repos/tatsuki-washimi/gwexpy/git/ref/heads/main
+  observed:
+    default_branch_sha: f3eee36fd4e0d0c4f134711d25b5d40650eb6b88
+    branch_count: 211
+    open_pull_requests: 7
+    protected_branches: 4
+  assessment:
+    method: Exact GitHub head SHA was compared to the local remote-tracking SHA before ancestry checks against origin/main. Every row records protection, open PR references, checked-out worktree, SHA equality, ancestry result, and recommendation.
+    recommendation_counts:
+      remove_eligible: 71
+      retain: 140
+      hold: 0
+    boundary: Recommendations only. No remote branch was deleted. A separate explicit authorization is required for any deletion.
+local_snapshot:
+  source:
+    - command: git worktree list --porcelain
+    - command: git status --porcelain --untracked-files=all for each existing worktree path
+    - command: /proc current-directory process snapshot for each worktree
+  observed:
+    worktrees: 38
+    retain: 5
+    hold: 33
+    remove_eligible: 0
+  assessment: Each row records path, branch or detached status, HEAD SHA, dirty/untracked entry counts, current-directory processes, recommendation, and a hold/retain reason.
+  limitation: Current-directory process detection does not identify open file handles or infer intent from other sessions. Clean worktrees without direct owner-purpose evidence remain held.
+  boundary: Assessment only. No worktree was removed. A separate explicit authorization is required for any removal.
+verification:
+  - command: git diff --check
+    result: passed
+omitted:
+  - No branch deletion, worktree removal, force operation, Pages dispatch, pull-request merge, or external service write.
+  - Branch inventory reflects GitHub API state at the report timestamp; it is not a permanent deletion authorization.
