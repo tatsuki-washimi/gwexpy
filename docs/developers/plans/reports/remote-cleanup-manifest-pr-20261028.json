@@ -1,0 +1,110 @@
+{
+  "schema": "gwexpy-pr-audit-v1",
+  "recorded_at_utc": "2026-10-27T17:43:11Z",
+  "actor": "tatsuki-washimi",
+  "repository": "tatsuki-washimi/gwexpy",
+  "purpose": "Record verified v0.2.6 remote cleanup evidence in the post-release manifest through a review PR.",
+  "pull_request": {
+    "base_branch": "main",
+    "base_sha": "d29fe2ce97ea1b7778c9be697651fe3f38b8c21f",
+    "head_branch": "post-release/v0.2.6-remote-cleanup",
+    "title": "[AGENT:prep_release] docs: record v0.2.6 remote cleanup evidence",
+    "commit_message": "docs: record v0.2.6 remote cleanup evidence",
+    "body": "## 概要\n- 2026年10月28日のリモートブランチ整理実行監査JSONをリポジトリに追加します。\n- v0.2.6のpost-release manifestで`remote_cleanup`だけを`complete`に更新します。\n- `local_cleanup`は`pending_external`、全体状態`post_release_status`は`pending_review`のまま維持します。\n\n## 根拠\n- 2026-10-27 17:17:29 UTCのGitHub API readbackでは、削除前214本から固定allowlistの70本を削除し、144本が残りました。削除名と元SHA、削除後の全ブランチ名とSHAを監査JSONに記録しています。\n- `main`のSHAは`d29fe2ce97ea1b7778c9be697651fe3f38b8c21f`で不変です。Open PR 7件のhead、必須保持ブランチ、v0.2.6関連4タグも保持されています。\n- 削除処理のAPIエラー、既に不在の対象、スキップは0件です。\n- 2026-10-27 17:35 UTCに再取得した144ブランチのinventoryと7件のOpen PR情報は、保存済みreadbackと一致しました。\n- 監査JSONのSHA-256は`b57dd06a97e8f4addc565c76feabd41a314dbd37824d78e4b49baeec40afb40b`です。\n\n## 確認\n- manifestと監査JSONの構造、削除receipt件数、削除後inventoryを確認しました。\n- `git diff --check`を実行しました。\n- コード変更はないため、Pythonテスト、Ruff/MyPy、docs buildは実行していません。\n"
+  },
+  "source_evidence": {
+    "execution_audit_path": "docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+    "execution_audit_sha256": "b57dd06a97e8f4addc565c76feabd41a314dbd37824d78e4b49baeec40afb40b",
+    "manifest_before_sha256": "7f5868761a8108827f28c0b51f170f79d6d280dc0e9b2398e3c198736562728b",
+    "manifest_prepared_sha256": "7b759a6de81fda5ea7893aa9226e62e6b6818e9f6233c0bad78770e5b80b2412"
+  },
+  "github_readback_before_pr_branch": {
+    "observed_at_utc": "2026-10-27T17:35:00Z",
+    "main_sha": "d29fe2ce97ea1b7778c9be697651fe3f38b8c21f",
+    "branch_count": 144,
+    "branch_inventory_matches_execution_audit": true,
+    "open_pr_count": 7,
+    "open_pr_inventory_matches_execution_audit": true,
+    "all_open_pr_heads_present": true,
+    "required_and_held_refs_present": true,
+    "v026_related_tag_targets_match_execution_audit": true,
+    "active_ruleset_details_rechecked": true,
+    "new_pr_branch_absent_before_creation": true
+  },
+  "changes": [
+    "Add the 70-branch deletion audit and complete post-delete inventory.",
+    "Set items.remote_cleanup to complete with a SHA-256-bound evidence URL.",
+    "Leave items.local_cleanup as pending_external and post_release_status as pending_review."
+  ],
+  "validation": {
+    "json_structure": "passed with jq empty on manifest and execution audit",
+    "receipt_and_inventory_invariants": "passed; 70 deletion receipts, 0 already absent, 0 skipped, no API errors, 144 final refs",
+    "live_inventory_comparison": "passed; all 144 branch names, tip SHAs, and protection flags match the saved readback",
+    "open_pr_comparison": "passed; all 7 Open PR records match and all head branches remain present",
+    "ruleset_detail_readback": "passed; details fetched for all 4 active rulesets",
+    "v026_tag_readback": "passed; 4 current annotated tag refs and peeled commit targets match the saved audit",
+    "git_diff_check": "passed",
+    "manual_secret_pattern_scan": "passed; no findings",
+    "gitleaks_stdin": "passed with gitleaks 8.30.1; no findings"
+  },
+  "validation_adjustments": [
+    "An initial jq assertion treated execution.deleted as a numeric count; the field is a 70-item receipt array. The corrected length check passed.",
+    "The ruleset list endpoint omitted scope conditions, so each ruleset detail endpoint was queried before recording protection scopes.",
+    "The first tag comparison mixed annotated tag-object SHAs with peeled commit SHAs; the tag objects were followed and all four peeled targets matched."
+  ],
+  "omitted_checks": [
+    {
+      "check": "Python tests, Ruff, and MyPy",
+      "reason": "No Python code changed."
+    },
+    {
+      "check": "Sphinx/docs build",
+      "reason": "No rendered documentation or build configuration changed."
+    }
+  ],
+  "physics_review": {
+    "applicable": false,
+    "reason": "No physics or data-model changes."
+  },
+  "worktree_scope": {
+    "original_linked_worktrees_before_pr_preparation": 39,
+    "linked_worktrees_modified_or_removed": 0,
+    "preparation_clone_is_linked_worktree": false
+  },
+  "github_write_state_at_recording": "Prepared locally; no branch push or PR creation has been performed.",
+  "skills_used": [
+    "prep_release",
+    "github-mcp-secret-filter",
+    "agent-output-report",
+    "japanese-tech-writing"
+  ],
+  "commands_executed": [
+    "gh auth status",
+    "gh api -X GET repos/tatsuki-washimi/gwexpy/commits/main --jq .sha",
+    "gh api -X GET --paginate --slurp repos/tatsuki-washimi/gwexpy/branches?per_page=100",
+    "gh api -X GET --paginate --slurp repos/tatsuki-washimi/gwexpy/pulls?state=open&per_page=100",
+    "gh api -X GET --paginate repos/tatsuki-washimi/gwexpy/git/matching-refs/tags/v0.2.6",
+    "gh api -X GET repos/tatsuki-washimi/gwexpy/git/tags/<tag-object-sha> for each of 4 tags",
+    "gh api -X GET repos/tatsuki-washimi/gwexpy/rulesets/<ruleset-id> for each of 4 active rulesets",
+    "jq normalized equality checks for branch and Open PR inventories",
+    "jq empty on manifest and audit JSON files",
+    "jq -e audit receipt and post-delete inventory invariants",
+    "git diff --check",
+    "rg manual secret-pattern and KEY=VALUE scans on the labeled payload",
+    "gitleaks stdin --no-banner --redact on the labeled payload"
+  ],
+  "files_changed": [
+    {
+      "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-post-release.yaml",
+      "change": "Record verified remote_cleanup evidence; retain local_cleanup and overall pending states."
+    },
+    {
+      "path": "docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+      "change": "Add the existing completed execution audit and GitHub readback evidence."
+    },
+    {
+      "path": "docs/developers/plans/reports/remote-cleanup-manifest-pr-20261028.json",
+      "change": "Add this PR audit, commands, validation outcomes, and exact PR title and body."
+    }
+  ]
+}
