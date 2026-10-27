@@ -1,0 +1,63 @@
+schema: gwexpy-agent-audit-v1
+task: v026-bilingual-changelog-and-pages-readback
+skills:
+  - prep_release
+  - manage_docs
+  - web_docs_release_gates
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+scope:
+  - Include the published v0.2.6 detailed history on the bilingual Changelog page.
+  - Route Japanese activity figures to the matching Japanese SVG for every release.
+  - Validate rendered Changelog history and language-specific figures locally and on live Pages.
+  - Prevent post-release reconciliation from treating incomplete Changelog Pages as complete.
+  - Preserve the published tag, wheel, sdist and release notes.
+files:
+  - docs_redesign/about/changelog.md
+  - docs_redesign/conf.py
+  - scripts/check_public_docs.py
+  - scripts/ci/post_release_observers.py
+  - tests/docs/test_check_public_docs_workflow.py
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/docs/test_public_docs_pipeline.py
+  - tests/test_post_release_observers.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.6-changelog-reconcile.yaml
+verification:
+  red:
+    - The new observer regression cases accepted the wrong Japanese chart and missing v0.2.7 release details before the readback checks were added.
+    - Existing local and remote Changelog checks exposed missing v0.2.6 detail history and the Japanese page's use of the English SVG.
+  commands:
+    - command: rtk proxy conda run -n gwexpy python -m pytest tests/test_post_release_observers.py tests/docs/test_docs_redesign_release_facts.py tests/docs/test_check_public_docs_workflow.py tests/docs/test_public_docs_pipeline.py -q
+      result: passed; 126 passed
+    - command: conda run -n gwexpy ruff check docs_redesign/conf.py scripts/check_public_docs.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/docs/test_check_public_docs_workflow.py tests/docs/test_docs_redesign_release_facts.py tests/docs/test_public_docs_pipeline.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check docs_redesign/conf.py scripts/check_public_docs.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/docs/test_check_public_docs_workflow.py tests/docs/test_docs_redesign_release_facts.py tests/docs/test_public_docs_pipeline.py
+      result: passed; 7 files already formatted
+    - command: conda run -n gwexpy mypy scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed; no issues in 1 source file
+    - command: python scripts/check_public_docs.py --url https://tatsuki-washimi.github.io/gwexpy/docs/ --expected-revision 91b55dd02695c10413193c7d24b2950b13de2b9b
+      result: correctly rejected the current live site: EN missing detailed v0.2.6 history; JA missing the localized v0.2.6 SVG, using the English SVG, and missing detailed history
+    - command: gh api -X GET repos/tatsuki-washimi/gwexpy/actions/runs/40497861405
+      result: success for source 91b55dd02695c10413193c7d24b2950b13de2b9b; publisher verified bilingual HTML and artifact hashes, while the strengthened semantic readback found the Changelog defects above
+    - command: git diff --check
+      result: passed before PR creation
+  omitted:
+    - The changed revision has not been merged, so the main-only Docs Pages publish workflow was not dispatched and no changed site was published.
+    - The full executed bilingual Sphinx/Pages release gate was not rerun; an earlier local EN/JA no-execution Sphinx build was inspected and is not claimed as that gate.
+    - No release artifacts were rebuilt or uploaded; no PR was approved or merged.
+  physics_review: not applicable
+live_readback:
+  source_revision: 91b55dd02695c10413193c7d24b2950b13de2b9b
+  latest_release: 0.2.6
+  pages_workflow_run: https://github.com/tatsuki-washimi/gwexpy/actions/runs/40497861405
+  changelog_page_sha256:
+    en: fd0fcf626841c8a392808674017bb7a8ba2271e9f163f45838e8fc9c6f23d20d
+    ja: 918578d16a99b57727578961cdeb7f94e22557ce22213fc06cea29c6d33edb69
+  issues:
+    - EN Changelog lacks the v0.2.6 detailed history section.
+    - JA Changelog points to development-activity-v0.2.6.svg instead of development-activity-v0.2.6-ja.svg.
+    - JA Changelog lacks the v0.2.6 detailed history section.
+  status: Docs correction review and Pages deployment remain pending.
+release_protection:
+  v026_tag_and_distributions: unchanged
+  rebuild_or_upload: false

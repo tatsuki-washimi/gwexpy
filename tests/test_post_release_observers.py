@@ -1000,8 +1000,12 @@ def test_recipe_duplicate_quoted_source_key_is_rejected(monkeypatch):
 
 
 @pytest.mark.parametrize("merged", [True, False])
+@pytest.mark.parametrize(
+    "page_defect",
+    [None, "wrong_ja_chart", "missing_en_history", "missing_ja_history"],
+)
 def test_docs_pages_readback_requires_exact_revision_workflow_and_merged_pr(
-    monkeypatch, merged
+    monkeypatch, merged, page_defect
 ):
     import base64
     import hashlib
@@ -1045,9 +1049,28 @@ def test_docs_pages_readback_requires_exact_revision_workflow_and_merged_pr(
     monkeypatch.setattr(observer.c, "api", api)
     build_info = json.dumps({"source_revision": revision, "dirty": False}).encode()
     page_content = {
-        "about/changelog.html": b"PyPI 0.2.7 weekly development activity",
-        "ja/about/changelog.html": "PyPI 0.2.7 公開".encode(),
+        "about/changelog.html": (
+            b'<img src="/_static/images/development-activity-v0.2.7.svg">'
+            b"<h2>[0.2.7] - 2026-10-27</h2><h3>Fixed</h3>"
+            b"PyPI 0.2.7 weekly development activity"
+        ),
+        "ja/about/changelog.html": (
+            b'<img src="/_static/images/development-activity-v0.2.7-ja.svg">'
+            + "<h2>[0.2.7] - 2026-10-27</h2><h3>修正</h3>PyPI 0.2.7 公開".encode()
+        ),
     }
+    if page_defect == "wrong_ja_chart":
+        page_content["ja/about/changelog.html"] = page_content[
+            "ja/about/changelog.html"
+        ].replace(b"-ja.svg", b".svg")
+    elif page_defect == "missing_en_history":
+        page_content["about/changelog.html"] = page_content[
+            "about/changelog.html"
+        ].replace(b"<h3>Fixed</h3>", b"")
+    elif page_defect == "missing_ja_history":
+        page_content["ja/about/changelog.html"] = page_content[
+            "ja/about/changelog.html"
+        ].replace("<h3>修正</h3>".encode(), b"")
 
     def public_bytes(url):
         path = url.split("/gwexpy/docs/", 1)[1]
@@ -1106,6 +1129,19 @@ def test_docs_pages_readback_requires_exact_revision_workflow_and_merged_pr(
         raise AssertionError((path, key))
 
     monkeypatch.setattr(observer.c, "pages", pages)
+    if page_defect is not None:
+        expected_error = (
+            "language-specific activity chart"
+            if page_defect == "wrong_ja_chart"
+            else "detailed v0.2.7 release history"
+        )
+        result = observer.docs_pages(r)
+        assert result["status"] == "pending_external"
+        assert result["docs_status"] == "pending_review"
+        assert result["readback_succeeded"] is False
+        assert expected_error in " ".join(result["changelog_errors"])
+        return
+
     result = observer.docs_pages(r)
     assert result["status"] == "complete"
     assert result["docs_status"] == ("complete" if merged else "pending_review")

@@ -170,7 +170,17 @@ def test_preparation_uses_redesign_notebook_code_without_legacy_docs_tree(tmp_pa
 
 
 @pytest.mark.parametrize(
-    "defect", [None, "revision", "figure", "route", "anchor", "download"]
+    "defect",
+    [
+        None,
+        "revision",
+        "figure",
+        "route",
+        "anchor",
+        "download",
+        "changelog_chart",
+        "changelog_history",
+    ],
 )
 def test_deployment_readback_rejects_stale_or_incomplete_publication(
     monkeypatch, defect
@@ -185,6 +195,7 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
                 {
                     "source_revision": "b" * 40 if defect == "revision" else revision,
                     "dirty": False,
+                    "latest_release": "0.2.6",
                 }
             ).encode()
         elif ".ipynb" in request.full_url:
@@ -199,6 +210,8 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
                 if defect == "figure"
                 else b"\x89PNG\r\n\x1a\n" + b"0" * 1200
             )
+        elif ".svg" in request.full_url:
+            data = b'<svg xmlns="http://www.w3.org/2000/svg"></svg>'
         elif "/downloads/" in request.full_url:
             filename = request.full_url.split("?", 1)[0].rsplit("/", 1)[1]
             data = (DOCS / "_static/downloads" / filename).read_bytes()
@@ -212,7 +225,8 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
                 page += '<div id="for-gw-experimentalists"></div>'
             # Workflow readback fixtures: language switch, figure, download.
             rel = request.full_url.split("docs.example.test/", 1)[1].split("?", 1)[0]
-            rel = rel[3:] if rel.startswith("ja/") else rel
+            is_ja_request = rel.startswith("ja/")
+            rel = rel[3:] if is_ja_request else rel
             notebook_name = WORKFLOW_NOTEBOOK_PAGES.get(rel)
             page += (
                 f'<a href="https://docs.example.test/{rel}">EN</a>'
@@ -221,7 +235,14 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
             )
             if notebook_name:
                 page += f'<a href="_sources/{notebook_name}">notebook</a>'
-            if "/ja/" in request.full_url:
+            if rel == "about/changelog.html":
+                chart = "development-activity-v0.2.6.svg"
+                if is_ja_request and defect != "changelog_chart":
+                    chart = "development-activity-v0.2.6-ja.svg"
+                page += f'<img src="/_static/images/{chart}">'
+                if defect != "changelog_history":
+                    page += "<h2>[0.2.6] - 2026-10-24</h2><h3>Fixed</h3>"
+            if is_ja_request:
                 page += "<p>日本語の説明文</p>"
             data = page.encode()
         return io.BytesIO(data)
