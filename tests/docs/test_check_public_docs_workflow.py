@@ -10,10 +10,12 @@ from urllib.error import URLError
 import pytest
 
 from scripts.check_public_docs import (
+    CHANGELOG_PAGE,
     ENTRY_PAGES,
     LEGACY_ANCHORS,
     WORKFLOW_NOTEBOOK_PAGES,
     WORKFLOW_PAGES,
+    changelog_page_errors,
     check,
     check_remote,
     has_japanese_text,
@@ -34,6 +36,16 @@ def _page_html(name: str, language: str, *, body: str = "") -> str:
         f'<div id="{anchor}"></div>' for anchor in LEGACY_ANCHORS.get(name, ())
     )
     text = "BODY " * 200 + body
+    if name == CHANGELOG_PAGE:
+        chart = (
+            "development-activity-v0.2.6-ja.svg"
+            if language == "ja/"
+            else "development-activity-v0.2.6.svg"
+        )
+        text += (
+            f'<img src="/gwexpy/docs/_static/images/{chart}">'
+            "<h2>[0.2.6] - 2026-10-24</h2><h3>Fixed</h3>"
+        )
     if language == "ja/":
         text += "日本語の説明文 " * 20
     return (
@@ -51,6 +63,7 @@ def _build_tree(root: Path) -> None:
         info = {
             "source_revision": REVISION,
             "language_baseurl": BASEURL,
+            "latest_release": "0.2.6",
             "public_notebooks": ["how-to/case-studies/case_x.ipynb"],
             "notebook_execution": {
                 "how-to/case-studies/case_x": {"succeeded": True, "runtime": 1.0}
@@ -100,6 +113,13 @@ def _build_tree(root: Path) -> None:
                 f'<a href="../../_sources/{nb_name}">notebook</a></body></html>',
             )
             wp_file.write_text(html)
+    for filename in (
+        "development-activity-v0.2.6.svg",
+        "development-activity-v0.2.6-ja.svg",
+    ):
+        image = root / "_static/images" / filename
+        image.parent.mkdir(parents=True, exist_ok=True)
+        image.write_text('<svg xmlns="http://www.w3.org/2000/svg"></svg>')
 
 
 def _workflow_errors(errors: list[str]) -> list[str]:
@@ -275,6 +295,31 @@ def test_notebook_payload_helper() -> None:
     assert not has_japanese_text("English only")
 
 
+def test_changelog_page_errors_require_localized_svg_and_latest_details() -> None:
+    en = _page_html(CHANGELOG_PAGE, "")
+    ja = _page_html(CHANGELOG_PAGE, "ja/")
+    assert changelog_page_errors(en, "", "0.2.6") == []
+    assert changelog_page_errors(ja, "ja/", "0.2.6") == []
+
+    wrong_ja_chart = ja.replace(
+        "development-activity-v0.2.6-ja.svg",
+        "development-activity-v0.2.6.svg",
+    )
+    assert "wrong language" in " ".join(
+        changelog_page_errors(wrong_ja_chart, "ja/", "0.2.6")
+    )
+    missing_history = en.replace("<h3>Fixed</h3>", "")
+    assert "missing detailed v0.2.6 release history" in " ".join(
+        changelog_page_errors(missing_history, "", "0.2.6")
+    )
+
+    future = (
+        '<img src="/gwexpy/docs/_static/images/development-activity-v0.2.7.svg">'
+        "<h2>[0.2.7] - 2026-11-03</h2><h3>Fixed</h3>"
+    )
+    assert changelog_page_errors(future, "", "0.2.7") == []
+
+
 # --- Remote readback with a mocked deployment -------------------------------
 
 _MOCK_ROUTES = (
@@ -300,6 +345,7 @@ def _mock_response(defect: str | None):
                         if defect == "revision"
                         else REVISION,
                         "dirty": False,
+                        "latest_release": "0.2.6",
                     }
                 ).encode()
             )
@@ -309,6 +355,8 @@ def _mock_response(defect: str | None):
             if defect == "image_html" and "_images/workflow" in url:
                 return io.BytesIO(b"<html><body>404</body></html>")
             return io.BytesIO(b"\x89PNG\r\n\x1a\n" + b"0" * 1200)
+        if url.split("?", 1)[0].endswith(".svg"):
+            return io.BytesIO(b'<svg xmlns="http://www.w3.org/2000/svg"></svg>')
         if ".ipynb" in url:
             if defect == "notebook":
                 return io.BytesIO(b"<html>not a notebook</html>")
@@ -333,6 +381,7 @@ def _mock_response(defect: str | None):
         is_ja_request = rel.startswith("ja/")
         rel = rel[3:] if is_ja_request else rel
         is_workflow = rel in WORKFLOW_PAGES
+        is_changelog = rel == CHANGELOG_PAGE
         page = ""
         if defect != "identity" or not is_workflow:
             page += f"<aside class='gwexpy-build-status'>{REVISION[:8]}</aside>"
@@ -355,6 +404,13 @@ def _mock_response(defect: str | None):
                 if defect == "notebook_wrong_target" and rel == t1:
                     notebook_name = WORKFLOW_NOTEBOOK_PAGES[t7]
                 page += f'<a href="_sources/{notebook_name}">notebook</a>'
+        if is_changelog:
+            chart = "development-activity-v0.2.6.svg"
+            if is_ja_request and defect != "changelog_chart":
+                chart = "development-activity-v0.2.6-ja.svg"
+            page += f'<img src="/_static/images/{chart}">'
+            if defect != "changelog_history":
+                page += "<h2>[0.2.6] - 2026-10-24</h2><h3>Fixed</h3>"
         if "/ja/" in url and defect != "ja_text":
             page += "<p>日本語の説明文</p>"
         if defect == "unreachable" and is_workflow and "/ja/" not in url:
@@ -378,6 +434,8 @@ def _mock_response(defect: str | None):
         ("image", ["invalid image"]),
         ("image_html", ["invalid image"]),
         ("analysis_figure_missing", ["missing analysis figure"]),
+        ("changelog_chart", ["wrong language"]),
+        ("changelog_history", ["missing detailed v0.2.6 release history"]),
         ("revision", ["deployed revision is not the clean expected commit"]),
         ("unreachable", ["mock connection failure"]),
     ],

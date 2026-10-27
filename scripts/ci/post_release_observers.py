@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
+from html.parser import HTMLParser
 from typing import Any
 
 import post_release as c
@@ -48,6 +49,83 @@ def repository_file(repository: str, path: str, revision: str) -> bytes:
         "Unexpected GitHub file identity or encoding",
     )
     return base64.b64decode(entry["content"])
+
+
+class _ChangelogHTML(HTMLParser):
+    """Collect rendered chart links and heading structure from a changelog."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.images: list[str] = []
+        self.headings: list[tuple[int, str]] = []
+        self._heading_level: int | None = None
+        self._heading_text: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "img":
+            self.images.extend(
+                value for name, value in attrs if name == "src" and value
+            )
+        match = re.fullmatch(r"h([1-6])", tag)
+        if match:
+            self._heading_level = int(match.group(1))
+            self._heading_text = []
+
+    def handle_data(self, data: str) -> None:
+        if self._heading_level is not None:
+            self._heading_text.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._heading_level is not None and tag == f"h{self._heading_level}":
+            text = " ".join("".join(self._heading_text).split())
+            self.headings.append((self._heading_level, text))
+            self._heading_level = None
+            self._heading_text = []
+
+
+def _changelog_page_errors(page_html: str, page_path: str, version: str) -> list[str]:
+    """Find missing version details or a chart rendered in the wrong language."""
+    page = _ChangelogHTML()
+    page.feed(page_html)
+    image_names = {
+        urllib.parse.urlsplit(src).path.rsplit("/", 1)[-1] for src in page.images
+    }
+    japanese = page_path.startswith("ja/")
+    suffix = "-ja" if japanese else ""
+    other_suffix = "" if japanese else "-ja"
+    expected = f"development-activity-v{version}{suffix}.svg"
+    other = f"development-activity-v{version}{other_suffix}.svg"
+    errors: list[str] = []
+    if expected not in image_names:
+        errors.append(f"missing language-specific activity chart {expected}")
+    if other in image_names:
+        errors.append("wrong language activity chart")
+
+    latest_index = next(
+        (
+            index
+            for index, (level, text) in enumerate(page.headings)
+            if level == 2 and f"[{version}]" in text
+        ),
+        None,
+    )
+    if latest_index is None:
+        errors.append(f"missing detailed v{version} release history")
+    else:
+        next_release = next(
+            (
+                index
+                for index in range(latest_index + 1, len(page.headings))
+                if page.headings[index][0] == 2
+            ),
+            len(page.headings),
+        )
+        if not any(
+            level == 3
+            for level, _text in page.headings[latest_index + 1 : next_release]
+        ):
+            errors.append(f"missing detailed v{version} release history")
+    return errors
 
 
 def docs_pages(record: dict[str, Any]) -> dict[str, Any]:
@@ -180,6 +258,7 @@ def docs_pages(record: dict[str, Any]) -> dict[str, Any]:
         asset_hashes[source_path] = expected_hash
 
     page_hashes: dict[str, str] = {}
+    changelog_errors: list[str] = []
     for page_path in ("about/changelog.html", "ja/about/changelog.html"):
         page = public_bytes(urllib.parse.urljoin(DOCS_BASE_URL, page_path))
         decoded = page.decode("utf-8")
@@ -192,7 +271,25 @@ def docs_pages(record: dict[str, Any]) -> dict[str, Any]:
                 re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", decoded) is not None,
                 "Published Japanese changelog contains no Japanese text",
             )
+        changelog_errors.extend(
+            f"{page_path}: {error}"
+            for error in _changelog_page_errors(decoded, page_path, version)
+        )
         page_hashes[page_path] = c.sha256(page)
+
+    if changelog_errors:
+        return dict(
+            status="pending_external",
+            docs_status="pending_review",
+            readback_succeeded=False,
+            reason="Published changelog is incomplete: " + "; ".join(changelog_errors),
+            changelog_errors=changelog_errors,
+            source_revision=revision,
+            pages_workflow_run_id=run["id"],
+            pages_workflow_run_attempt=attempt,
+            pages_workflow_run_url=run["html_url"],
+            page_sha256=page_hashes,
+        )
 
     associated = c.pages(repository, f"commits/{revision}/pulls")
     merged_prs = [

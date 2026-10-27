@@ -417,7 +417,8 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
         'msgid "[0.2.6] - 2026-10-24"\nmsgstr "[0.2.6] - 2026-10-24"'
     ) in japanese_po
     assert "development-activity-v0.2.4.svg" in redesigned_changelog
-    assert ":end-before:" not in redesigned_changelog
+    assert ':start-after: "## [0.2.6] - 2026-10-24"' in redesigned_changelog
+    assert ':end-before: "## [0.2.5] - 2026-10-04"' in redesigned_changelog
     assert ':start-after: "[#778]' in redesigned_changelog
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
@@ -568,24 +569,22 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     canonical = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
     published_heading = f"## {PUBLISHED_V023_HISTORY_ENTRY}"
-    current_heading = f"## {PUBLISHED_V024_HISTORY_ENTRY}"
+    latest_history_heading = f"## {CANDIDATE_V026_HISTORY_ENTRY}"
+    previous_heading = f"## {PUBLISHED_V025_HISTORY_ENTRY}"
     assert ":::{include} ../../CHANGELOG.md" in source
-    include_anchor = re.search(r':start-after: "(.+)"', source).group(1)
+    assert latest_history_heading in source
+    assert f':start-after: "{latest_history_heading}"' in source
+    assert f':end-before: "{previous_heading}"' in source
+    assert ':start-after: "[#778]' in source
     canonical_lines = canonical.splitlines()
-    anchor_hits = [
-        i for i, line in enumerate(canonical_lines) if include_anchor in line
-    ]
-    assert len(anchor_hits) == 1
-    anchor_line = anchor_hits[0]
-    # The include starts after a whole line: the anchor line ends with the anchor,
-    # then a blank line, then the published 0.2.5 heading.
-    assert canonical_lines[anchor_line].endswith(include_anchor)
-    assert canonical_lines[anchor_line + 1] == ""
-    assert canonical_lines[anchor_line + 2].startswith("## [0.2.5]")
-    assert ":end-before:" not in source
-    assert current_heading not in source
+    latest_line = canonical_lines.index(latest_history_heading)
+    previous_line = canonical_lines.index(previous_heading)
+    assert latest_line < previous_line
+    assert "ASD frequency-grid rejection diagnostics" in "\n".join(
+        canonical_lines[latest_line:previous_line]
+    )
     assert published_heading not in source
-    current_section = canonical.split(current_heading, 1)[1].split(
+    current_section = canonical.split(latest_history_heading, 1)[1].split(
         published_heading, 1
     )[0]
     assert "Release status: candidate." not in current_section

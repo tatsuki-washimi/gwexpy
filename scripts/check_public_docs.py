@@ -31,6 +31,7 @@ ENTRY_PAGES = (
     "reference/io_capabilities.html",
     "reference/interop_capabilities.html",
     "about/index.html",
+    "about/changelog.html",
     "about/documentation_version.html",
     "about/developer.html",
     "about/known_limitations.html",
@@ -46,6 +47,7 @@ ENTRY_PAGES = (
     "how-to/calibration/calibration_units_contract.html",
     "how-to/interop/root_to_python_migration.html",
 )
+CHANGELOG_PAGE = "about/changelog.html"
 
 AUDIENCE_ROUTES = (
     "tutorials/first_analysis.html",
@@ -152,6 +154,31 @@ class Links(HTMLParser):
             src = str(values["src"])
             self.links.append(src)
             self.images.append(src)
+
+
+class Headings(HTMLParser):
+    """Collect rendered heading levels and text for release-section checks."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.items: list[tuple[int, str]] = []
+        self._level: int | None = None
+        self._text: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if len(tag) == 2 and tag[0] == "h" and tag[1].isdigit():
+            self._level = int(tag[1])
+            self._text = []
+
+    def handle_data(self, data: str) -> None:
+        if self._level is not None:
+            self._text.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._level is not None and tag == f"h{self._level}":
+            self.items.append((self._level, " ".join("".join(self._text).split())))
+            self._level = None
+            self._text = []
 
 
 def has_japanese_text(text: str) -> bool:
@@ -273,6 +300,56 @@ def workflow_page_errors(
     return errors
 
 
+def changelog_page_errors(
+    page_html: str, language: str, latest_release: str | None
+) -> list[str]:
+    """Require the latest release details and language-specific activity SVG."""
+    errors: list[str] = []
+    if not latest_release:
+        return ["missing latest release metadata"]
+    parsed = Links()
+    parsed.feed(page_html)
+    image_names = {Path(unquote(urlsplit(src).path)).name for src in parsed.images}
+    suffix = "-ja" if language == "ja/" else ""
+    other_suffix = "" if language == "ja/" else "-ja"
+    expected_svg = f"development-activity-v{latest_release}{suffix}.svg"
+    other_svg = f"development-activity-v{latest_release}{other_suffix}.svg"
+    if expected_svg not in image_names:
+        errors.append(f"missing language-specific activity SVG {expected_svg}")
+    if other_svg in image_names:
+        errors.append("wrong language activity SVG")
+    headings = Headings()
+    headings.feed(page_html)
+    release_heading = f"[{latest_release}]"
+    latest_index = next(
+        (
+            index
+            for index, (level, text) in enumerate(headings.items)
+            if level == 2 and release_heading in text
+        ),
+        None,
+    )
+    if latest_index is None:
+        errors.append(f"missing detailed v{latest_release} release history")
+    else:
+        next_release_index = next(
+            (
+                index
+                for index in range(latest_index + 1, len(headings.items))
+                if headings.items[index][0] == 2
+            ),
+            len(headings.items),
+        )
+        if not any(
+            level == 3
+            for level, _text in headings.items[latest_index + 1 : next_release_index]
+        ):
+            errors.append(f"missing detailed v{latest_release} release history")
+    if language == "ja/" and not has_japanese_text(page_html):
+        errors.append("JA changelog lacks Japanese translation")
+    return errors
+
+
 def check(root: Path, expected_revision: str | None = None) -> list[str]:
     root = root.resolve()
     errors: list[str] = []
@@ -304,6 +381,11 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
                 or info["source_revision"][:8] not in text
             ):
                 errors.append(f"Missing build identity: {language}{name}")
+            if name == CHANGELOG_PAGE:
+                for error in changelog_page_errors(
+                    text, language, info.get("latest_release")
+                ):
+                    errors.append(f"{language}{name}: {error}")
             for anchor in LEGACY_ANCHORS.get(name, ()):
                 if anchor == "io-formats-ja-supported-classes":
                     continue
@@ -419,7 +501,7 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                     f"{prefix}: deployed revision is not the clean expected commit"
                 )
             pages = dict.fromkeys(
-                ("index.html", "tutorials/quickstart.html")
+                ("index.html", "tutorials/quickstart.html", CHANGELOG_PAGE)
                 + tuple(urlsplit(route).path for route in AUDIENCE_ROUTES)
             )
             for name in pages:
@@ -431,6 +513,42 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                     errors.append(f"{prefix}{name}: missing expected build identity")
                 parsed = Links()
                 parsed.feed(page)
+                if name == CHANGELOG_PAGE:
+                    for error in changelog_page_errors(
+                        page, language, info.get("latest_release")
+                    ):
+                        errors.append(f"{prefix}{name}: {error}")
+                    counterpart = (
+                        base_url.rstrip("/")
+                        + ("/ja/" if language == "" else "/")
+                        + CHANGELOG_PAGE
+                    )
+                    if counterpart not in parsed.links:
+                        errors.append(f"{prefix}{name}: missing language switch link")
+                    expected_svg = (
+                        f"development-activity-v{info.get('latest_release')}-ja.svg"
+                        if language == "ja/"
+                        else f"development-activity-v{info.get('latest_release')}.svg"
+                    )
+                    chart_sources = [
+                        src
+                        for src in parsed.images
+                        if Path(unquote(urlsplit(src).path)).name == expected_svg
+                    ]
+                    if chart_sources:
+                        try:
+                            image, content_type = fetch_url(
+                                urljoin(prefix + name, chart_sources[0])
+                            )
+                        except (URLError, TimeoutError, ValueError) as exc:
+                            errors.append(
+                                f"{prefix}{name}: activity SVG readback failed: {exc}"
+                            )
+                        else:
+                            if not is_image_payload(
+                                image, content_type, chart_sources[0]
+                            ):
+                                errors.append(f"{prefix}{name}: invalid activity SVG")
                 if name == "index.html":
                     for route in AUDIENCE_ROUTES:
                         if route not in parsed.links:

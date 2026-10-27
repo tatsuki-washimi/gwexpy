@@ -15,6 +15,13 @@ Weekly activity through the immutable v0.2.6 release tag. The stacked bars group
 
 The snapshot ends at commit `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes.
 
+## [0.2.6] - 2026-10-24
+
+:::{include} ../../CHANGELOG.md
+:start-after: "## [0.2.6] - 2026-10-24"
+:end-before: "## [0.2.5] - 2026-10-04"
+:::
+
 Published on 2026-10-04 UTC: [PyPI 0.2.5](https://pypi.org/project/gwexpy/0.2.5/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.5).
 Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
 
