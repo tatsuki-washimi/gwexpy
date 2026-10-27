@@ -714,3 +714,139 @@ def test_feedstock_does_not_confuse_neighbor_or_prerelease_versions(monkeypatch,
     monkeypatch.setattr(observer.c, "pages", lambda *_: [pull])
     monkeypatch.setattr(observer, "feedstock_recipe", lambda *_: {"version": "0.2.7"})
     assert observer.feedstock(record())["status"] == "pending_external"
+
+
+def test_human_complete_cannot_mask_new_zenodo_identity_conflict(monkeypatch):
+    import post_release_observers as observer
+
+    r = record()
+    payload = dict(
+        id=999,
+        doi="10.5281/zenodo.999",
+        conceptdoi="10.5281/zenodo.19059422",
+        metadata=dict(version="0.2.7", publication_date="2026-11-01"),
+        files=[
+            dict(key="example/gwexpy-v0.2.7.zip", checksum="md5:" + "a" * 32, size=123)
+        ],
+    )
+    observer.update(
+        r,
+        "zenodo",
+        "complete",
+        "https://zenodo.org/records/999",
+        observer.zenodo(r, [payload]),
+        "2026-11-01T00:00:00Z",
+    )
+    r["items"]["zenodo"]["human_decision"] = {
+        "status": "complete",
+        "approved_by": "owner",
+    }
+    prior = copy.deepcopy(r)
+    monkeypatch.setattr(observer, "discover_records", lambda *args: ({"v0.2.7": r}, []))
+    monkeypatch.setattr(observer, "github", lambda _: {"readback_succeeded": True})
+    monkeypatch.setattr(observer, "zenodo_records", lambda *_: [payload])
+    monkeypatch.setattr(observer, "public_json", lambda _: {"files": []})
+    monkeypatch.setattr(
+        observer,
+        "feedstock",
+        lambda _: {"status": "pending_external", "reason": "Absent"},
+    )
+    payload["files"][0]["checksum"] = "md5:" + "b" * 32
+    result = controller.merge_manifest(prior, observer.observe_with_durable(record()))
+    item = result["items"]["zenodo"]
+    assert item["status"] == "blocked"
+    assert item["readback_succeeded"] is False
+    assert item["human_decision"] == prior["items"]["zenodo"]["human_decision"]
+    assert (
+        len(
+            [
+                e
+                for e in item["evidence"]
+                if '"readback_succeeded": true' in e["observation"]
+            ]
+        )
+        == 1
+    )
+    observer.update(
+        result,
+        "zenodo",
+        "complete",
+        "https://zenodo.org/records/999",
+        {"readback_succeeded": True},
+        "2026-11-02T00:00:00Z",
+    )
+    assert result["items"]["zenodo"]["status"] == "blocked"
+
+
+@pytest.mark.parametrize(
+    "version,active_hash",
+    [("0.2.70", "d" * 64), ("0.2.7rc1", "d" * 64), ("0.2.7", "e" * 64)],
+)
+def test_feedstock_recipe_rejects_prefix_version_and_commented_hash(
+    monkeypatch, version, active_hash
+):
+    import base64
+
+    import post_release_observers as observer
+
+    recipe = (
+        '{% set version = "'
+        + version
+        + '" %}\nsource:\n  sha256: '
+        + active_hash
+        + "\n# sha256: "
+        + "d" * 64
+        + "\n"
+    )
+    monkeypatch.setattr(
+        observer.c, "pages", lambda *_: [{"filename": "recipe/meta.yaml"}]
+    )
+    monkeypatch.setattr(
+        observer.c,
+        "api",
+        lambda *_: {"content": base64.b64encode(recipe.encode()).decode()},
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        observer.feedstock_recipe(feedstock_pull(), record())
+
+
+def test_discovery_null_evidence_url_isolates_version(monkeypatch):
+    import post_release_observers as observer
+
+    malformed = record("0.2.6")
+    malformed["items"]["publication_identity"]["evidence"][0]["url"] = None
+    test_discovery_malformed_record_does_not_hide_other_version(monkeypatch, malformed)
+    monkeypatch.setattr(observer, "observe", lambda r: r)
+    written = []
+    monkeypatch.setattr(
+        observer.c, "persist", lambda repo, r: written.append(r["version"])
+    )
+    results = observer.resume("example/gwexpy")
+    assert written == ["0.2.7"]
+    assert results[0]["tag"] == "v0.2.6" and results[0]["status"] == "blocked"
+
+
+def test_discovery_missing_overall_status_isolates_version(monkeypatch):
+    malformed = record("0.2.6")
+    del malformed["post_release_status"]
+    test_discovery_malformed_record_does_not_hide_other_version(monkeypatch, malformed)
+
+
+def test_resume_missing_status_does_not_abort_subsequent_version(monkeypatch):
+    import post_release_observers as observer
+
+    malformed = record("0.2.6")
+    del malformed["post_release_status"]
+    monkeypatch.setattr(
+        observer,
+        "discover_records",
+        lambda _: ({"v0.2.6": malformed, "v0.2.7": record()}, []),
+    )
+    monkeypatch.setattr(observer, "observe", lambda r: r)
+    written = []
+    monkeypatch.setattr(
+        observer.c, "persist", lambda repo, r: written.append(r["version"])
+    )
+    result = observer.resume("example/gwexpy")
+    assert written == ["0.2.7"]
+    assert result[0]["tag"] == "v0.2.6" and result[0]["status"] == "blocked"

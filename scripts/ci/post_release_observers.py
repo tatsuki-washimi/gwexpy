@@ -48,6 +48,16 @@ def update(
     ):
         item["evidence"].append(entry)
         changed = True
+    if status == "blocked":
+        # Verification failure invalidates readback even after human approval.
+        # Retain the human decision as history, never as a safety override.
+        item.update(
+            status="blocked",
+            observer=name,
+            readback_succeeded=False,
+            pending_reason=observation.get("reason", "Identity verification failed"),
+            resume_condition="Owner must resolve the identity conflict before resuming",
+        )
     if (
         item["status"] != "blocked"
         and not item.get("human_decision")
@@ -256,14 +266,53 @@ def feedstock_recipe(pull: dict[str, Any], record: dict[str, Any]) -> dict[str, 
     data = c.api(head["repo"]["full_name"], f"contents/{paths[0]}?ref={head['sha']}")
     raw = base64.b64decode(data["content"])
     text = raw.decode()
-    # Only extract literal metadata. Expressions are deliberately not evaluated.
-    version = re.search(
-        r'(?:set\s+version\s*=|version:)\s*["\']?([0-9]+\.[0-9]+\.[0-9]+)', text
-    )
-    hashes = re.findall(r'(?:sha256\s*=|sha256:)\s*["\']?([0-9a-f]{64})', text)
-    version_text = version[1] if version else ""
+    # A deliberately restricted literal reader, never a Jinja evaluator.
+    # Ignore comments and YAML block scalars; hashes must be active source fields.
+    versions: list[str] = []
+    hashes: list[str] = []
+    source_indent: int | None = None
+    block_indent: int | None = None
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip())
+        if block_indent is not None:
+            if indent > block_indent:
+                continue
+            block_indent = None
+        if re.search(r":\s*[|>][+-]?\s*$", line):
+            block_indent = indent
+            continue
+        declaration = re.fullmatch(
+            r'\s*\{%-?\s*set\s+version\s*=\s*(["\'])([^"\']+)\1\s*-?%\}\s*', line
+        )
+        literal = re.fullmatch(
+            r'\s*version:\s*(?:"([^"\']+)"|\'([^"\']+)\'|([0-9][0-9A-Za-z.+-]*))\s*',
+            line,
+        )
+        if declaration:
+            versions.append(declaration[2])
+        elif literal:
+            versions.append(
+                next(group for group in literal.groups() if group is not None)
+            )
+        if source_indent is not None and indent <= source_indent:
+            source_indent = None
+        if re.fullmatch(r"\s*source:\s*", line):
+            source_indent = indent
+        if source_indent is not None and indent > source_indent:
+            digest = re.fullmatch(
+                r'\s*(?:-\s+)?sha256:\s*(?:"([0-9a-f]{64})"|\'([0-9a-f]{64})\'|([0-9a-f]{64}))\s*',
+                line,
+            )
+            if digest:
+                hashes.append(
+                    next(group for group in digest.groups() if group is not None)
+                )
+    version_text = versions[0] if versions else ""
     c.require(
-        version_text == record["version"],
+        bool(versions) and all(version == record["version"] for version in versions),
         "Feedstock recipe version mismatch or not literal",
     )
     expected = next(
@@ -629,9 +678,12 @@ def resume(repository: str) -> list[dict[str, str]]:
     records, results = discover_records(repository)
     failed = {r["tag"] for r in results}
     for tag, record in records.items():
-        if tag in failed or record["post_release_status"] == "complete":
+        if tag in failed:
             continue
         try:
+            c.validate_record(record)
+            if record["post_release_status"] == "complete":
+                continue
             for name in ("conda_feedstock", "conda_package"):
                 if name not in record["items"]:
                     record["items"][name] = copy.deepcopy(record["items"]["conda"])

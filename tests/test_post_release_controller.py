@@ -713,3 +713,38 @@ def test_release_asset_set_is_exactly_manifest_payload_and_sidecars(identity_inp
         m.validate_release_asset_names(manifest, names | {"unexpected.txt"})
     with pytest.raises(ValueError, match="asset set"):
         m.validate_release_asset_names(manifest, names - {"LICENSE.sha256"})
+
+
+def test_successor_applies_latest_observer_after_all_durable_baselines(
+    identity_inputs, monkeypatch
+):
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    old["items"]["pypi"]["observer"] = "pypi"
+    old["items"]["pypi"]["human_note"] = "Retain reviewer text"
+    fresh = copy.deepcopy(old)
+    fresh["items"]["pypi"].update(
+        status="complete",
+        readback_succeeded=True,
+        pending_reason="",
+        resume_condition="",
+        evidence=[
+            dict(
+                url="https://pypi.org/project/gwexpy/0.2.5/",
+                sha256=None,
+                observed_at_utc="2026-10-27T02:00:00Z",
+                observation="Exact files verified",
+            )
+        ],
+    )
+    store = GitHubStore(old, "closed")
+    store.commits["hmain"] = copy.deepcopy(store.commits["h0"])
+    store.refs["main"] = "hmain"
+    monkeypatch.setattr(m, "api", store.api)
+    m.persist("example/gwexpy", fresh)
+    commit = store.commits[store.refs["post-release/v0.2.5"]]
+    blob = store.trees[commit["tree"]["sha"]][0]["sha"]
+    result = json.loads(store.blobs[blob])
+    assert result["items"]["pypi"]["status"] == "complete"
+    assert result["items"]["pypi"]["readback_succeeded"] is True
+    assert result["items"]["pypi"]["human_note"] == "Retain reviewer text"

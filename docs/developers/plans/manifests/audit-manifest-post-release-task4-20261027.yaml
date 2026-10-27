@@ -63,6 +63,27 @@ limitations:
   - Unknown future Zenodo versions bind version DOI/archive identity on first successful readback and block later archive/date changes; no arbitrary expected future publication date is invented
   - A human decision is represented by human_decision or a human-owned pending_review/complete state; observers retain it and append evidence
   - EN/JA content preparation, Pages publishing and cleanup are later tasks
+additional_review_followup_20261027:
+  changes:
+    - Identity verification failures force sticky blocked and readback_succeeded false through observer and persistence merge while retaining human decision history
+    - Required overall status, object containers and nested evidence field types validate before processing
+    - Per-record resume status checks and validation are inside the exception boundary
+    - Recipe literal parsing ignores comments and YAML block scalar content and requires exact version plus active source hash
+    - Persistence applies latest observer transitions after default/stable durable baselines while retaining reviewer text
+  red:
+    - Human-approved Zenodo archive A to B retained complete before fail-closed transitions
+    - Null evidence URL aborted discovery before nested type validation
+    - Missing overall status passed discovery and aborted resume before guarded status validation
+    - Prerelease version prefix and commented expected hash were accepted before restricted literal parsing
+    - Stale stable-branch pending_external overwrote fresh complete before merge ordering correction
+  verification:
+    focused_tests: 126 passed
+    ruff_check: passed
+    ruff_format_check: passed
+    mypy_two_controller_modules: passed
+    git_diff_check: passed
+  commands: Same focused pytest/Ruff/MyPy matrix as review_followup_20261027, adding tests/test_post_release_controller.py to Ruff checks
+  scope: Controller, observers, focused regressions and audit only; no unrelated documentation or external writes
 review_followup_20261027:
   blockers:
     - Manual/automatic redispatch previously initialized fresh evidence before observing; it now loads default/open-version durable records before every observation and preserves prior Zenodo identity

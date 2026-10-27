@@ -317,12 +317,21 @@ def docs_eligible(record: dict[str, Any]) -> bool:
 
 def validate_record(record: dict[str, Any]) -> None:
     """Require evidence or explicit pending reason and resumption condition."""
+    require(isinstance(record, dict), "post-release record must be an object")
+    require(
+        record.get("post_release_status") in STATUSES,
+        "invalid or missing overall status",
+    )
+    require(isinstance(record.get("release"), dict), "invalid release identity")
+    require(isinstance(record.get("publication"), dict), "invalid publication identity")
+    require(isinstance(record.get("items"), dict), "invalid objective map")
     require(record.get("schema") == SCHEMA, "unsupported post-release schema")
     require(
         record.get("version") == record["release"]["version"], "record version mismatch"
     )
     require(REQUIRED_ITEMS <= record["items"].keys(), "required objectives are missing")
     for item in record["items"].values():
+        require(isinstance(item, dict), "invalid objective object")
         require(item.get("status") in STATUSES, "invalid objective status")
         for field in (
             "actor",
@@ -334,6 +343,7 @@ def validate_record(record: dict[str, Any]) -> None:
             require(field in item, f"objective missing {field}")
         require(isinstance(item["evidence"], list), "invalid evidence list")
         for entry in item["evidence"]:
+            require(isinstance(entry, dict), "invalid evidence entry")
             require(
                 all(
                     key in entry
@@ -342,14 +352,20 @@ def validate_record(record: dict[str, Any]) -> None:
                 "incomplete evidence",
             )
             require(
-                entry["url"].startswith("https://")
+                isinstance(entry["url"], str)
+                and entry["url"].startswith("https://")
+                and isinstance(entry["observed_at_utc"], str)
                 and entry["observed_at_utc"].endswith("Z")
+                and isinstance(entry["observation"], str)
                 and entry["observation"],
                 "invalid evidence URL/time/observation",
             )
             require(
                 entry["sha256"] is None
-                or re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]),
+                or (
+                    isinstance(entry["sha256"], str)
+                    and re.fullmatch(r"[0-9a-f]{64}", entry["sha256"])
+                ),
                 "invalid evidence hash",
             )
         if item["status"] == "complete":
@@ -395,11 +411,17 @@ def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str,
                     "conda_package",
                 }
                 and item.get("observer") == name
-                and target["status"] != "blocked"
-                and not target.get("human_decision")
                 and (
-                    target["status"] in ("pending_external", "retryable_failure")
-                    or target.get("observer") == name
+                    item["status"] == "blocked"
+                    or (
+                        target["status"] != "blocked"
+                        and not target.get("human_decision")
+                        and (
+                            target["status"]
+                            in ("pending_external", "retryable_failure")
+                            or target.get("observer") == name
+                        )
+                    )
                 )
             ):
                 for field in (
@@ -751,7 +773,7 @@ def persist(repository: str, record: dict[str, Any]) -> str:
             )
             blob = api(repository, f"git/blobs/{matches[0]['sha']}")
             old = json.loads(base64.b64decode(blob["content"]))
-        merged = merge_manifest(old, record)
+        baseline = old
         if merged_refresh and base_head != head:
             # A preceding attempt may have committed evidence but failed before
             # opening its successor PR. Do not discard that durable evidence.
@@ -770,9 +792,12 @@ def persist(repository: str, record: dict[str, Any]) -> str:
                 )
                 previous_blob = api(repository, f"git/blobs/{previous[0]['sha']}")
                 stable_manifest_sha = previous[0]["sha"]
-                merged = merge_manifest(
-                    merged, json.loads(base64.b64decode(previous_blob["content"]))
+                baseline = merge_manifest(
+                    baseline, json.loads(base64.b64decode(previous_blob["content"]))
                 )
+        # Durable branches are baselines. Apply the latest observer result last
+        # so stale observer-owned state cannot undo a new successful readback.
+        merged = merge_manifest(baseline, record)
         if merged == old:
             if pulls:
                 return (active or pulls)[0]["html_url"]
