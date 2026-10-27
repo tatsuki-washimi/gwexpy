@@ -139,7 +139,9 @@ for _candidate_root in (_docs_root.parent, Path(_gwexpy_module_path).parent.pare
             if _p.is_dir():
                 for _f in sorted(_p.rglob("*")):
                     if _f.is_file():
-                        _repo_data_hash.update(str(_f.relative_to(_candidate_root)).encode())
+                        _repo_data_hash.update(
+                            str(_f.relative_to(_candidate_root)).encode()
+                        )
                         _repo_data_hash.update(_f.read_bytes())
         break
 
@@ -493,18 +495,32 @@ def setup(app):
     app.connect("html-page-context", _case_information)
 
     def _localize_changelog_activity(app, docname, source):
-        if app.config.language == "ja" and docname == "about/changelog":
-            source[0] = (
-                source[0]
-                .replace(
-                    ":::{figure} /_static/images/development-activity-v0.2.4.svg",
-                    ":::{figure} /_static/images/development-activity-v0.2.4-ja.svg",
+        if app.config.language != "ja" or docname != "about/changelog":
+            return
+
+        import re
+
+        from sphinx.errors import ExtensionError
+
+        image_dir = Path(app.srcdir) / "_static" / "images"
+        pattern = re.compile(
+            r"(?P<prefix>:::\{figure\} /_static/images/)"
+            r"(?P<stem>development-activity-[A-Za-z0-9._-]+)\.svg"
+        )
+
+        def localized_figure(match: re.Match[str]) -> str:
+            stem = match.group("stem")
+            if stem.endswith("-ja"):
+                return match.group(0)
+            localized_asset = image_dir / f"{stem}-ja.svg"
+            if not localized_asset.is_file():
+                raise ExtensionError(
+                    f"Japanese changelog activity asset is missing: "
+                    f"{localized_asset.name}"
                 )
-                .replace(
-                    ":::{figure} /_static/images/development-activity-v0.2.3-candidate.svg",
-                    ":::{figure} /_static/images/development-activity-v0.2.3-candidate-ja.svg",
-                )
-            )
+            return f"{match.group('prefix')}{stem}-ja.svg"
+
+        source[0] = pattern.sub(localized_figure, source[0])
 
     app.connect("source-read", _localize_changelog_activity)
 
