@@ -1,0 +1,210 @@
+schema: gwexpy-agent-audit-v1
+task: post-release-recurring-task-4
+skills:
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+scope:
+  - Independent GET-only GitHub, PyPI, Zenodo, feedstock PR and actual channel observers
+  - Frozen source notes/review hashes, exact five Release assets and distribution identity
+  - Explicit observer-owned transitions, sticky blocks, human-decision preservation and evidence deduplication
+  - Docs eligibility independent of conda and Zenodo date-disposition review
+  - Daily durable-record resume using default-controller code and existing PR/CAS persistence
+  - Scheduled read-only Docs/Pages verification and durable state transitions independent of conda and Zenodo
+files:
+  - scripts/ci/post_release.py
+  - scripts/ci/post_release_observers.py
+  - tests/test_post_release_observers.py
+  - .github/workflows/post-release.yml
+  - RELEASING.md
+  - docs/developers/plans/manifests/audit-manifest-post-release-task4-20261027.yaml
+verification:
+  red:
+    - Missing docs eligibility helper and observer module failed before implementation
+    - Human pending-review state was overwritten during merge before ownership fix
+    - Previously observed Zenodo archive changes were accepted before immutable snapshot comparison
+    - Record distribution digest mutation passed GitHub readback before frozen-manifest binding
+    - Missing anonymous Zenodo search/pagination helper failed before implementation
+  commands:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q
+      result: 107 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed
+    - command: git diff --check
+      result: passed
+  omitted:
+    - No live writes, workflow dispatches, PR creation, package publication or release mutation
+    - Full scientific suite and Sphinx build omitted; no scientific or rendered user-document source changes
+    - Actionlint unavailable; YAML and workflow contract checked by focused tests
+  physics_review: not applicable
+live_read_only:
+  github_release: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6
+  feedstock_pr: https://github.com/conda-forge/gwexpy-feedstock/pull/16
+  zenodo_record: https://zenodo.org/api/records/23680359
+  zenodo_search: https://zenodo.org/api/records?q=conceptrecid%3A19059422&all_versions=true&size=25
+  observation: Record 23680359, version 0.2.6, date 2026-10-27, archive MD5 e587201a22f3acc9be92d4915c6d08f6 and size 36592642 match supplied snapshot; feedstock PR 16 open
+  api_correction: Anonymous Zenodo requests permit at most 25 records; verified conceptrecid query is filtered locally by exact metadata version and paginated
+  date_disposition: pending_review; no owner-approved disposition inferred
+sources:
+  - https://developers.zenodo.org/
+  - https://docs.pypi.org/api/json/
+  - https://docs.github.com/en/rest/commits/commits
+resume_contract:
+  discovery: Default-branch durable manifests plus matching version manifest on same-repository open post-release/vX.Y.Z PRs targeting default
+  code: Only trusted workflow_sha checkout executes; branch trees and blobs are data only
+  identity: Durable accepted publication identity survives artifact/log expiry; every observer run rebinds immutable tag/source and Release manifest/assets
+  writes: Existing persist function retains non-force CAS and at-most-one active PR on one stable branch with sequential successor PRs
+  conflicts: Observer-owned blocked states are sticky; missing/unverifiable source identity is recorded blocked by GitHub observer
+  independent_failures: Per-service transport failures remain retryable_failure; other services continue
+limitations:
+  - Resolved by review follow-up: feedstock PR discovery is generic across exact versions
+  - Unknown future Zenodo versions bind version DOI/archive identity on first successful readback and block later archive/date changes; no arbitrary expected future publication date is invented
+  - A human decision is represented by human_decision or a human-owned pending_review/complete state; observers retain it and append evidence
+  - EN/JA content preparation, Pages publishing and cleanup are later tasks
+additional_review_followup_20261027:
+  changes:
+    - Identity verification failures force sticky blocked and readback_succeeded false through observer and persistence merge while retaining human decision history
+    - Required overall status, object containers and nested evidence field types validate before processing
+    - Per-record resume status checks and validation are inside the exception boundary
+    - Scheduled resume observes published EN/JA Pages revision, release assets, workflow artifact-hash steps and merged-PR review state independently
+    - Recipe literal parsing ignores comments and YAML block scalar content and requires exact version plus active source hash
+    - Persistence applies latest observer transitions after default/stable durable baselines while retaining reviewer text
+  red:
+    - Human-approved Zenodo archive A to B retained complete before fail-closed transitions
+    - Null evidence URL aborted discovery before nested type validation
+    - Missing overall status passed discovery and aborted resume before guarded status validation
+    - Prerelease version prefix and commented expected hash were accepted before restricted literal parsing
+    - Stale stable-branch pending_external overwrote fresh complete before merge ordering correction
+  verification:
+    focused_tests: 126 passed
+    ruff_check: passed
+    ruff_format_check: passed
+    mypy_two_controller_modules: passed
+    git_diff_check: passed
+  commands: Same focused pytest/Ruff/MyPy matrix as review_followup_20261027, adding tests/test_post_release_controller.py to Ruff checks
+  scope: Controller, observers, focused regressions and audit only; no unrelated documentation or external writes
+review_followup_20261027:
+  blockers:
+    - Manual/automatic redispatch previously initialized fresh evidence before observing; it now loads default/open-version durable records before every observation and preserves prior Zenodo identity
+    - Removed v0.2.6 record/date/archive constants from production; version-specific snapshots remain fixtures
+    - Channel availability now requires matching final per-subdir repodata entry, including build/build-number/SHA256/size, rather than Anaconda inventory or labels alone
+    - Exact-version feedstock PR discovery now uses the feedstock PR list, version boundaries in title/branch, immutable head SHA and literal recipe version/source hash data; missing is pending and ambiguity blocks
+    - Daily discovery and processing now return per-version blocked/retryable diagnostics and continue other versions when a record fails
+  red:
+    - All six initial blocker tests failed before implementation
+    - Nested malformed objective containers aborted discovery before added object validation
+  regression_fixtures:
+    - v0.2.7 observes archive checksum A, then fresh redispatch sees B; durable merge persists blocked and retains exactly one successful identity snapshot
+    - Inventory build bearing main plus broken labels is absent from final repodata and remains pending_external
+    - Repodata hash conflict blocks; matching exact build completes
+    - v0.2.7 unique feedstock PR binds head SHA and recipe source SHA; second match blocks
+    - Malformed v0.2.6 record and transport failure do not suppress valid v0.2.7 processing
+  additional_sources:
+    - https://conda-forge.org/docs/maintainer/understanding_conda_forge/life_cycle/
+    - https://conda-forge.org/news/2020/05/28/new-process-for-marking-packages-as-broken/
+  limitations:
+    - Recipe YAML and Jinja are never evaluated; unsupported nonliteral version/source hash recipes block for owner review
+    - An unsafe or malformed durable record returns a named blocked diagnostic instead of fabricating accepted identity or writing a replacement
+    - Repodata uses the final conda.anaconda.org channel index; no package file download or service mutation occurs
+  verification:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q
+      result: 118 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed
+    - command: git diff --check
+      result: passed
+final_independent_review_followup_20261027:
+  findings:
+    - YAML explicit-indentation block scalars such as |2 and >+2 are ignored as data, not scanned for recipe identity.
+    - The active source mapping must contain exactly one direct URL and sha256 at the same child indentation; the URL must resolve to the exact PyPI sdist filename and the direct digest must match its frozen distribution identity.
+    - JSON-decoded prior Zenodo evidence must be an object; malformed snapshots block only the affected release and later versions continue.
+    - Overall status must exactly match the precedence-ordered objective statuses. A stale aggregate is recomputed only when every objective state is well-formed; missing aggregate status remains invalid.
+    - Non-whitelisted Jinja control structures and unsupported inline/flow `source` forms cannot supply active version, URL, or hash identity; the literal conda recipe `${{ version }}` placeholder is supported.
+    - Jinja comment markers and quoted `source` keys are rejected before the restricted line reader can mistake commented or alternate YAML syntax for the active mapping.
+  red:
+    - Recipe identity only inside |2, >2, |2-, |-2, and >+2 block content is rejected.
+    - Wrong sdist filename, foreign URL, duplicate source mapping, and mismatched direct hash are rejected.
+    - null, array, and numeric Zenodo snapshots block v0.2.6 while v0.2.7 still completes its observer readback.
+    - Both complete-over-pending and pending-over-complete aggregate states are rejected; a valid stale stored aggregate is normalized before merge/resume.
+    - Jinja conditional/comment content and quoted/inline source mappings cannot hide a competing active URL/hash; `${{ version }}` resolves to the exact target sdist.
+  verification:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q
+      result: passed; 147 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/test_post_release_controller.py tests/docs/test_docs_redesign_release_facts.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/test_post_release_controller.py tests/docs/test_docs_redesign_release_facts.py
+      result: pending final recheck after formatting
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed
+    - command: git diff --check
+      result: passed
+  omitted:
+    - No release workflow dispatch, publication, upload, external service mutation, or automatic merge.
+    - Public Pages remains pending review/merge/deployment; local source/build checks do not establish public delivery.
+  v026_backfill_readonly:
+    selected_publication_run: 40439962941
+    attempt: 1
+    exact_pypi_readback_job: 121979381040
+    workflow_sha: f3eee36fd4e0d0c4f134711d25b5d40650eb6b88
+    tag: v0.2.6
+    tag_object_sha: e9f30e6b410d6c599880f741f188f48db4067869
+    source_sha: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+    distribution_sha256:
+      wheel: 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003
+      sdist: b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783
+    commands:
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py resolve --release-run-id 40439962941 --release-tag v0.2.6 --output ~/HDD1TB/tmp/post-release-v0.2.6-resolved.json
+        result: passed; selected existing successful run and exact PyPI readback; no rebuild or upload
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record ~/HDD1TB/tmp/post-release-v0.2.6-resolved.json --output ~/HDD1TB/tmp/post-release-v0.2.6-observed.json
+        result: passed; GitHub/PyPI/Zenodo readbacks succeeded; conda-forge PR 16 pending_review; exact conda 0.2.6 package pending_external; docs_eligible true; Zenodo date disposition pending_review
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record ~/HDD1TB/tmp/post-release-v0.2.6-observed.json --output ~/HDD1TB/tmp/post-release-v0.2.6-rerun.json
+        result: passed; aggregate remains pending_review and each observer evidence count remains unchanged (1 for observed services, 0 for docs/pages/cleanup)
+      - command: Read-only `observe_docs_pages` against the verified v0.2.6 record, repeated twice and compared
+        result: passed; Pages pending_external and Docs pending_review because live site is still v0.2.5; one evidence entry each, with no duplicate on rerun
+    limitations:
+      - Local resolver/observer execution did not persist a GitHub branch or create a PR; those writes require the trusted default-branch workflow after merge.
+      - No GitHub Actions workflow was dispatched, no Pages build was published, and no human review or merge was bypassed.
+final_followup_20261027:
+  findings:
+    - An independent security review found that Jinja control tags inside YAML comment lines were removed before the restricted recipe parser checked them.
+    - Scheduled resume had no observer to advance Docs and Pages from pending after deployment, leaving those objectives pending indefinitely.
+    - The initial Pages completion test exposed that durable merge did not promote a reviewer-owned docs item from pending_review even when verified Pages and merged-PR evidence were present.
+  red:
+    - The YAML-comment Jinja conditional fixture failed before raw-line validation was added.
+    - Docs/Pages state-transition and merge tests failed before the scheduled Pages observer and narrow pending_review-to-complete merge rule were added.
+  changes:
+    - Validate Jinja control syntax on original recipe lines before stripping YAML comments or skipping block scalar content.
+    - Scheduled resume now verifies bilingual build-info, changelog presence, source-commit release assets, live asset hashes, the successful Pages workflow attempt, its public HTML/hash verification steps, and the merged default-branch PR association.
+    - Pages delivery and Docs review advance independently; conda and Zenodo waits do not gate them, human decisions and blocks remain sticky, and evidence deduplicates on rerun.
+    - Durable merge accepts the docs reviewer-owned pending_review-to-complete transition only when the docs observer emitted complete evidence and no human decision or block exists.
+  verification:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q --tb=short
+      result: passed; 152 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/test_post_release_controller.py tests/docs/test_docs_redesign_release_facts.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py tests/test_post_release_controller.py tests/docs/test_docs_redesign_release_facts.py
+      result: passed; all five Python files formatted
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed; no issues in two source files
+    - command: git diff --check
+      result: passed
+  live_pages_read_only:
+    status: pending_external
+    target_version: 0.2.6
+    source_revision: a62808cf78b1060443365c23552129dd779b923c
+    published_latest_release: 0.2.5
+    reason: Current live bilingual Pages revision predates v0.2.6 documentation updates.
+    matching_pages_run: 40341921165
+    attempt: 1
+    run_conclusion: success
+    verified_steps:
+      - Verify published EN and JA HTML: success
+      - Verify published EN and JA artifact hashes: success
+    limitation: This run verified the existing v0.2.5 site; v0.2.6 Pages remain pending until the docs change is merged and deployed.

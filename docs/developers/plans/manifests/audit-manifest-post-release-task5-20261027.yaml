@@ -1,0 +1,97 @@
+schema: gwexpy-agent-audit-v1
+task: post-release-task-5-v0.2.6-docs-preparation
+date: 2026-10-27
+skills:
+  - web_docs_page_rewrite
+  - web_docs_release_gates
+scope:
+  - Update published redesign release status, changelog, roadmap, and Japanese catalogs
+  - Generate immutable v0.2.6 English/Japanese development activity figures and canonical CSV
+  - Extend public release facts and snapshot identity assertions
+  - Bound the existing seasonal Auto-ARIMA tutorial search after the full Pages build hit its 600-second cell timeout
+  - Preserve frozen source artifacts and historical chart snapshots
+files:
+  - docs_redesign/release_status.json
+  - docs_redesign/about/changelog.md
+  - docs_redesign/explanation/roadmap.md
+  - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+  - docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po
+  - docs_redesign/how-to/fitting/advanced_arima.ipynb
+  - docs_redesign/_static/images/development-activity-v0.2.6.svg
+  - docs_redesign/_static/images/development-activity-v0.2.6-ja.svg
+  - docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv
+  - docs/developers/plans/reports/development-activity-v0.2.6-en-audit.csv
+  - docs/developers/plans/reports/development-activity-v0.2.6-ja-audit.csv
+  - tests/docs/test_docs_redesign_release_facts.py
+  - docs/developers/plans/manifests/audit-manifest-post-release-task5-20261027.yaml
+publication_facts:
+  read_only_sources:
+    - docs/developers/plans/manifests/audit-manifest-post-release-task4-20261027.yaml
+  release_date_utc: 2026-10-27
+  pypi: published
+  github_release: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6
+  zenodo_record: https://zenodo.org/api/records/23680359
+  zenodo_doi: 10.5281/zenodo.23680359
+  zenodo_date_disposition: pending_review
+  conda_forge:
+    feedstock_pr: https://github.com/conda-forge/gwexpy-feedstock/pull/16
+    status: open_for_review
+    channel_package_inventory_latest: 0.2.4
+  frozen_metadata_date: 2026-10-24
+  note: Publication timestamp is separate from frozen source metadata; no conda package availability or Zenodo date disposition is claimed.
+activity_snapshot:
+  ref: v0.2.6
+  resolved_commit: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+  non_merge_commits: 2274
+  canonical_csv_sha256: a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26
+  csv_regenerated_for_both_languages: true
+  byte_identical_csvs: true
+  audit_csv_redaction: "Historical local editor file-link prefixes are represented as <LOCAL_HOME>; canonical weekly CSV and SVG identities are unchanged."
+verification:
+  commands:
+    - command: conda run -n gwexpy python scripts/generate_development_activity.py --ref v0.2.6 --language en --svg-output docs_redesign/_static/images/development-activity-v0.2.6.svg --csv-output docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv --audit-output docs/developers/plans/reports/development-activity-v0.2.6-en-audit.csv
+      result: passed; 2274 non-merge commits; CSV SHA-256 a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26
+    - command: conda run -n gwexpy python scripts/generate_development_activity.py --ref v0.2.6 --language ja --svg-output docs_redesign/_static/images/development-activity-v0.2.6-ja.svg --csv-output ~/HDD1TB/tmp/development-activity-v0.2.6-ja-weekly.csv --audit-output docs/developers/plans/reports/development-activity-v0.2.6-ja-audit.csv
+      result: passed; same resolved commit and CSV SHA-256
+    - command: cmp docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv ~/HDD1TB/tmp/development-activity-v0.2.6-ja-weekly.csv
+      result: passed; byte-identical CSVs
+    - command: conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py -q --tb=short
+      result: passed; 15 passed
+    - command: gettext catalogue parse and diagnostics check for changelog.po and roadmap.po
+      result: passed; all catalog messages translated and non-fuzzy; zero Babel diagnostics
+    - command: git diff --check
+      result: passed
+    - command: memcap -- conda run -n gwexpy python -m sphinx -b html ~/HDD1TB/tmp/gwexpy-post-release-public-docs-20261027/docs_redesign ~/HDD1TB/tmp/gwexpy-post-release-public-docs-20261027/docs_redesign/_build/html
+      result: failed before the tutorial bound was added; `advanced_arima.ipynb` Auto-ARIMA cell exceeded myst-nb's 600-second timeout. The notebook was unchanged from origin/main at investigation time.
+    - command: EN and JA full Sphinx builds with `-D nb_execution_mode=off` and `memcap`
+      result: both rendered successfully. This verifies page rendering only; notebook execution evidence is intentionally absent.
+    - command: conda run -n gwexpy python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=600 --output advanced_arima-executed.ipynb ~/HDD1TB/tmp/gwexpy-post-release-arima-20261027/docs_redesign/how-to/fitting/advanced_arima.ipynb
+      result: passed; full notebook executed in 56 seconds after bounding the seasonal search; zero notebook error outputs.
+    - command: conda run -n gwexpy python scripts/check_public_docs.py ~/HDD1TB/tmp/gwexpy-post-release-final-20261027/html
+      result: expected not to pass in `nb_execution_mode=off`; reported missing executed notebook evidence and derived analysis figures, so this is not claimed as a Pages release-gate pass.
+    - command: read-only `docs_pages` observer and GitHub Actions GET for source revision a62808cf78b1060443365c23552129dd779b923c
+      result: live Pages remains at v0.2.5; run 40341921165 attempt 1 succeeded and its EN/JA HTML and artifact-hash verification steps succeeded. v0.2.6 delivery remains pending merge/deployment.
+  omitted:
+    - No physics review; no scientific implementation or data-model behavior changed.
+    - No publication, Pages dispatch, merge, feedstock action, or other external write.
+    - Legacy docs/web/ was not updated because docs_redesign/ is the published source; docs/web/ remains legacy input and redirect source.
+    - Historical v0.2.4 and earlier activity assets/data were preserved.
+    - The full executed bilingual Sphinx workflow was not rerun end-to-end after the notebook fix; the updated notebook itself was executed through nbconvert, while the complete EN/JA tree was rendered with notebook execution disabled.
+ci_followup_20261027:
+  findings:
+    - Published release-status tests still expected v0.2.5 after v0.2.6 became latest.
+    - The exact local-path exception guard found workstation-specific home paths in the new audit manifests, activity audit CSVs, and cleanup report.
+  changes:
+    - Updated current release-status contract expectations to v0.2.6 while preserving intro_examples_release at v0.2.4.
+    - Replaced temporary command paths with home-relative paths, redacted historical editor-link prefixes in audit CSVs, and represented local worktree paths with ~.
+  verification:
+    - command: PR Fast workflow run 40490777911, job 122143869166
+      result: "failed on three stale assertions: two expected latest_release 0.2.5, and the local-path guard found five new files with workstation-specific paths."
+    - command: conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_status.py tests/docs/test_v024_publication_status.py tests/test_v026_local_path_exceptions.py tests/docs/test_docs_redesign_release_facts.py -q --tb=short
+      result: passed; 24 passed after updating the expected published release and redacting machine-specific paths.
+    - command: conda run -n gwexpy ruff check tests/docs/test_docs_redesign_release_status.py tests/docs/test_v024_publication_status.py
+      result: passed.
+    - command: Python csv.DictReader(strict=True) over both v0.2.6 audit CSVs
+      result: passed; each CSV has 2274 rows and 14 columns, and each redacted editor URI remains parseable.
+  omitted:
+    - No release workflow dispatch, publication, Pages deployment, merge, or external service write.

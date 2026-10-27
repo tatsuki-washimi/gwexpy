@@ -28,6 +28,8 @@ PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DA
 PUBLISHED_V025_VERSION = "0.2.5"
 PUBLISHED_V025_DATE = "2026-10-04"
 PUBLISHED_V025_HISTORY_ENTRY = f"[{PUBLISHED_V025_VERSION}] - {PUBLISHED_V025_DATE}"
+PUBLISHED_V026_VERSION = "0.2.6"
+PUBLISHED_V026_DATE = "2026-10-27"
 CANDIDATE_V026_VERSION = "0.2.6"
 CANDIDATE_V026_METADATA_DATE = "2026-10-24"
 CANDIDATE_V026_HISTORY_ENTRY = (
@@ -155,7 +157,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
         (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
     version = PUBLISHED_V024_VERSION
-    assert release_status["latest_release"] == PUBLISHED_V025_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -389,7 +391,7 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     )
     assert "candidate records are historical" not in release_note_text.lower()
 
-    assert release_status["latest_release"] == PUBLISHED_V025_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
@@ -404,7 +406,16 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     redesigned_changelog = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
-    assert "Published on 2026-09-26 UTC" in redesigned_changelog
+    assert f"Published on {PUBLISHED_V026_DATE} UTC" in redesigned_changelog
+    assert "conda-forge feedstock [PR #16]" in redesigned_changelog
+    assert "channel package inventory still tops at 0.2.4" in redesigned_changelog
+    assert "development-activity-v0.2.6.svg" in redesigned_changelog
+    japanese_po = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    ).read_text(encoding="utf-8")
+    assert (
+        'msgid "[0.2.6] - 2026-10-24"\nmsgstr "[0.2.6] - 2026-10-24"'
+    ) in japanese_po
     assert "development-activity-v0.2.4.svg" in redesigned_changelog
     assert ":end-before:" not in redesigned_changelog
     assert ':start-after: "[#778]' in redesigned_changelog
@@ -422,6 +433,34 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     assert "Publication remains on HOLD" not in release_note_text
     assert "Published on PyPI" in release_note_text
     assert RELEASE_DOI_URL in release_note_text
+
+    # The redesign follows actual publication evidence while frozen source
+    # metadata above remains dated 2026-10-24.
+    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
+    assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
+    assert "[0.2.6] - 2026-10-24" in changelog
+    assert f"Published on {PUBLISHED_V026_DATE} UTC" in redesigned_changelog
+    assert "10.5281/zenodo.23680359" in redesigned_changelog
+    assert "conda-forge" in redesigned_changelog
+    assert "0.2.4" in redesigned_changelog
+    activity_csv = REPO_ROOT / (
+        "docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv"
+    )
+    activity_sha = "a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26"
+    assert hashlib.sha256(activity_csv.read_bytes()).hexdigest() == activity_sha
+    for suffix in ("", "-ja"):
+        svg = (
+            REPO_ROOT
+            / f"docs_redesign/_static/images/development-activity-v0.2.6{suffix}.svg"
+        ).read_text(encoding="utf-8")
+        assert (
+            "Target ref: v0.2.6; resolved SHA: a1ff8e2f18ef4e599727d6df6fdff61fce7019bd"
+            in svg
+        )
+        assert f"canonical CSV SHA-256: {activity_sha}" in svg
+        if suffix:
+            assert "週ごとのコミット数" in svg
+            assert "Commits per week" not in svg
 
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
