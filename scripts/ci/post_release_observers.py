@@ -141,14 +141,6 @@ def zenodo(record: dict[str, Any], hits: list[dict[str, Any]]) -> dict[str, Any]
         and files[0]["size"] > 0,
         "Zenodo archive identity mismatch",
     )
-    if version == "0.2.6":
-        c.require(
-            data["id"] == 23680359
-            and data["metadata"]["publication_date"] == "2026-10-27"
-            and files[0]["checksum"] == "md5:e587201a22f3acc9be92d4915c6d08f6"
-            and files[0]["size"] == 36592642,
-            "Zenodo frozen archive/date mismatch",
-        )
     c.require(
         re.fullmatch(r"\d{4}-\d{2}-\d{2}", data["metadata"]["publication_date"]),
         "Zenodo date missing",
@@ -187,22 +179,153 @@ def zenodo(record: dict[str, Any], hits: list[dict[str, Any]]) -> dict[str, Any]
 
 
 def conda_package(record: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
+    """Require a matching build in the final solver-visible channel repodata."""
     files = [f for f in data["files"] if f.get("version") == record["version"]]
-    if not files:
+    available = []
+    missing = []
+    repodata: dict[str, Any] = {}
+    for entry in files:
+        attrs = entry.get("attrs", {})
+        subdir = attrs.get("subdir", "")
+        basename = entry.get("basename", "")
+        c.require(
+            re.fullmatch(r"[a-z0-9_-]+", subdir)
+            and basename.startswith(subdir + "/")
+            and len(basename.split("/")) == 2
+            and entry.get("download_url"),
+            "Conda package identity incomplete",
+        )
+        name = basename.split("/")[1]
+        url = f"https://conda.anaconda.org/conda-forge/{subdir}/repodata.json"
+        if subdir not in repodata:
+            repodata[subdir] = public_json(url)
+        index = repodata[subdir]
+        package = index.get("packages", {}).get(name) or index.get(
+            "packages.conda", {}
+        ).get(name)
+        if not package:
+            missing.append(basename)
+            continue
+        c.require(
+            package.get("name") == "gwexpy"
+            and package.get("version") == record["version"]
+            and package.get("build") == attrs.get("build")
+            and package.get("build_number") == attrs.get("build_number")
+            and package.get("size") == entry.get("size")
+            and bool(entry.get("sha256"))
+            and package.get("sha256") == entry["sha256"],
+            "Conda inventory/repodata build identity mismatch",
+        )
+        available.append(
+            dict(
+                basename=basename,
+                download_url=entry["download_url"],
+                labels=entry.get("labels", []),
+                repodata_url=url,
+                repodata=package,
+                sha256=entry["sha256"],
+                size=entry["size"],
+            )
+        )
+    if not available:
         return dict(
             status="pending_external",
-            reason="Exact version absent from actual conda-forge channel package",
+            reason="Exact build absent from final conda-forge repodata",
+            inventory_files=[f.get("basename") for f in files],
+            missing_from_repodata=missing,
         )
-    c.require(
-        all(
-            f.get("basename")
-            and f.get("download_url")
-            and f.get("attrs", {}).get("subdir")
-            for f in files
-        ),
-        "Conda package identity incomplete",
+    return dict(
+        status="complete",
+        readback_succeeded=True,
+        files=available,
+        missing_from_repodata=missing,
     )
-    return dict(status="complete", readback_succeeded=True, files=files)
+
+
+def feedstock_recipe(pull: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
+    """Read recipe bytes at the immutable PR revision; never evaluate YAML/Jinja."""
+    repo = "conda-forge/gwexpy-feedstock"
+    changed = c.pages(repo, f"pulls/{pull['number']}/files")
+    paths = [
+        f["filename"]
+        for f in changed
+        if f["filename"] in ("recipe/meta.yaml", "recipe/recipe.yaml")
+    ]
+    c.require(len(paths) == 1, "Feedstock recipe change missing or ambiguous")
+    head = pull["head"]
+    data = c.api(head["repo"]["full_name"], f"contents/{paths[0]}?ref={head['sha']}")
+    raw = base64.b64decode(data["content"])
+    text = raw.decode()
+    # Only extract literal metadata. Expressions are deliberately not evaluated.
+    version = re.search(
+        r'(?:set\s+version\s*=|version:)\s*["\']?([0-9]+\.[0-9]+\.[0-9]+)', text
+    )
+    hashes = re.findall(r'(?:sha256\s*=|sha256:)\s*["\']?([0-9a-f]{64})', text)
+    version_text = version[1] if version else ""
+    c.require(
+        version_text == record["version"],
+        "Feedstock recipe version mismatch or not literal",
+    )
+    expected = next(
+        f["sha256"]
+        for f in record["release"]["distributions"]
+        if f["name"].endswith(".tar.gz")
+    )
+    c.require(
+        expected in hashes, "Feedstock recipe source SHA256 mismatch or unavailable"
+    )
+    return dict(
+        path=paths[0],
+        version=version_text,
+        source_sha256=expected,
+        recipe_sha256=c.sha256(raw),
+        head_sha=head["sha"],
+    )
+
+
+def feedstock(record: dict[str, Any]) -> dict[str, Any]:
+    """Find one exact-version PR on the feedstock, retaining revision evidence."""
+    repo = "conda-forge/gwexpy-feedstock"
+    version = record["version"]
+    pulls = c.pages(repo, "pulls?state=all")
+    matches = [
+        p
+        for p in pulls
+        if p.get("base", {}).get("repo", {}).get("full_name") == repo
+        and re.search(
+            r"(?<![0-9A-Za-z.])v?" + re.escape(version) + r"(?![0-9A-Za-z.])",
+            p.get("title", ""),
+        )
+        and re.search(
+            r"(?<![0-9A-Za-z.])" + re.escape(version) + r"(?![0-9A-Za-z.])",
+            p.get("head", {}).get("ref", ""),
+        )
+    ]
+    c.require(len(matches) <= 1, "Feedstock exact-version PR ambiguous")
+    if not matches:
+        return dict(
+            status="pending_external", reason="Exact-version feedstock PR absent"
+        )
+    pull = matches[0]
+    c.require(
+        re.fullmatch(r"[0-9a-f]{40}", pull["head"]["sha"]), "Feedstock revision missing"
+    )
+    c.require(
+        pull["state"] == "open" or pull.get("merged_at"), "Feedstock PR closed unmerged"
+    )
+    recipe = feedstock_recipe(pull, record)
+    return dict(
+        status="complete" if pull.get("merged_at") else "pending_review",
+        pull_url=pull["html_url"],
+        number=pull["number"],
+        author=pull["user"]["login"],
+        head_branch=pull["head"]["ref"],
+        head_sha=pull["head"]["sha"],
+        recipe=recipe,
+        merged_at=pull.get("merged_at"),
+        updated_at=pull["updated_at"],
+        reason="Feedstock maintainer review outstanding",
+    )
 
 
 def github(record: dict[str, Any]) -> dict[str, Any]:
@@ -329,7 +452,7 @@ def observe(record: dict[str, Any]) -> dict[str, Any]:
         github=f"https://github.com/{repo}/releases/tag/v{version}",
         pypi=f"https://pypi.org/pypi/gwexpy/{version}/json",
         zenodo="https://zenodo.org/api/records?" + query,
-        conda_feedstock="https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls/16",
+        conda_feedstock="https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls",
         conda_package="https://api.anaconda.org/package/conda-forge/gwexpy",
     )
     for name in SERVICES:
@@ -355,35 +478,7 @@ def observe(record: dict[str, Any]) -> dict[str, Any]:
             elif name == "conda_package":
                 result = conda_package(record, public_json(url))
             else:
-                # PR 16 is known only for v0.2.6. Never reuse it for a later version.
-                if version != "0.2.6":
-                    update(
-                        record,
-                        name,
-                        "pending_external",
-                        url,
-                        dict(reason="Version-specific feedstock PR identity required"),
-                        now,
-                    )
-                    continue
-                data = c.api("conda-forge/gwexpy-feedstock", "pulls/16")
-                c.require(
-                    version in data["title"]
-                    and data["base"]["repo"]["full_name"]
-                    == "conda-forge/gwexpy-feedstock",
-                    "Feedstock PR identity mismatch",
-                )
-                c.require(
-                    data["state"] == "open" or data.get("merged_at"),
-                    "Feedstock PR closed unmerged",
-                )
-                result = dict(
-                    status="complete" if data.get("merged_at") else "pending_review",
-                    pull_url=data["html_url"],
-                    merged_at=data.get("merged_at"),
-                    updated_at=data["updated_at"],
-                    reason="Feedstock maintainer review outstanding",
-                )
+                result = feedstock(record)
             status = result.get(
                 "status", "pending_review" if name == "zenodo" else "complete"
             )
@@ -425,8 +520,10 @@ def observe(record: dict[str, Any]) -> dict[str, Any]:
     return record
 
 
-def resume(repository: str) -> None:
-    """Read durable data on trusted default/open version refs; never execute it."""
+def discover_records(
+    repository: str, tag: str | None = None
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, str]]]:
+    """Discover durable branch data, isolating invalid entries by version."""
     default = c.api(repository, "")["default_branch"]
     refs = [default]
     for pull in c.pages(repository, "pulls?state=open"):
@@ -435,16 +532,28 @@ def resume(repository: str) -> None:
             (head.get("repo") or {}).get("full_name") == repository
             and re.fullmatch("post-release/" + c.TAG_PATTERN, head["ref"])
             and pull["base"]["ref"] == default
+            and (tag is None or head["ref"] == "post-release/" + tag)
         ):
             refs.append(head["ref"])
     records: dict[str, dict[str, Any]] = {}
+    failures = []
     for ref in refs:
-        head_sha = c.api(repository, "git/ref/heads/" + ref)["object"]["sha"]
-        commit = c.api(repository, "git/commits/" + head_sha)
-        tree = c.api(repository, f"git/trees/{commit['tree']['sha']}?recursive=1")
-        c.require(
-            not tree.get("truncated"), "Cannot discover manifests in truncated tree"
-        )
+        try:
+            head_sha = c.api(repository, "git/ref/heads/" + ref)["object"]["sha"]
+            commit = c.api(repository, "git/commits/" + head_sha)
+            tree = c.api(repository, f"git/trees/{commit['tree']['sha']}?recursive=1")
+            c.require(
+                not tree.get("truncated"), "Cannot discover manifests in truncated tree"
+            )
+        except (
+            ValueError,
+            KeyError,
+            TypeError,
+            OSError,
+            subprocess.CalledProcessError,
+        ) as error:
+            failures.append(failure(tag or ref, error))
+            continue
         for entry in tree["tree"]:
             match = re.fullmatch(
                 r"docs/developers/plans/manifests/audit-manifest-("
@@ -452,31 +561,101 @@ def resume(repository: str) -> None:
                 + r")-post-release\.yaml",
                 entry["path"],
             )
-            if not match or (ref != default and ref != "post-release/" + match[1]):
+            if (
+                not match
+                or (tag is not None and tag != match[1])
+                or (ref != default and ref != "post-release/" + match[1])
+            ):
                 continue
-            c.require(
-                entry["type"] == "blob" and entry["mode"] == "100644",
-                "Unsafe durable manifest",
-            )
-            blob = c.api(repository, "git/blobs/" + entry["sha"])
-            record = json.loads(base64.b64decode(blob["content"]))
-            c.validate_record(record)
-            c.require(
-                record["publication"]["repository"] == repository
-                and record["release"]["tag"] == match[1],
-                "Durable record identity mismatch",
-            )
-            records[match[1]] = c.merge_manifest(records.get(match[1]), record)
-    for record in records.values():
-        if record["post_release_status"] == "complete":
-            continue
-        for name in ("conda_feedstock", "conda_package"):
-            if name not in record["items"]:
-                record["items"][name] = copy.deepcopy(record["items"]["conda"])
-                record["items"][name].update(
-                    status="pending_external",
-                    evidence=[],
-                    pending_reason="Component readback missing",
-                    resume_condition="Run component observer",
+            try:
+                c.require(
+                    entry["type"] == "blob" and entry["mode"] == "100644",
+                    "Unsafe durable manifest",
                 )
-        c.persist(repository, observe(record))
+                blob = c.api(repository, "git/blobs/" + entry["sha"])
+                record = json.loads(base64.b64decode(blob["content"]))
+                c.require(isinstance(record, dict), "Durable record must be an object")
+                c.require(
+                    isinstance(record.get("items"), dict)
+                    and all(
+                        isinstance(item, dict) for item in record["items"].values()
+                    ),
+                    "Durable record objectives must be objects",
+                )
+                c.validate_record(record)
+                c.require(
+                    record["publication"]["repository"] == repository
+                    and record["release"]["tag"] == match[1],
+                    "Durable record identity mismatch",
+                )
+                records[match[1]] = c.merge_manifest(records.get(match[1]), record)
+            except (
+                ValueError,
+                KeyError,
+                TypeError,
+                OSError,
+                subprocess.CalledProcessError,
+            ) as error:
+                failures.append(failure(match[1], error))
+    return records, failures
+
+
+def failure(tag: str, error: Exception) -> dict[str, str]:
+    """Return a safe per-version diagnostic without inventing accepted identity."""
+    return dict(
+        tag=tag,
+        status="retryable_failure"
+        if isinstance(error, (OSError, subprocess.CalledProcessError))
+        else "blocked",
+        reason=f"{type(error).__name__}: {error}",
+    )
+
+
+def observe_with_durable(record: dict[str, Any]) -> dict[str, Any]:
+    """Load prior identity before manual/automatic readback, including Zenodo."""
+    records, failures = discover_records(
+        record["publication"]["repository"], record["release"]["tag"]
+    )
+    c.require(
+        not failures,
+        "Durable evidence could not be safely loaded: " + json.dumps(failures),
+    )
+    prior = records.get(record["release"]["tag"])
+    return observe(c.merge_manifest(prior, record))
+
+
+def resume(repository: str) -> list[dict[str, str]]:
+    """Resume versions independently, returning diagnostics for unsafe records."""
+    records, results = discover_records(repository)
+    failed = {r["tag"] for r in results}
+    for tag, record in records.items():
+        if tag in failed or record["post_release_status"] == "complete":
+            continue
+        try:
+            for name in ("conda_feedstock", "conda_package"):
+                if name not in record["items"]:
+                    record["items"][name] = copy.deepcopy(record["items"]["conda"])
+                    record["items"][name].update(
+                        status="pending_external",
+                        evidence=[],
+                        pending_reason="Component readback missing",
+                        resume_condition="Run component observer",
+                    )
+            observed = observe(record)
+            c.persist(repository, observed)
+            results.append(
+                dict(
+                    tag=tag,
+                    status=observed["post_release_status"],
+                    reason="Observed and persisted",
+                )
+            )
+        except (
+            ValueError,
+            KeyError,
+            TypeError,
+            OSError,
+            subprocess.CalledProcessError,
+        ) as error:
+            results.append(failure(tag, error))
+    return results

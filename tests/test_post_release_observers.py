@@ -177,6 +177,14 @@ def test_transport_failure_does_not_stop_other_services(monkeypatch):
     monkeypatch.setattr(
         observer, "github", lambda _: (_ for _ in ()).throw(OSError("offline"))
     )
+    monkeypatch.setattr(
+        observer,
+        "feedstock",
+        lambda _: {
+            "status": "pending_external",
+            "reason": "Exact-version feedstock PR absent",
+        },
+    )
 
     def get(url):
         if "pypi.org" in url:
@@ -445,3 +453,264 @@ def test_zenodo_search_uses_anonymous_limit_and_filters_versions(monkeypatch):
         "https://zenodo.org/api/records?q=conceptrecid%3A19059422&size=25&all_versions=true",
     ) == [dict(id=2, metadata={"version": "v0.2.7"})]
     assert "size=25" in calls[0]
+
+
+def test_redispatch_loads_durable_zenodo_identity_before_observation(monkeypatch):
+    import post_release_observers as observer
+
+    r = record()
+    payload = dict(
+        id=999,
+        doi="10.5281/zenodo.999",
+        conceptdoi="10.5281/zenodo.19059422",
+        metadata=dict(version="0.2.7", publication_date="2026-11-01"),
+        files=[
+            dict(key="example/gwexpy-v0.2.7.zip", checksum="md5:" + "a" * 32, size=123)
+        ],
+    )
+    observer.update(
+        r,
+        "zenodo",
+        "pending_review",
+        "https://zenodo.org/records/999",
+        observer.zenodo(r, [payload]),
+        "2026-11-01T00:00:00Z",
+    )
+    monkeypatch.setattr(
+        observer, "discover_records", lambda repository, tag=None: ({"v0.2.7": r}, [])
+    )
+    monkeypatch.setattr(observer, "github", lambda _: {"readback_succeeded": True})
+    monkeypatch.setattr(observer, "zenodo_records", lambda *_: [payload])
+    monkeypatch.setattr(observer, "public_json", lambda _: {"files": []})
+    monkeypatch.setattr(
+        observer,
+        "feedstock",
+        lambda _: {"status": "pending_external", "reason": "absent"},
+    )
+    payload["files"][0]["checksum"] = "md5:" + "b" * 32
+    observed = observer.observe_with_durable(record())
+    assert observed["items"]["zenodo"]["status"] == "blocked"
+    successful = [
+        e
+        for e in observed["items"]["zenodo"]["evidence"]
+        if '"readback_succeeded": true' in e["observation"]
+    ]
+    assert len(successful) == 1
+    persisted = controller.merge_manifest(r, observed)
+    assert persisted["items"]["zenodo"]["status"] == "blocked"
+
+
+def test_zenodo_v026_uses_generic_first_readback_identity():
+    import post_release_observers as observer
+
+    data = dict(
+        id=123,
+        doi="10.5281/zenodo.123",
+        conceptdoi="10.5281/zenodo.19059422",
+        metadata=dict(version="0.2.6", publication_date="2026-10-28"),
+        files=[
+            dict(key="example/gwexpy-v0.2.6.zip", checksum="md5:" + "a" * 32, size=100)
+        ],
+    )
+    assert observer.zenodo(record("0.2.6"), [data])["record_id"] == 123
+
+
+def inventory():
+    return {
+        "files": [
+            dict(
+                version="0.2.7",
+                basename="noarch/gwexpy-0.2.7-py_0.conda",
+                download_url="//api.anaconda.org/download/conda-forge/gwexpy/0.2.7/noarch/gwexpy-0.2.7-py_0.conda",
+                labels=["main", "broken"],
+                attrs=dict(subdir="noarch", build="py_0", build_number=0),
+                sha256="a" * 64,
+                size=123,
+            )
+        ]
+    }
+
+
+def test_broken_inventory_package_absent_from_final_repodata_is_pending(monkeypatch):
+    import post_release_observers as observer
+
+    monkeypatch.setattr(
+        observer, "public_json", lambda _: {"packages": {}, "packages.conda": {}}
+    )
+    assert observer.conda_package(record(), inventory())["status"] == "pending_external"
+
+
+def test_conda_requires_exact_build_and_hash_in_final_repodata(monkeypatch):
+    import post_release_observers as observer
+
+    info = dict(
+        name="gwexpy",
+        version="0.2.7",
+        build="py_0",
+        build_number=0,
+        sha256="a" * 64,
+        size=123,
+        subdir="noarch",
+    )
+    monkeypatch.setattr(
+        observer,
+        "public_json",
+        lambda _: {"packages.conda": {"gwexpy-0.2.7-py_0.conda": info}},
+    )
+    assert observer.conda_package(record(), inventory())["status"] == "complete"
+    info["sha256"] = "b" * 64
+    with pytest.raises(ValueError, match="repodata"):
+        observer.conda_package(record(), inventory())
+
+
+def feedstock_pull(number=20):
+    return dict(
+        number=number,
+        title="gwexpy v0.2.7",
+        state="open",
+        merged_at=None,
+        html_url=f"https://github.com/conda-forge/gwexpy-feedstock/pull/{number}",
+        updated_at="2026-11-01T00:00:00Z",
+        user={"login": "regro-cf-autotick-bot"},
+        head=dict(
+            ref="0.2.7_h123",
+            sha="f" * 40,
+            repo={"full_name": "regro-cf-autotick-bot/gwexpy-feedstock"},
+        ),
+        base={"repo": {"full_name": "conda-forge/gwexpy-feedstock"}},
+    )
+
+
+def test_next_version_feedstock_discovery_and_ambiguity(monkeypatch):
+    import post_release_observers as observer
+
+    pulls = [feedstock_pull()]
+    monkeypatch.setattr(
+        observer.c,
+        "pages",
+        lambda repo, path: pulls if path.startswith("pulls?") else [],
+    )
+    monkeypatch.setattr(
+        observer,
+        "feedstock_recipe",
+        lambda pull, r: {"version": "0.2.7", "source_sha256": "d" * 64},
+    )
+    result = observer.feedstock(record())
+    assert result["status"] == "pending_review"
+    assert result["head_sha"] == "f" * 40
+    assert result["recipe"]["source_sha256"] == "d" * 64
+    pulls.append(feedstock_pull(21))
+    with pytest.raises(ValueError, match="ambiguous"):
+        observer.feedstock(record())
+
+
+def test_daily_resume_isolates_record_failure(monkeypatch):
+    import post_release_observers as observer
+
+    monkeypatch.setattr(
+        observer,
+        "discover_records",
+        lambda *_: (
+            {"v0.2.6": record("0.2.6"), "v0.2.7": record()},
+            [{"tag": "v0.2.8", "status": "blocked", "reason": "Malformed record"}],
+        ),
+    )
+
+    def observe(r):
+        if r["version"] == "0.2.6":
+            raise OSError("offline")
+        return r
+
+    written = []
+    monkeypatch.setattr(observer, "observe", observe)
+    monkeypatch.setattr(
+        observer.c, "persist", lambda repo, r: written.append(r["version"])
+    )
+    results = observer.resume("example/gwexpy")
+    assert written == ["0.2.7"]
+    assert {r["tag"]: r["status"] for r in results} == {
+        "v0.2.8": "blocked",
+        "v0.2.6": "retryable_failure",
+        "v0.2.7": "pending_review",
+    }
+
+
+@pytest.mark.parametrize(
+    "malformed",
+    [
+        [],
+        {
+            "schema": controller.SCHEMA,
+            "version": "0.2.6",
+            "release": {"version": "0.2.6"},
+            "items": [],
+        },
+    ],
+)
+def test_discovery_malformed_record_does_not_hide_other_version(monkeypatch, malformed):
+    import base64
+    import json
+
+    import post_release_observers as observer
+
+    def api(repo, path, **kwargs):
+        if path == "":
+            return {"default_branch": "main"}
+        if path.startswith("git/ref/"):
+            return {"object": {"sha": "head"}}
+        if path.startswith("git/commits/"):
+            return {"tree": {"sha": "tree"}}
+        if path.startswith("git/trees/"):
+            return {
+                "tree": [
+                    dict(
+                        path=f"docs/developers/plans/manifests/audit-manifest-v{v}-post-release.yaml",
+                        type="blob",
+                        mode="100644",
+                        sha=v,
+                    )
+                    for v in ("0.2.6", "0.2.7")
+                ]
+            }
+        content = malformed if path.endswith("0.2.6") else record()
+        return {"content": base64.b64encode(json.dumps(content).encode()).decode()}
+
+    monkeypatch.setattr(observer.c, "api", api)
+    monkeypatch.setattr(observer.c, "pages", lambda *_: [])
+    records, failures = observer.discover_records("example/gwexpy")
+    assert list(records) == ["v0.2.7"]
+    assert failures[0]["tag"] == "v0.2.6"
+    assert failures[0]["status"] == "blocked"
+
+
+def test_feedstock_recipe_reads_revision_data_without_evaluating_jinja(monkeypatch):
+    import base64
+
+    import post_release_observers as observer
+
+    monkeypatch.setattr(
+        observer.c, "pages", lambda *_: [{"filename": "recipe/meta.yaml"}]
+    )
+    recipe = '{% set version = "0.2.7" %}\nsource:\n  sha256: ' + "d" * 64 + "\n"
+    calls = []
+
+    def api(repo, path):
+        calls.append((repo, path))
+        return {"content": base64.b64encode(recipe.encode()).decode()}
+
+    monkeypatch.setattr(observer.c, "api", api)
+    result = observer.feedstock_recipe(feedstock_pull(), record())
+    assert result["version"] == "0.2.7"
+    assert result["source_sha256"] == "d" * 64
+    assert calls[0][1].endswith("?ref=" + "f" * 40)
+
+
+@pytest.mark.parametrize("title", ["gwexpy v0.2.70", "gwexpy v0.2.7rc1"])
+def test_feedstock_does_not_confuse_neighbor_or_prerelease_versions(monkeypatch, title):
+    import post_release_observers as observer
+
+    pull = feedstock_pull()
+    pull["title"] = title
+    monkeypatch.setattr(observer.c, "pages", lambda *_: [pull])
+    monkeypatch.setattr(observer, "feedstock_recipe", lambda *_: {"version": "0.2.7"})
+    assert observer.feedstock(record())["status"] == "pending_external"

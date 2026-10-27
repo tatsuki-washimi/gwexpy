@@ -925,13 +925,13 @@ def main() -> int:
             automatic=args.automatic,
         )
     elif args.command == "observe":
-        from post_release_observers import observe
+        from post_release_observers import observe_with_durable
 
-        record = observe(json.loads(args.record.read_text()))
+        record = observe_with_durable(json.loads(args.record.read_text()))
     elif args.command == "resume":
         from post_release_observers import resume
 
-        resume(os.environ["GITHUB_REPOSITORY"])
+        print(json.dumps(resume(os.environ["GITHUB_REPOSITORY"]), indent=2))
         return 0
     else:
         print(

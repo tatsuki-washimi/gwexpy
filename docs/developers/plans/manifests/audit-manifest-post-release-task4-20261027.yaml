@@ -59,7 +59,41 @@ resume_contract:
   conflicts: Observer-owned blocked states are sticky; missing/unverifiable source identity is recorded blocked by GitHub observer
   independent_failures: Per-service transport failures remain retryable_failure; other services continue
 limitations:
-  - Next-version feedstock PR discovery intentionally requires a new version-specific binding; PR 16 is never reused beyond 0.2.6
+  - Resolved by review follow-up: feedstock PR discovery is generic across exact versions
   - Unknown future Zenodo versions bind version DOI/archive identity on first successful readback and block later archive/date changes; no arbitrary expected future publication date is invented
   - A human decision is represented by human_decision or a human-owned pending_review/complete state; observers retain it and append evidence
   - EN/JA content preparation, Pages publishing and cleanup are later tasks
+review_followup_20261027:
+  blockers:
+    - Manual/automatic redispatch previously initialized fresh evidence before observing; it now loads default/open-version durable records before every observation and preserves prior Zenodo identity
+    - Removed v0.2.6 record/date/archive constants from production; version-specific snapshots remain fixtures
+    - Channel availability now requires matching final per-subdir repodata entry, including build/build-number/SHA256/size, rather than Anaconda inventory or labels alone
+    - Exact-version feedstock PR discovery now uses the feedstock PR list, version boundaries in title/branch, immutable head SHA and literal recipe version/source hash data; missing is pending and ambiguity blocks
+    - Daily discovery and processing now return per-version blocked/retryable diagnostics and continue other versions when a record fails
+  red:
+    - All six initial blocker tests failed before implementation
+    - Nested malformed objective containers aborted discovery before added object validation
+  regression_fixtures:
+    - v0.2.7 observes archive checksum A, then fresh redispatch sees B; durable merge persists blocked and retains exactly one successful identity snapshot
+    - Inventory build bearing main plus broken labels is absent from final repodata and remains pending_external
+    - Repodata hash conflict blocks; matching exact build completes
+    - v0.2.7 unique feedstock PR binds head SHA and recipe source SHA; second match blocks
+    - Malformed v0.2.6 record and transport failure do not suppress valid v0.2.7 processing
+  additional_sources:
+    - https://conda-forge.org/docs/maintainer/understanding_conda_forge/life_cycle/
+    - https://conda-forge.org/news/2020/05/28/new-process-for-marking-packages-as-broken/
+  limitations:
+    - Recipe YAML and Jinja are never evaluated; unsupported nonliteral version/source hash recipes block for owner review
+    - An unsafe or malformed durable record returns a named blocked diagnostic instead of fabricating accepted identity or writing a replacement
+    - Repodata uses the final conda.anaconda.org channel index; no package file download or service mutation occurs
+  verification:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q
+      result: 118 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed
+    - command: git diff --check
+      result: passed
