@@ -34,6 +34,17 @@ REQUIRED_RECOVERY_PR_PATHS = {
     "tests/test_release_recovery.py",
     "tests/test_validate_release_script.py",
 }
+REQUIRED_RECOVERY_PYPI_REPAIR_PATHS = {
+    ".github/workflows/publish-release.yml",
+    "RELEASING.md",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
+    "scripts/ci/release_contract.py",
+    "scripts/ci/release_contracts.json",
+    "scripts/ci/verify_release_recovery.py",
+    "tests/test_publish_release_workflow.py",
+    "tests/test_release_contracts.py",
+    "tests/test_release_recovery.py",
+}
 
 
 class RecoveryAuthorizationError(ValueError):
@@ -286,7 +297,8 @@ def validate_recovery_pull_request(
         item.get("filename") for item in files if isinstance(item, Mapping)
     }
     _require(
-        REQUIRED_RECOVERY_PR_PATHS <= changed_paths,
+        REQUIRED_RECOVERY_PR_PATHS <= changed_paths
+        or REQUIRED_RECOVERY_PYPI_REPAIR_PATHS <= changed_paths,
         "recovery PR omits required validator, workflow, contract, docs, or tests",
     )
 

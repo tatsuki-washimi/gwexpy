@@ -882,7 +882,9 @@ def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
     assert contract["tagger_date_policy"] == "independent"
     assert contract["source_metadata_date_policy"] == "independent"
     assert contract["publication_tip_policy"] == "qualified_candidate_ancestor"
-    assert contract["recovery_dispatch_ref"] == "refs/tags/v0.2.6-recovery-control"
+    assert contract["recovery_dispatch_ref"] == (
+        "refs/tags/v0.2.6-recovery-control-pypi-reconcile"
+    )
     assert contract["promotion"]["artifact_retention"] == {
         "configured_retention_days": 90,
         "expires_at_after_run_started_at_seconds": 90 * 24 * 60 * 60,
@@ -1051,6 +1053,17 @@ def test_release_contract_loader_rejects_branch_checkout_shorthand(
         contracts.release_contract("v0.1.14")
 
 
+def test_v026_rejects_the_superseded_recovery_control_ref() -> None:
+    contracts = load_contract_module()
+    candidate = contracts.release_contract("v0.2.6")
+    candidate["recovery_dispatch_ref"] = "refs/tags/v0.2.6-recovery-control"
+
+    with pytest.raises(
+        contracts.ReleaseContractError, match="invalid recovery_dispatch_ref"
+    ):
+        contracts._validate_contract("v0.2.6", candidate)
+
+
 def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
     contracts = load_contract_module()
 
@@ -1072,7 +1085,7 @@ def test_release_contract_cli_emits_v026_publication_policies() -> None:
         "tagger_date_policy=independent",
         "source_metadata_date_policy=independent",
         "publication_tip_policy=qualified_candidate_ancestor",
-        "recovery_dispatch_ref=refs/tags/v0.2.6-recovery-control",
+        "recovery_dispatch_ref=refs/tags/v0.2.6-recovery-control-pypi-reconcile",
     ]
 
 

@@ -18,6 +18,7 @@ PROMOTION_MANIFEST_PREFIX = "release-promotion-manifest-"
 PROMOTION_PAYLOAD_PREFIX = "release-payload-"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v2"
+V026_RECOVERY_CONTROL_REF = "refs/tags/v0.2.6-recovery-control-pypi-reconcile"
 LOGIN = re.compile(r"^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$")
 IDENTIFIER = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 JOB_IDENTIFIER = re.compile(r"^[a-z0-9]+(?:[-_][a-z0-9]+)*$")
@@ -325,7 +326,8 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
             raise ReleaseContractError(f"recovery dispatch is unsupported for {tag}")
         recovery_ref = contract["recovery_dispatch_ref"]
         if (
-            recovery_ref != "refs/tags/v0.2.6-recovery-control"
+            not isinstance(recovery_ref, str)
+            or recovery_ref != V026_RECOVERY_CONTROL_REF
             or recovery_ref == f"refs/tags/{tag}"
         ):
             raise ReleaseContractError(f"invalid recovery_dispatch_ref for {tag}")
