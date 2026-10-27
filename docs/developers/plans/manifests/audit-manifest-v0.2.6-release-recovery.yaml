@@ -27,10 +27,14 @@ commands:
   - command: "git diff --check"
     result: "PASS before each commit; PR-base comparison recorded after final commit"
   - command: "PR Actionlint run 40424724266"
-    result: "PASS on head 2e4a95d700d820e7135f11242d276d4404044e24; the final candidate-mode frozen-tip correction changes the workflow and is being checked on the next PR revision"
+    result: "PASS on final implementation head d05ac04555256950a58c902c3a168068ea370fbd in Actionlint PR check 40425548654"
+  - command: "gh run view 40425548861 --log-failed"
+    result: "First PR Fast run on d05ac0455: Ruff, mypy, artifact hygiene passed; pytest reported 11,512 passed, 397 skipped, 52 deselected, 7 xfailed and 3 failed. The failures were stale scheduled-date wording in the docs facts test, an unmapped inputs.release_mode in the workflow-expression test, and the new manifest's local worktree path being absent from the audited exception ledger. Updated those checks/data and reran the five focused regressions successfully; full PR CI rerun pending."
+  - command: "conda run -n gwexpy python -m pytest -q tests/docs/test_docs_redesign_release_facts.py::test_published_history_and_v026_candidate_metadata_remain_distinct tests/test_release_gate_workflow_contract.py::test_future_promotion_candidate_graph_is_dispatch_only_but_legacy_tag_builds tests/test_v026_local_path_exceptions.py"
+    result: "PASS: 5 focused regressions after correcting the three PR Fast failures"
   - command: "gitleaks stdin plus manual secret-pattern scan"
     result: "PASS before each GitHub write payload; clean on implementation, PR title/body, and commit messages"
-  - command: "conda run -n gwexpy python scripts/validate_release.py --repo-root /home/washimi/HDD1TB/worktrees/gwexpy/candidate-v026-40161240805 --release-ref v0.2.6 --expected-tag v0.2.6 --review-evidence docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
+  - command: "conda run -n gwexpy python scripts/validate_release.py --repo-root candidate-v026-40161240805 --release-ref v0.2.6 --expected-tag v0.2.6 --review-evidence docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
     result: "PASS: strict mode, source a1ff8e2f18ef4e599727d6df6fdff61fce7019bd; CITATION.cff, Zenodo and CHANGELOG dates individually valid (each currently 2026-10-24)"
   - command: "release_promotion.py validate-download for payload, promotion manifest, distribution sidecar and license sidecar"
     result: "PASS: all four exact downloaded artifacts match the original manifest"
@@ -38,9 +42,9 @@ commands:
     result: "PASS: sdist b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783; wheel 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003; manifest 8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d"
 checks_omitted:
   - check: actionlint local binary
-    reason: "Not installed locally; the latest PR Actionlint pass covers the prior workflow revision and a final-head PR check is pending."
-  - check: full test suite
-    reason: "Focused release validation, contract, recovery, and workflow tests cover the changed surface; PR CI remains required."
+    reason: "Not installed locally; the final implementation head passed the required PR Actionlint check 40425548654."
+  - check: additional local full-suite invocation
+    reason: "Not run locally; the repository's configured broad PR Fast suite runs in CI. Its initial run exposed three stale or newly introduced guard-test expectations, now fixed with focused regressions passing; a fresh full PR run is pending."
   - check: check_physics
     reason: "No scientific algorithm, public data model, or numerical result changed."
   - check: publication workflow execution, tag creation, GitHub Release creation, PyPI upload, Zenodo mutation
