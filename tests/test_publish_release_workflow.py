@@ -163,8 +163,13 @@ def test_releasing_documents_future_build_once_promotion_contract():
     releasing = path.read_text(encoding="utf-8")
     normalized = re.sub(r"\s+", " ", releasing)
     assert "v0.2.5 is published and immutable" in normalized
-    assert "v0.2.6 is the selected maintenance release candidate" in normalized
-    assert "it has not been published" in normalized
+    assert "v0.2.6 is the selected maintenance release source" in normalized
+    assert "Its successful publication run is" in normalized
+    assert "40439962941" in normalized
+    assert (
+        "PyPI publication success and post-release completion are separate outcomes"
+        in normalized
+    )
     assert "Candidate Qualification must pass on the exact source" in normalized
     assert (
         "Historical v0.2.6 source approvals, including approvals for S18 and S20, "

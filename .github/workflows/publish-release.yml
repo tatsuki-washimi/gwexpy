@@ -2023,3 +2023,23 @@ jobs:
             --payload-dir "$PAYLOAD_DIR" \
             --github-release-dir "$RELEASE_DIR" \
             --output-dir "$OUTPUT_DIR"
+      - name: Check out publication controller for post-release handoff
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+          path: post-release-control
+      - name: Bind successful readback to post-release handoff
+        env:
+          TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
+        run: |
+          python post-release-control/scripts/ci/post_release.py handoff \
+            --manifest "$RUNNER_TEMP/release-manifest/promotion-manifest.json" \
+            --output "$RUNNER_TEMP/post-release-handoff.json"
+      - name: Upload temporary post-release handoff
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/post-release-handoff.json
+          if-no-files-found: error
+          retention-days: 90

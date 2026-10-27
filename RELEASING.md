@@ -393,6 +393,25 @@ item is pending, failed, or blocked unless it depends on that item.
 Resume idempotently by version and exact publication identity: refresh missing
 or stale observations and update the existing record/PR without duplicating
 work or overwriting human changes. Use normal PR checks and human review.
+The stable branch is `post-release/vX.Y.Z`, with at most one active version PR.
+After a PR merges, newly verified evidence may open a sequential review PR on
+that same branch; identical observations create neither a commit nor a PR.
+Closed, unmerged PRs require owner reconciliation before automation resumes.
+The automatic entry follows the successful publication's exact `pypi_readback`
+job. To backfill the existing v0.2.6 publication after this controller lands on
+`main`, dispatch only the post-release workflow:
+
+```bash
+gh workflow run post-release.yml --ref main \
+  -f release_run_id=40439962941 -f release_tag=v0.2.6
+```
+
+Manual entries accept any existing successful publication run and final tag.
+If its temporary handoff is absent, the resolver binds the exact successful
+readback job's logged tag and promotion-manifest hash, then rechecks the
+immutable Release and PyPI bytes. Missing handoff and expired/unavailable job
+logs block acceptance; neither condition authorizes publication reruns.
+
 Automatic start is allowed; automatic merge is not. A failed readback records
 its own status and evidence; it does not authorize artifact deletion, tag
 replacement, or automatic package withdrawal. Product corrections follow a
