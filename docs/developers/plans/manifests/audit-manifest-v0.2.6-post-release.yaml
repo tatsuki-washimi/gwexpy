@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-27T12:09:00Z",
+  "recorded_at_utc": "2026-10-27T13:20:32Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.6",
@@ -129,17 +129,35 @@
       "status": "pending_review",
       "actor": "Release Owner",
       "objective": "Prepare and review EN/JA release/history updates",
-      "evidence": [],
-      "pending_reason": "Docs preparation and human review outstanding",
-      "resume_condition": "Record GitHub/PyPI/Zenodo observations, prepare docs, then human review"
+      "evidence": [
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "a056255e5d39c88c5bd527cb72522b086ad28e6b47d92042ade068a1e5492fed",
+          "observed_at_utc": "2026-10-27T13:20:32Z",
+          "observation": "{\"changelog_errors\": [\"about/changelog.html: missing detailed v0.2.6 release history\", \"ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg\", \"ja/about/changelog.html: wrong language activity chart\", \"ja/about/changelog.html: missing detailed v0.2.6 release history\"], \"docs_status\": \"pending_review\", \"page_sha256\": {\"about/changelog.html\": \"fd0fcf626841c8a392808674017bb7a8ba2271e9f163f45838e8fc9c6f23d20d\", \"ja/about/changelog.html\": \"918578d16a99b57727578961cdeb7f94e22557ce22213fc06cea29c6d33edb69\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40497861405, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40497861405\", \"readback_succeeded\": false, \"reason\": \"Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history\", \"source_revision\": \"91b55dd02695c10413193c7d24b2950b13de2b9b\", \"status\": \"pending_external\"}"
+        }
+      ],
+      "pending_reason": "Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history",
+      "resume_condition": "After review and merge of https://github.com/tatsuki-washimi/gwexpy/pull/840, reobserve Docs and Pages",
+      "observer": "docs",
+      "readback_succeeded": false
     },
     "pages": {
       "status": "pending_external",
       "actor": "GitHub Actions",
       "objective": "Verify live EN/JA revision and artifact manifest hash",
-      "evidence": [],
-      "pending_reason": "Deployment not observed",
-      "resume_condition": "After docs merge, run isolated Pages and revision/hash readback"
+      "evidence": [
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "a056255e5d39c88c5bd527cb72522b086ad28e6b47d92042ade068a1e5492fed",
+          "observed_at_utc": "2026-10-27T13:20:32Z",
+          "observation": "{\"changelog_errors\": [\"about/changelog.html: missing detailed v0.2.6 release history\", \"ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg\", \"ja/about/changelog.html: wrong language activity chart\", \"ja/about/changelog.html: missing detailed v0.2.6 release history\"], \"docs_status\": \"pending_review\", \"page_sha256\": {\"about/changelog.html\": \"fd0fcf626841c8a392808674017bb7a8ba2271e9f163f45838e8fc9c6f23d20d\", \"ja/about/changelog.html\": \"918578d16a99b57727578961cdeb7f94e22557ce22213fc06cea29c6d33edb69\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40497861405, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40497861405\", \"readback_succeeded\": false, \"reason\": \"Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history\", \"source_revision\": \"91b55dd02695c10413193c7d24b2950b13de2b9b\", \"status\": \"pending_external\"}"
+        }
+      ],
+      "pending_reason": "Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history",
+      "resume_condition": "After review and merge of https://github.com/tatsuki-washimi/gwexpy/pull/840, run the existing Pages workflow and revision/hash readback",
+      "observer": "pages",
+      "readback_succeeded": false
     },
     "remote_cleanup": {
       "status": "pending_external",
