@@ -420,8 +420,19 @@ it verifies the retained Candidate evidence and downloads only the original
 manifest-selected artifact IDs. The workflow must use the existing `pypi`
 environment and PyPI Trusted Publisher. No API token, alternate environment,
 or new publisher is permitted. The control tag uses the existing `v*` tag
-environment rule; its push is excluded from release publication and its
-workflow dispatch is checked against protected `main` history.
+environment rule; all `v0.2.6-recovery-control*` pushes are excluded from
+release publication and a workflow dispatch is checked against protected
+`main` history. The PyPI-state reconciliation and partial-upload authorization
+helpers run from the exact workflow-control revision, while the candidate
+source tree supplies only validators that were present when it qualified.
+
+If a controller-only repair is needed after partial publication, keep the
+original Candidate, tag, manifest, and package bytes. Merge the narrow repair
+under normal `main` protections, select a new immutable control-tag name in the
+v0.2.6 contract, and bind the retry to that merge with a fresh canonical
+recovery GO. The retry must read back already-published surfaces and only
+perform the still-missing publication step; it must not rerun scientific
+qualification or rebuild the Candidate.
 
 After publication, confirm the PyPI distribution/version and exact file
 hashes, GitHub Release assets and publication timestamp, Zenodo record
@@ -439,7 +450,7 @@ version=0.2.6
 tag=v0.2.6
 source_sha=a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
 tag_object_sha=e9f30e6b410d6c599880f741f188f48db4067869
-control_ref=refs/tags/v0.2.6-recovery-control
+control_ref=refs/tags/v0.2.6-recovery-control-pypi-reconcile
 recovery_pr=<merged-implementation-PR-number>
 candidate_run_id=40161240805
 promotion_manifest_sha256=8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d

@@ -49,6 +49,16 @@ checks_omitted:
     reason: "No scientific algorithm, public data model, or numerical result changed."
   - check: publication workflow execution, tag creation, GitHub Release creation, PyPI upload, Zenodo mutation
     reason: "Requires the aggregate Release Owner adoption and publication decisions; none was executed."
+follow_up_execution:
+  original_recovery_pr: 835
+  original_control_ref: refs/tags/v0.2.6-recovery-control
+  original_control_merge_sha: 00cebe5a44f350f98292e87fa34d5ba54508aaf2
+  original_control_tag_object_sha: 3538b578b23319f0c364065f38d9389b34783ae9
+  workflow_run_id: 40433305535
+  workflow_result: "GitHub Release creation and five-asset readback passed; PyPI publication did not start."
+  failure: "The PyPI reconciliation helper was invoked from the Candidate source tree, where the post-Candidate controller helper is not present."
+  pypi_readback: "PyPI returned HTTP 404 for gwexpy 0.2.6; no wheel or sdist upload occurred."
+  repair_scope: "Run reconciliation and partial-upload authorization helpers from the exact workflow-control revision; preserve the original Candidate and all artifact hashes."
 review:
   physics_review: not_applicable
   security_boundary: "Existing pypi environment and PyPI Trusted Publisher retained; no API token or environment change. Recovery requires a merged main PR, annotated control tag, existing candidate evidence, original approvals, and a matching Owner GO."

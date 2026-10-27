@@ -257,11 +257,68 @@ def test_recovery_control_tag_must_be_the_approved_main_pr_merge():
             control_sha="4" * 40,
         )
 
+
+def test_pypi_recovery_control_pr_may_contain_the_scoped_repair_paths():
+    recovery = load_recovery()
+    pull = {
+        "number": 836,
+        "merged": True,
+        "merged_at": "2026-10-27T02:00:00Z",
+        "merge_commit_sha": "6" * 40,
+        "base": {
+            "ref": "main",
+            "repo": {"full_name": "tatsuki-washimi/gwexpy"},
+        },
+    }
+    repair_paths = {
+        ".github/workflows/publish-release.yml",
+        "RELEASING.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/verify_release_recovery.py",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_recovery.py",
+    }
+    assert recovery.REQUIRED_RECOVERY_PYPI_REPAIR_PATHS <= repair_paths
+
+    recovery.validate_recovery_pull_request(
+        pull,
+        files=[{"filename": path} for path in repair_paths],
+        repository="tatsuki-washimi/gwexpy",
+        number=836,
+        control_sha="6" * 40,
+    )
+
+
+def test_pypi_recovery_control_pr_requires_the_scoped_guard_and_workflow_paths():
+    recovery = load_recovery()
+    pull = {
+        "number": 836,
+        "merged": True,
+        "merged_at": "2026-10-27T02:00:00Z",
+        "merge_commit_sha": "6" * 40,
+        "base": {
+            "ref": "main",
+            "repo": {"full_name": "tatsuki-washimi/gwexpy"},
+        },
+    }
+
+    with pytest.raises(recovery.RecoveryAuthorizationError, match="required"):
+        recovery.validate_recovery_pull_request(
+            pull,
+            files=[{"filename": ".github/workflows/publish-release.yml"}],
+            repository="tatsuki-washimi/gwexpy",
+            number=836,
+            control_sha="6" * 40,
+        )
+
     with pytest.raises(recovery.RecoveryAuthorizationError, match="omits required"):
         recovery.validate_recovery_pull_request(
             pull,
             files=[{"filename": "README.md"}],
             repository="tatsuki-washimi/gwexpy",
-            number=812,
-            control_sha="4" * 40,
+            number=836,
+            control_sha="6" * 40,
         )

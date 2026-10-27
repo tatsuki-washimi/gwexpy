@@ -34,7 +34,7 @@ def test_release_workflow_defaults_to_candidate_dry_run_and_has_owner_gated_reco
     assert "release_ref:" in workflow
     assert "expected_tag:" in workflow
     assert "candidate workflow_dispatch must run with --ref main" in workflow
-    assert "!v0.2.6-recovery-control" in workflow
+    assert "!v0.2.6-recovery-control*" in workflow
     assert "recovery dispatch must use its contract-selected control tag" in workflow
     assert "verify_release_recovery.py" in workflow
     assert "recovery_authorized == 'true'" in workflow
@@ -54,6 +54,7 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     publish_uses = re.findall(r"^\s*uses:\s*([^\s]+)$", publish, flags=re.MULTILINE)
     assert publish_uses == [
         "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
         "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
         "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
         "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
@@ -62,6 +63,32 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     ]
     assert "id-token: write" in publish
     assert workflow.count("id-token: write") == 2
+
+
+def test_recovery_pypi_reconciliation_uses_the_workflow_control_revision():
+    workflow = read_workflow()
+    publish = workflow.split("\n  publish:\n", maxsplit=1)[1].split(
+        "\n  github_release_legacy:\n", maxsplit=1
+    )[0]
+
+    checkout = publish.split(
+        "- name: Check out exact workflow controller for recovery helpers", maxsplit=1
+    )[1].split("- name:", maxsplit=1)[0]
+    assert "ref: ${{ github.workflow_sha }}" in checkout
+    assert "path: control" in checkout
+
+    reconcile = publish.split(
+        "- name: Reconcile PyPI state against the exact candidate manifest",
+        maxsplit=1,
+    )[1].split(
+        "- name: Verify Release Owner decision for partial PyPI recovery", maxsplit=1
+    )[0]
+    assert "working-directory: control" in reconcile
+
+    partial_recovery = publish.split(
+        "- name: Verify Release Owner decision for partial PyPI recovery", maxsplit=1
+    )[1].split("- name:", maxsplit=1)[0]
+    assert "working-directory: control" in partial_recovery
 
 
 def test_verify_separates_validator_and_source_trees_and_gates_recovery_dispatch():
