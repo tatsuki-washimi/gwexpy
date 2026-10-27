@@ -1,0 +1,65 @@
+schema: gwexpy-agent-audit-v1
+task: post-release-recurring-task-4
+skills:
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+scope:
+  - Independent GET-only GitHub, PyPI, Zenodo, feedstock PR and actual channel observers
+  - Frozen source notes/review hashes, exact five Release assets and distribution identity
+  - Explicit observer-owned transitions, sticky blocks, human-decision preservation and evidence deduplication
+  - Docs eligibility independent of conda and Zenodo date-disposition review
+  - Daily durable-record resume using default-controller code and existing PR/CAS persistence
+files:
+  - scripts/ci/post_release.py
+  - scripts/ci/post_release_observers.py
+  - tests/test_post_release_observers.py
+  - .github/workflows/post-release.yml
+  - RELEASING.md
+  - docs/developers/plans/manifests/audit-manifest-post-release-task4-20261027.yaml
+verification:
+  red:
+    - Missing docs eligibility helper and observer module failed before implementation
+    - Human pending-review state was overwritten during merge before ownership fix
+    - Previously observed Zenodo archive changes were accepted before immutable snapshot comparison
+    - Record distribution digest mutation passed GitHub readback before frozen-manifest binding
+    - Missing anonymous Zenodo search/pagination helper failed before implementation
+  commands:
+    - command: conda run -n gwexpy pytest tests/test_post_release_observers.py tests/test_post_release_controller.py tests/test_post_release_qualification_workflow.py tests/test_publish_release_workflow.py -q
+      result: 107 passed
+    - command: conda run -n gwexpy ruff check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py scripts/ci/post_release_observers.py tests/test_post_release_observers.py
+      result: passed
+    - command: conda run -n gwexpy mypy scripts/ci/post_release.py scripts/ci/post_release_observers.py --follow-imports=silent
+      result: passed
+    - command: git diff --check
+      result: passed
+  omitted:
+    - No live writes, workflow dispatches, PR creation, package publication or release mutation
+    - Full scientific suite and Sphinx build omitted; no scientific or rendered user-document source changes
+    - Actionlint unavailable; YAML and workflow contract checked by focused tests
+  physics_review: not applicable
+live_read_only:
+  github_release: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6
+  feedstock_pr: https://github.com/conda-forge/gwexpy-feedstock/pull/16
+  zenodo_record: https://zenodo.org/api/records/23680359
+  zenodo_search: https://zenodo.org/api/records?q=conceptrecid%3A19059422&all_versions=true&size=25
+  observation: Record 23680359, version 0.2.6, date 2026-10-27, archive MD5 e587201a22f3acc9be92d4915c6d08f6 and size 36592642 match supplied snapshot; feedstock PR 16 open
+  api_correction: Anonymous Zenodo requests permit at most 25 records; verified conceptrecid query is filtered locally by exact metadata version and paginated
+  date_disposition: pending_review; no owner-approved disposition inferred
+sources:
+  - https://developers.zenodo.org/
+  - https://docs.pypi.org/api/json/
+  - https://docs.github.com/en/rest/commits/commits
+resume_contract:
+  discovery: Default-branch durable manifests plus matching version manifest on same-repository open post-release/vX.Y.Z PRs targeting default
+  code: Only trusted workflow_sha checkout executes; branch trees and blobs are data only
+  identity: Durable accepted publication identity survives artifact/log expiry; every observer run rebinds immutable tag/source and Release manifest/assets
+  writes: Existing persist function retains non-force CAS and at-most-one active PR on one stable branch with sequential successor PRs
+  conflicts: Observer-owned blocked states are sticky; missing/unverifiable source identity is recorded blocked by GitHub observer
+  independent_failures: Per-service transport failures remain retryable_failure; other services continue
+limitations:
+  - Next-version feedstock PR discovery intentionally requires a new version-specific binding; PR 16 is never reused beyond 0.2.6
+  - Unknown future Zenodo versions bind version DOI/archive identity on first successful readback and block later archive/date changes; no arbitrary expected future publication date is invented
+  - A human decision is represented by human_decision or a human-owned pending_review/complete state; observers retain it and append evidence
+  - EN/JA content preparation, Pages publishing and cleanup are later tasks

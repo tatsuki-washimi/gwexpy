@@ -293,6 +293,9 @@ def initialize_manifest(identity: dict[str, Any], observed: str) -> dict[str, An
             observation="Exact pypi_readback attempt succeeded; tag, manifest and Release/PyPI bytes reverified",
         )
     ]
+    for name in ("conda_feedstock", "conda_package"):
+        items[name] = copy.deepcopy(items["conda"])
+        items[name]["objective"] = "Observe " + name
     return dict(
         schema=SCHEMA,
         version=identity["release"]["version"],
@@ -300,6 +303,15 @@ def initialize_manifest(identity: dict[str, Any], observed: str) -> dict[str, An
         post_release_status="pending_review",
         **copy.deepcopy(identity),
         items=items,
+    )
+
+
+def docs_eligible(record: dict[str, Any]) -> bool:
+    """Docs require successful GH/PyPI/Zenodo record readback only."""
+    return all(
+        record["items"][name].get("readback_succeeded") is True
+        and record["items"][name]["status"] not in ("blocked", "retryable_failure")
+        for name in ("github", "pypi", "zenodo")
     )
 
 
@@ -371,8 +383,38 @@ def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str,
         if name not in result["items"]:
             result["items"][name] = copy.deepcopy(item)
         else:
+            target = result["items"][name]
+            if (
+                name
+                in {
+                    "github",
+                    "pypi",
+                    "zenodo",
+                    "conda",
+                    "conda_feedstock",
+                    "conda_package",
+                }
+                and item.get("observer") == name
+                and target["status"] != "blocked"
+                and not target.get("human_decision")
+                and (
+                    target["status"] in ("pending_external", "retryable_failure")
+                    or target.get("observer") == name
+                )
+            ):
+                for field in (
+                    "status",
+                    "observer",
+                    "pending_reason",
+                    "resume_condition",
+                    "readback_succeeded",
+                    "components",
+                ):
+                    if field in item:
+                        target[field] = copy.deepcopy(item[field])
             for key, value in item.items():
-                result["items"][name].setdefault(key, copy.deepcopy(value))
+                if key not in {"observer", "readback_succeeded", "components"}:
+                    target.setdefault(key, copy.deepcopy(value))
             evidence = result["items"][name]["evidence"]
             for entry in item["evidence"]:
                 if not any(
@@ -857,6 +899,10 @@ def main() -> int:
     resolver.add_argument("--release-tag")
     resolver.add_argument("--automatic", action="store_true")
     resolver.add_argument("--output", type=Path, required=True)
+    observer = sub.add_parser("observe")
+    observer.add_argument("--record", type=Path, required=True)
+    observer.add_argument("--output", type=Path, required=True)
+    sub.add_parser("resume")
     writer = sub.add_parser("persist")
     writer.add_argument("--record", type=Path, required=True)
     args = parser.parse_args()
@@ -878,6 +924,15 @@ def main() -> int:
             args.release_tag,
             automatic=args.automatic,
         )
+    elif args.command == "observe":
+        from post_release_observers import observe
+
+        record = observe(json.loads(args.record.read_text()))
+    elif args.command == "resume":
+        from post_release_observers import resume
+
+        resume(os.environ["GITHUB_REPOSITORY"])
+        return 0
     else:
         print(
             persist(

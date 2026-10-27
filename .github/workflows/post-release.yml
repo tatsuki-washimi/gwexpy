@@ -1,6 +1,8 @@
 name: Post-release reconciliation
 
 on:
+  schedule:
+    - cron: '23 6 * * *'
   workflow_run:
     workflows: [Publish release]
     types: [completed]
@@ -61,6 +63,10 @@ jobs:
             args+=(--release-tag "$RELEASE_TAG")
           fi
           python scripts/ci/post_release.py resolve "${args[@]}"
+      - name: Observe independent external services
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/ci/post_release.py observe --record "$RUNNER_TEMP/post-release.json" --output "$RUNNER_TEMP/post-release.json"
       - name: Transfer verified record to persistence job
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -97,3 +103,27 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/ci/post_release.py persist --record "$RUNNER_TEMP/verified/post-release.json"
+
+  resume:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Check out trusted default-branch controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Resume durable pending records through version branch CAS
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/ci/post_release.py resume

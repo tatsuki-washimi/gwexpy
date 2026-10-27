@@ -282,12 +282,10 @@ mismatch fails immediately.
 
 PyPI publication success and post-release completion are separate outcomes.
 After successful exact-hash `pypi_readback` in `publish-release.yml`, the
-post-release controller may start automatically. The controller introduced by
-this implementation must provide dispatch inputs `release_run_id` and
-`release_tag`; its automatic `workflow_run` trigger must use the same identity
-resolver. Until
-that interface is available, follow this contract without inventing a dispatch
-command. The existing `post-release-qualification.yml` is a separate
+`post-release.yml` starts automatically. Its dispatch inputs are
+`release_run_id` and `release_tag`; its automatic `workflow_run` trigger uses
+the same exact publication identity resolver. The existing
+`post-release-qualification.yml` is a separate
 qualification process, not the recurring completion controller.
 
 For backfill, supply the successful publish workflow run ID and release tag.
@@ -306,7 +304,8 @@ Continue the evidence conventions in
 [`audit-manifest-v0.2.3-release-closure.yaml`](docs/developers/plans/manifests/audit-manifest-v0.2.3-release-closure.yaml).
 The durable source of truth for the recurring process is
 `docs/developers/plans/manifests/audit-manifest-vX.Y.Z-post-release.yaml`,
-updated through one stable PR per version. Historical closure manifests retain
+updated on one stable branch per version with at most one active PR and
+sequential successor PRs after earlier reviews merge. Historical closure manifests retain
 their original schemas and are not rewritten. Workflow artifacts and logs are
 evidence inputs, not substitutes for the versioned record.
 
@@ -397,6 +396,22 @@ The stable branch is `post-release/vX.Y.Z`, with at most one active version PR.
 After a PR merges, newly verified evidence may open a sequential review PR on
 that same branch; identical observations create neither a commit nor a PR.
 Closed, unmerged PRs require owner reconciliation before automation resumes.
+The daily schedule discovers durable records on the default branch and active
+same-repository `post-release/vX.Y.Z` PR branches. It reads those branches as
+data and runs only the trusted default-branch controller. Previously accepted
+durable publication identity survives temporary artifact/log expiry. Every
+resume rechecks the tag/source and immutable Release assets; a mismatch blocks
+the affected observer and requires owner review. Service transport failures
+remain retryable and do not suppress independent service observations.
+
+`docs_eligible(record)` requires successful GitHub, PyPI and Zenodo record
+readback. Zenodo's owner date-disposition decision stays `pending_review`
+separately from successful record readback. Neither that outstanding decision
+nor conda-forge's feedstock PR/package state prevents Docs preparation. The
+`conda_feedstock` and `conda_package` items retain separate states and evidence;
+their aggregate appears in `conda.components`. Publication, upload, Zenodo,
+source-committer and tagger timestamps are recorded under their own names.
+Observers never rewrite CITATION, Zenodo metadata, tags or release assets.
 The automatic entry follows the successful publication's exact `pypi_readback`
 job. To backfill the existing v0.2.6 publication after this controller lands on
 `main`, dispatch only the post-release workflow:
