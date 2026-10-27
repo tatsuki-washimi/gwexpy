@@ -166,6 +166,7 @@ jobs:
         env:
           RELEASE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
+          RELEASE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}
           REVIEW_EVIDENCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || '' }}
         run: |
           canonical_review_evidence="$(python control/scripts/ci/release_contract.py --review-evidence-path "$EXPECTED_TAG")"
@@ -180,7 +181,7 @@ jobs:
           policy="$(python control/scripts/ci/release_contract.py --release-policy "$EXPECTED_TAG")"
           tip_policy="$(sed -n 's/^publication_tip_policy=//p' <<< "$policy")"
           validation_args=()
-          if [[ ! "$RELEASE_REF" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$tip_policy" == "exact_tip" ]]; then
+          if [[ "$RELEASE_MODE" == "candidate" || ! "$RELEASE_REF" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$tip_policy" == "exact_tip" ]]; then
             validation_args+=(--frozen-tip)
           fi
           result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$canonical_review_evidence" "${validation_args[@]}")"

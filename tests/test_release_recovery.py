@@ -84,6 +84,15 @@ def test_latest_owner_hold_supersedes_an_earlier_recovery_go():
             expected={key: value for key, value in fields.items() if key != "owner"},
         )
 
+    crlf_hold = comment(hold_fields, comment_id=12)
+    crlf_hold["body"] = str(crlf_hold["body"]).replace("\n", "\r\n")
+    with pytest.raises(recovery.RecoveryAuthorizationError, match="is HOLD"):
+        recovery.validate_recovery_authorization(
+            [earlier, crlf_hold],
+            owner_login=fields["owner"],
+            expected={key: value for key, value in fields.items() if key != "owner"},
+        )
+
     later_wrong_pr = comment(dict(fields, recovery_pr="813"), comment_id=12)
     with pytest.raises(
         recovery.RecoveryAuthorizationError, match="recovery_pr mismatch"
@@ -101,7 +110,7 @@ def test_newer_malformed_or_edited_owner_record_cannot_fall_back_to_an_older_go(
     earlier = comment(fields, comment_id=10)
 
     malformed = comment(fields, comment_id=11)
-    malformed["body"] = recovery.MARKER + "\nversion=0.2.6"
+    malformed["body"] = recovery.MARKER + " trailing text\nversion=0.2.6"
     with pytest.raises(recovery.RecoveryAuthorizationError, match="later.*malformed"):
         recovery.validate_recovery_authorization(
             [earlier, malformed], owner_login=fields["owner"], expected=expected

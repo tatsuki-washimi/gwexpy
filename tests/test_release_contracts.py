@@ -802,6 +802,15 @@ def test_future_contracts_must_select_date_and_publication_tip_policies(
         "recovery_dispatch_ref": None,
     }
 
+    promotion = future.pop("promotion")
+    contract_path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(
+        contracts.ReleaseContractError,
+        match="requires a promotion contract for qualified-candidate publication",
+    ):
+        contracts.release_contract("v0.2.7")
+    future["promotion"] = promotion
+
     future["tagger_date_policy"] = "must_match_metadata"
     future["source_metadata_date_policy"] = "consistent"
     future["publication_tip_policy"] = "exact_tip"

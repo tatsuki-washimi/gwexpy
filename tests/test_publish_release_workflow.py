@@ -90,6 +90,26 @@ def test_verify_separates_validator_and_source_trees_and_gates_recovery_dispatch
     assert "sys.prefix" in workflow
 
 
+def test_candidate_dispatch_always_keeps_exact_frozen_tip_qualification():
+    workflow = read_workflow()
+    validate = workflow.split(
+        "- name: Validate metadata, tag mode, ancestry, and frozen tips", maxsplit=1
+    )[1].split(
+        "- name: Resolve contract-selected candidate qualification profile", maxsplit=1
+    )[0]
+
+    assert (
+        "RELEASE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}"
+        in validate
+    )
+    assert re.search(
+        r'if \[\[ "\$RELEASE_MODE" == "candidate" \|\| .*?\]\]; then\s+'
+        r"validation_args\+=\(--frozen-tip\)",
+        validate,
+        re.DOTALL,
+    )
+
+
 def test_releasing_doc_separates_enforced_controls_from_operational_rules():
     """Immutability is a maintainer rule until the ruleset enforces it.
 

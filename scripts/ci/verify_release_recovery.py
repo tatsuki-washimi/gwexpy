@@ -157,9 +157,10 @@ def validate_recovery_authorization(
             continue
         if comment.get("created_at") != comment.get("updated_at"):
             edited_owner_comments.append(comment_id)
-        if not isinstance(body, str) or not (
-            body == MARKER or body.startswith(MARKER + "\n")
-        ):
+        if not isinstance(body, str):
+            continue
+        marker_line = body.splitlines()[:1]
+        if not marker_line or not marker_line[0].startswith(MARKER):
             continue
         try:
             record = parse_recovery_authorization(body)

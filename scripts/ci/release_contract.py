@@ -298,6 +298,13 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         for field, choices in PUBLICATION_POLICIES.items():
             if not isinstance(contract[field], str) or contract[field] not in choices:
                 raise ReleaseContractError(f"invalid {field} for {tag}")
+        if (
+            contract["publication_tip_policy"] == "qualified_candidate_ancestor"
+            and "promotion" not in contract
+        ):
+            raise ReleaseContractError(
+                f"{tag} requires a promotion contract for qualified-candidate publication"
+            )
         if tag not in HISTORICAL_STRICT_TAGS and (
             contract["tagger_date_policy"] != "independent"
             or contract["source_metadata_date_policy"] != "independent"
