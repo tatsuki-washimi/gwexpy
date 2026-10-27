@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-27T13:20:32Z",
+  "recorded_at_utc": "2026-10-27T14:52:35Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.6",
@@ -126,7 +126,7 @@
       }
     },
     "docs": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "Release Owner",
       "objective": "Prepare and review EN/JA release/history updates",
       "evidence": [
@@ -135,15 +135,21 @@
           "sha256": "a056255e5d39c88c5bd527cb72522b086ad28e6b47d92042ade068a1e5492fed",
           "observed_at_utc": "2026-10-27T13:20:32Z",
           "observation": "{\"changelog_errors\": [\"about/changelog.html: missing detailed v0.2.6 release history\", \"ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg\", \"ja/about/changelog.html: wrong language activity chart\", \"ja/about/changelog.html: missing detailed v0.2.6 release history\"], \"docs_status\": \"pending_review\", \"page_sha256\": {\"about/changelog.html\": \"fd0fcf626841c8a392808674017bb7a8ba2271e9f163f45838e8fc9c6f23d20d\", \"ja/about/changelog.html\": \"918578d16a99b57727578961cdeb7f94e22557ce22213fc06cea29c6d33edb69\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40497861405, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40497861405\", \"readback_succeeded\": false, \"reason\": \"Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history\", \"source_revision\": \"91b55dd02695c10413193c7d24b2950b13de2b9b\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "1364c3ae046407d517ba08727cf3d64a997a405d029e74bec43ec4086542f4e5",
+          "observed_at_utc": "2026-10-27T14:52:35Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 840, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/840\"}, \"page_sha256\": {\"about/changelog.html\": \"66d2e6adaa3e97fbfbde685f259a8a883915897f32e1c056a25f4efcf5895da7\", \"ja/about/changelog.html\": \"b926cbc7e9137b708910a471a573c6b218a464f38eae5c3932283dbe05674653\"}, \"pages_workflow_run_attempt\": 2, \"pages_workflow_run_id\": 40517480396, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40517480396\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f5f532ced76e14b2583d55f6322caaa718e31981\", \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history",
-      "resume_condition": "After review and merge of https://github.com/tatsuki-washimi/gwexpy/pull/840, reobserve Docs and Pages",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "docs",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "pages": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Verify live EN/JA revision and artifact manifest hash",
       "evidence": [
@@ -152,12 +158,18 @@
           "sha256": "a056255e5d39c88c5bd527cb72522b086ad28e6b47d92042ade068a1e5492fed",
           "observed_at_utc": "2026-10-27T13:20:32Z",
           "observation": "{\"changelog_errors\": [\"about/changelog.html: missing detailed v0.2.6 release history\", \"ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg\", \"ja/about/changelog.html: wrong language activity chart\", \"ja/about/changelog.html: missing detailed v0.2.6 release history\"], \"docs_status\": \"pending_review\", \"page_sha256\": {\"about/changelog.html\": \"fd0fcf626841c8a392808674017bb7a8ba2271e9f163f45838e8fc9c6f23d20d\", \"ja/about/changelog.html\": \"918578d16a99b57727578961cdeb7f94e22557ce22213fc06cea29c6d33edb69\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40497861405, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40497861405\", \"readback_succeeded\": false, \"reason\": \"Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history\", \"source_revision\": \"91b55dd02695c10413193c7d24b2950b13de2b9b\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "1364c3ae046407d517ba08727cf3d64a997a405d029e74bec43ec4086542f4e5",
+          "observed_at_utc": "2026-10-27T14:52:35Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 840, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/840\"}, \"page_sha256\": {\"about/changelog.html\": \"66d2e6adaa3e97fbfbde685f259a8a883915897f32e1c056a25f4efcf5895da7\", \"ja/about/changelog.html\": \"b926cbc7e9137b708910a471a573c6b218a464f38eae5c3932283dbe05674653\"}, \"pages_workflow_run_attempt\": 2, \"pages_workflow_run_id\": 40517480396, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40517480396\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f5f532ced76e14b2583d55f6322caaa718e31981\", \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Published changelog is incomplete: about/changelog.html: missing detailed v0.2.6 release history; ja/about/changelog.html: missing language-specific activity chart development-activity-v0.2.6-ja.svg; ja/about/changelog.html: wrong language activity chart; ja/about/changelog.html: missing detailed v0.2.6 release history",
-      "resume_condition": "After review and merge of https://github.com/tatsuki-washimi/gwexpy/pull/840, run the existing Pages workflow and revision/hash readback",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "pages",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "remote_cleanup": {
       "status": "pending_external",
