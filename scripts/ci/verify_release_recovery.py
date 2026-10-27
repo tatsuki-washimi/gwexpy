@@ -22,12 +22,15 @@ ZENODO_CHOICES = {"correct-after-archive", "retain-candidate-date"}
 REQUIRED_RECOVERY_PR_PATHS = {
     ".github/workflows/publish-release.yml",
     "RELEASING.md",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
     "scripts/check_release_metadata.py",
     "scripts/ci/release_contract.py",
     "scripts/ci/release_contracts.json",
     "scripts/ci/verify_release_recovery.py",
     "scripts/validate_release.py",
     "tests/test_check_release_metadata_script.py",
+    "tests/test_publish_release_workflow.py",
+    "tests/test_release_contracts.py",
     "tests/test_release_recovery.py",
     "tests/test_validate_release_script.py",
 }
@@ -134,7 +137,9 @@ def validate_recovery_authorization(
         "tag_object_sha",
         "candidate_run_id",
     )
-    matching: list[tuple[int, dict[str, str]]] = []
+    matching: list[tuple[int, dict[str, str], bool]] = []
+    malformed_markers: list[int] = []
+    edited_owner_comments: list[int] = []
     for comment in comments:
         if not isinstance(comment, Mapping):
             continue
@@ -143,30 +148,44 @@ def validate_recovery_authorization(
         if not isinstance(login, str) or login.lower() != owner_login.lower():
             continue
         body = comment.get("body")
-        if not isinstance(body, str) or not body.startswith(MARKER + "\n"):
+        comment_id = comment.get("id")
+        if (
+            not isinstance(comment_id, int)
+            or isinstance(comment_id, bool)
+            or comment_id <= 0
+        ):
+            continue
+        if comment.get("created_at") != comment.get("updated_at"):
+            edited_owner_comments.append(comment_id)
+        if not isinstance(body, str) or not (
+            body == MARKER or body.startswith(MARKER + "\n")
+        ):
             continue
         try:
             record = parse_recovery_authorization(body)
         except RecoveryAuthorizationError:
+            malformed_markers.append(comment_id)
             continue
         if all(record[field] == expected[field] for field in identity_fields):
-            comment_id = comment.get("id")
-            if (
-                not isinstance(comment_id, int)
-                or isinstance(comment_id, bool)
-                or comment_id <= 0
-            ):
-                raise RecoveryAuthorizationError(
-                    "recovery authorization comment ID is invalid"
+            matching.append(
+                (
+                    comment_id,
+                    record,
+                    comment.get("created_at") != comment.get("updated_at"),
                 )
-            _require(
-                comment.get("created_at") == comment.get("updated_at"),
-                "recovery authorization comment was edited",
             )
-            matching.append((comment_id, record))
 
     _require(bool(matching), "no matching Release Owner recovery authorization exists")
-    _, latest = max(matching, key=lambda item: item[0])
+    latest_id, latest, latest_edited = max(matching, key=lambda item: item[0])
+    _require(not latest_edited, "latest recovery authorization comment was edited")
+    _require(
+        not any(comment_id > latest_id for comment_id in malformed_markers),
+        "a later Release Owner recovery record is malformed",
+    )
+    _require(
+        not any(comment_id > latest_id for comment_id in edited_owner_comments),
+        "a later Release Owner comment was edited; issue a fresh recovery record",
+    )
     _require(
         latest["publication_decision"] == "GO",
         "latest Release Owner recovery authorization is HOLD",

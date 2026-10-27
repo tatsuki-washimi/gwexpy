@@ -95,6 +95,44 @@ def test_latest_owner_hold_supersedes_an_earlier_recovery_go():
         )
 
 
+def test_newer_malformed_or_edited_owner_record_cannot_fall_back_to_an_older_go():
+    recovery, fields = record()
+    expected = {key: value for key, value in fields.items() if key != "owner"}
+    earlier = comment(fields, comment_id=10)
+
+    malformed = comment(fields, comment_id=11)
+    malformed["body"] = recovery.MARKER + "\nversion=0.2.6"
+    with pytest.raises(recovery.RecoveryAuthorizationError, match="later.*malformed"):
+        recovery.validate_recovery_authorization(
+            [earlier, malformed], owner_login=fields["owner"], expected=expected
+        )
+
+    edited_without_marker = comment(fields, comment_id=12)
+    edited_without_marker["body"] = "withdrawn"
+    edited_without_marker["updated_at"] = "2026-10-27T01:00:00Z"
+    with pytest.raises(recovery.RecoveryAuthorizationError, match="later.*edited"):
+        recovery.validate_recovery_authorization(
+            [earlier, edited_without_marker],
+            owner_login=fields["owner"],
+            expected=expected,
+        )
+
+
+def test_a_new_unedited_go_supersedes_an_older_edited_record():
+    recovery, fields = record()
+    edited = comment(fields, comment_id=10)
+    edited["updated_at"] = "2026-10-27T01:00:00Z"
+    latest = comment(fields, comment_id=11)
+
+    accepted = recovery.validate_recovery_authorization(
+        [edited, latest],
+        owner_login=fields["owner"],
+        expected={key: value for key, value in fields.items() if key != "owner"},
+    )
+
+    assert accepted["publication_decision"] == "GO"
+
+
 def test_recovery_authorization_rejects_a_different_distribution_hash():
     recovery, fields = record()
     wrong = dict(fields, wheel_sha256="0" * 64)

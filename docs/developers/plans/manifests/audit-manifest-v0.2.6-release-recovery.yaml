@@ -14,7 +14,7 @@ high_level_actions:
   - Ran strict release preflight against the original candidate source and actual fetched protected branch tips.
 commands:
   - command: "conda run -n gwexpy pytest -q tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
-    result: "PASS: 204 tests"
+    result: "PASS: 206 tests, including fail-closed handling for newer malformed or edited Owner records"
   - command: "conda run -n gwexpy ruff check scripts/check_release_metadata.py scripts/validate_release.py scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
     result: "PASS"
   - command: "conda run -n gwexpy ruff format --check scripts/check_release_metadata.py scripts/validate_release.py scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
@@ -24,7 +24,11 @@ commands:
   - command: "conda run -n gwexpy python scripts/check_release_metadata.py"
     result: "PASS: v0.2.6 metadata versions and independent source dates valid"
   - command: "git diff --check"
-    result: "PASS before commit; repeat against PR base before submission"
+    result: "PASS before each commit; PR-base comparison recorded after final commit"
+  - command: "PR Actionlint run 40424101084"
+    result: "PASS: Release workflow static analysis on commit 40813de526ab650a9f3622ed2bd2d61db235dbcb; later commits did not change the workflow"
+  - command: "gitleaks stdin plus manual secret-pattern scan"
+    result: "PASS before each GitHub write payload; clean on implementation, PR title/body, and commit messages"
   - command: "conda run -n gwexpy python scripts/validate_release.py --repo-root /home/washimi/HDD1TB/worktrees/gwexpy/candidate-v026-40161240805 --release-ref v0.2.6 --expected-tag v0.2.6 --review-evidence docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
     result: "PASS: strict mode, source a1ff8e2f18ef4e599727d6df6fdff61fce7019bd; CITATION.cff, Zenodo and CHANGELOG dates individually valid (each currently 2026-10-24)"
   - command: "release_promotion.py validate-download for payload, promotion manifest, distribution sidecar and license sidecar"
@@ -33,7 +37,7 @@ commands:
     result: "PASS: sdist b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783; wheel 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003; manifest 8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d"
 checks_omitted:
   - check: actionlint local binary
-    reason: "Not installed locally; the repository Actionlint workflow is an expected PR check."
+    reason: "Not installed locally; PR Actionlint run 40424101084 passed the current workflow content."
   - check: full test suite
     reason: "Focused release validation, contract, recovery, and workflow tests cover the changed surface; PR CI remains required."
   - check: check_physics
