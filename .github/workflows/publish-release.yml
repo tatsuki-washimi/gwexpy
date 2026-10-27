@@ -185,19 +185,21 @@ jobs:
           fi
           result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$canonical_review_evidence" "${validation_args[@]}")"
           printf '%s\n' "$result"
-          printf '%s\n' "$result" | awk -F= '
-            /^source_sha=/ {print "source_sha=" $2}
-            /^version=/ {print "version=" $2}
-            /^artifact_prefix=/ {print "artifact_prefix=" $2}
-          ' >> "$GITHUB_OUTPUT"
           tag_object_sha=""
           if git -C source cat-file -e "refs/tags/$EXPECTED_TAG^{tag}" 2>/dev/null; then
             tag_object_sha="$(git -C source rev-parse "refs/tags/$EXPECTED_TAG")"
           fi
-          printf 'tag_object_sha=%s\n' "$tag_object_sha" >> "$GITHUB_OUTPUT"
-          printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
-          printf 'expected_tag=%s\n' "$EXPECTED_TAG" >> "$GITHUB_OUTPUT"
-          printf 'release_mode=%s\n' "${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}" >> "$GITHUB_OUTPUT"
+          {
+            printf '%s\n' "$result" | awk -F= '
+              /^source_sha=/ {print "source_sha=" $2}
+              /^version=/ {print "version=" $2}
+              /^artifact_prefix=/ {print "artifact_prefix=" $2}
+            '
+            printf 'tag_object_sha=%s\n' "$tag_object_sha"
+            printf 'review_evidence=%s\n' "$canonical_review_evidence"
+            printf 'expected_tag=%s\n' "$EXPECTED_TAG"
+            printf 'release_mode=%s\n' "${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Resolve contract-selected candidate qualification profile
         id: profile
