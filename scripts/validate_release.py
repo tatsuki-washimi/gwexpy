@@ -98,7 +98,7 @@ class ValidationResult:
     mode: str
     source_sha: str
     version: str
-    release_date: str
+    metadata_dates: dict[str, str]
     artifact_prefix: str
 
 
@@ -170,7 +170,7 @@ def _read_changelog_date(repo_root: Path, version: str) -> str:
     return matches[0]
 
 
-def _read_metadata(repo_root: Path, version: str) -> str:
+def _read_metadata(repo_root: Path, version: str) -> dict[str, str]:
     py_match = re.search(
         r'__version__\s*=\s*["\']([^"\']+)["\']',
         (repo_root / "gwexpy" / "_version.py").read_text(encoding="utf-8"),
@@ -217,11 +217,15 @@ def _read_metadata(repo_root: Path, version: str) -> str:
             raise ReleaseValidationError(
                 f"{name} release date is invalid: {value}"
             ) from exc
-    if len(set(dates.values())) != 1:
+    contract = _release_contract(version)
+    date_policy = str(contract.get("source_metadata_date_policy", "consistent"))
+    if date_policy not in {"consistent", "independent"}:
+        raise ReleaseValidationError("unsupported source metadata date policy")
+    if date_policy == "consistent" and len(set(dates.values())) != 1:
         raise ReleaseValidationError(
             "release dates differ: " + ", ".join(f"{k}={v}" for k, v in dates.items())
         )
-    return next(iter(dates.values()))
+    return dates
 
 
 def _ref_exists(repo_root: Path, ref: str) -> bool:
@@ -238,7 +242,10 @@ def _ref_exists(repo_root: Path, ref: str) -> bool:
 
 
 def _branch_ref(repo_root: Path, branch: str) -> str:
-    for ref in (f"refs/heads/{branch}", f"refs/remotes/origin/{branch}"):
+    # Validation must use the fetched protected tip when it is available.
+    # A local branch may intentionally lag a remote-tracking ref in a
+    # detached release checkout and must not create a false rejection.
+    for ref in (f"refs/remotes/origin/{branch}", f"refs/heads/{branch}"):
         if _ref_exists(repo_root, ref):
             return ref
     raise ReleaseValidationError(f"required ancestry branch {branch!r} is unavailable")
@@ -554,11 +561,19 @@ def validate_release(
             raise ReleaseValidationError(
                 "checked-out source SHA does not match the tag peel"
             )
-        release_date = _read_metadata(root, expected_tag)
-        if _tagger_utc_date(root, release_ref) != release_date:
+        metadata_dates = _read_metadata(root, expected_tag)
+        tagger_date_policy = str(
+            contract.get("tagger_date_policy", "must_match_metadata")
+        )
+        if (
+            tagger_date_policy == "must_match_metadata"
+            and _tagger_utc_date(root, release_ref) != metadata_dates["CITATION.cff"]
+        ):
             raise ReleaseValidationError(
                 "annotated tagger date does not match release metadata"
             )
+        if tagger_date_policy not in {"must_match_metadata", "independent"}:
+            raise ReleaseValidationError("unsupported tagger date policy")
         _require_ancestry(root, source_sha, expected_tag)
         if review_evidence is not None:
             validate_review_evidence(
@@ -573,7 +588,7 @@ def validate_release(
             "strict",
             source_sha,
             expected_tag.removeprefix("v"),
-            release_date,
+            metadata_dates,
             artifact_prefix,
         )
 
@@ -592,7 +607,7 @@ def validate_release(
         raise ReleaseValidationError(
             "checked-out source SHA does not match release_ref"
         )
-    release_date = _read_metadata(root, expected_tag)
+    metadata_dates = _read_metadata(root, expected_tag)
     _require_ancestry(root, source_sha, expected_tag)
     if review_evidence is not None:
         validate_review_evidence(
@@ -607,7 +622,7 @@ def validate_release(
         "candidate",
         source_sha,
         expected_tag.removeprefix("v"),
-        release_date,
+        metadata_dates,
         artifact_prefix,
     )
 
@@ -660,7 +675,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"mode={result.mode}")
     print(f"source_sha={result.source_sha}")
     print(f"version={result.version}")
-    print(f"release_date={result.release_date}")
+    for name, value in result.metadata_dates.items():
+        output_name = {
+            "CITATION.cff": "citation_date",
+            ".zenodo.json": "zenodo_date",
+            "CHANGELOG.md": "changelog_date",
+        }[name]
+        print(f"{output_name}={value}")
     print(f"artifact_prefix={result.artifact_prefix}")
     return 0
 

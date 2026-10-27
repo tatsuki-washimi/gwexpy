@@ -1,0 +1,60 @@
+schema: gwexpy-agent-audit-v1
+date: 2026-10-27
+task: v0.2.6 release blocker correction and existing candidate recovery
+base_sha: eefd2a32af04ab7db1170246e6a6b51055a3f26e
+skills_used:
+  - github-actions-author
+  - github-mcp-secret-filter
+  - gwexpy_conda_jobs
+high_level_actions:
+  - Read current Issue 797, Issues 819 and 820, release contract, tag, branch tips, candidate run, artifacts, approvals, ruleset and publish workflow.
+  - Reproduced the tag-date rejection and branch-tip validation behavior without invoking a publication action.
+  - Added version-scoped date and publication ancestry policies, a control-tag recovery dispatch, exact Owner authorization checks, and regression coverage.
+  - Downloaded and rehashed the existing candidate manifest, wheel, sdist, and sidecars; validated their manifest bindings.
+  - Ran strict release preflight against the original candidate source and actual fetched protected branch tips.
+commands:
+  - command: "conda run -n gwexpy pytest -q tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
+    result: "PASS: 204 tests"
+  - command: "conda run -n gwexpy ruff check scripts/check_release_metadata.py scripts/validate_release.py scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
+    result: "PASS"
+  - command: "conda run -n gwexpy ruff format --check scripts/check_release_metadata.py scripts/validate_release.py scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
+    result: "PASS: 9 files already formatted"
+  - command: "conda run -n gwexpy mypy scripts/check_release_metadata.py scripts/validate_release.py scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py"
+    result: "PASS: no issues in 4 source files"
+  - command: "conda run -n gwexpy python scripts/check_release_metadata.py"
+    result: "PASS: v0.2.6 metadata versions and independent source dates valid"
+  - command: "git diff --check"
+    result: "PASS before commit; repeat against PR base before submission"
+  - command: "conda run -n gwexpy python scripts/validate_release.py --repo-root /home/washimi/HDD1TB/worktrees/gwexpy/candidate-v026-40161240805 --release-ref v0.2.6 --expected-tag v0.2.6 --review-evidence docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml"
+    result: "PASS: strict mode, source a1ff8e2f18ef4e599727d6df6fdff61fce7019bd; CITATION.cff, Zenodo and CHANGELOG dates individually valid (each currently 2026-10-24)"
+  - command: "release_promotion.py validate-download for payload, promotion manifest, distribution sidecar and license sidecar"
+    result: "PASS: all four exact downloaded artifacts match the original manifest"
+  - command: "sha256sum on downloaded v0.2.6 source distributions and promotion manifest"
+    result: "PASS: sdist b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783; wheel 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003; manifest 8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d"
+checks_omitted:
+  - check: actionlint local binary
+    reason: "Not installed locally; the repository Actionlint workflow is an expected PR check."
+  - check: full test suite
+    reason: "Focused release validation, contract, recovery, and workflow tests cover the changed surface; PR CI remains required."
+  - check: check_physics
+    reason: "No scientific algorithm, public data model, or numerical result changed."
+  - check: publication workflow execution, tag creation, GitHub Release creation, PyPI upload, Zenodo mutation
+    reason: "Requires the aggregate Release Owner adoption and publication decisions; none was executed."
+review:
+  physics_review: not_applicable
+  security_boundary: "Existing pypi environment and PyPI Trusted Publisher retained; no API token or environment change. Recovery requires a merged main PR, annotated control tag, existing candidate evidence, original approvals, and a matching Owner GO."
+  remaining_owner_choices: "Adopt date policy; adopt publication ancestry policy; apply them to v0.2.6; select existing candidate reuse; choose Zenodo date handling; authorize formal publication."
+files_changed:
+  - .github/workflows/publish-release.yml
+  - RELEASING.md
+  - docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml
+  - scripts/check_release_metadata.py
+  - scripts/ci/release_contract.py
+  - scripts/ci/release_contracts.json
+  - scripts/ci/verify_release_recovery.py
+  - scripts/validate_release.py
+  - tests/test_publish_release_workflow.py
+  - tests/test_release_contracts.py
+  - tests/test_release_recovery.py
+  - tests/test_check_release_metadata_script.py
+  - tests/test_validate_release_script.py

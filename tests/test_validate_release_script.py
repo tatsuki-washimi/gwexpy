@@ -333,6 +333,180 @@ def test_strict_mode_rejects_tagger_date_mismatch_and_missing_maintenance_branch
         validator.validate_release(repo, "v0.1.13", "v0.1.13")
 
 
+def test_v026_strict_mode_accepts_independent_tagger_date_and_advanced_tips(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.2.6",
+        date="2026-10-24",
+        maintenance_branch="maint/0.2",
+    )
+    source_sha = git(repo, "rev-parse", "HEAD")
+    tag_annotated(repo, "v0.2.6", "2026-10-25T03:00:00+00:00")
+
+    git(repo, "commit", "--allow-empty", "-m", "ordinary protected-branch advance")
+    advanced_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "branch", "-f", "maint/0.2", advanced_sha)
+    git(repo, "update-ref", "refs/remotes/origin/main", advanced_sha)
+    git(repo, "update-ref", "refs/remotes/origin/maint/0.2", advanced_sha)
+    git(repo, "checkout", "--detach", source_sha)
+    tree = git(repo, "rev-parse", f"{source_sha}^{{tree}}")
+    stale_local_tip = git(repo, "commit-tree", tree, "-m", "stale local branch tip")
+    git(repo, "branch", "-f", "main", stale_local_tip)
+    git(repo, "branch", "-f", "maint/0.2", stale_local_tip)
+    monkeypatch.setattr(
+        validator, "validate_review_evidence", lambda *a, **k: source_sha
+    )
+
+    result = validator.validate_release(
+        repo,
+        "v0.2.6",
+        "v0.2.6",
+        review_evidence=repo / "review-evidence.yaml",
+    )
+
+    assert result.mode == "strict"
+    assert result.source_sha == source_sha
+    assert result.metadata_dates == {
+        "CITATION.cff": "2026-10-24",
+        ".zenodo.json": "2026-10-24",
+        "CHANGELOG.md": "2026-10-24",
+    }
+    assert advanced_sha != source_sha
+    assert stale_local_tip != source_sha
+
+
+def test_v026_strict_mode_accepts_individually_valid_source_metadata_dates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.2.6",
+        date="2026-10-24",
+        maintenance_branch="maint/0.2",
+    )
+    zenodo = json.loads((repo / ".zenodo.json").read_text(encoding="utf-8"))
+    zenodo["publication_date"] = "2026-10-25"
+    (repo / ".zenodo.json").write_text(json.dumps(zenodo), encoding="utf-8")
+    changelog = (repo / "CHANGELOG.md").read_text(encoding="utf-8")
+    (repo / "CHANGELOG.md").write_text(
+        changelog.replace("2026-10-24", "2026-10-26"), encoding="utf-8"
+    )
+    git(repo, "add", ".zenodo.json", "CHANGELOG.md")
+    git(repo, "commit", "-m", "independent metadata dates")
+    source_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "branch", "-f", "maint/0.2", source_sha)
+    tag_annotated(repo, "v0.2.6", "2026-10-25T03:00:00+00:00")
+    monkeypatch.setattr(
+        validator, "validate_review_evidence", lambda *a, **k: source_sha
+    )
+
+    result = validator.validate_release(
+        repo,
+        "v0.2.6",
+        "v0.2.6",
+        review_evidence=repo / "review-evidence.yaml",
+    )
+
+    assert result.metadata_dates == {
+        "CITATION.cff": "2026-10-24",
+        ".zenodo.json": "2026-10-25",
+        "CHANGELOG.md": "2026-10-26",
+    }
+
+
+def test_v026_strict_mode_rejects_invalid_calendar_date_in_any_source_metadata(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.2.6",
+        date="2026-10-24",
+        maintenance_branch="maint/0.2",
+    )
+    zenodo = json.loads((repo / ".zenodo.json").read_text(encoding="utf-8"))
+    zenodo["publication_date"] = "2026-02-30"
+    (repo / ".zenodo.json").write_text(json.dumps(zenodo), encoding="utf-8")
+    git(repo, "add", ".zenodo.json")
+    git(repo, "commit", "-m", "invalid metadata calendar date")
+    source_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "branch", "-f", "maint/0.2", source_sha)
+    tag_annotated(repo, "v0.2.6", "2026-10-25T03:00:00+00:00")
+    monkeypatch.setattr(
+        validator, "validate_review_evidence", lambda *a, **k: source_sha
+    )
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match=r"\.zenodo\.json release date is invalid: 2026-02-30",
+    ):
+        validator.validate_release(
+            repo,
+            "v0.2.6",
+            "v0.2.6",
+            review_evidence=repo / "review-evidence.yaml",
+        )
+
+
+def test_historical_contract_keeps_source_metadata_dates_consistent(
+    tmp_path: Path,
+):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.1.13",
+        date="2026-10-24",
+        maintenance_branch="maint/0.1",
+    )
+    zenodo = json.loads((repo / ".zenodo.json").read_text(encoding="utf-8"))
+    zenodo["publication_date"] = "2026-10-25"
+    (repo / ".zenodo.json").write_text(json.dumps(zenodo), encoding="utf-8")
+    git(repo, "add", ".zenodo.json")
+    git(repo, "commit", "-m", "historical metadata date mismatch")
+    source_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "branch", "-f", "maint/0.1", source_sha)
+    tag_annotated(repo, "v0.1.13", "2026-10-24T03:00:00+00:00")
+
+    with pytest.raises(validator.ReleaseValidationError, match="release dates differ"):
+        validator.validate_release(repo, "v0.1.13", "v0.1.13")
+
+
+def test_v026_strict_mode_rejects_a_protected_branch_without_candidate_ancestry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.2.6",
+        date="2026-10-24",
+        maintenance_branch="maint/0.2",
+    )
+    source_sha = git(repo, "rev-parse", "HEAD")
+    tag_annotated(repo, "v0.2.6", "2026-10-25T03:00:00+00:00")
+    tree = git(repo, "rev-parse", f"{source_sha}^{{tree}}")
+    unrelated = git(repo, "commit-tree", tree, "-m", "unrelated history")
+    git(repo, "branch", "-f", "maint/0.2", unrelated)
+    git(repo, "update-ref", "refs/remotes/origin/main", source_sha)
+    git(repo, "update-ref", "refs/remotes/origin/maint/0.2", unrelated)
+    monkeypatch.setattr(
+        validator, "validate_review_evidence", lambda *a, **k: source_sha
+    )
+
+    with pytest.raises(
+        validator.ReleaseValidationError, match="not an ancestor of maint/0.2"
+    ):
+        validator.validate_release(
+            repo,
+            "v0.2.6",
+            "v0.2.6",
+            review_evidence=repo / "review-evidence.yaml",
+        )
+
+
 def test_duplicate_changelog_release_heading_is_rejected(tmp_path: Path):
     """Two headings for one version must fail, not resolve to the first.
 
