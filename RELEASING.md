@@ -282,9 +282,10 @@ mismatch fails immediately.
 
 PyPI publication success and post-release completion are separate outcomes.
 After successful exact-hash `pypi_readback` in `publish-release.yml`, the
-post-release controller may start automatically. The controller workflow in
-this branch introduces the dispatch inputs `release_run_id` and `release_tag`;
-its automatic `workflow_run` trigger uses the same identity resolver. Until
+post-release controller may start automatically. The controller introduced by
+this implementation must provide dispatch inputs `release_run_id` and
+`release_tag`; its automatic `workflow_run` trigger must use the same identity
+resolver. Until
 that interface is available, follow this contract without inventing a dispatch
 command. The existing `post-release-qualification.yml` is a separate
 qualification process, not the recurring completion controller.
@@ -309,7 +310,7 @@ updated through one stable PR per version. Historical closure manifests retain
 their original schemas and are not rewritten. Workflow artifacts and logs are
 evidence inputs, not substitutes for the versioned record.
 
-The controller's machine-readable schema must express these proposed fields:
+The controller's machine-readable schema must express these required fields:
 
 - `schema: gwexpy-post-release-v1`, `version`, `recorded_at_utc`: record format,
   package version, and latest record update time.
@@ -385,8 +386,9 @@ item is pending, failed, or blocked unless it depends on that item.
    sessions. Actions cannot inspect or remove a user's local worktrees. Each
    item completes on an evidenced retain/remove/no-action assessment; any
    deletion is a separate authorized action. Missing local-host evidence stays
-   pending with a named actor and resume condition. Protect release/control
-   tags, candidate evidence and active work.
+   `pending_external` with a named local-host actor and observation/resume
+   condition; use `pending_review` only for an actual owner/reviewer decision.
+   Protect release/control tags, candidate evidence and active work.
 
 Resume idempotently by version and exact publication identity: refresh missing
 or stale observations and update the existing record/PR without duplicating
