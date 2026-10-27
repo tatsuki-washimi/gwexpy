@@ -177,8 +177,8 @@
       "objective": "Assess remote branches using ancestry and open PRs",
       "evidence": [
         {
-          "url": "https://github.com/tatsuki-washimi/gwexpy/blob/post-release/v0.2.6-remote-cleanup/docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
-          "sha256": "b57dd06a97e8f4addc565c76feabd41a314dbd37824d78e4b49baeec40afb40b",
+          "url": "https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+          "sha256": "8189f07f0d0bcd1369874fe56956ca3bbc9db9dd6f39c9c0c6c4477bfde24076",
           "observed_at_utc": "2026-10-27T17:17:29Z",
           "observation": "GitHub API readback at 2026-10-27T17:17:29Z verified that all 70 fixed-allowlist refs were deleted (0 already absent, 0 skipped), the 144 remaining refs exactly matched the initial inventory minus the allowlist, main stayed at d29fe2ce97ea1b7778c9be697651fe3f38b8c21f, all 7 Open PR heads and protected or explicitly held refs remained, all 4 v0.2.6-related tags were unchanged, and no API errors occurred. A fresh readback at 2026-10-27T17:35:00Z matched the saved 144-branch inventory and 7 Open PR records."
         }

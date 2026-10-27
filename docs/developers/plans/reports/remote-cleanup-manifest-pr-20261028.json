@@ -14,9 +14,9 @@
   },
   "source_evidence": {
     "execution_audit_path": "docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
-    "execution_audit_sha256": "b57dd06a97e8f4addc565c76feabd41a314dbd37824d78e4b49baeec40afb40b",
+    "execution_audit_sha256": "8189f07f0d0bcd1369874fe56956ca3bbc9db9dd6f39c9c0c6c4477bfde24076",
     "manifest_before_sha256": "7f5868761a8108827f28c0b51f170f79d6d280dc0e9b2398e3c198736562728b",
-    "manifest_prepared_sha256": "7b759a6de81fda5ea7893aa9226e62e6b6818e9f6233c0bad78770e5b80b2412"
+    "manifest_prepared_sha256": "ac81f149ecce25f2b7f2990ff0b2d6177b368d253b67c5a5e6575df8c88f4e79"
   },
   "github_readback_before_pr_branch": {
     "observed_at_utc": "2026-10-27T17:35:00Z",
@@ -71,7 +71,7 @@
     "linked_worktrees_modified_or_removed": 0,
     "preparation_clone_is_linked_worktree": false
   },
-  "github_write_state_at_recording": "Prepared locally; no branch push or PR creation has been performed.",
+  "github_write_state_at_recording": "Historical state at recorded_at_utc (2026-10-27T17:43:11Z): content was prepared locally; the branch had not yet been pushed and PR #841 had not yet been created.",
   "skills_used": [
     "prep_release",
     "github-mcp-secret-filter",
@@ -106,5 +106,24 @@
       "path": "docs/developers/plans/reports/remote-cleanup-manifest-pr-20261028.json",
       "change": "Add this PR audit, commands, validation outcomes, and exact PR title and body."
     }
-  ]
+  ],
+  "review_follow_up": {
+    "recorded_at_utc": "2026-10-27T18:25:18Z",
+    "review_id": 5672055522,
+    "reviewed_commit": "7900cca7a505a5f5130aa336cc60d336b2f0c1c2",
+    "findings": [
+      "The PR Fast local-path exception test failed because the execution audit contained local absolute filesystem paths.",
+      "The manifest evidence URL referenced the temporary PR branch."
+    ],
+    "changes": [
+      "Replaced local absolute paths in the execution audit with stable worktree/NN labels or role-labeled repository-relative paths; retained all 70 deletion receipts, 144-branch readback, SHAs, timestamps, process counts, and worktree status evidence.",
+      "Changed the manifest evidence URL to the main-branch file path and updated the evidence SHA-256 to the normalized audit bytes.",
+      "Updated the PR audit report SHA-256 references and clarified that its GitHub write-state field records the historical state at its original recorded_at_utc."
+    ],
+    "validation": {
+      "absolute_local_path_scan": "passed; no absolute local paths remain in the execution audit.",
+      "audit_invariants": "passed; 70 deletion receipts and all 144 post-delete branch records are preserved.",
+      "test_local_path_hits_are_exactly_the_reviewed_exceptions": "passed; 1 test passed using conda run -n gwexpy pytest."
+    }
+  }
 }

@@ -11,7 +11,7 @@
       "sha256": "3287be048ce4a564aeed96f41bd9c5aab3c404c588b89cb4a80c491c44918dc1"
     },
     "cleanup_script": {
-      "allowlist_comparison": "not possible; script was not found in the checkout, /home/washimi, /mnt/data, /tmp, or current main tree",
+      "allowlist_comparison": "not possible; script was not found in the checkout, uploaded-file directory, temporary directory, or current main tree",
       "available_in_checkout_or_searched_attachment_paths": false,
       "available_on_github_main_tree": false,
       "dry_run_run": false,
@@ -2321,7 +2321,7 @@
       ],
       "exit_code": 0,
       "observed_at_utc": "2026-10-27T17:05:47Z",
-      "output_path": "/home/washimi/HDD1TB/tmp/gwexpy-branch-cleanup-preflight-20261028/script-dry-run.txt",
+      "output_path": "execution-logs/script-dry-run.txt",
       "output_sha256": "31fb0c4a382ace7072ca9050aab17b121c1a5c1bd51330ec6320139744359035",
       "status": "passed",
       "summary": {
@@ -2342,7 +2342,7 @@
         "remote_branch_count": 214,
         "skipped_count": 0
       },
-      "output_path": "/home/washimi/HDD1TB/tmp/gwexpy-branch-cleanup-preflight-20261028/script-execute-output.txt",
+      "output_path": "execution-logs/script-execute-output.txt",
       "output_sha256": "ef6bdccd1cbda40db47e66fbaccfdc78f9114576f1ca1419edca49cafd915c5a",
       "patched_script_sha256": "0ee5f8a17cd32a4626e4364c6f5afadc99c63e3b4f8581ce55ec2bacd152698d",
       "result": {
@@ -2350,7 +2350,7 @@
         "deleted_count": 70,
         "skipped_or_failed_count": 0
       },
-      "script_path": "/home/washimi/HDD1TB/tmp/gwexpy_remote_branch_cleanup.py",
+      "script_path": "execution-artifacts/gwexpy_remote_branch_cleanup.py",
       "started_at_note": "Exact process-start time was not captured; execute command was launched immediately after the pre-execute audit update at 2026-10-27T17:06:45Z.",
       "started_at_utc": null,
       "status": "completed"
@@ -3727,7 +3727,7 @@
         "title": "fix(io): let TimeSeries.read accept Virgo .ffl frame lists (#594)"
       }
     ],
-    "readback_snapshot_path": "/home/washimi/HDD1TB/tmp/gwexpy-branch-cleanup-preflight-20261028/github-readback-after-delete.json",
+    "readback_snapshot_path": "readback/github-readback-after-delete.json",
     "v026_related_tags": [
       {
         "name": "v0.2.6",
@@ -4900,7 +4900,7 @@
         "title": "fix(io): let TimeSeries.read accept Virgo .ffl frame lists (#594)"
       }
     ],
-    "readback_source_path": "/home/washimi/HDD1TB/tmp/gwexpy-branch-cleanup-preflight-20261028/github-readback-noop.json",
+    "readback_source_path": "readback/github-readback-noop.json",
     "v026_related_tags": [
       {
         "name": "v0.2.6",
@@ -6154,99 +6154,99 @@
       "processes": [
         {
           "comm": "python3",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832412,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "npm exec @model",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832423,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "MainThread",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832424,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "MainThread",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832430,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "node_repl",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832436,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "node_repl",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832578,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "sh",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832705,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "MainThread",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1832706,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "bash",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1833487,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "rg",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1833490,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "bash",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1833854,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "rg",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1833856,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "bash",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1835314,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "find",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 1835315,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "MainThread",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 2705189,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         },
         {
           "comm": "MainThread",
-          "cwd": "/home/washimi/work/gwexpy",
+          "cwd": "worktree/01",
           "pid": 2900610,
-          "worktree": "/home/washimi/work/gwexpy"
+          "worktree": "worktree/01"
         }
       ]
     },
@@ -6276,7 +6276,7 @@
   "script_review": {
     "original_upload_unchanged": true,
     "patched_copy_sha256": "0ee5f8a17cd32a4626e4364c6f5afadc99c63e3b4f8581ce55ec2bacd152698d",
-    "patched_execution_copy": "/home/washimi/HDD1TB/tmp/gwexpy_remote_branch_cleanup.py",
+    "patched_execution_copy": "execution-artifacts/gwexpy_remote_branch_cleanup.py",
     "review_summary": [
       "Fixed allowlist contains exactly 70 branches and matches the 70 preflight candidates after excluding explicit hold maint/0.1.",
       "GitHub DELETE endpoint is git/refs/heads/<branch>; it only targets the fixed repository ref and uses no force operation.",
@@ -6294,7 +6294,7 @@
       "Stop after a DELETE API error so later refs are not modified under uncertain state."
     ],
     "security_review_skill": "The catalogued python-security-review SKILL.md was unavailable in the configured skill roots; direct source review was performed.",
-    "uploaded_file": "/home/washimi/.paseo/uploads/upload_7d650e40-b1ca-4677-85cd-9eec5c234578/gwexpy_remote_branch_cleanup_resend.py",
+    "uploaded_file": "input-artifacts/gwexpy_remote_branch_cleanup_resend.py",
     "uploaded_file_sha256": "6a5ea57efb31d8592103cae6c60500a8cdca6c72f5307b183fae213388d2fe25",
     "uploaded_file_size_bytes": 8705,
     "worktree_script_copy_created": false
@@ -6317,7 +6317,7 @@
         "dirty_entry_count": 20,
         "status_exit": 0,
         "status_sha256": "c34e30fa93b9bb608c3e78bc552b01fc2a1ba11ebd1992bba0273f49f363aff9",
-        "worktree": "/home/washimi/work/gwexpy"
+        "worktree": "worktree/01"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6325,7 +6325,7 @@
         "dirty_entry_count": 124,
         "status_exit": 0,
         "status_sha256": "d2ff39ffd2d774dabe7b9d156ceed27584b3d4de20b2bbe619534bfd4263d6e7",
-        "worktree": "/home/washimi/.config/superpowers/worktrees/gwexpy/v030-core-integration-20261005"
+        "worktree": "worktree/02"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6333,7 +6333,7 @@
         "dirty_entry_count": 140,
         "status_exit": 0,
         "status_sha256": "81aaea6f8bdd3ff3c8d01beeb60d33de4bf94c7db34c21cab1708503073c341b",
-        "worktree": "/home/washimi/.config/superpowers/worktrees/gwexpy/v030-field-common-20261005"
+        "worktree": "worktree/03"
       },
       {
         "HEAD": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
@@ -6341,7 +6341,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/candidate-v026-40161240805"
+        "worktree": "worktree/04"
       },
       {
         "HEAD": "57f477767bd4389b25a51ec6d8afd134ea8c5836",
@@ -6349,7 +6349,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/post-release-recurring-20261027"
+        "worktree": "worktree/05"
       },
       {
         "HEAD": "b6cad6b17859cda9e94bbb6a3cb2dd238e0abd6c",
@@ -6357,7 +6357,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/post-release-v026-manifest-20261027"
+        "worktree": "worktree/06"
       },
       {
         "HEAD": "289e42670d05d7ec2519a15dffc701fe21553f94",
@@ -6365,7 +6365,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/pypi-recovery-20261027"
+        "worktree": "worktree/07"
       },
       {
         "HEAD": "eeb3613b19b6f04cec60f7abc9e29df714ffe390",
@@ -6373,7 +6373,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/pypi-release-readback-20261027"
+        "worktree": "worktree/08"
       },
       {
         "HEAD": "b7b226fa9cd2c565260e5392c886aa911a01d06b",
@@ -6381,7 +6381,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/release-recovery-20261027"
+        "worktree": "worktree/09"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6389,7 +6389,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/release-v0.2.5-3439fba"
+        "worktree": "worktree/10"
       },
       {
         "HEAD": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
@@ -6397,7 +6397,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s24-doc-003-ja-translation-20261024"
+        "worktree": "worktree/11"
       },
       {
         "HEAD": "e0e4a1fc180c0079b9e19ecf661ef22f34224e4b",
@@ -6405,7 +6405,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s24-doc-catalogs-20261024"
+        "worktree": "worktree/12"
       },
       {
         "HEAD": "f821e9f467265819ceec5cc6df51746c56641456",
@@ -6413,7 +6413,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s26-three-test-findings-20261024"
+        "worktree": "worktree/13"
       },
       {
         "HEAD": "cae25bfc1a249b600876cae9f47a2cbf10b9f25a",
@@ -6421,7 +6421,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-actionlint-remediation"
+        "worktree": "worktree/14"
       },
       {
         "HEAD": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
@@ -6429,7 +6429,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-candidate-0f07ac"
+        "worktree": "worktree/15"
       },
       {
         "HEAD": "b04bf98633ed406ba8d2e0846683b3c4cf8c595c",
@@ -6437,7 +6437,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-compat-s24"
+        "worktree": "worktree/16"
       },
       {
         "HEAD": "0f07acfa7310c668972be7c3938d548147fde9e5",
@@ -6445,7 +6445,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-doc2-portable-evidence"
+        "worktree": "worktree/17"
       },
       {
         "HEAD": "983f58d4ef2668103ec7c6e4786b884927d03061",
@@ -6453,7 +6453,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-89c82d84"
+        "worktree": "worktree/18"
       },
       {
         "HEAD": "a4497b3498dc159469466cd337ef63f10cf76a58",
@@ -6461,7 +6461,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-9faa99e7"
+        "worktree": "worktree/19"
       },
       {
         "HEAD": "0501756b79560dc7fea8f48ca75cf2eeb270b9c7",
@@ -6469,7 +6469,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-ab6ad040"
+        "worktree": "worktree/20"
       },
       {
         "HEAD": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
@@ -6477,7 +6477,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-retention-s2"
+        "worktree": "worktree/21"
       },
       {
         "HEAD": "50be179fd25e391a8651f6fbf752db804c513529",
@@ -6485,7 +6485,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-review-contract-s22"
+        "worktree": "worktree/22"
       },
       {
         "HEAD": "5eab8d48621e88032702d75d9197275ebe1f2bbc",
@@ -6493,7 +6493,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s10-5eab8d486"
+        "worktree": "worktree/23"
       },
       {
         "HEAD": "db8a8ce011e58f0d6f512564149daff10d870b19",
@@ -6501,7 +6501,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s11-db8a8ce01"
+        "worktree": "worktree/24"
       },
       {
         "HEAD": "705a4669c5ec7b53c41091642c27ab78d0ed10e9",
@@ -6509,7 +6509,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s12-705a4669c"
+        "worktree": "worktree/25"
       },
       {
         "HEAD": "56d4c949f1a1350b2128c67a8da3583f7118f4d3",
@@ -6517,7 +6517,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s14-56d4c949f"
+        "worktree": "worktree/26"
       },
       {
         "HEAD": "9bfcb2b28921bdb547b83cffc893bb21d43bbbf7",
@@ -6525,7 +6525,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s15-9bfcb2b28"
+        "worktree": "worktree/27"
       },
       {
         "HEAD": "932b1436f657adc418f6967936ddb4e3b151a1c8",
@@ -6533,7 +6533,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s16-932b1436f"
+        "worktree": "worktree/28"
       },
       {
         "HEAD": "9992d17c62125536d886b4d91830ac9fc109456e",
@@ -6541,7 +6541,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s17-9992d17c6"
+        "worktree": "worktree/29"
       },
       {
         "HEAD": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
@@ -6549,7 +6549,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s18"
+        "worktree": "worktree/30"
       },
       {
         "HEAD": "5989390f160a973cde1e84b46793404b4ac5c0b4",
@@ -6557,7 +6557,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s19"
+        "worktree": "worktree/31"
       },
       {
         "HEAD": "caa780f025443bccbce463e17577ef488e9b10e3",
@@ -6565,7 +6565,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s20"
+        "worktree": "worktree/32"
       },
       {
         "HEAD": "23618850b338c7bad6ed0b1634148b7dff9fbc07",
@@ -6573,7 +6573,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s21-gwosc-audit"
+        "worktree": "worktree/33"
       },
       {
         "HEAD": "50be179fd25e391a8651f6fbf752db804c513529",
@@ -6581,7 +6581,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s26-contract-tests"
+        "worktree": "worktree/34"
       },
       {
         "HEAD": "c9ec27d259cb62d0fae8100cffd7b77d08dc3b66",
@@ -6589,7 +6589,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s6-docs-build"
+        "worktree": "worktree/35"
       },
       {
         "HEAD": "42c3c0996dec018870139dddf2ad086e57ce47f0",
@@ -6597,7 +6597,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s7-sphinx"
+        "worktree": "worktree/36"
       },
       {
         "HEAD": "dcaf7d444eded879c5b01fb9aa8d9d966e33a33d",
@@ -6605,7 +6605,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s8-review"
+        "worktree": "worktree/37"
       },
       {
         "HEAD": "d633a17c1df7e13b12a4e5a147894d9128164c00",
@@ -6613,7 +6613,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s9-d633a17c1"
+        "worktree": "worktree/38"
       },
       {
         "HEAD": "9992d17c62125536d886b4d91830ac9fc109456e",
@@ -6621,7 +6621,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/tmp/gwex-sha"
+        "worktree": "worktree/39"
       }
     ]
   },
@@ -6642,7 +6642,7 @@
         "dirty_entry_count": 19,
         "status_exit": 0,
         "status_sha256": "b774ee5835b99102a33e6b6c70f5ce4317b4621c90a1675356e8b2c49f690c12",
-        "worktree": "/home/washimi/work/gwexpy"
+        "worktree": "worktree/01"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6650,7 +6650,7 @@
         "dirty_entry_count": 124,
         "status_exit": 0,
         "status_sha256": "d2ff39ffd2d774dabe7b9d156ceed27584b3d4de20b2bbe619534bfd4263d6e7",
-        "worktree": "/home/washimi/.config/superpowers/worktrees/gwexpy/v030-core-integration-20261005"
+        "worktree": "worktree/02"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6658,7 +6658,7 @@
         "dirty_entry_count": 140,
         "status_exit": 0,
         "status_sha256": "81aaea6f8bdd3ff3c8d01beeb60d33de4bf94c7db34c21cab1708503073c341b",
-        "worktree": "/home/washimi/.config/superpowers/worktrees/gwexpy/v030-field-common-20261005"
+        "worktree": "worktree/03"
       },
       {
         "HEAD": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
@@ -6666,7 +6666,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/candidate-v026-40161240805"
+        "worktree": "worktree/04"
       },
       {
         "HEAD": "57f477767bd4389b25a51ec6d8afd134ea8c5836",
@@ -6674,7 +6674,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/post-release-recurring-20261027"
+        "worktree": "worktree/05"
       },
       {
         "HEAD": "b6cad6b17859cda9e94bbb6a3cb2dd238e0abd6c",
@@ -6682,7 +6682,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/post-release-v026-manifest-20261027"
+        "worktree": "worktree/06"
       },
       {
         "HEAD": "289e42670d05d7ec2519a15dffc701fe21553f94",
@@ -6690,7 +6690,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/pypi-recovery-20261027"
+        "worktree": "worktree/07"
       },
       {
         "HEAD": "eeb3613b19b6f04cec60f7abc9e29df714ffe390",
@@ -6698,7 +6698,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/pypi-release-readback-20261027"
+        "worktree": "worktree/08"
       },
       {
         "HEAD": "b7b226fa9cd2c565260e5392c886aa911a01d06b",
@@ -6706,7 +6706,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/release-recovery-20261027"
+        "worktree": "worktree/09"
       },
       {
         "HEAD": "3439fba41dcc644af12870d91bee794524098fb4",
@@ -6714,7 +6714,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/release-v0.2.5-3439fba"
+        "worktree": "worktree/10"
       },
       {
         "HEAD": "9faa99e7be2c4ce288108d57e012e463d2b91efc",
@@ -6722,7 +6722,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s24-doc-003-ja-translation-20261024"
+        "worktree": "worktree/11"
       },
       {
         "HEAD": "e0e4a1fc180c0079b9e19ecf661ef22f34224e4b",
@@ -6730,7 +6730,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s24-doc-catalogs-20261024"
+        "worktree": "worktree/12"
       },
       {
         "HEAD": "f821e9f467265819ceec5cc6df51746c56641456",
@@ -6738,7 +6738,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/s26-three-test-findings-20261024"
+        "worktree": "worktree/13"
       },
       {
         "HEAD": "cae25bfc1a249b600876cae9f47a2cbf10b9f25a",
@@ -6746,7 +6746,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-actionlint-remediation"
+        "worktree": "worktree/14"
       },
       {
         "HEAD": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
@@ -6754,7 +6754,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-candidate-0f07ac"
+        "worktree": "worktree/15"
       },
       {
         "HEAD": "b04bf98633ed406ba8d2e0846683b3c4cf8c595c",
@@ -6762,7 +6762,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-compat-s24"
+        "worktree": "worktree/16"
       },
       {
         "HEAD": "0f07acfa7310c668972be7c3938d548147fde9e5",
@@ -6770,7 +6770,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-doc2-portable-evidence"
+        "worktree": "worktree/17"
       },
       {
         "HEAD": "983f58d4ef2668103ec7c6e4786b884927d03061",
@@ -6778,7 +6778,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-89c82d84"
+        "worktree": "worktree/18"
       },
       {
         "HEAD": "a4497b3498dc159469466cd337ef63f10cf76a58",
@@ -6786,7 +6786,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-9faa99e7"
+        "worktree": "worktree/19"
       },
       {
         "HEAD": "0501756b79560dc7fea8f48ca75cf2eeb270b9c7",
@@ -6794,7 +6794,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-r-ab6ad040"
+        "worktree": "worktree/20"
       },
       {
         "HEAD": "ab6ad040b50de0f7324ba992d048a5880e126bd8",
@@ -6802,7 +6802,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-retention-s2"
+        "worktree": "worktree/21"
       },
       {
         "HEAD": "50be179fd25e391a8651f6fbf752db804c513529",
@@ -6810,7 +6810,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-review-contract-s22"
+        "worktree": "worktree/22"
       },
       {
         "HEAD": "5eab8d48621e88032702d75d9197275ebe1f2bbc",
@@ -6818,7 +6818,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s10-5eab8d486"
+        "worktree": "worktree/23"
       },
       {
         "HEAD": "db8a8ce011e58f0d6f512564149daff10d870b19",
@@ -6826,7 +6826,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s11-db8a8ce01"
+        "worktree": "worktree/24"
       },
       {
         "HEAD": "705a4669c5ec7b53c41091642c27ab78d0ed10e9",
@@ -6834,7 +6834,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s12-705a4669c"
+        "worktree": "worktree/25"
       },
       {
         "HEAD": "56d4c949f1a1350b2128c67a8da3583f7118f4d3",
@@ -6842,7 +6842,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s14-56d4c949f"
+        "worktree": "worktree/26"
       },
       {
         "HEAD": "9bfcb2b28921bdb547b83cffc893bb21d43bbbf7",
@@ -6850,7 +6850,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s15-9bfcb2b28"
+        "worktree": "worktree/27"
       },
       {
         "HEAD": "932b1436f657adc418f6967936ddb4e3b151a1c8",
@@ -6858,7 +6858,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s16-932b1436f"
+        "worktree": "worktree/28"
       },
       {
         "HEAD": "9992d17c62125536d886b4d91830ac9fc109456e",
@@ -6866,7 +6866,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s17-9992d17c6"
+        "worktree": "worktree/29"
       },
       {
         "HEAD": "89c82d84d4431a1b0e7cf2938c154f92ced20f99",
@@ -6874,7 +6874,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s18"
+        "worktree": "worktree/30"
       },
       {
         "HEAD": "5989390f160a973cde1e84b46793404b4ac5c0b4",
@@ -6882,7 +6882,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s19"
+        "worktree": "worktree/31"
       },
       {
         "HEAD": "caa780f025443bccbce463e17577ef488e9b10e3",
@@ -6890,7 +6890,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s20"
+        "worktree": "worktree/32"
       },
       {
         "HEAD": "23618850b338c7bad6ed0b1634148b7dff9fbc07",
@@ -6898,7 +6898,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s21-gwosc-audit"
+        "worktree": "worktree/33"
       },
       {
         "HEAD": "50be179fd25e391a8651f6fbf752db804c513529",
@@ -6906,7 +6906,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s26-contract-tests"
+        "worktree": "worktree/34"
       },
       {
         "HEAD": "c9ec27d259cb62d0fae8100cffd7b77d08dc3b66",
@@ -6914,7 +6914,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s6-docs-build"
+        "worktree": "worktree/35"
       },
       {
         "HEAD": "42c3c0996dec018870139dddf2ad086e57ce47f0",
@@ -6922,7 +6922,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s7-sphinx"
+        "worktree": "worktree/36"
       },
       {
         "HEAD": "dcaf7d444eded879c5b01fb9aa8d9d966e33a33d",
@@ -6930,7 +6930,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s8-review"
+        "worktree": "worktree/37"
       },
       {
         "HEAD": "d633a17c1df7e13b12a4e5a147894d9128164c00",
@@ -6938,7 +6938,7 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/home/washimi/HDD1TB/worktrees/gwexpy/v026-s9-d633a17c1"
+        "worktree": "worktree/38"
       },
       {
         "HEAD": "9992d17c62125536d886b4d91830ac9fc109456e",
@@ -6946,8 +6946,14 @@
         "dirty_entry_count": 0,
         "status_exit": 0,
         "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "worktree": "/tmp/gwex-sha"
+        "worktree": "worktree/39"
       }
     ]
+  },
+  "path_normalization": {
+    "strategy": "Local absolute filesystem paths are replaced with repository-relative labels.",
+    "worktree_labels": "worktree/01 through worktree/39 follow the original worktree inventory order and are reused in both snapshots and matching process CWDs.",
+    "other_local_paths": "Script, input, log, and readback paths use role-labeled relative paths with basenames only.",
+    "preserved_evidence": "Branch names, commit SHAs, timestamps, status values, process counts, GitHub readbacks, and deletion receipts are unchanged."
   }
 }
