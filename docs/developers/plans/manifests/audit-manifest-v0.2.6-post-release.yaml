@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-27T14:52:35Z",
+  "recorded_at_utc": "2026-10-27T17:42:09Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.6",
@@ -172,12 +172,19 @@
       "readback_succeeded": true
     },
     "remote_cleanup": {
-      "status": "pending_external",
-      "actor": "GitHub Actions",
+      "status": "complete",
+      "actor": "tatsuki-washimi via GitHub API",
       "objective": "Assess remote branches using ancestry and open PRs",
-      "evidence": [],
-      "pending_reason": "Assessment missing",
-      "resume_condition": "Run read-only remote assessment"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+          "sha256": "8189f07f0d0bcd1369874fe56956ca3bbc9db9dd6f39c9c0c6c4477bfde24076",
+          "observed_at_utc": "2026-10-27T17:17:29Z",
+          "observation": "GitHub API readback at 2026-10-27T17:17:29Z verified that all 70 fixed-allowlist refs were deleted (0 already absent, 0 skipped), the 144 remaining refs exactly matched the initial inventory minus the allowlist, main stayed at d29fe2ce97ea1b7778c9be697651fe3f38b8c21f, all 7 Open PR heads and protected or explicitly held refs remained, all 4 v0.2.6-related tags were unchanged, and no API errors occurred. A fresh readback at 2026-10-27T17:35:00Z matched the saved 144-branch inventory and 7 Open PR records."
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "local_cleanup": {
       "status": "pending_external",
