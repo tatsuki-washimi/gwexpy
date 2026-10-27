@@ -883,7 +883,7 @@ def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
     assert contract["source_metadata_date_policy"] == "independent"
     assert contract["publication_tip_policy"] == "qualified_candidate_ancestor"
     assert contract["recovery_dispatch_ref"] == (
-        "refs/tags/v0.2.6-recovery-control-pypi-reconcile"
+        "refs/tags/v0.2.6-recovery-control-release-readback"
     )
     assert contract["promotion"]["artifact_retention"] == {
         "configured_retention_days": 90,
@@ -1064,6 +1064,19 @@ def test_v026_rejects_the_superseded_recovery_control_ref() -> None:
         contracts._validate_contract("v0.2.6", candidate)
 
 
+def test_v026_rejects_the_superseded_pypi_reconcile_control_ref() -> None:
+    contracts = load_contract_module()
+    candidate = contracts.release_contract("v0.2.6")
+    candidate["recovery_dispatch_ref"] = (
+        "refs/tags/v0.2.6-recovery-control-pypi-reconcile"
+    )
+
+    with pytest.raises(
+        contracts.ReleaseContractError, match="invalid recovery_dispatch_ref"
+    ):
+        contracts._validate_contract("v0.2.6", candidate)
+
+
 def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
     contracts = load_contract_module()
 
@@ -1085,7 +1098,7 @@ def test_release_contract_cli_emits_v026_publication_policies() -> None:
         "tagger_date_policy=independent",
         "source_metadata_date_policy=independent",
         "publication_tip_policy=qualified_candidate_ancestor",
-        "recovery_dispatch_ref=refs/tags/v0.2.6-recovery-control-pypi-reconcile",
+        "recovery_dispatch_ref=refs/tags/v0.2.6-recovery-control-release-readback",
     ]
 
 

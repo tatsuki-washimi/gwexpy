@@ -725,6 +725,34 @@ def test_existing_release_recovery_checks_tag_identity_before_any_release_write(
     assert all("--clobber" not in step["run"] for step in release_uploads)
 
 
+def test_existing_release_cli_uses_exact_workflow_controller_helper():
+    import yaml
+
+    release = yaml.safe_load(read_workflow())["jobs"]["github_release"]
+    steps = release["steps"]
+    checkout = next(
+        step
+        for step in steps
+        if step.get("name")
+        == "Check out exact workflow controller for Release readback"
+    )
+    assert checkout["uses"] == (
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+    )
+    assert checkout["with"]["ref"] == "${{ github.workflow_sha }}"
+    assert checkout["with"]["path"] == "control"
+    assert checkout["with"]["persist-credentials"] is False
+
+    readback = next(
+        step
+        for step in steps
+        if step.get("name")
+        == "Verify existing Release assets and upload only missing candidate files"
+    )
+    assert readback["working-directory"] == "control"
+    assert "--existing-release" in readback["run"]
+
+
 def test_pypi_promotion_reconciles_only_missing_manifest_bound_files():
     import yaml
 

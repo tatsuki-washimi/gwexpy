@@ -1484,6 +1484,13 @@ jobs:
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 0
           path: source
+      - name: Check out exact workflow controller for Release readback
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          path: control
       - name: Download exact candidate artifacts by ID
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -1606,7 +1613,7 @@ jobs:
             --verify-tag
       - name: Verify existing Release assets and upload only missing candidate files
         if: steps.existing.outputs.existing == 'true'
-        working-directory: source
+        working-directory: control
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
