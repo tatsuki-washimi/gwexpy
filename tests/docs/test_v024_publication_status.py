@@ -150,7 +150,7 @@ def test_public_release_sources_distinguish_published_and_pending_channels() -> 
     status = json.loads(
         (ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
-    assert status == {"latest_release": "0.2.5", "intro_examples_release": "0.2.4"}
+    assert status == {"latest_release": "0.2.6", "intro_examples_release": "0.2.4"}
 
     public_sources = (
         ROOT / "docs_redesign/tutorials/installation.md",

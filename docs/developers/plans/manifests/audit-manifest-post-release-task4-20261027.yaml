@@ -160,11 +160,11 @@ final_independent_review_followup_20261027:
       wheel: 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003
       sdist: b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783
     commands:
-      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py resolve --release-run-id 40439962941 --release-tag v0.2.6 --output /home/washimi/HDD1TB/tmp/post-release-v0.2.6-resolved.json
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py resolve --release-run-id 40439962941 --release-tag v0.2.6 --output ~/HDD1TB/tmp/post-release-v0.2.6-resolved.json
         result: passed; selected existing successful run and exact PyPI readback; no rebuild or upload
-      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record /home/washimi/HDD1TB/tmp/post-release-v0.2.6-resolved.json --output /home/washimi/HDD1TB/tmp/post-release-v0.2.6-observed.json
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record ~/HDD1TB/tmp/post-release-v0.2.6-resolved.json --output ~/HDD1TB/tmp/post-release-v0.2.6-observed.json
         result: passed; GitHub/PyPI/Zenodo readbacks succeeded; conda-forge PR 16 pending_review; exact conda 0.2.6 package pending_external; docs_eligible true; Zenodo date disposition pending_review
-      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record /home/washimi/HDD1TB/tmp/post-release-v0.2.6-observed.json --output /home/washimi/HDD1TB/tmp/post-release-v0.2.6-rerun.json
+      - command: GITHUB_REPOSITORY=tatsuki-washimi/gwexpy conda run -n gwexpy python scripts/ci/post_release.py observe --record ~/HDD1TB/tmp/post-release-v0.2.6-observed.json --output ~/HDD1TB/tmp/post-release-v0.2.6-rerun.json
         result: passed; aggregate remains pending_review and each observer evidence count remains unchanged (1 for observed services, 0 for docs/pages/cleanup)
       - command: Read-only `observe_docs_pages` against the verified v0.2.6 record, repeated twice and compared
         result: passed; Pages pending_external and Docs pending_review because live site is still v0.2.5; one evidence entry each, with no duplicate on rerun

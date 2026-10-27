@@ -39,6 +39,7 @@ local_snapshot:
     hold: 33
     remove_eligible: 0
   assessment: Each row records path, branch or detached status, HEAD SHA, dirty/untracked entry counts, current-directory processes, recommendation, and a hold/retain reason.
+  path_display: Home-relative paths are recorded with ~ to avoid publishing workstation-specific absolute home prefixes.
   limitation: Current-directory process detection does not identify open file handles or infer intent from other sessions. Clean worktrees without direct owner-purpose evidence remain held.
   boundary: Assessment only. No worktree was removed. A separate explicit authorization is required for any removal.
 verification:
