@@ -2,18 +2,19 @@
 
 ## Current scope
 
-The only release workflow is `publish-release.yml`. Manual candidate runs must
-be dispatched from `main`, which the workflow enforces. The release contract
-in `scripts/ci/release_contracts.json` determines whether a version uses the
-historical release path or build-once promotion.
+The only release workflow is `publish-release.yml`. Candidate qualification
+dispatches must run from `main`, which the workflow enforces. The v0.2.6
+recovery mode runs from its contract-selected protected control tag and
+requires the exact Release Owner recovery authorization described below.
+Release contracts determine the version-specific validation and publication
+policies.
 
 v0.2.5 is published and immutable. v0.2.6 is the selected maintenance release
 candidate and has a registered promotion contract in
 `scripts/ci/release_contracts.json`; it has not been published. The v0.2.6
 contract uses the build-once promotion procedure below. Other versions use the
 historical path or build-once promotion only when their own contract selects
-that behavior. Existing contract entries and their legacy behavior remain
-unchanged as release history.
+that behavior. Historical contract entries remain unchanged.
 
 ## v0.2.6 source review evidence v2
 
@@ -282,8 +283,10 @@ Contracts without the promotion schema retain their frozen historical
 workflow and evidence behavior. Do not use the legacy commands below to run a
 future promotion-enabled version.
 
-The only release workflow is `publish-release.yml`.  Manual dispatches are
-dry-runs and must be launched with `--ref main`, which the workflow enforces:
+Candidate dispatch is the default manual mode; it runs qualification and
+promotion-evidence checks without publication and must use `--ref main`.
+The v0.2.6 recovery mode described above is separately gated by its control
+tag and exact Release Owner authorization:
 
 ```bash
 gh workflow run publish-release.yml --ref main \
@@ -358,32 +361,104 @@ release instead of rewriting an older one.
 `release_ref` is either an existing annotated final-release tag (strict mode)
 or a lowercase 40-character candidate SHA.  Branch names, abbreviated SHAs,
 and arbitrary ref expressions are rejected.  Candidate mode requires that the
-expected tag does not exist; it verifies package, CITATION, Zenodo, and
-CHANGELOG version/date consistency but cannot verify a tagger date.
+expected tag does not exist; it verifies package and metadata version
+consistency, the contract's source-date policy, and each source date's
+calendar validity, but cannot verify a tagger date.
 
-Before pushing a final tag, run a candidate dry-run against the release SHA,
-then create an annotated tag locally.  Verify the tag name, peeled commit SHA,
-and UTC tagger date against the release metadata.  Signed tags are recommended.
-The UTC tagger date must equal the release date recorded in `.zenodo.json`,
-`CITATION.cff`, and the `CHANGELOG.md` heading of the frozen source; the tag
-validator fails closed on any mismatch.  The date is a property of the frozen
-source: do not backdate a tag, and if the date changes, create a new source
-freeze with fresh reviews and new human approval.  For v0.2.6 the conditional
-target is 2026-10-24 UTC; if the gates cannot complete by that date (the
-window ends 2026-10-25 09:00 JST), hold and request a new date from the Release
-Owner rather than retagging.
-Push the tag only after the candidate result, target-SHA CI, physics sign-off,
-PyPI publisher, environment, and ruleset readbacks are all approved.
+Before pushing a new final tag, run a candidate dry-run against the release
+SHA, then create an annotated tag locally.  Verify the tag name, peeled commit
+SHA, and complete tag object.  Signed tags are recommended.  Each release
+contract selects a `tagger_date_policy`: historical contracts without that
+field retain the original tagger-date-equals-metadata rule, while new
+contracts explicitly select `independent`.  Under `independent`, the tagger
+timestamp is recorded as Git history and is not compared with a planned date
+inside the source.
 
-After a tag push, the strict workflow must pass verify, build, smoke, all
+The package version and each present source date in `.zenodo.json`,
+`CITATION.cff`, and the `CHANGELOG.md` release heading must remain
+unambiguous, syntactically valid, and a real calendar date. Historical
+contracts retain their source-date equality rule. v0.2.6 and future contracts
+use `source_metadata_date_policy: independent`: the citation date, Zenodo
+metadata date, and changelog display date may differ and none asserts the
+GitHub Release or PyPI upload timestamp. A planned date does not expire a
+qualified candidate. Record GitHub Release and PyPI times from their service
+readbacks and Zenodo's date from its record. Do not silently alter candidate
+source metadata to make those service dates match.
+
+Zenodo's GitHub integration uses `.zenodo.json` in preference to
+`CITATION.cff` when both files exist, so `publication_date` is an external
+metadata choice, not merely a local label. For the current Candidate, keep the
+source bytes unchanged and explicitly choose in the recovery authorization
+whether to correct Zenodo's record after archiving or retain 2026-10-24. For
+future releases, decide the `.zenodo.json` date disposition before the
+existing Release Owner GO, then verify Zenodo's published record. See
+[Zenodo's software metadata rules](https://help.zenodo.org/docs/github/describe-software/)
+and its [`.zenodo.json` guide](https://help.zenodo.org/docs/github/describe-software/zenodo-json/).
+
+For v0.2.6, the frozen source records 2026-10-24 in its citation, Zenodo, and
+changelog metadata. It remains Candidate source metadata and is not asserted
+to be the eventual tagger, GitHub Release, PyPI, or Zenodo publication date.
+The v0.2.6 recovery authorization must explicitly decide how the existing
+`.zenodo.json` `publication_date` value will be handled, because Zenodo imports
+that file when it archives the GitHub Release.
+
+For a new tag push, the strict workflow must pass verify, build, smoke,
 version-specific qualification and evidence gates, then create and read back
 the GitHub Release before PyPI publication can start. The Release uses the
-same-run checksum-validated wheel, sdist, and detached sidecars, and the exact
-annotated tag must still resolve to the validated source SHA. A pre-existing
-Release for that tag fails closed. Manual workflow dispatch remains a
-candidate-only dry-run and cannot create a GitHub Release or publish to PyPI.
-Confirm the PyPI distribution/version, GitHub Release, Zenodo, and conda
-follow-up state before declaring release acceptance.
+manifest-bound wheel, sdist, and detached sidecars, and the exact annotated
+tag must still resolve to the validated source SHA. An existing Release is
+accepted only after exact tag, notes, asset, and downloaded-byte readback; only
+missing, manifest-bound assets may be added.
+
+Manual workflow dispatch defaults to candidate qualification and cannot
+publish. The v0.2.6 recovery mode is the only exception: it requires dispatch
+from the contract-selected annotated control tag, the existing `v0.2.6` tag,
+its original successful Candidate run and manifest, the original source
+approval and Release Owner GO, and a later exact Release Owner recovery GO.
+The recovery graph skips rebuilding and re-running scientific qualification;
+it verifies the retained Candidate evidence and downloads only the original
+manifest-selected artifact IDs. The workflow must use the existing `pypi`
+environment and PyPI Trusted Publisher. No API token, alternate environment,
+or new publisher is permitted. The control tag uses the existing `v*` tag
+environment rule; its push is excluded from release publication and its
+workflow dispatch is checked against protected `main` history.
+
+After publication, confirm the PyPI distribution/version and exact file
+hashes, GitHub Release assets and publication timestamp, Zenodo record
+metadata, and conda follow-up state before declaring release acceptance.
+
+A v0.2.6 recovery dispatch requires the latest Release Owner record on Issue
+#797 to match this exact format. `recovery_pr` is the merged implementation PR;
+the control tag must peel to that PR's `main` merge commit. The workflow
+verifies this relation through the GitHub pull request API before any public
+job can run.
+
+```text
+GWEXPY-RELEASE-RECOVERY-v1
+version=0.2.6
+tag=v0.2.6
+source_sha=a1ff8e2f18ef4e599727d6df6fdff61fce7019bd
+tag_object_sha=e9f30e6b410d6c599880f741f188f48db4067869
+control_ref=refs/tags/v0.2.6-recovery-control
+recovery_pr=<merged-implementation-PR-number>
+candidate_run_id=40161240805
+promotion_manifest_sha256=8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d
+sdist_sha256=b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783
+wheel_sha256=3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003
+tagger_date_policy=independent
+source_metadata_date_policy=independent
+publication_tip_policy=qualified_candidate_ancestor
+existing_candidate=reuse-qualified-candidate
+zenodo_date_disposition=correct-after-archive
+trusted_publishing=existing-pypi-workflow-environment
+publication_decision=GO
+```
+
+`zenodo_date_disposition` may instead be `retain-candidate-date`; that
+explicitly accepts the Candidate's 2026-10-24 `.zenodo.json` date. The
+workflow-dispatch input must match the Owner record. For a `HOLD`, post the
+same exact record with `publication_decision=HOLD`; the latest matching Owner
+record wins.
 
 ## Partial PyPI upload recovery
 
@@ -461,14 +536,20 @@ from the same qualified run.
 
 ## Frozen source, payload, and evidence
 
-Both a candidate dispatch and a tag push run the frozen-tip validator.  It
-loads the exact expected tag's `protected_refs` from the release contract and
-requires every fetched `origin/<protected-ref>` tip to equal the validated
-40-character source SHA.  The frozen v0.1.13 and v0.1.14 contracts require
-`main` and `maint/0.1`; v0.2.0 and v0.2.2 require exactly `main` and
-`maint/0.2`, as do v0.2.3 and v0.2.4.
-A missing protected-ref fetch or any moved tip is a release failure; it is
-never ignored as optional.
+Candidate Qualification runs the frozen-tip validator. It loads the exact
+expected tag's `protected_refs` from the release contract and requires every
+fetched `origin/<protected-ref>` tip to equal the validated 40-character
+source SHA at qualification time. A missing protected-ref fetch or any moved
+tip at that point fails closed.
+
+Publication validates the qualified source against the same protected
+histories. Historical contracts retain their exact-tip publication rule.
+Contracts using `qualified_candidate_ancestor` require the candidate to
+remain an ancestor of every protected branch, but allow ordinary fast-forward
+advances after qualification. Missing history, a force-updated ref that no
+longer contains the candidate, or a tag that peels to another source SHA still
+fails closed. New contracts must declare the source-metadata-date,
+tagger-date, and publication-tip policies.
 
 The PyPI upload artifact is a fresh `release-payload-<source-sha>` directory
 containing exactly one normalized wheel and one sdist.  `LICENSE.sha256` and
@@ -663,12 +744,13 @@ grading its own working tree, and it pins the source to an exact SHA that
 `build`, `smoke`, and `publish` all reuse.
 
 **The dual checkout is not, by itself, protection against a modified tag
-revision.**  On a `workflow_dispatch` run the control revision is pinned to
-`main` by the `--ref main` enforcement above.  On a *tag push*,
-`github.workflow_sha` is the revision the tag points at -- it identifies the
-commit containing the workflow file, not an independently protected `main`.
-A tag carrying a rewritten workflow would therefore run its own validator.
-Do not read the two checkouts as a protected-controller architecture.
+revision.** Candidate qualification dispatches run from protected `main`.
+v0.2.6 recovery dispatch is bound to the exact contract-selected annotated
+control tag; the workflow checks that its commit is the workflow revision and
+an ancestor of protected `main`. A normal *tag push* uses the tag's own
+`github.workflow_sha`, so the release-tag creation and integrity rulesets
+remain part of the trust boundary. Do not read the two checkouts as a
+protected-controller architecture.
 
 What actually bounds that risk is configured outside this repository, and
 must be verified by readback before every release.  Keep two categories

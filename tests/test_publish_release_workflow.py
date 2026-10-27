@@ -24,14 +24,22 @@ def read_workflow() -> str:
     return WORKFLOW.read_text(encoding="utf-8")
 
 
-def test_release_workflow_replaces_legacy_identity_and_is_manual_dry_run_only():
+def test_release_workflow_defaults_to_candidate_dry_run_and_has_owner_gated_recovery():
     workflow = read_workflow()
     assert not (WORKFLOW.parent / "release.yml").exists()
     assert "workflow_dispatch:" in workflow
+    assert "release_mode:" in workflow
+    assert "default: candidate" in workflow
+    assert "zenodo_date_disposition:" in workflow
     assert "release_ref:" in workflow
     assert "expected_tag:" in workflow
-    assert "      publish:" not in workflow
-    assert "workflow_dispatch must run with --ref main" in workflow
+    assert "candidate workflow_dispatch must run with --ref main" in workflow
+    assert "!v0.2.6-recovery-control" in workflow
+    assert "recovery dispatch must use its contract-selected control tag" in workflow
+    assert "verify_release_recovery.py" in workflow
+    assert "recovery_authorized == 'true'" in workflow
+    assert "name: pypi" in workflow
+    assert "id-token: write" in workflow
 
 
 def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
@@ -56,16 +64,15 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     assert workflow.count("id-token: write") == 2
 
 
-def test_verify_separates_validator_and_source_trees_and_publish_requires_tag_push():
+def test_verify_separates_validator_and_source_trees_and_gates_recovery_dispatch():
     """The verify job keeps validator code and validated source apart.
 
-    This asserts separation and SHA pinning only. It deliberately does *not*
-    assert that the `control` checkout is an independent trust boundary: on a
-    tag push `github.workflow_sha` is the revision the tag points at, not a
-    protected `main`, so a tag carrying a rewritten workflow would supply its
-    own validator. The controls that bound that risk are the tag rulesets,
-    the `pypi` environment, and the PyPI Trusted Publisher binding -- all
-    configured outside this repository and documented in RELEASING.md.
+    Candidate dispatch uses protected `main`; the v0.2.6 recovery dispatch
+    uses a contract-selected immutable control tag whose commit is checked
+    against protected `main`. A normal release tag push still runs the
+    workflow revision contained in that release tag. The repository's tag
+    rulesets, PyPI environment, and Trusted Publisher remain external
+    controls and are documented in RELEASING.md.
     """
     workflow = read_workflow()
     assert "ref: ${{ github.workflow_sha }}" in workflow
@@ -76,8 +83,31 @@ def test_verify_separates_validator_and_source_trees_and_publish_requires_tag_pu
     assert "scripts/validate_release.py" in workflow
     assert "github.event_name == 'push'" in workflow
     assert "startsWith(github.ref, 'refs/tags/v')" in workflow
+    assert "inputs.release_mode == 'recovery'" in workflow
+    assert "recovery_authorized == 'true'" in workflow
+    assert "inputs.release_mode == 'candidate'" in workflow
     assert "twine check --strict" in workflow
     assert "sys.prefix" in workflow
+
+
+def test_candidate_dispatch_always_keeps_exact_frozen_tip_qualification():
+    workflow = read_workflow()
+    validate = workflow.split(
+        "- name: Validate metadata, tag mode, ancestry, and frozen tips", maxsplit=1
+    )[1].split(
+        "- name: Resolve contract-selected candidate qualification profile", maxsplit=1
+    )[0]
+
+    assert (
+        "RELEASE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}"
+        in validate
+    )
+    assert re.search(
+        r'if \[\[ "\$RELEASE_MODE" == "candidate" \|\| .*?\]\]; then\s+'
+        r"validation_args\+=\(--frozen-tip\)",
+        validate,
+        re.DOTALL,
+    )
 
 
 def test_releasing_doc_separates_enforced_controls_from_operational_rules():
@@ -230,7 +260,7 @@ def test_releasing_documents_future_build_once_promotion_contract():
         assert required in normalized
 
 
-def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays_dry_run():
+def test_tag_push_and_owner_authorized_recovery_create_release_before_pypi():
     workflow = read_workflow()
     jobs = workflow.split("\njobs:\n", maxsplit=1)[1]
     release = jobs.split("\n  github_release:\n", maxsplit=1)[1].split(
@@ -262,6 +292,8 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
         "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
         in release
     )
+    assert "inputs.release_mode == 'recovery'" in release
+    assert "recovery_authorized == 'true'" in release
     assert "contents: write" in release
     assert "EXPECTED_SOURCE_SHA" in release
     assert "refs/tags/$EXPECTED_TAG^{}" in release
@@ -288,10 +320,14 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
         "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
         in publish
     )
+    assert "inputs.release_mode == 'recovery'" in publish
+    assert "recovery_authorized == 'true'" in publish
     assert "id-token: write" in publish
     assert "contents: read" in publish
     assert "contents: write" not in publish
-    assert "workflow_dispatch" not in publish
+    assert "workflow_dispatch" in publish
+    assert "artifact-ids:" in publish
+    assert "run-id:" in publish
 
     import yaml
 
@@ -735,18 +771,22 @@ def test_promotion_tag_graph_verifies_candidate_before_release_and_uses_exact_id
     jobs = yaml.safe_load(read_workflow())["jobs"]
     verification = jobs["promotion_verify"]
     assert verification["if"] == (
-        "${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') "
+        "${{ ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) "
+        "|| (github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery')) "
         "&& needs.verify.outputs.promotion_enabled == 'true' }}"
     )
     assert verification["permissions"] == {
         "contents": "read",
         "actions": "read",
         "issues": "read",
+        "pull-requests": "read",
     }
     assert "verify" in verification["needs"]
     verify_run = "\n".join(step.get("run", "") for step in verification["steps"])
     assert "release_promotion.py verify-tag" in verify_run
     assert "verify_release_human_approval.py" in verify_run
+    assert "verify_release_recovery.py" in verify_run
+    assert "recovery_authorized" in verification["outputs"]
     promotion_source = (
         WORKFLOW.parents[2] / "scripts/ci/release_promotion.py"
     ).read_text()
@@ -1006,9 +1046,11 @@ def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
     matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
 
     assert len(matrix) == 19
-    allowlist = "${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}"
-    assert workflow["jobs"]["qualify"]["if"] == allowlist
-    assert workflow["jobs"]["qualification_evidence"]["if"] == allowlist
+    assert "inputs.release_mode != 'recovery'" in workflow["jobs"]["qualify"]["if"]
+    assert (
+        "inputs.release_mode != 'recovery'"
+        in workflow["jobs"]["qualification_evidence"]["if"]
+    )
     assert matrix == [
         {
             "cell": "install-ubuntu-3.11-wheel",
@@ -1629,7 +1671,7 @@ def test_workflow_dispatch_inputs_are_preserved_for_manual_candidates():
 
     for name in ("release_ref", "expected_tag", "review_evidence"):
         assert f"      {name}:" in dispatch
-    assert dispatch.count("required: true") == 3
+    assert dispatch.count("required: true") == 4
 
 
 def test_workflow_fetches_the_exact_tags_contract_protected_refs():
@@ -1784,10 +1826,7 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
         for python in ("3.11", "3.12")
         for distribution in ("wheel", "sdist")
     }
-    assert (
-        jobs["cross_format_io"]["if"]
-        == "${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')) }}"
-    )
+    assert "inputs.release_mode != 'recovery'" in jobs["cross_format_io"]["if"]
     install = next(
         step
         for step in jobs["cross_format_io"]["steps"]
@@ -1832,6 +1871,10 @@ def test_candidate_graph_is_dispatch_only_and_finalizer_is_read_only():
         assert "github.event_name == 'workflow_dispatch'" in jobs[name]["if"]
         assert "github.event_name == 'push'" in jobs[name]["if"]
         assert "needs.verify.outputs.promotion_enabled != 'true'" in jobs[name]["if"]
+        assert "inputs.release_mode != 'recovery'" in jobs[name]["if"]
+    assert "inputs.release_mode == 'candidate'" in jobs["promotion_manifest"]["if"]
+    assert "inputs.release_mode == 'recovery'" in jobs["promotion_verify"]["if"]
+    assert "recovery_authorized" in jobs["promotion_verify"]["outputs"]
     finalizer = jobs["promotion_manifest"]
     assert finalizer["permissions"] == {"contents": "read", "actions": "read"}
     assert set(finalizer["needs"]) == {
@@ -2019,6 +2062,9 @@ def test_synthetic_future_compatibility_path_runs_junit_and_records_evidence(tmp
     registry = json.loads((root / "scripts/ci/release_contracts.json").read_text())
     contract = dict(registry["releases"]["v0.2.5"])
     contract.pop("review_base_sha", None)
+    contract["tagger_date_policy"] = "independent"
+    contract["source_metadata_date_policy"] = "independent"
+    contract["publication_tip_policy"] = "qualified_candidate_ancestor"
     contract["promotion"] = json.loads(
         (root / "tests/fixtures/release/promotion-contract-v2.json").read_text()
     )["promotion"]

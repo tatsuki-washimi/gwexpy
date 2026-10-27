@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+import importlib.util
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 QUOTED_VALUE_PATTERN = re.compile(r'(["\'])(.*?)\1\s*(?:#.*)?$')
@@ -138,9 +140,37 @@ def get_changelog_release_date(version):
     return match.group(1)
 
 
+def _source_metadata_date_policy(version):
+    """Return the exact release contract's source-date policy.
+
+    Uncontracted development versions retain the historical consistency
+    check. Release validation independently rejects uncontracted tags.
+    """
+    contract_path = Path(__file__).with_name("ci") / "release_contract.py"
+    spec = importlib.util.spec_from_file_location(
+        "release_contract_for_metadata_checker", contract_path
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("release contract loader is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    try:
+        contract = module.release_contract(f"v{version}")
+    except module.ReleaseContractError as exc:
+        if str(exc) == f"unsupported release tag: v{version}":
+            return "consistent"
+        raise
+    return str(contract.get("source_metadata_date_policy", "consistent"))
+
+
 def _check_date(label, value):
     if not DATE_PATTERN.fullmatch(value):
         print(f"Error: {label} release date is not YYYY-MM-DD: {value}")
+        return False
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        print(f"Error: {label} release date is not a valid calendar date: {value}")
         return False
     return True
 
@@ -158,6 +188,11 @@ def main():
     zenodo_version = get_version_from_zenodo()
     zenodo_date = get_date_from_zenodo()
     changelog_date = get_changelog_release_date(py_version)
+    try:
+        source_date_policy = _source_metadata_date_policy(py_version)
+    except (OSError, RuntimeError, ValueError) as exc:
+        print(f"Error loading source metadata date policy: {exc}")
+        sys.exit(1)
 
     errors = 0
 
@@ -187,31 +222,37 @@ def main():
     if not _check_date("CHANGELOG.md", changelog_date):
         errors += 1
 
-    if cff_date and zenodo_date and cff_date != zenodo_date:
-        print(
-            f"Error: Release date mismatch: CITATION.cff {cff_date} != "
-            f".zenodo.json {zenodo_date}"
-        )
+    if source_date_policy == "consistent":
+        if cff_date and zenodo_date and cff_date != zenodo_date:
+            print(
+                f"Error: Release date mismatch: CITATION.cff {cff_date} != "
+                f".zenodo.json {zenodo_date}"
+            )
+            errors += 1
+        if cff_date and changelog_date and cff_date != changelog_date:
+            print(
+                f"Error: Release date mismatch: CITATION.cff {cff_date} != "
+                f"CHANGELOG.md {changelog_date}"
+            )
+            errors += 1
+        if (
+            cff_date
+            and zenodo_date
+            and changelog_date
+            and cff_date == zenodo_date == changelog_date
+        ):
+            print("OK: release dates match.")
+    elif source_date_policy == "independent":
+        print("OK: source metadata dates are individually valid and independent.")
+    else:
+        print(f"Error: unsupported source metadata date policy: {source_date_policy}")
         errors += 1
-    if cff_date and changelog_date and cff_date != changelog_date:
-        print(
-            f"Error: Release date mismatch: CITATION.cff {cff_date} != "
-            f"CHANGELOG.md {changelog_date}"
-        )
-        errors += 1
-    if (
-        cff_date
-        and zenodo_date
-        and changelog_date
-        and cff_date == zenodo_date == changelog_date
-    ):
-        print("OK: release dates match.")
 
     if errors > 0:
         print(f"\nFound {errors} metadata consistency error(s).")
         sys.exit(1)
 
-    print("\nMetadata consistency check passed!")
+    print("\nRelease metadata validation passed!")
 
 
 if __name__ == "__main__":

@@ -118,6 +118,7 @@ def test_future_promotion_candidate_graph_is_dispatch_only_but_legacy_tag_builds
         expression = jobs[job_name]["if"].removeprefix("${{").removesuffix("}}").strip()
         values = {
             "github.event_name": event,
+            "inputs.release_mode": "candidate",
             "needs.verify.outputs.version": version,
             "needs.verify.outputs.promotion_enabled": promotion,
             "needs.verify.outputs.qualify": "true",

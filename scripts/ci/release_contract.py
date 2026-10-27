@@ -57,6 +57,25 @@ CONTRACT_KEYS = {
     "artifact_prefix",
     "protected_refs",
 }
+PUBLICATION_POLICY_KEYS = {
+    "tagger_date_policy",
+    "source_metadata_date_policy",
+    "publication_tip_policy",
+}
+HISTORICAL_STRICT_TAGS = {
+    "v0.1.13",
+    "v0.1.14",
+    "v0.2.0",
+    "v0.2.2",
+    "v0.2.3",
+    "v0.2.4",
+    "v0.2.5",
+}
+PUBLICATION_POLICIES = {
+    "tagger_date_policy": {"must_match_metadata", "independent"},
+    "source_metadata_date_policy": {"consistent", "independent"},
+    "publication_tip_policy": {"exact_tip", "qualified_candidate_ancestor"},
+}
 
 
 class ReleaseContractError(ValueError):
@@ -252,8 +271,64 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         frozenset(CONTRACT_KEYS | {"review_base_sha"}),
         frozenset(CONTRACT_KEYS | {"promotion"}),
         frozenset(CONTRACT_KEYS | {"review_base_sha", "promotion"}),
+        frozenset(CONTRACT_KEYS | PUBLICATION_POLICY_KEYS),
+        frozenset(CONTRACT_KEYS | PUBLICATION_POLICY_KEYS | {"review_base_sha"}),
+        frozenset(CONTRACT_KEYS | PUBLICATION_POLICY_KEYS | {"promotion"}),
+        frozenset(
+            CONTRACT_KEYS | PUBLICATION_POLICY_KEYS | {"review_base_sha", "promotion"}
+        ),
+        frozenset(
+            CONTRACT_KEYS
+            | PUBLICATION_POLICY_KEYS
+            | {"recovery_dispatch_ref", "promotion"}
+        ),
+        frozenset(
+            CONTRACT_KEYS
+            | PUBLICATION_POLICY_KEYS
+            | {"review_base_sha", "recovery_dispatch_ref", "promotion"}
+        ),
     }:
         raise ReleaseContractError(f"invalid release contract for {tag}")
+    has_publication_policy = PUBLICATION_POLICY_KEYS <= set(contract)
+    if bool(PUBLICATION_POLICY_KEYS & set(contract)) != has_publication_policy:
+        raise ReleaseContractError(f"incomplete publication policy for {tag}")
+    if tag not in HISTORICAL_STRICT_TAGS and not has_publication_policy:
+        raise ReleaseContractError(f"{tag} requires an explicit publication policy")
+    if has_publication_policy:
+        for field, choices in PUBLICATION_POLICIES.items():
+            if not isinstance(contract[field], str) or contract[field] not in choices:
+                raise ReleaseContractError(f"invalid {field} for {tag}")
+        if (
+            contract["publication_tip_policy"] == "qualified_candidate_ancestor"
+            and "promotion" not in contract
+        ):
+            raise ReleaseContractError(
+                f"{tag} requires a promotion contract for qualified-candidate publication"
+            )
+        if tag not in HISTORICAL_STRICT_TAGS and (
+            contract["tagger_date_policy"] != "independent"
+            or contract["source_metadata_date_policy"] != "independent"
+            or contract["publication_tip_policy"] != "qualified_candidate_ancestor"
+        ):
+            raise ReleaseContractError(
+                f"{tag} must decouple source dates, tag dates, and qualified branch tips"
+            )
+        if (
+            contract["tagger_date_policy"] == "must_match_metadata"
+            and contract["source_metadata_date_policy"] != "consistent"
+        ):
+            raise ReleaseContractError(
+                f"{tag} cannot match one tag date to independent source metadata dates"
+            )
+    if "recovery_dispatch_ref" in contract:
+        if tag != "v0.2.6" or "promotion" not in contract or not has_publication_policy:
+            raise ReleaseContractError(f"recovery dispatch is unsupported for {tag}")
+        recovery_ref = contract["recovery_dispatch_ref"]
+        if (
+            recovery_ref != "refs/tags/v0.2.6-recovery-control"
+            or recovery_ref == f"refs/tags/{tag}"
+        ):
+            raise ReleaseContractError(f"invalid recovery_dispatch_ref for {tag}")
     review_base_sha = contract.get("review_base_sha")
     if review_base_sha is not None and (
         tag not in {"v0.2.4", "v0.2.5", "v0.2.6"}
@@ -340,19 +415,52 @@ def protected_refs(tag: str) -> list[str]:
     return list(release_contract(tag)["protected_refs"])
 
 
+def release_policies(tag: str) -> dict[str, str | None]:
+    """Return source-date, tag-date, protected-tip, and recovery-ref policy.
+
+    Contracts that predate these explicit fields retain their historical
+    strict defaults: consistent source dates, tagger date matching metadata,
+    and exact protected tips. The v0.2.6 recovery entry explicitly decouples
+    those dates and allows qualified candidates to remain ancestors of
+    advanced protected tips.
+    """
+    contract = release_contract(tag)
+    return {
+        "tagger_date_policy": str(
+            contract.get("tagger_date_policy", "must_match_metadata")
+        ),
+        "source_metadata_date_policy": str(
+            contract.get("source_metadata_date_policy", "consistent")
+        ),
+        "publication_tip_policy": str(
+            contract.get("publication_tip_policy", "exact_tip")
+        ),
+        "recovery_dispatch_ref": (
+            str(contract["recovery_dispatch_ref"])
+            if "recovery_dispatch_ref" in contract
+            else None
+        ),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     """Print an exact-tag workflow value selected from the release contract."""
     parser = argparse.ArgumentParser(description=__doc__)
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument("--protected-ref", metavar="EXPECTED_TAG")
     selection.add_argument("--review-evidence-path", metavar="EXPECTED_TAG")
+    selection.add_argument("--release-policy", metavar="EXPECTED_TAG")
     args = parser.parse_args(argv)
     try:
         if args.protected_ref is not None:
             print(*protected_refs(args.protected_ref), sep="\n")
-        else:
+        elif args.review_evidence_path is not None:
             contract = release_contract(args.review_evidence_path)
             print(contract["review_evidence_path"])
+        else:
+            policies = release_policies(args.release_policy)
+            for key, value in policies.items():
+                print(f"{key}={value if value is not None else ''}")
     except ReleaseContractError as exc:
         print(f"release contract failed: {exc}")
         return 1

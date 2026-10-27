@@ -290,7 +290,7 @@ def test_main_passes_when_release_metadata_matches(tmp_path: Path, monkeypatch, 
 
     module.main()
 
-    assert "Metadata consistency check passed!" in capsys.readouterr().out
+    assert "Release metadata validation passed!" in capsys.readouterr().out
 
 
 def test_main_passes_with_yaml_spacing_variants(tmp_path: Path, monkeypatch, capsys):
@@ -323,7 +323,7 @@ def test_main_passes_with_yaml_spacing_variants(tmp_path: Path, monkeypatch, cap
 
     module.main()
 
-    assert "Metadata consistency check passed!" in capsys.readouterr().out
+    assert "Release metadata validation passed!" in capsys.readouterr().out
 
 
 def test_main_fails_closed_when_cff_exists_without_parseable_version(
@@ -422,6 +422,63 @@ def test_main_fails_when_release_dates_drift(tmp_path: Path, monkeypatch, capsys
     assert "Release date mismatch" in output
 
 
+def test_main_accepts_independently_valid_v026_source_dates(
+    tmp_path: Path, monkeypatch, capsys
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "gwexpy").mkdir()
+    (tmp_path / "gwexpy" / "_version.py").write_text(
+        '__version__ = "0.2.6"\n', encoding="utf-8"
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "version: 0.2.6\ndate-released: 2026-10-24\n", encoding="utf-8"
+    )
+    (tmp_path / ".zenodo.json").write_text(
+        json.dumps({"version": "0.2.6", "publication_date": "2026-10-25"}),
+        encoding="utf-8",
+    )
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## [0.2.6] - 2026-10-26\n", encoding="utf-8"
+    )
+
+    module.main()
+
+    output = capsys.readouterr().out
+    assert "individually valid and independent" in output
+    assert "Release metadata validation passed!" in output
+
+
+def test_main_rejects_invalid_calendar_date_under_independent_policy(
+    tmp_path: Path, monkeypatch, capsys
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "gwexpy").mkdir()
+    (tmp_path / "gwexpy" / "_version.py").write_text(
+        '__version__ = "0.2.6"\n', encoding="utf-8"
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "version: 0.2.6\ndate-released: 2026-10-24\n", encoding="utf-8"
+    )
+    (tmp_path / ".zenodo.json").write_text(
+        json.dumps({"version": "0.2.6", "publication_date": "2026-02-30"}),
+        encoding="utf-8",
+    )
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## [0.2.6] - 2026-10-26\n", encoding="utf-8"
+    )
+
+    try:
+        module.main()
+    except SystemExit as exc:
+        assert exc.code == 1
+    else:
+        raise AssertionError("impossible Zenodo publication date should fail")
+
+    assert "not a valid calendar date: 2026-02-30" in capsys.readouterr().out
+
+
 def test_repository_v026_release_identity_metadata_is_synchronized(monkeypatch, capsys):
     module = load_script_module()
     monkeypatch.chdir(ROOT)
@@ -434,4 +491,4 @@ def test_repository_v026_release_identity_metadata_is_synchronized(monkeypatch, 
 
     module.main()
 
-    assert "Metadata consistency check passed!" in capsys.readouterr().out
+    assert "Release metadata validation passed!" in capsys.readouterr().out

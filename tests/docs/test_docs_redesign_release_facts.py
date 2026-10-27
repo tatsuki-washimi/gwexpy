@@ -371,9 +371,10 @@ def test_published_history_and_v026_candidate_metadata_remain_distinct():
     releasing_text = " ".join(
         (REPO_ROOT / "RELEASING.md").read_text(encoding="utf-8").split()
     )
+    assert "A planned date does not expire a qualified candidate." in releasing_text
     assert (
-        "For v0.2.6 the conditional target is 2026-10-24 UTC; if the gates cannot "
-        "complete by that date (the window ends 2026-10-25 09:00 JST)" in releasing_text
+        "Record GitHub Release and PyPI times from their service readbacks"
+        in releasing_text
     )
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
     release_note_text = " ".join(release_note.split())

@@ -693,6 +693,9 @@ def test_release_contract_loader_rejects_unknown_tags() -> None:
 def _synthetic_promotion_document() -> dict[str, object]:
     base = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))["releases"]["v0.2.5"]
     base.pop("review_base_sha", None)
+    base["tagger_date_policy"] = "independent"
+    base["source_metadata_date_policy"] = "independent"
+    base["publication_tip_policy"] = "qualified_candidate_ancestor"
     return {
         "schema": "gwexpy-release-contracts-v1",
         "releases": {
@@ -776,6 +779,61 @@ def test_v026_rejects_legacy_promotion_contract_schema(
         contracts.release_contract("v0.2.6")
 
 
+def test_future_contracts_must_select_date_and_publication_tip_policies(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    contracts = load_contract_module()
+    document = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    future = dict(document["releases"]["v0.2.6"])
+    future.pop("review_base_sha")
+    future.pop("recovery_dispatch_ref")
+    future["tagger_date_policy"] = "independent"
+    future["source_metadata_date_policy"] = "independent"
+    future["publication_tip_policy"] = "qualified_candidate_ancestor"
+    document["releases"] = {"v0.2.7": future}
+    contract_path = tmp_path / "future-release-contracts.json"
+    contract_path.write_text(json.dumps(document), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", contract_path)
+
+    assert contracts.release_policies("v0.2.7") == {
+        "tagger_date_policy": "independent",
+        "source_metadata_date_policy": "independent",
+        "publication_tip_policy": "qualified_candidate_ancestor",
+        "recovery_dispatch_ref": None,
+    }
+
+    promotion = future.pop("promotion")
+    contract_path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(
+        contracts.ReleaseContractError,
+        match="requires a promotion contract for qualified-candidate publication",
+    ):
+        contracts.release_contract("v0.2.7")
+    future["promotion"] = promotion
+
+    future["tagger_date_policy"] = "must_match_metadata"
+    future["source_metadata_date_policy"] = "consistent"
+    future["publication_tip_policy"] = "exact_tip"
+    contract_path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(
+        contracts.ReleaseContractError,
+        match="must decouple source dates, tag dates, and qualified branch tips",
+    ):
+        contracts.release_contract("v0.2.7")
+
+    future["tagger_date_policy"] = "independent"
+    future["source_metadata_date_policy"] = "independent"
+    future["publication_tip_policy"] = "qualified_candidate_ancestor"
+    future.pop("tagger_date_policy")
+    future.pop("source_metadata_date_policy")
+    future.pop("publication_tip_policy")
+    contract_path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(
+        contracts.ReleaseContractError, match="requires an explicit publication policy"
+    ):
+        contracts.release_contract("v0.2.7")
+
+
 def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
     contracts = load_contract_module()
     values = contracts._load_contracts()
@@ -795,6 +853,17 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         tag: contract for tag, contract in values.items() if tag != "v0.2.6"
     }
     assert all("promotion" not in contract for contract in legacy_releases.values())
+    assert all(
+        key not in contract
+        for tag, contract in values.items()
+        if tag != "v0.2.6"
+        for key in (
+            "tagger_date_policy",
+            "source_metadata_date_policy",
+            "publication_tip_policy",
+            "recovery_dispatch_ref",
+        )
+    )
     assert (
         values["v0.2.5"]["review_evidence_schema"] == "gwexpy-v025-review-evidence-v2"
     )
@@ -810,6 +879,10 @@ def test_v026_uses_platform_independent_review_and_approval_contract() -> None:
         "approver": "tatsuki-washimi",
     }
     assert contract["promotion"]["schema"] == "gwexpy-release-promotion-contract-v2"
+    assert contract["tagger_date_policy"] == "independent"
+    assert contract["source_metadata_date_policy"] == "independent"
+    assert contract["publication_tip_policy"] == "qualified_candidate_ancestor"
+    assert contract["recovery_dispatch_ref"] == "refs/tags/v0.2.6-recovery-control"
     assert contract["promotion"]["artifact_retention"] == {
         "configured_retention_days": 90,
         "expires_at_after_run_started_at_seconds": 90 * 24 * 60 * 60,
@@ -984,6 +1057,23 @@ def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
     assert contracts.protected_refs("v0.2.0") == ["main", "maint/0.2"]
     assert contracts.protected_refs("v0.2.2") == ["main", "maint/0.2"]
     assert contracts.protected_refs("v0.2.3") == ["main", "maint/0.2"]
+
+
+def test_release_contract_cli_emits_v026_publication_policies() -> None:
+    result = subprocess.run(
+        [sys.executable, str(LOADER_PATH), "--release-policy", "v0.2.6"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.stdout.splitlines() == [
+        "tagger_date_policy=independent",
+        "source_metadata_date_policy=independent",
+        "publication_tip_policy=qualified_candidate_ancestor",
+        "recovery_dispatch_ref=refs/tags/v0.2.6-recovery-control",
+    ]
 
 
 def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:

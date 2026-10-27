@@ -4,8 +4,17 @@ on:
   push:
     tags:
       - "v*"
+      - "!v0.2.6-recovery-control"
   workflow_dispatch:
     inputs:
+      release_mode:
+        description: Candidate qualification dry-run or approved v0.2.6 recovery publication
+        required: true
+        type: choice
+        default: candidate
+        options:
+          - candidate
+          - recovery
       release_ref:
         description: Existing final-release tag or full 40-character candidate SHA
         required: true
@@ -17,6 +26,18 @@ on:
       review_evidence:
         description: Repository-relative canonical review evidence at reviewed commit S
         required: true
+        type: string
+      zenodo_date_disposition:
+        description: Owner-approved handling of the candidate's planned Zenodo date
+        required: false
+        type: choice
+        default: correct-after-archive
+        options:
+          - correct-after-archive
+          - retain-candidate-date
+      recovery_pr:
+        description: Merged implementation PR bound by the Release Owner recovery authorization
+        required: false
         type: string
 
 permissions:
@@ -38,6 +59,8 @@ jobs:
       source_sha: ${{ steps.validate.outputs.source_sha }}
       version: ${{ steps.validate.outputs.version }}
       artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}
+      expected_tag: ${{ steps.validate.outputs.expected_tag }}
+      release_mode: ${{ steps.validate.outputs.release_mode }}
       review_evidence: ${{ steps.validate.outputs.review_evidence }}
       tag_object_sha: ${{ steps.validate.outputs.tag_object_sha }}
       promotion_enabled: ${{ steps.profile.outputs.promotion_enabled }}
@@ -49,7 +72,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-          ref: ${{ github.workflow_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery' && github.ref || github.workflow_sha }}
           fetch-depth: 0
           path: control
 
@@ -64,9 +87,51 @@ jobs:
 
       - name: Enforce manual control revision
         if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          GITHUB_REF_VALUE: ${{ github.ref }}
+          RELEASE_MODE: ${{ inputs.release_mode }}
+          EXPECTED_TAG: ${{ inputs.expected_tag }}
+          RELEASE_REF: ${{ inputs.release_ref }}
+          RECOVERY_PR: ${{ inputs.recovery_pr }}
         run: |
-          if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
-            echo "workflow_dispatch must run with --ref main" >&2
+          if [[ "$RELEASE_MODE" == "candidate" ]]; then
+            if [[ "$GITHUB_REF_VALUE" != "refs/heads/main" ]]; then
+              echo "candidate workflow_dispatch must run with --ref main" >&2
+              exit 1
+            fi
+          elif [[ "$RELEASE_MODE" == "recovery" ]]; then
+            policy="$(python control/scripts/ci/release_contract.py --release-policy "$EXPECTED_TAG")"
+            recovery_ref="$(sed -n 's/^recovery_dispatch_ref=//p' <<< "$policy")"
+            tip_policy="$(sed -n 's/^publication_tip_policy=//p' <<< "$policy")"
+            if [[ -z "$recovery_ref" || "$GITHUB_REF_VALUE" != "$recovery_ref" ]]; then
+              echo "recovery dispatch must use its contract-selected control tag" >&2
+              exit 1
+            fi
+            if [[ "$EXPECTED_TAG" != "v0.2.6" || "$RELEASE_REF" != "$EXPECTED_TAG" || "$tip_policy" != "qualified_candidate_ancestor" ]]; then
+              echo "recovery dispatch must target the existing v0.2.6 candidate tag" >&2
+              exit 1
+            fi
+            if [[ ! "$RECOVERY_PR" =~ ^[1-9][0-9]*$ ]]; then
+              echo "recovery dispatch requires the exact implementation PR number" >&2
+              exit 1
+            fi
+            control_object="$(git -C control rev-parse "$recovery_ref")"
+            if [[ "$(git -C control cat-file -t "$control_object")" != "tag" ]]; then
+              echo "recovery control ref must be an annotated tag" >&2
+              exit 1
+            fi
+            control_commit="$(git -C control rev-parse "$recovery_ref^{commit}")"
+            if [[ "$control_commit" != "${{ github.workflow_sha }}" ]]; then
+              echo "recovery control tag does not identify this workflow revision" >&2
+              exit 1
+            fi
+            git -C control fetch --no-tags origin "refs/heads/main:refs/remotes/origin/main"
+            if ! git -C control merge-base --is-ancestor "$control_commit" refs/remotes/origin/main; then
+              echo "recovery control revision is not in protected main history" >&2
+              exit 1
+            fi
+          else
+            echo "unknown workflow_dispatch release mode" >&2
             exit 1
           fi
 
@@ -101,6 +166,7 @@ jobs:
         env:
           RELEASE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
+          RELEASE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}
           REVIEW_EVIDENCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || '' }}
         run: |
           canonical_review_evidence="$(python control/scripts/ci/release_contract.py --review-evidence-path "$EXPECTED_TAG")"
@@ -112,19 +178,29 @@ jobs:
             echo "review evidence input does not match the configured path" >&2
             exit 1
           fi
-          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$canonical_review_evidence" --frozen-tip)"
+          policy="$(python control/scripts/ci/release_contract.py --release-policy "$EXPECTED_TAG")"
+          tip_policy="$(sed -n 's/^publication_tip_policy=//p' <<< "$policy")"
+          validation_args=()
+          if [[ "$RELEASE_MODE" == "candidate" || ! "$RELEASE_REF" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$tip_policy" == "exact_tip" ]]; then
+            validation_args+=(--frozen-tip)
+          fi
+          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$canonical_review_evidence" "${validation_args[@]}")"
           printf '%s\n' "$result"
-          printf '%s\n' "$result" | awk -F= '
-            /^source_sha=/ {print "source_sha=" $2}
-            /^version=/ {print "version=" $2}
-            /^artifact_prefix=/ {print "artifact_prefix=" $2}
-          ' >> "$GITHUB_OUTPUT"
           tag_object_sha=""
           if git -C source cat-file -e "refs/tags/$EXPECTED_TAG^{tag}" 2>/dev/null; then
             tag_object_sha="$(git -C source rev-parse "refs/tags/$EXPECTED_TAG")"
           fi
-          printf 'tag_object_sha=%s\n' "$tag_object_sha" >> "$GITHUB_OUTPUT"
-          printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
+          {
+            printf '%s\n' "$result" | awk -F= '
+              /^source_sha=/ {print "source_sha=" $2}
+              /^version=/ {print "version=" $2}
+              /^artifact_prefix=/ {print "artifact_prefix=" $2}
+            '
+            printf 'tag_object_sha=%s\n' "$tag_object_sha"
+            printf 'review_evidence=%s\n' "$canonical_review_evidence"
+            printf 'expected_tag=%s\n' "$EXPECTED_TAG"
+            printf 'release_mode=%s\n' "${{ github.event_name == 'workflow_dispatch' && inputs.release_mode || 'tag' }}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Resolve contract-selected candidate qualification profile
         id: profile
@@ -149,7 +225,7 @@ jobs:
   build:
     name: Build and check release artifacts
     needs: verify
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -228,7 +304,7 @@ jobs:
   smoke:
     name: Smoke-test ${{ matrix.distribution }} on Python ${{ matrix.python-version }}
     needs: [verify, build]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -324,7 +400,7 @@ jobs:
   qualify:
     name: Qualify ${{ matrix.cell }}
     needs: [verify, build]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -575,7 +651,7 @@ jobs:
   qualification_evidence:
     name: Aggregate nineteen qualification cells
     needs: [verify, build, qualify]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -734,7 +810,7 @@ jobs:
   diaggui_qualification:
     name: Qualify installed DiagGUI routes (${{ matrix.cell }})
     needs: [verify, build]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -854,7 +930,7 @@ jobs:
   diaggui_qualification_evidence:
     name: Aggregate four DiagGUI qualification cells
     needs: [verify, build, diaggui_qualification]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.diaggui_qualification != 'true') || needs.diaggui_qualification.result == 'success')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.diaggui_qualification != 'true') || needs.diaggui_qualification.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -919,7 +995,7 @@ jobs:
   cross_format_io:
     name: Qualify installed cross-format I/O (${{ matrix.cell }})
     needs: [verify, build]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -1009,7 +1085,7 @@ jobs:
   cross_format_io_evidence:
     name: Aggregate eight cross-format I/O cells
     needs: [verify, build, cross_format_io]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.cross_format_io != 'true') || needs.cross_format_io.result == 'success')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.cross_format_io != 'true') || needs.cross_format_io.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -1062,7 +1138,7 @@ jobs:
   historical_74_gate:
     name: Enforce v0.2.5 historical 62 passes and 12 owner dispositions
     needs: [verify, build]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -1154,7 +1230,7 @@ jobs:
   evidence:
     name: Collect same-run integration evidence
     needs: [verify, build, smoke]
-    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
+    if: ${{ ((github.event_name == 'workflow_dispatch' && inputs.release_mode != 'recovery') || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -1233,7 +1309,7 @@ jobs:
   promotion_manifest:
     name: Finalize immutable candidate promotion manifest
     needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification, diaggui_qualification_evidence, cross_format_io, cross_format_io_evidence, evidence]
-    if: ${{ github.event_name == 'workflow_dispatch' && !cancelled() && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.build.result == 'success' && needs.smoke.result == 'success' && needs.qualify.result == 'success' && needs.qualification_evidence.result == 'success' && needs.diaggui_qualification.result == 'success' && needs.diaggui_qualification_evidence.result == 'success' && needs.cross_format_io.result == 'success' && needs.cross_format_io_evidence.result == 'success' && needs.evidence.result == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode == 'candidate' && !cancelled() && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.build.result == 'success' && needs.smoke.result == 'success' && needs.qualify.result == 'success' && needs.qualification_evidence.result == 'success' && needs.diaggui_qualification.result == 'success' && needs.diaggui_qualification_evidence.result == 'success' && needs.cross_format_io.result == 'success' && needs.cross_format_io_evidence.result == 'success' && needs.evidence.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -1279,13 +1355,14 @@ jobs:
   promotion_verify:
     name: Verify exact candidate promotion before Release creation
     needs: verify
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' }}
+    if: ${{ ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery')) && needs.verify.outputs.promotion_enabled == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
       actions: read
       issues: read
+      pull-requests: read
     outputs:
       candidate_run_id: ${{ steps.verify.outputs.candidate_run_id }}
       manifest_artifact_id: ${{ steps.verify.outputs.manifest_artifact_id }}
@@ -1295,6 +1372,7 @@ jobs:
       license_sidecar_artifact_id: ${{ steps.verify.outputs.license_sidecar_artifact_id }}
       sdist_sha256: ${{ steps.verify.outputs.sdist_sha256 }}
       wheel_sha256: ${{ steps.verify.outputs.wheel_sha256 }}
+      recovery_authorized: ${{ steps.recovery.outputs.authorized }}
     steps:
       - name: Check out exact release source and annotated tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -1303,6 +1381,13 @@ jobs:
           ref: ${{ needs.verify.outputs.source_sha }}
           fetch-depth: 0
           path: source
+      - name: Check out the exact workflow-control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          path: control
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
@@ -1310,7 +1395,7 @@ jobs:
       - name: Read the exact annotated tag record
         working-directory: source
         env:
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           EXPECTED_TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
           TAG_BODY: ${{ runner.temp }}/promotion-tag-body.txt
@@ -1341,7 +1426,7 @@ jobs:
       - name: Verify tag record, completed candidate, exact artifacts, GO, and evidence
         id: verify
         env:
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1355,7 +1440,7 @@ jobs:
             --output "${{ runner.temp }}/tag-promotion"
       - name: Recheck exact configured S approval comment through GitHub
         env:
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -1363,11 +1448,29 @@ jobs:
             --repo-root source \
             --expected-tag "$EXPECTED_TAG" \
             --repository "$GITHUB_REPOSITORY"
+      - name: Verify exact Release Owner recovery authorization
+        id: recovery
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery' }}
+        working-directory: control
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
+          CONTROL_SHA: ${{ github.workflow_sha }}
+          RECOVERY_PR: ${{ inputs.recovery_pr }}
+          CANDIDATE_RUN_ID: ${{ steps.verify.outputs.candidate_run_id }}
+          MANIFEST_SHA256: ${{ steps.verify.outputs.manifest_sha256 }}
+          SDIST_SHA256: ${{ steps.verify.outputs.sdist_sha256 }}
+          WHEEL_SHA256: ${{ steps.verify.outputs.wheel_sha256 }}
+          ZENODO_DATE_DISPOSITION: ${{ inputs.zenodo_date_disposition }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/ci/verify_release_recovery.py --repository "$GITHUB_REPOSITORY" --tag "$EXPECTED_TAG" --source-sha "$SOURCE_SHA" --tag-object-sha "$TAG_OBJECT_SHA" --control-sha "$CONTROL_SHA" --recovery-pr "$RECOVERY_PR" --candidate-run-id "$CANDIDATE_RUN_ID" --manifest-sha256 "$MANIFEST_SHA256" --sdist-sha256 "$SDIST_SHA256" --wheel-sha256 "$WHEEL_SHA256" --zenodo-date-disposition "$ZENODO_DATE_DISPOSITION"
 
   github_release:
     name: Create or read back promoted GitHub Release
     needs: [verify, promotion_verify]
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' }}
+    if: ${{ ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery' && needs.promotion_verify.outputs.recovery_authorized == 'true')) && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -1425,7 +1528,7 @@ jobs:
       - name: Recheck annotated tag before Release writes
         working-directory: source
         env:
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           EXPECTED_TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
         run: |
@@ -1454,7 +1557,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
           EXISTING_RELEASE_PATH: ${{ runner.temp }}/existing-release.json
@@ -1487,7 +1590,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
         run: |
           gh release create "$EXPECTED_TAG" \
@@ -1507,7 +1610,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           EXISTING_RELEASE_PATH: ${{ runner.temp }}/existing-release.json
         run: |
@@ -1551,7 +1654,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           EXISTING_RELEASE: ${{ steps.existing.outputs.existing }}
         run: |
@@ -1592,7 +1695,7 @@ jobs:
   publish:
     name: Publish exact promoted payload to PyPI
     needs: [verify, promotion_verify, github_release]
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' }}
+    if: ${{ ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery' && needs.promotion_verify.outputs.recovery_authorized == 'true')) && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
@@ -1666,7 +1769,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           CANDIDATE_RUN_ID: ${{ needs.promotion_verify.outputs.candidate_run_id }}
           MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
@@ -1856,7 +1959,7 @@ jobs:
   pypi_readback:
     name: Read back exact published PyPI files
     needs: [verify, promotion_verify, github_release, publish]
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' && needs.publish.result == 'success' }}
+    if: ${{ ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && inputs.release_mode == 'recovery' && needs.promotion_verify.outputs.recovery_authorized == 'true')) && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' && needs.publish.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -1888,7 +1991,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_TAG: ${{ needs.verify.outputs.expected_tag }}
           MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
           MANIFEST_SHA256: ${{ needs.promotion_verify.outputs.manifest_sha256 }}
           PAYLOAD_DIR: ${{ runner.temp }}/release-payload
