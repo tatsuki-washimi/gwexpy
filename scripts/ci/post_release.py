@@ -605,6 +605,7 @@ def persist(repository: str, record: dict[str, Any]) -> str:
             "existing PR closed unmerged; owner must reconcile",
         )
     merged_refresh = bool(pulls and not active)
+    reviewed_head = pulls[0].get("head", {}).get("sha") if merged_refresh else None
     branches = {entry["name"] for entry in pages(repository, "branches")}
     if branch not in branches:
         base = api(repository, f"git/ref/heads/{default}")["object"]["sha"]
@@ -631,8 +632,76 @@ def persist(repository: str, record: dict[str, Any]) -> str:
         require(
             not tree.get("truncated"), "truncated tree cannot safely merge manifest"
         )
+        if merged_refresh and head != reviewed_head and head != base_head:
+            require(
+                reviewed_head,
+                "merged PR lacks reviewed head SHA; owner must reconcile",
+            )
+            stable_commit = api(repository, f"git/commits/{head}")
+            stable_tree = api(
+                repository,
+                f"git/trees/{stable_commit['tree']['sha']}?recursive=1",
+            )
+            reviewed_commit = api(repository, f"git/commits/{reviewed_head}")
+            reviewed_tree = api(
+                repository,
+                f"git/trees/{reviewed_commit['tree']['sha']}?recursive=1",
+            )
+            require(
+                not stable_tree.get("truncated") and not reviewed_tree.get("truncated"),
+                "truncated stable/reviewed tree cannot establish safe successor",
+            )
+
+            def files_without_manifest(
+                tree_result: dict[str, Any],
+            ) -> dict[str, tuple[str, str, str]]:
+                return {
+                    entry["path"]: (entry["mode"], entry["type"], entry["sha"])
+                    for entry in tree_result["tree"]
+                    if entry["type"] != "tree" and entry["path"] != path
+                }
+
+            stable_files = files_without_manifest(stable_tree)
+            trusted_base_files = [files_without_manifest(reviewed_tree)]
+            head_comparison = api(repository, f"compare/{head}...{base_head}")
+            if head_comparison.get("behind_by") == 0 and head_comparison.get(
+                "status"
+            ) in ("ahead", "identical"):
+                # A recreated or retained branch may point at a later default
+                # commit than the reviewed PR head. It is safe when that exact
+                # tree is already on the trusted default-branch history.
+                trusted_base_files.append(stable_files)
+            stable_commit_parents = stable_commit.get("parents", [])
+            for parent in stable_commit_parents:
+                parent_sha = parent.get("sha")
+                if not parent_sha:
+                    continue
+                if parent_sha == base_head:
+                    trusted_base_files.append(files_without_manifest(tree))
+                    continue
+                comparison = api(repository, f"compare/{parent_sha}...{base_head}")
+                if comparison.get("behind_by") != 0 or comparison.get("status") not in (
+                    "ahead",
+                    "identical",
+                ):
+                    continue
+                parent_commit = api(repository, f"git/commits/{parent_sha}")
+                parent_tree = api(
+                    repository,
+                    f"git/trees/{parent_commit['tree']['sha']}?recursive=1",
+                )
+                require(
+                    not parent_tree.get("truncated"),
+                    "truncated parent tree cannot establish safe successor",
+                )
+                trusted_base_files.append(files_without_manifest(parent_tree))
+            require(
+                any(stable_files == approved for approved in trusted_base_files),
+                "unreviewed stable-branch file changes; owner must reconcile",
+            )
         matches = [entry for entry in tree["tree"] if entry["path"] == path]
         old = None
+        stable_manifest_sha = None
         if matches:
             require(
                 matches[0]["type"] == "blob" and matches[0]["mode"] == "100644",
@@ -658,15 +727,43 @@ def persist(repository: str, record: dict[str, Any]) -> str:
                     "unsafe stable manifest",
                 )
                 previous_blob = api(repository, f"git/blobs/{previous[0]['sha']}")
+                stable_manifest_sha = previous[0]["sha"]
                 merged = merge_manifest(
                     merged, json.loads(base64.b64decode(previous_blob["content"]))
                 )
         if merged == old:
-            return (
-                (active or pulls)[0]["html_url"]
-                if pulls
-                else f"https://github.com/{repository}/blob/{default}/{path}"
+            if pulls:
+                return (active or pulls)[0]["html_url"]
+            # A branch commit can succeed before PR creation fails. On retry,
+            # the record is already present, but review still has to start.
+            # Compare only the dedicated manifest path so an already-merged
+            # identical record does not create an empty PR.
+            default_head = api(repository, f"git/ref/heads/{default}")["object"]["sha"]
+            default_commit = api(repository, f"git/commits/{default_head}")
+            default_tree = api(
+                repository,
+                f"git/trees/{default_commit['tree']['sha']}?recursive=1",
             )
+            require(
+                not default_tree.get("truncated"),
+                "truncated default tree cannot establish review diff",
+            )
+            default_matches = [
+                entry for entry in default_tree["tree"] if entry["path"] == path
+            ]
+            require(
+                len(default_matches) <= 1,
+                "duplicate manifest entries on default branch",
+            )
+            if (
+                default_matches
+                and matches
+                and (default_matches[0]["sha"] == matches[0]["sha"])
+            ):
+                return f"https://github.com/{repository}/blob/{default}/{path}"
+            # Do not add another manifest commit. Continue below to recreate
+            # the missing review PR from the already-persisted stable branch.
+            break
         content = json.dumps(merged, indent=2, ensure_ascii=False) + "\n"
         blob = api(
             repository,
@@ -675,6 +772,10 @@ def persist(repository: str, record: dict[str, Any]) -> str:
             method="POST",
         )
         if matches and matches[0]["sha"] == blob["sha"]:
+            break
+        if stable_manifest_sha == blob["sha"]:
+            # A prior attempt already committed this merged manifest. Reuse
+            # that branch head and retry only the missing review PR.
             break
         tree = api(
             repository,
@@ -714,6 +815,11 @@ def persist(repository: str, record: dict[str, Any]) -> str:
     require(
         len(active) <= 1, "multiple active version PRs require owner reconciliation"
     )
+    if not active and pulls:
+        require(
+            pulls[0].get("merged_at"),
+            "existing PR closed unmerged; owner must reconcile",
+        )
     if not active:
         try:
             pull = api(

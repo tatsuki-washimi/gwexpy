@@ -301,6 +301,7 @@ class GitHubStore:
                     else None,
                     html_url="https://github.com/example/gwexpy/pull/1",
                     number=1,
+                    head={"sha": "h0"},
                 )
             ]
         )
@@ -324,6 +325,25 @@ class GitHubStore:
                 self.pulls.insert(0, pull)
                 return pull
             return self.pulls
+        if route.startswith("compare/"):
+            base, head = route.removeprefix("compare/").split("...", 1)
+            if base == head:
+                return {"status": "identical", "behind_by": 0}
+            pending = [head]
+            seen = set()
+            while pending:
+                current = pending.pop()
+                if current in seen:
+                    continue
+                seen.add(current)
+                if current == base:
+                    return {"status": "ahead", "behind_by": 0}
+                commit = self.commits.get(current, {})
+                pending.extend(
+                    parent.get("sha") if isinstance(parent, dict) else parent
+                    for parent in commit.get("parents", [])
+                )
+            return {"status": "diverged", "behind_by": 1}
         if route.startswith("git/ref/heads/"):
             return {"object": {"sha": self.refs[route.removeprefix("git/ref/heads/")]}}
         if route.startswith("git/refs/heads/"):
@@ -342,7 +362,17 @@ class GitHubStore:
             }
         if route == "git/trees":
             sha = f"t{len(self.trees)}"
-            self.trees[sha] = payload["tree"]
+            entries = (
+                copy.deepcopy(self.trees[payload["base_tree"]])
+                if payload.get("base_tree")
+                else []
+            )
+            for update in payload["tree"]:
+                entries = [
+                    entry for entry in entries if entry["path"] != update["path"]
+                ]
+                entries.append(copy.deepcopy(update))
+            self.trees[sha] = entries
             return {"sha": sha}
         if route.startswith("git/trees/"):
             return {"tree": self.trees[route.rsplit("/", 1)[1]], "truncated": False}
@@ -350,7 +380,7 @@ class GitHubStore:
             sha = f"h{len(self.commits)}"
             self.commits[sha] = {
                 "tree": {"sha": payload["tree"]},
-                "parents": payload["parents"],
+                "parents": [{"sha": parent} for parent in payload["parents"]],
             }
             return {"sha": sha}
         if route.startswith("git/commits/"):
@@ -369,6 +399,219 @@ def test_merged_pr_identical_resume_has_no_writes_or_duplicate(
     monkeypatch.setattr(m, "api", store.api)
     assert m.persist("example/gwexpy", record).endswith("/1")
     assert store.writes == []
+
+
+def test_retry_after_manifest_commit_but_before_pr_creation_opens_pr(
+    identity_inputs, monkeypatch
+):
+    m = controller()
+    record = m.initialize_manifest(
+        validated(m, identity_inputs), "2026-10-27T01:00:00Z"
+    )
+    store = GitHubStore(record)
+    store.trees["tmain"] = []
+    store.commits["hmain"] = {"tree": {"sha": "tmain"}}
+    store.refs["main"] = "hmain"
+    monkeypatch.setattr(m, "api", store.api)
+
+    url = m.persist("example/gwexpy", record)
+
+    assert url.endswith("/1")
+    assert len([pull for pull in store.pulls if pull["state"] == "open"]) == 1
+    assert [route for route, _ in store.writes] == ["pulls"]
+
+
+def test_closed_unmerged_pr_during_persistence_blocks_replacement(
+    identity_inputs, monkeypatch
+):
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    new = copy.deepcopy(old)
+    new["items"]["pypi"]["evidence"] = [
+        dict(
+            url="https://pypi.org/project/gwexpy/0.2.5/",
+            sha256=None,
+            observed_at_utc="2026-10-27T02:00:00Z",
+            observation="Upload timestamps recorded",
+        )
+    ]
+    store = GitHubStore(old, "open")
+
+    def api(repository, path, payload=None, *, method="GET", raw=False):
+        result = store.api(repository, path, payload, method=method, raw=raw)
+        if path == "git/refs/heads/post-release/v0.2.5" and method == "PATCH":
+            store.pulls[0]["state"] = "closed"
+        return result
+
+    monkeypatch.setattr(m, "api", api)
+
+    with pytest.raises(ValueError, match="closed unmerged"):
+        m.persist("example/gwexpy", new)
+
+    assert [pull for pull in store.pulls if pull["state"] == "open"] == []
+    assert [route for route, _ in store.writes].count("pulls") == 0
+
+
+def test_successor_race_with_unreviewed_file_blocks_without_dropping_edit(
+    identity_inputs, monkeypatch
+):
+    import subprocess
+
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    new = copy.deepcopy(old)
+    new["items"]["pypi"]["evidence"] = [
+        dict(
+            url="https://pypi.org/project/gwexpy/0.2.5/",
+            sha256=None,
+            observed_at_utc="2026-10-27T02:00:00Z",
+            observation="Upload timestamps recorded",
+        )
+    ]
+    store = GitHubStore(old, "closed")
+    raced = False
+
+    def api(repository, path, payload=None, **kwargs):
+        nonlocal raced
+        if path == "git/refs/heads/post-release/v0.2.5" and not raced:
+            raced = True
+            content = "keep this concurrent edit\n"
+            digest = hashlib.sha256(content.encode()).hexdigest()
+            store.blobs[digest] = content
+            store.trees["t2"] = [
+                *copy.deepcopy(store.trees["t0"]),
+                dict(path="notes.txt", mode="100644", type="blob", sha=digest),
+            ]
+            store.commits["h2"] = {
+                "tree": {"sha": "t2"},
+                "parents": [{"sha": "h0"}],
+            }
+            store.refs["post-release/v0.2.5"] = "h2"
+            raise subprocess.CalledProcessError(1, ["gh", "api"])
+        return store.api(repository, path, payload, **kwargs)
+
+    monkeypatch.setattr(m, "api", api)
+
+    with pytest.raises(ValueError, match="unreviewed"):
+        m.persist("example/gwexpy", new)
+
+    assert raced
+    assert store.refs["post-release/v0.2.5"] == "h2"
+    retained = store.trees["t2"]
+    notes = next(entry for entry in retained if entry["path"] == "notes.txt")
+    assert store.blobs[notes["sha"]] == "keep this concurrent edit\n"
+    assert len(store.pulls) == 1
+
+
+def test_successor_retry_recovers_after_pr_failure_with_new_default_content(
+    identity_inputs, monkeypatch
+):
+    import subprocess
+
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    new = copy.deepcopy(old)
+    new["items"]["pypi"]["evidence"] = [
+        dict(
+            url="https://pypi.org/project/gwexpy/0.2.5/",
+            sha256=None,
+            observed_at_utc="2026-10-27T02:00:00Z",
+            observation="Upload timestamps recorded",
+        )
+    ]
+    store = GitHubStore(old, "closed")
+    content = "reviewed default-branch update\n"
+    digest = hashlib.sha256(content.encode()).hexdigest()
+    store.blobs[digest] = content
+    store.trees["tmain"] = [
+        *copy.deepcopy(store.trees["t0"]),
+        dict(path="docs/maintainer-note.txt", mode="100644", type="blob", sha=digest),
+    ]
+    store.commits["hmain"] = {"tree": {"sha": "tmain"}, "parents": ["h0"]}
+    store.refs["main"] = "hmain"
+    fail_pr_once = True
+
+    def api(repository, path, payload=None, **kwargs):
+        nonlocal fail_pr_once
+        if path == "pulls" and kwargs.get("method", "GET") == "POST" and fail_pr_once:
+            fail_pr_once = False
+            raise subprocess.CalledProcessError(1, ["gh", "api"])
+        return store.api(repository, path, payload, **kwargs)
+
+    monkeypatch.setattr(m, "api", api)
+    with pytest.raises(ValueError, match="PR creation failed"):
+        m.persist("example/gwexpy", new)
+    committed_head = store.refs["post-release/v0.2.5"]
+    assert committed_head != "h0"
+
+    url = m.persist("example/gwexpy", new)
+
+    assert url.endswith("/2")
+    assert store.refs["post-release/v0.2.5"] == committed_head
+    assert len([pull for pull in store.pulls if pull["state"] == "open"]) == 1
+    tree_sha = store.commits[committed_head]["tree"]["sha"]
+    paths = {entry["path"] for entry in store.trees[tree_sha]}
+    assert "docs/maintainer-note.txt" in paths
+
+
+def test_default_advance_after_branch_read_uses_trusted_stable_head(
+    identity_inputs, monkeypatch
+):
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    new = copy.deepcopy(old)
+    new["items"]["pypi"]["evidence"] = [
+        dict(
+            url="https://pypi.org/project/gwexpy/0.2.5/",
+            sha256=None,
+            observed_at_utc="2026-10-27T02:00:00Z",
+            observation="Upload timestamps recorded",
+        )
+    ]
+    store = GitHubStore(old, "closed")
+    content_a = "reviewed main change A\n"
+    digest_a = hashlib.sha256(content_a.encode()).hexdigest()
+    store.blobs[digest_a] = content_a
+    store.trees["tmain-old"] = [
+        *copy.deepcopy(store.trees["t0"]),
+        dict(path="docs/reviewed-a.txt", mode="100644", type="blob", sha=digest_a),
+    ]
+    store.commits["hmain-old"] = {
+        "tree": {"sha": "tmain-old"},
+        "parents": [{"sha": "h0"}],
+    }
+    content_b = "reviewed main change B\n"
+    digest_b = hashlib.sha256(content_b.encode()).hexdigest()
+    store.blobs[digest_b] = content_b
+    store.trees["tmain-new"] = [
+        *copy.deepcopy(store.trees["tmain-old"]),
+        dict(path="docs/reviewed-b.txt", mode="100644", type="blob", sha=digest_b),
+    ]
+    store.commits["hmain-new"] = {
+        "tree": {"sha": "tmain-new"},
+        "parents": [{"sha": "hmain-old"}],
+    }
+    store.refs["main"] = "hmain-old"
+    store.refs["post-release/v0.2.5"] = "hmain-old"
+    advance_default_once = True
+
+    def api(repository, path, payload=None, **kwargs):
+        nonlocal advance_default_once
+        if path == "git/ref/heads/main" and advance_default_once:
+            advance_default_once = False
+            store.refs["main"] = "hmain-new"
+        return store.api(repository, path, payload, **kwargs)
+
+    monkeypatch.setattr(m, "api", api)
+
+    url = m.persist("example/gwexpy", new)
+
+    assert url.endswith("/2")
+    head = store.refs["post-release/v0.2.5"]
+    tree_sha = store.commits[head]["tree"]["sha"]
+    paths = {entry["path"] for entry in store.trees[tree_sha]}
+    assert "docs/reviewed-a.txt" in paths
+    assert "docs/reviewed-b.txt" in paths
 
 
 def test_merged_pr_new_evidence_creates_one_successor_on_stable_branch(

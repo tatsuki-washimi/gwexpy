@@ -9,6 +9,7 @@ scope:
   - Trusted default-branch automatic/manual resolver with a read-only backfill
   - Durable version manifest and one active review PR on a stable branch
   - Evidence-preserving non-force Git ref retry and sequential post-merge review
+  - Recovery after PR creation failures, closed-PR race guards, and safe successor tree checks
 files:
   - .github/workflows/publish-release.yml
   - .github/workflows/post-release.yml
@@ -23,9 +24,12 @@ verification:
     - Missing objective validation and timestamp-preserving merge assertions failed before fixes
     - Later-time no-op and merged-PR successor tests failed before persistence changes
     - Missing exact Release asset-set helper failed before implementation
+    - Missing-PR recovery regression failed with no PR API write before the retry fix
+    - Closed-during-persist and unreviewed-tree race regressions failed before owner-intervention guards
+    - New-default successor retry regression caught a duplicate commit before stable-manifest reuse
   commands:
     - command: conda run -n gwexpy python -m pytest tests/test_post_release_controller.py tests/test_publish_release_workflow.py -q --tb=short
-      result: 78 passed
+      result: 83 passed
     - command: conda run -n gwexpy ruff check scripts/ci/post_release.py tests/test_post_release_controller.py tests/test_publish_release_workflow.py
       result: passed
     - command: conda run -n gwexpy ruff format --check scripts/ci/post_release.py tests/test_post_release_controller.py tests/test_publish_release_workflow.py
@@ -56,6 +60,17 @@ live_read_only_backfill:
   tag_object_sha: e9f30e6b410d6c599880f741f188f48db4067869
   result: Successful resolver only; exact five Release assets and both distribution byte streams reverified against PyPI
   evidence_url: https://github.com/tatsuki-washimi/gwexpy/actions/runs/40439962941/job/121979381040
+review_followups:
+  - finding: Repeated reconcile returned a manifest URL instead of retrying PR creation after a branch update
+    disposition: Fixed; same-content unreviewed branch now retries only POST pulls and merged identical state remains a no-op
+  - finding: Concurrent closure of an open PR could create an unapproved replacement
+    disposition: Fixed; the final PR reread rejects a closed unmerged PR and requires owner action
+  - finding: CAS successor refresh could discard a competing non-manifest edit
+    disposition: Fixed; non-manifest tree changes must match a reviewed or current-default ancestor, otherwise persistence stops
+  - finding: Retry after a successor commit and PR API failure could append a duplicate manifest commit
+    disposition: Fixed; stable-branch manifest content is reused before attempting PR creation
+  - finding: Default advancement between branch read and successor write could block a safe reviewed tree
+    disposition: Fixed; verified ancestry of the stable head/current default is accepted and preserved
 constraints:
   - No publication rerun, rebuild, upload, retag, immutable asset mutation or package smoke
   - Existing objective state and human fields are preserved by initializer merges; later observer updates require explicit transition handling
