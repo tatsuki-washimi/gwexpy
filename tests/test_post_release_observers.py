@@ -392,6 +392,7 @@ def test_daily_resume_discovers_data_on_default_and_active_version_ref(monkeypat
         return r
 
     monkeypatch.setattr(observer, "observe", observe)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
     monkeypatch.setattr(
         observer.c, "persist", lambda repo, r: written.append(r["version"])
     )
@@ -623,6 +624,7 @@ def test_daily_resume_isolates_record_failure(monkeypatch):
 
     written = []
     monkeypatch.setattr(observer, "observe", observe)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
     monkeypatch.setattr(
         observer.c, "persist", lambda repo, r: written.append(r["version"])
     )
@@ -691,7 +693,11 @@ def test_feedstock_recipe_reads_revision_data_without_evaluating_jinja(monkeypat
     monkeypatch.setattr(
         observer.c, "pages", lambda *_: [{"filename": "recipe/meta.yaml"}]
     )
-    recipe = '{% set version = "0.2.7" %}\nsource:\n  sha256: ' + "d" * 64 + "\n"
+    recipe = (
+        '{% set version = "0.2.7" %}\nsource:\n  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n  sha256: '
+        + "d" * 64
+        + "\n"
+    )
     calls = []
 
     def api(repo, path):
@@ -817,6 +823,7 @@ def test_discovery_null_evidence_url_isolates_version(monkeypatch):
     malformed["items"]["publication_identity"]["evidence"][0]["url"] = None
     test_discovery_malformed_record_does_not_hide_other_version(monkeypatch, malformed)
     monkeypatch.setattr(observer, "observe", lambda r: r)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
     written = []
     monkeypatch.setattr(
         observer.c, "persist", lambda repo, r: written.append(r["version"])
@@ -843,6 +850,7 @@ def test_resume_missing_status_does_not_abort_subsequent_version(monkeypatch):
         lambda _: ({"v0.2.6": malformed, "v0.2.7": record()}, []),
     )
     monkeypatch.setattr(observer, "observe", lambda r: r)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
     written = []
     monkeypatch.setattr(
         observer.c, "persist", lambda repo, r: written.append(r["version"])
@@ -850,3 +858,436 @@ def test_resume_missing_status_does_not_abort_subsequent_version(monkeypatch):
     result = observer.resume("example/gwexpy")
     assert written == ["0.2.7"]
     assert result[0]["tag"] == "v0.2.6" and result[0]["status"] == "blocked"
+
+
+def recipe_result(monkeypatch, text):
+    import base64
+
+    import post_release_observers as observer
+
+    monkeypatch.setattr(
+        observer.c, "pages", lambda *_: [{"filename": "recipe/meta.yaml"}]
+    )
+    monkeypatch.setattr(
+        observer.c,
+        "api",
+        lambda *_: {"content": base64.b64encode(text.encode()).decode()},
+    )
+    return observer.feedstock_recipe(feedstock_pull(), record())
+
+
+@pytest.mark.parametrize("indicator", ["|2", ">2", "|2-", "|-2", ">+2"])
+def test_recipe_indented_scalar_metadata_cannot_supply_active_identity(
+    monkeypatch, indicator
+):
+    text = (
+        "description: "
+        + indicator
+        + "\n  version: 0.2.7\n  source:\n    sha256: "
+        + "d" * 64
+        + "\nversion: 0.2.7\nsource:\n  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n  sha256: "
+        + "e" * 64
+        + "\n"
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.70.tar.gz",
+        "https://evil.example/gwexpy-0.2.7.tar.gz",
+        "https://pypi.org/packages/source/o/other/other-0.2.7.tar.gz",
+    ],
+)
+def test_recipe_hash_must_bind_exact_sdist_url(monkeypatch, url):
+    text = "version: 0.2.7\nsource:\n  url: " + url + "\n  sha256: " + "d" * 64 + "\n"
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+def test_recipe_multiple_source_mappings_cannot_lend_expected_hash(monkeypatch):
+    text = (
+        "version: 0.2.7\nsource:\n  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n  sha256: "
+        + "e" * 64
+        + "\nextra:\n  source:\n    url: https://evil.example/other.tar.gz\n    sha256: "
+        + "d" * 64
+        + "\n"
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+def test_recipe_valid_literal_url_and_single_version(monkeypatch):
+    url = "https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz"
+    result = recipe_result(
+        monkeypatch,
+        "version: 0.2.7\nsource:\n  url: " + url + "\n  sha256: " + "d" * 64 + "\n",
+    )
+    assert result["source_url"] == url
+
+
+def test_recipe_inactive_jinja_source_cannot_hide_active_inline_source(monkeypatch):
+    text = (
+        '{% set version = "0.2.7" %}\n'
+        "{% if false %}\n"
+        "source:\n"
+        "  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n"
+        "  sha256: " + "d" * 64 + "\n{% endif %}\n"
+        'source: {url: "https://evil.example/wrong.tar.gz", sha256: "'
+        + "e"
+        * 64
+        + '"}\n'
+        "package:\n  name: gwexpy\n  version: {{ version }}\n"
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+def test_recipe_v1_context_version_template_binds_exact_sdist(monkeypatch):
+    text = (
+        'context:\n  version: "0.2.7"\n'
+        "package:\n  name: gwexpy\n  version: ${{ version }}\n"
+        "source:\n"
+        "  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-${{ version }}.tar.gz\n"
+        "  sha256: " + "d" * 64 + "\n"
+    )
+    result = recipe_result(monkeypatch, text)
+    assert result["version"] == "0.2.7"
+    assert result["source_url"].endswith("gwexpy-0.2.7.tar.gz")
+
+
+def test_recipe_jinja_comment_source_cannot_hide_quoted_active_source(monkeypatch):
+    text = (
+        "version: 0.2.7\n"
+        "{#\n"
+        "source:\n"
+        "  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n"
+        "  sha256: " + "d" * 64 + "\n#}\n"
+        '"source": {url: "https://evil.example/wrong.tar.gz", sha256: "'
+        + "e" * 64
+        + '"}\n'
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+def test_recipe_rejects_jinja_control_hidden_in_yaml_comment(monkeypatch):
+    text = (
+        '{% set version = "0.2.7" %}\n'
+        "# {% if false %}\n"
+        "source:\n"
+        "  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n"
+        "  sha256: " + "d" * 64 + "\n# {% endif %}\n"
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+def test_recipe_duplicate_quoted_source_key_is_rejected(monkeypatch):
+    text = (
+        "version: 0.2.7\nsource:\n"
+        "  url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\n"
+        "  sha256: "
+        + "d" * 64
+        + '\n"source": {url: https://evil.example/wrong.tar.gz, sha256: '
+        + "e" * 64
+        + "}\n"
+    )
+    with pytest.raises(ValueError, match="Feedstock recipe"):
+        recipe_result(monkeypatch, text)
+
+
+@pytest.mark.parametrize("merged", [True, False])
+def test_docs_pages_readback_requires_exact_revision_workflow_and_merged_pr(
+    monkeypatch, merged
+):
+    import base64
+    import hashlib
+    import json
+
+    import post_release_observers as observer
+
+    r = record("0.2.7")
+    revision = "f" * 40
+    assets = {
+        "docs_redesign/_static/images/development-activity-v0.2.7.svg": b"en svg",
+        "docs_redesign/_static/images/development-activity-v0.2.7-ja.svg": b"ja svg",
+        "docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv": b"csv",
+    }
+    changelog = (
+        "Published on 2026-10-27 UTC: [PyPI 0.2.7](/project)\n"
+        "## v0.2.7 weekly development activity\n"
+        "/_static/downloads/development-activity-v0.2.7-weekly.csv"
+    ).encode()
+    release_status = b'{"latest_release":"0.2.7"}'
+
+    def api(_repo, path, **_kwargs):
+        if not path:
+            return {"default_branch": "main"}
+        if path.endswith("release_status.json?ref=" + revision):
+            content = release_status
+        elif path.endswith("about/changelog.md?ref=" + revision):
+            content = changelog
+        elif path.endswith(".svg?ref=" + revision) or path.endswith(
+            ".csv?ref=" + revision
+        ):
+            content = assets[path.split("?", 1)[0].replace("contents/", "")]
+        else:
+            raise AssertionError(path)
+        return {
+            "path": path.split("?", 1)[0].removeprefix("contents/"),
+            "encoding": "base64",
+            "content": base64.b64encode(content).decode(),
+        }
+
+    monkeypatch.setattr(observer.c, "api", api)
+    build_info = json.dumps({"source_revision": revision, "dirty": False}).encode()
+    page_content = {
+        "about/changelog.html": b"PyPI 0.2.7 weekly development activity",
+        "ja/about/changelog.html": "PyPI 0.2.7 公開".encode(),
+    }
+
+    def public_bytes(url):
+        path = url.split("/gwexpy/docs/", 1)[1]
+        if path in ("build-info.json", "ja/build-info.json"):
+            return build_info
+        if path.startswith("_static/"):
+            return assets["docs_redesign/" + path]
+        return page_content[path]
+
+    monkeypatch.setattr(observer, "public_bytes", public_bytes)
+
+    def pages(_repo, path, key=None):
+        if path.startswith("actions/workflows/"):
+            return [
+                dict(
+                    id=77,
+                    head_sha=revision,
+                    head_branch="main",
+                    run_attempt=1,
+                    status="completed",
+                    conclusion="success",
+                    html_url="https://github.com/example/gwexpy/actions/runs/77",
+                )
+            ]
+        if path == "actions/runs/77/attempts/1/jobs":
+            return [
+                dict(
+                    name="Publish verified Docs artifact",
+                    status="completed",
+                    conclusion="success",
+                    steps=[
+                        dict(
+                            name="Verify published EN and JA HTML",
+                            status="completed",
+                            conclusion="success",
+                        ),
+                        dict(
+                            name="Verify published EN and JA artifact hashes",
+                            status="completed",
+                            conclusion="success",
+                        ),
+                    ],
+                )
+            ]
+        if path == f"commits/{revision}/pulls" and merged:
+            return [
+                dict(
+                    number=42,
+                    html_url="https://github.com/example/gwexpy/pull/42",
+                    merged_at="2026-10-27T12:00:00Z",
+                    base={"ref": "main", "repo": {"full_name": "example/gwexpy"}},
+                )
+            ]
+        if path == f"commits/{revision}/pulls":
+            return []
+        raise AssertionError((path, key))
+
+    monkeypatch.setattr(observer.c, "pages", pages)
+    result = observer.docs_pages(r)
+    assert result["status"] == "complete"
+    assert result["docs_status"] == ("complete" if merged else "pending_review")
+    assert result["source_revision"] == revision
+    assert result["pages_workflow_run_id"] == 77
+    assert result["artifact_manifest_readback"] == "success"
+    assert result["merged_pull_request"] == (
+        {"number": 42, "url": "https://github.com/example/gwexpy/pull/42"}
+        if merged
+        else None
+    )
+    assert result["asset_sha256"] == {
+        path: hashlib.sha256(content).hexdigest() for path, content in assets.items()
+    }
+
+
+def test_docs_pages_records_publication_wait_with_current_latest_release(monkeypatch):
+    import base64
+    import json
+
+    import post_release_observers as observer
+
+    r = record("0.2.6")
+    revision = "a" * 40
+    monkeypatch.setattr(
+        observer,
+        "public_bytes",
+        lambda _url: json.dumps({"source_revision": revision, "dirty": False}).encode(),
+    )
+    monkeypatch.setattr(
+        observer.c,
+        "api",
+        lambda _repo, path: {
+            "path": "docs_redesign/release_status.json",
+            "encoding": "base64",
+            "content": base64.b64encode(b'{"latest_release":"0.2.5"}').decode(),
+        },
+    )
+    result = observer.docs_pages(r)
+    assert result["status"] == "pending_external"
+    assert result["docs_status"] == "pending_review"
+    assert result["published_latest_release"] == "0.2.5"
+
+
+def test_docs_and_pages_resume_states_advance_only_with_review_evidence(monkeypatch):
+    import post_release_observers as observer
+
+    r = record("0.2.7")
+    baseline = copy.deepcopy(r)
+    observation = dict(readback_succeeded=True, source_revision="f" * 40)
+    result = dict(
+        status="complete",
+        docs_status="pending_review",
+        merged_pull_request=None,
+        **observation,
+    )
+    monkeypatch.setattr(observer, "docs_pages", lambda _record: result)
+    observer.observe_docs_pages(r)
+    assert r["items"]["pages"]["status"] == "complete"
+    assert r["items"]["docs"]["status"] == "pending_review"
+    assert r["post_release_status"] == "pending_review"
+
+    result = dict(
+        status="complete",
+        docs_status="complete",
+        merged_pull_request={"number": 42},
+        **observation,
+    )
+    observer.observe_docs_pages(r)
+    first = copy.deepcopy(r)
+    observer.observe_docs_pages(r)
+    assert r["items"]["docs"]["status"] == "complete"
+    assert r["items"]["pages"]["status"] == "complete"
+    assert r["items"]["docs"]["evidence"] == first["items"]["docs"]["evidence"]
+    assert r["items"]["pages"]["evidence"] == first["items"]["pages"]["evidence"]
+    merged = controller.merge_manifest(baseline, r)
+    assert merged["items"]["docs"]["status"] == "complete"
+    assert merged["items"]["pages"]["status"] == "complete"
+
+
+@pytest.mark.parametrize("snapshot", ["null", "[]", "7"])
+def test_daily_malformed_zenodo_snapshot_blocks_only_affected_version(
+    monkeypatch, snapshot
+):
+    import post_release_observers as observer
+
+    bad, good = record("0.2.6"), record()
+    bad["items"]["zenodo"]["evidence"] = [
+        dict(
+            url="https://zenodo.org/records/1",
+            sha256=None,
+            observed_at_utc="2026-11-01T00:00:00Z",
+            observation=snapshot,
+        )
+    ]
+    monkeypatch.setattr(
+        observer, "discover_records", lambda _: ({"v0.2.6": bad, "v0.2.7": good}, [])
+    )
+    monkeypatch.setattr(observer, "github", lambda _: {"readback_succeeded": True})
+    monkeypatch.setattr(
+        observer,
+        "feedstock",
+        lambda _: {"status": "pending_external", "reason": "Absent"},
+    )
+    monkeypatch.setattr(observer, "public_json", lambda _: {"files": []})
+
+    def records(r, url):
+        version = r["version"]
+        return [
+            dict(
+                id=1,
+                doi="10.5281/zenodo.1",
+                conceptdoi="10.5281/zenodo.19059422",
+                metadata=dict(version=version, publication_date="2026-11-01"),
+                files=[
+                    dict(
+                        key="example/gwexpy-v" + version + ".zip",
+                        checksum="md5:" + "a" * 32,
+                        size=123,
+                    )
+                ],
+            )
+        ]
+
+    monkeypatch.setattr(observer, "zenodo_records", records)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
+    written = {}
+    monkeypatch.setattr(
+        observer.c, "persist", lambda repo, r: written.update({r["version"]: r})
+    )
+    result = observer.resume("example/gwexpy")
+    assert len(result) == 2
+    assert written["0.2.6"]["items"]["zenodo"]["status"] == "blocked"
+    assert written["0.2.6"]["items"]["zenodo"]["readback_succeeded"] is False
+    assert written["0.2.7"]["items"]["zenodo"]["readback_succeeded"] is True
+
+
+def test_validate_rejects_complete_over_pending_items():
+    r = record()
+    r["post_release_status"] = "complete"
+    with pytest.raises(ValueError, match="complete"):
+        controller.validate_record(r)
+
+
+def test_validate_rejects_pending_over_complete_items():
+    r = record()
+    for item in r["items"].values():
+        item.update(
+            status="complete",
+            evidence=[
+                dict(
+                    url="https://example.org/evidence",
+                    sha256=None,
+                    observed_at_utc="2026-10-27T01:00:00Z",
+                    observation="Verified objective",
+                )
+            ],
+            pending_reason="",
+            resume_condition="",
+        )
+    r["post_release_status"] = "pending_review"
+    with pytest.raises(ValueError, match="overall status"):
+        controller.validate_record(r)
+
+
+def test_resume_normalizes_complete_over_pending_then_observes(monkeypatch):
+    import post_release_observers as observer
+
+    r = record()
+    r["post_release_status"] = "complete"
+    monkeypatch.setattr(observer, "discover_records", lambda _: ({"v0.2.7": r}, []))
+    seen = []
+
+    def observe(r):
+        seen.append(r["post_release_status"])
+        r["items"]["pypi"]["pending_reason"] = "Fresh API observation"
+        return r
+
+    monkeypatch.setattr(observer, "observe", observe)
+    monkeypatch.setattr(observer, "observe_docs_pages", lambda _record: None)
+    written = []
+    monkeypatch.setattr(observer.c, "persist", lambda repo, r: written.append(r))
+    observer.resume("example/gwexpy")
+    assert seen == ["pending_review"]
+    assert written[0]["items"]["pypi"]["pending_reason"] == "Fresh API observation"

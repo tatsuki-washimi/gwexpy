@@ -16,12 +16,253 @@ from typing import Any
 import post_release as c
 
 SERVICES = ("github", "pypi", "zenodo", "conda_feedstock", "conda_package")
+DOCS_BASE_URL = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 
 
 def public_json(url: str) -> Any:
     """GET public metadata without credentials or repository code execution."""
     with urllib.request.urlopen(url, timeout=45) as response:
         return json.load(response)
+
+
+def public_bytes(url: str) -> bytes:
+    """Read a public Pages file while confining redirects to the site host."""
+    expected = urllib.parse.urlsplit(DOCS_BASE_URL)
+    with urllib.request.urlopen(url, timeout=45) as response:
+        actual = urllib.parse.urlsplit(response.geturl())
+        c.require(
+            actual.scheme == "https"
+            and actual.hostname == expected.hostname
+            and actual.path.startswith(expected.path),
+            "Docs Pages readback redirected outside the published site",
+        )
+        return response.read()
+
+
+def repository_file(repository: str, path: str, revision: str) -> bytes:
+    """Read exact committed bytes through the authenticated GitHub GET API."""
+    query = urllib.parse.urlencode({"ref": revision})
+    entry = c.api(repository, f"contents/{path}?{query}")
+    c.require(
+        entry.get("path") == path and entry.get("encoding") == "base64",
+        "Unexpected GitHub file identity or encoding",
+    )
+    return base64.b64decode(entry["content"])
+
+
+def docs_pages(record: dict[str, Any]) -> dict[str, Any]:
+    """Verify bilingual live Pages against its successful source build and PR."""
+    repository = record["publication"]["repository"]
+    version = record["version"]
+    c.require(
+        re.fullmatch(c.TAG_PATTERN, "v" + version), "Invalid Docs release version"
+    )
+    base_info = json.loads(public_bytes(DOCS_BASE_URL + "build-info.json"))
+    ja_info = json.loads(public_bytes(DOCS_BASE_URL + "ja/build-info.json"))
+    revision = base_info.get("source_revision")
+    c.require(
+        isinstance(revision, str)
+        and re.fullmatch(r"[0-9a-f]{40}", revision)
+        and base_info.get("dirty") is False
+        and ja_info.get("source_revision") == revision
+        and ja_info.get("dirty") is False,
+        "EN/JA Docs Pages build identity mismatch",
+    )
+
+    status_bytes = repository_file(
+        repository, "docs_redesign/release_status.json", revision
+    )
+    release_status = json.loads(status_bytes)
+    latest = release_status.get("latest_release")
+    c.require(
+        isinstance(latest, str) and re.fullmatch(r"\d+\.\d+\.\d+", latest),
+        "Docs release status is invalid",
+    )
+    if tuple(map(int, latest.split("."))) < tuple(map(int, version.split("."))):
+        return dict(
+            status="pending_external",
+            docs_status="pending_review",
+            reason="Published Docs revision does not include this release yet",
+            source_revision=revision,
+            published_latest_release=latest,
+        )
+
+    changelog = repository_file(
+        repository, "docs_redesign/about/changelog.md", revision
+    ).decode("utf-8")
+    c.require(
+        f"PyPI {version}" in changelog
+        and f"v{version} weekly development activity" in changelog,
+        "Committed Docs changelog omits release facts or history section",
+    )
+
+    default_branch = c.api(repository, "")["default_branch"]
+    runs = c.pages(
+        repository,
+        "actions/workflows/docs-pages-isolated.yml/runs?branch="
+        + urllib.parse.quote(default_branch),
+        "workflow_runs",
+    )
+    matching_runs = [
+        run
+        for run in runs
+        if run.get("head_sha") == revision and run.get("head_branch") == default_branch
+    ]
+    successful_runs = [
+        run
+        for run in matching_runs
+        if run.get("status") == "completed" and run.get("conclusion") == "success"
+    ]
+    if not successful_runs:
+        active = any(
+            run.get("status") in ("queued", "in_progress") for run in matching_runs
+        )
+        failed = any(run.get("status") == "completed" for run in matching_runs)
+        return dict(
+            status="pending_external" if active or not failed else "retryable_failure",
+            docs_status="pending_review",
+            reason=(
+                "Matching Docs Pages workflow is still running or not observed"
+                if active or not failed
+                else "Matching Docs Pages workflow failed"
+            ),
+            source_revision=revision,
+        )
+    run = successful_runs[0]
+    attempt = run.get("run_attempt")
+    c.require(
+        isinstance(attempt, int) and attempt > 0, "Docs Pages run attempt missing"
+    )
+    jobs = c.pages(
+        repository,
+        f"actions/runs/{run['id']}/attempts/{attempt}/jobs",
+        "jobs",
+    )
+    publish_jobs = [
+        job
+        for job in jobs
+        if job.get("name") == "Publish verified Docs artifact"
+        and job.get("status") == "completed"
+        and job.get("conclusion") == "success"
+    ]
+    c.require(
+        len(publish_jobs) == 1, "Successful Pages publisher job missing or ambiguous"
+    )
+    successful_steps = {
+        step.get("name")
+        for step in publish_jobs[0].get("steps", [])
+        if step.get("status") == "completed" and step.get("conclusion") == "success"
+    }
+    c.require(
+        {
+            "Verify published EN and JA HTML",
+            "Verify published EN and JA artifact hashes",
+        }
+        <= successful_steps,
+        "Pages run did not verify bilingual HTML and artifact hashes",
+    )
+
+    asset_paths = (
+        f"docs_redesign/_static/images/development-activity-v{version}.svg",
+        f"docs_redesign/_static/images/development-activity-v{version}-ja.svg",
+        f"docs_redesign/_static/downloads/development-activity-v{version}-weekly.csv",
+    )
+    asset_hashes: dict[str, str] = {}
+    for source_path in asset_paths:
+        expected = repository_file(repository, source_path, revision)
+        public_path = source_path.removeprefix("docs_redesign/")
+        actual = public_bytes(urllib.parse.urljoin(DOCS_BASE_URL, public_path))
+        expected_hash = c.sha256(expected)
+        c.require(
+            c.sha256(actual) == expected_hash,
+            f"Published Docs asset differs from source: {source_path}",
+        )
+        asset_hashes[source_path] = expected_hash
+
+    page_hashes: dict[str, str] = {}
+    for page_path in ("about/changelog.html", "ja/about/changelog.html"):
+        page = public_bytes(urllib.parse.urljoin(DOCS_BASE_URL, page_path))
+        decoded = page.decode("utf-8")
+        c.require(
+            version in decoded and "PyPI" in decoded,
+            f"Published Docs page omits release {version}: {page_path}",
+        )
+        if page_path.startswith("ja/"):
+            c.require(
+                re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", decoded) is not None,
+                "Published Japanese changelog contains no Japanese text",
+            )
+        page_hashes[page_path] = c.sha256(page)
+
+    associated = c.pages(repository, f"commits/{revision}/pulls")
+    merged_prs = [
+        pull
+        for pull in associated
+        if pull.get("merged_at")
+        and pull.get("base", {}).get("ref") == default_branch
+        and pull.get("base", {}).get("repo", {}).get("full_name") == repository
+    ]
+    c.require(len(merged_prs) <= 1, "Docs source revision has ambiguous merged PRs")
+    merged_pr = (
+        dict(number=merged_prs[0]["number"], url=merged_prs[0]["html_url"])
+        if merged_prs
+        else None
+    )
+    return dict(
+        status="complete",
+        docs_status="complete" if merged_pr else "pending_review",
+        readback_succeeded=True,
+        reason=(
+            "Bilingual Pages, release assets and workflow readback verified"
+            if merged_pr
+            else "Pages readback verified; default-branch PR review evidence is missing"
+        ),
+        source_revision=revision,
+        pages_workflow_run_id=run["id"],
+        pages_workflow_run_attempt=attempt,
+        pages_workflow_run_url=run["html_url"],
+        artifact_manifest_readback="success",
+        merged_pull_request=merged_pr,
+        asset_sha256=asset_hashes,
+        page_sha256=page_hashes,
+    )
+
+
+def observe_docs_pages(record: dict[str, Any]) -> None:
+    """Advance Docs and Pages independently from public readback evidence."""
+    now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    try:
+        result = docs_pages(record)
+        status = result["status"]
+    except urllib.error.HTTPError as error:
+        status = "pending_external" if error.code == 404 else "retryable_failure"
+        result = dict(reason=f"Docs Pages HTTP {error.code}")
+    except (OSError, subprocess.CalledProcessError) as error:
+        status = "retryable_failure"
+        result = dict(reason=f"Docs Pages transport failure: {type(error).__name__}")
+    except (ValueError, KeyError, TypeError) as error:
+        status = "blocked"
+        result = dict(reason=str(error))
+    update(record, "pages", status, DOCS_BASE_URL, result, now)
+    if "docs_status" not in result:
+        return
+    docs = record["items"]["docs"]
+    if docs["status"] != "blocked" and not docs.get("human_decision"):
+        docs["observer"] = "docs"
+    update(
+        record,
+        "docs",
+        result["docs_status"],
+        DOCS_BASE_URL + "about/changelog.html",
+        result,
+        now,
+    )
+    record["post_release_status"] = next(
+        status
+        for status in c.STATUSES
+        if any(item["status"] == status for item in record["items"].values())
+    )
+    c.validate_record(record)
 
 
 def update(
@@ -171,6 +412,9 @@ def zenodo(record: dict[str, Any], hits: list[dict[str, Any]]) -> dict[str, Any]
             previous = json.loads(entry["observation"])
         except (ValueError, TypeError):
             continue
+        c.require(
+            isinstance(previous, dict), "Malformed prior Zenodo observation snapshot"
+        )
         if previous.get("readback_succeeded"):
             c.require(
                 all(
@@ -269,10 +513,25 @@ def feedstock_recipe(pull: dict[str, Any], record: dict[str, Any]) -> dict[str, 
     # A deliberately restricted literal reader, never a Jinja evaluator.
     # Ignore comments and YAML block scalars; hashes must be active source fields.
     versions: list[str] = []
-    hashes: list[str] = []
+    source_fields: dict[str, list[tuple[int, str]]] = {"url": [], "sha256": []}
+    source_count = 0
     source_indent: int | None = None
+    source_child_indent: int | None = None
     block_indent: int | None = None
+    declaration_pattern = (
+        r'\s*\{%-?\s*set\s+(version|name)\s*=\s*(["\'])([^"\']+)\2\s*-?%\}\s*'
+    )
     for raw_line in text.splitlines():
+        c.require(
+            "{#" not in raw_line and "#}" not in raw_line,
+            "Unsupported Feedstock recipe Jinja comment syntax",
+        )
+        raw_declaration = re.fullmatch(declaration_pattern, raw_line)
+        if "{%" in raw_line:
+            c.require(
+                raw_declaration is not None,
+                "Unsupported Feedstock recipe Jinja control structure",
+            )
         line = raw_line.split("#", 1)[0].rstrip()
         if not line.strip():
             continue
@@ -281,52 +540,109 @@ def feedstock_recipe(pull: dict[str, Any], record: dict[str, Any]) -> dict[str, 
             if indent > block_indent:
                 continue
             block_indent = None
-        if re.search(r":\s*[|>][+-]?\s*$", line):
+        if re.search(r":\s*[|>](?:[1-9][+-]?|[+-][1-9]?)?\s*$", line):
             block_indent = indent
             continue
-        declaration = re.fullmatch(
-            r'\s*\{%-?\s*set\s+version\s*=\s*(["\'])([^"\']+)\1\s*-?%\}\s*', line
-        )
+        declaration = re.fullmatch(declaration_pattern, line)
+        if "{%" in line:
+            c.require(
+                declaration is not None,
+                "Unsupported Feedstock recipe Jinja control structure",
+            )
         literal = re.fullmatch(
             r'\s*version:\s*(?:"([^"\']+)"|\'([^"\']+)\'|([0-9][0-9A-Za-z.+-]*))\s*',
             line,
         )
+        c.require(
+            re.match(r"\s*['\"]source['\"]\s*:", line) is None,
+            "Unsupported Feedstock recipe quoted source key",
+        )
         if declaration:
-            versions.append(declaration[2])
+            if declaration[1] == "version":
+                versions.append(declaration[3])
+            else:
+                c.require(declaration[3] == "gwexpy", "Feedstock recipe name mismatch")
         elif literal:
             versions.append(
                 next(group for group in literal.groups() if group is not None)
             )
         if source_indent is not None and indent <= source_indent:
             source_indent = None
-        if re.fullmatch(r"\s*source:\s*", line):
+        source_mapping = re.fullmatch(r"\s*source:\s*", line)
+        if re.match(r"\s*source\s*:", line):
+            c.require(
+                source_mapping is not None,
+                "Feedstock recipe source must use a supported block mapping",
+            )
+        if source_mapping:
+            source_count += 1
+            c.require(
+                indent == 0 and source_count == 1,
+                "Feedstock recipe source mapping ambiguous",
+            )
             source_indent = indent
         if source_indent is not None and indent > source_indent:
-            digest = re.fullmatch(
-                r'\s*(?:-\s+)?sha256:\s*(?:"([0-9a-f]{64})"|\'([0-9a-f]{64})\'|([0-9a-f]{64}))\s*',
-                line,
-            )
-            if digest:
-                hashes.append(
-                    next(group for group in digest.groups() if group is not None)
-                )
-    version_text = versions[0] if versions else ""
+            if source_child_indent is None:
+                source_child_indent = indent
+            field = re.fullmatch(r"\s*(url|sha256):\s*(.+?)\s*", line)
+            if field:
+                value = field[2]
+                if value.startswith(("'", '"')):
+                    c.require(
+                        len(value) >= 2 and value[-1] == value[0],
+                        "Feedstock recipe source literal malformed",
+                    )
+                    value = value[1:-1]
+                source_fields[field[1]].append((indent, value))
     c.require(
-        bool(versions) and all(version == record["version"] for version in versions),
-        "Feedstock recipe version mismatch or not literal",
+        len(versions) == 1 and versions[0] == record["version"],
+        "Feedstock recipe version mismatch, ambiguous or not literal",
     )
-    expected = next(
-        f["sha256"]
-        for f in record["release"]["distributions"]
-        if f["name"].endswith(".tar.gz")
-    )
+    version_text = versions[0]
     c.require(
-        expected in hashes, "Feedstock recipe source SHA256 mismatch or unavailable"
+        source_count == 1
+        and len(source_fields["url"]) == 1
+        and len(source_fields["sha256"]) == 1,
+        "Feedstock recipe source mapping missing or ambiguous",
+    )
+    url_indent, source_url = source_fields["url"][0]
+    hash_indent, source_hash = source_fields["sha256"][0]
+    c.require(
+        url_indent == hash_indent == source_child_indent,
+        "Feedstock recipe URL/hash are not in the direct source mapping",
+    )
+    # Substitute known literal tokens only; no template expressions execute.
+    for token, value in (("version", version_text), ("name", "gwexpy")):
+        source_url = re.sub(r"\$?\{\{\s*" + token + r"\s*\}\}", value, source_url)
+    expected_files = [
+        f for f in record["release"]["distributions"] if f["name"].endswith(".tar.gz")
+    ]
+    c.require(len(expected_files) == 1, "Feedstock recipe expected sdist ambiguous")
+    expected_file = expected_files[0]
+    parsed = urllib.parse.urlsplit(source_url)
+    c.require(
+        parsed.scheme == "https"
+        and parsed.hostname in ("pypi.org", "pypi.io", "files.pythonhosted.org")
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.port in (None, 443)
+        and not parsed.query
+        and not parsed.fragment
+        and parsed.path.rsplit("/", 1)[-1] == expected_file["name"]
+        and "{" not in source_url
+        and "}" not in source_url,
+        "Feedstock recipe source URL does not identify the exact package sdist",
+    )
+    expected = expected_file["sha256"]
+    c.require(
+        source_hash == expected and re.fullmatch(r"[0-9a-f]{64}", source_hash),
+        "Feedstock recipe source SHA256 mismatch or unavailable",
     )
     return dict(
         path=paths[0],
         version=version_text,
         source_sha256=expected,
+        source_url=source_url,
         recipe_sha256=c.sha256(raw),
         head_sha=head["sha"],
     )
@@ -631,6 +947,7 @@ def discover_records(
                     ),
                     "Durable record objectives must be objects",
                 )
+                c.normalize_aggregate_status(record)
                 c.validate_record(record)
                 c.require(
                     record["publication"]["repository"] == repository
@@ -681,6 +998,7 @@ def resume(repository: str) -> list[dict[str, str]]:
         if tag in failed:
             continue
         try:
+            c.normalize_aggregate_status(record)
             c.validate_record(record)
             if record["post_release_status"] == "complete":
                 continue
@@ -694,6 +1012,7 @@ def resume(repository: str) -> list[dict[str, str]]:
                         resume_condition="Run component observer",
                     )
             observed = observe(record)
+            observe_docs_pages(observed)
             c.persist(repository, observed)
             results.append(
                 dict(

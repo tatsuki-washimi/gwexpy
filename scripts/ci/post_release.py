@@ -375,6 +375,39 @@ def validate_record(record: dict[str, Any]) -> None:
                 item["pending_reason"] and item["resume_condition"],
                 "pending objective needs resumption",
             )
+    expected_status = next(
+        status
+        for status in STATUSES
+        if any(item["status"] == status for item in record["items"].values())
+    )
+    status_message = (
+        "overall complete requires every objective complete"
+        if record["post_release_status"] == "complete" and expected_status != "complete"
+        else f"overall status must match objective statuses ({expected_status})"
+    )
+    require(
+        record["post_release_status"] == expected_status,
+        status_message,
+    )
+
+
+def normalize_aggregate_status(record: dict[str, Any]) -> None:
+    """Repair only a stale aggregate when all objective states are well-formed."""
+    items = record.get("items")
+    if (
+        "post_release_status" in record
+        and isinstance(items, dict)
+        and REQUIRED_ITEMS <= items.keys()
+        and all(
+            isinstance(item, dict) and item.get("status") in STATUSES
+            for item in items.values()
+        )
+    ):
+        record["post_release_status"] = next(
+            status
+            for status in STATUSES
+            if any(item["status"] == status for item in items.values())
+        )
 
 
 def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str, Any]:
@@ -382,19 +415,21 @@ def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str,
     validate_record(new)
     if old is None:
         return copy.deepcopy(new)
-    validate_record(old)
+    baseline = copy.deepcopy(old)
+    normalize_aggregate_status(baseline)
+    validate_record(baseline)
     require(
         all(
-            old["release"].get(key) == new["release"].get(key)
+            baseline["release"].get(key) == new["release"].get(key)
             for key in RELEASE_IDENTITY
         )
         and all(
-            old["publication"].get(key) == new["publication"].get(key)
+            baseline["publication"].get(key) == new["publication"].get(key)
             for key in PUBLICATION_IDENTITY
         ),
         "stored publication identity differs; owner review required",
     )
-    result = copy.deepcopy(old)
+    result = baseline
     for name, item in new["items"].items():
         if name not in result["items"]:
             result["items"][name] = copy.deepcopy(item)
@@ -409,6 +444,8 @@ def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str,
                     "conda",
                     "conda_feedstock",
                     "conda_package",
+                    "docs",
+                    "pages",
                 }
                 and item.get("observer") == name
                 and (
@@ -420,6 +457,11 @@ def merge_manifest(old: dict[str, Any] | None, new: dict[str, Any]) -> dict[str,
                             target["status"]
                             in ("pending_external", "retryable_failure")
                             or target.get("observer") == name
+                            or (
+                                name == "docs"
+                                and target["status"] == "pending_review"
+                                and item["status"] == "complete"
+                            )
                         )
                     )
                 )

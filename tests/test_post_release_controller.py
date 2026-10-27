@@ -748,3 +748,19 @@ def test_successor_applies_latest_observer_after_all_durable_baselines(
     assert result["items"]["pypi"]["status"] == "complete"
     assert result["items"]["pypi"]["readback_succeeded"] is True
     assert result["items"]["pypi"]["human_note"] == "Retain reviewer text"
+
+
+def test_normalized_pending_record_replaces_stale_stored_complete(
+    identity_inputs, monkeypatch
+):
+    m = controller()
+    old = m.initialize_manifest(validated(m, identity_inputs), "2026-10-27T01:00:00Z")
+    old["post_release_status"] = "complete"
+    new = copy.deepcopy(old)
+    new["post_release_status"] = "pending_review"
+    store = GitHubStore(old, "open")
+    monkeypatch.setattr(m, "api", store.api)
+    m.persist("example/gwexpy", new)
+    commit = store.commits[store.refs["post-release/v0.2.5"]]
+    blob = store.trees[commit["tree"]["sha"]][0]["sha"]
+    assert json.loads(store.blobs[blob])["post_release_status"] == "pending_review"
