@@ -322,3 +322,37 @@ def test_pypi_recovery_control_pr_requires_the_scoped_guard_and_workflow_paths()
             number=836,
             control_sha="6" * 40,
         )
+
+
+def test_release_readback_recovery_pr_may_contain_its_scoped_repair_paths():
+    recovery = load_recovery()
+    pull = {
+        "number": 837,
+        "merged": True,
+        "merged_at": "2026-10-27T02:30:00Z",
+        "merge_commit_sha": "7" * 40,
+        "base": {
+            "ref": "main",
+            "repo": {"full_name": "tatsuki-washimi/gwexpy"},
+        },
+    }
+    repair_paths = {
+        ".github/workflows/publish-release.yml",
+        "RELEASING.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/verify_release_recovery.py",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_recovery.py",
+    }
+    assert recovery.REQUIRED_RECOVERY_RELEASE_READBACK_REPAIR_PATHS <= repair_paths
+
+    recovery.validate_recovery_pull_request(
+        pull,
+        files=[{"filename": path} for path in repair_paths],
+        repository="tatsuki-washimi/gwexpy",
+        number=837,
+        control_sha="7" * 40,
+    )

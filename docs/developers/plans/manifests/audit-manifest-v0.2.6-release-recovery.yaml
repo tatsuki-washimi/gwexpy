@@ -6,6 +6,9 @@ skills_used:
   - github-actions-author
   - github-mcp-secret-filter
   - gwexpy_conda_jobs
+  - systematic-debugging
+  - test-driven-development
+  - pr-writer
 high_level_actions:
   - Read current Issue 797, Issues 819 and 820, release contract, tag, branch tips, candidate run, artifacts, approvals, ruleset and publish workflow.
   - Reproduced the tag-date rejection and branch-tip validation behavior without invoking a publication action.
@@ -13,6 +16,8 @@ high_level_actions:
   - Incorporated independent review findings to preserve exact-tip qualification, reject newer malformed Owner records across newline variants, and require promotion evidence for ancestry-based publication.
   - Downloaded and rehashed the existing candidate manifest, wheel, sdist, and sidecars; validated their manifest bindings.
   - Ran strict release preflight against the original candidate source and actual fetched protected branch tips.
+  - Corrected the existing-GitHub-Release retry path to load its readback CLI from the exact workflow-control revision rather than the older Candidate source tree.
+  - Bound the final recovery retry to the PR #837 merge through a new immutable control tag and the latest canonical Owner GO.
 commands:
   - command: "conda run -n gwexpy pytest -q tests/test_check_release_metadata_script.py tests/test_validate_release_script.py tests/test_release_contracts.py tests/test_release_recovery.py tests/test_publish_release_workflow.py"
     result: "PASS: 207 tests, including exact-tip Candidate dispatch, fail-closed malformed/edited/CRLF Owner records, and promotion-policy contract boundaries"
@@ -40,15 +45,25 @@ commands:
     result: "PASS: all four exact downloaded artifacts match the original manifest"
   - command: "sha256sum on downloaded v0.2.6 source distributions and promotion manifest"
     result: "PASS: sdist b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783; wheel 3c1552de056ded5f3f934a30f3454133dcf13374e10b0dac0a7ff8ac3d0c2003; manifest 8b517b336d503ebedc1f6ac92070dc73bf9c144b091d01a3b680a80e70f64a8d"
+  - command: "pytest -q tests/test_publish_release_workflow.py::test_existing_release_cli_uses_exact_workflow_controller_helper"
+    result: "RED before implementation (the controller checkout was absent); PASS after the exact workflow revision supplies the --existing-release helper."
+  - command: "pytest -q tests/test_release_recovery.py::test_release_readback_recovery_pr_may_contain_its_scoped_repair_paths tests/test_release_contracts.py::test_v026_uses_platform_independent_review_and_approval_contract tests/test_release_contracts.py::test_v026_rejects_the_superseded_pypi_reconcile_control_ref tests/test_release_contracts.py::test_release_contract_cli_emits_v026_publication_policies tests/test_publish_release_workflow.py::test_existing_release_cli_uses_exact_workflow_controller_helper"
+    result: "PASS: 5 tests"
+  - command: "recovery workflow run 40436523122"
+    result: "Source, original Candidate promotion, qualification, both human approvals, tag, and control PR authorization passed; exact GitHub Release payload was downloaded and rehashed. Existing Release readback stopped before uploads because the Candidate-era CLI did not recognize --existing-release. No PyPI upload ran."
+  - command: "pytest -q tests/test_publish_release_workflow.py tests/test_release_recovery.py tests/test_release_contracts.py"
+    result: "PASS after PR #837 changes: 136 tests."
+  - command: "ruff check scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py tests/test_publish_release_workflow.py tests/test_release_contracts.py tests/test_release_recovery.py; ruff format --check on the same Python files; mypy scripts/ci/release_contract.py scripts/ci/verify_release_recovery.py"
+    result: "PASS: Ruff, formatting, and MyPy."
 checks_omitted:
   - check: actionlint local binary
-    reason: "Not installed locally; the final implementation head passed the required PR Actionlint check 40425548654."
+    reason: "Not installed locally; PR #837's required Actionlint CI check is pending."
   - check: additional local full-suite invocation
-    reason: "Not run locally; the repository's configured broad PR Fast suite runs in CI. Its initial run exposed three stale or newly introduced guard-test expectations, now fixed with focused regressions passing; a fresh full PR run is pending."
+    reason: "The package-wide test suite was not run locally. The affected release workflow, recovery verifier, and contract suite passed locally; the repository's broad PR Fast gate is required CI."
   - check: check_physics
     reason: "No scientific algorithm, public data model, or numerical result changed."
   - check: publication workflow execution, tag creation, GitHub Release creation, PyPI upload, Zenodo mutation
-    reason: "Requires the aggregate Release Owner adoption and publication decisions; none was executed."
+    reason: "Not run during original Candidate preparation before Owner adoption. After the Owner recorded A-F, release publication, tag creation, and GitHub Release readback ran under recovery PRs #835/#836; PyPI remained gated by the documented controller/readback failures, and Zenodo date correction remains pending authenticated record-owner access."
 follow_up_execution:
   original_recovery_pr: 835
   original_control_ref: refs/tags/v0.2.6-recovery-control
@@ -59,10 +74,18 @@ follow_up_execution:
   failure: "The PyPI reconciliation helper was invoked from the Candidate source tree, where the post-Candidate controller helper is not present."
   pypi_readback: "PyPI returned HTTP 404 for gwexpy 0.2.6; no wheel or sdist upload occurred."
   repair_scope: "Run reconciliation and partial-upload authorization helpers from the exact workflow-control revision; preserve the original Candidate and all artifact hashes."
+  release_readback_repair:
+    run_id: 40436523122
+    result: "Stopped before PyPI; the already-published GitHub Release was unchanged."
+    failure: "The idempotent existing-Release branch passed --existing-release to the older helper in Candidate source; all Candidate downloads and SHA-256 checks passed before this CLI mismatch."
+    repair_pr: 837
+    repair_base_sha: 9af02299e5096a71631c439805524bd6f6b9d2b2
+    repair_scope: "Check out github.workflow_sha in the GitHub Release job and invoke only the existing-Release helper from that control tree; retain source-bound tag, notes, payload, and asset readback checks."
+    recovery_control_ref: refs/tags/v0.2.6-recovery-control-release-readback
 review:
   physics_review: not_applicable
   security_boundary: "Existing pypi environment and PyPI Trusted Publisher retained; no API token or environment change. Recovery requires a merged main PR, annotated control tag, existing candidate evidence, original approvals, and a matching Owner GO."
-  remaining_owner_choices: "Adopt date policy; adopt publication ancestry policy; apply them to v0.2.6; select existing candidate reuse; choose Zenodo date handling; authorize formal publication."
+  remaining_owner_choices: "None; decisions A-F recorded in canonical Issue #797 recovery GO comments."
 files_changed:
   - .github/workflows/publish-release.yml
   - RELEASING.md
