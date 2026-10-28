@@ -148,6 +148,20 @@ def _release_contract(expected_tag: str) -> dict[str, Any]:
         raise ReleaseReviewEvidenceError(str(exc)) from exc
 
 
+def _review_evidence_profile(schema: str) -> str:
+    path = Path(__file__).with_name("release_contract.py")
+    spec = importlib.util.spec_from_file_location("release_contract", path)
+    if spec is None or spec.loader is None:
+        raise ReleaseReviewEvidenceError("release contract loader is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    try:
+        return module.review_evidence_profile(schema)
+    except module.ReleaseContractError as exc:
+        raise ReleaseReviewEvidenceError(str(exc)) from exc
+
+
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key, value in pairs:
@@ -367,7 +381,7 @@ def _validate_human_approval(
 ) -> None:
     keys = (
         V026_HUMAN_APPROVAL_KEYS
-        if expected_tag == "v0.2.6"
+        if expected_tag in {"v0.2.6", "v0.2.7"}
         else V025_HUMAN_APPROVAL_KEYS
         if expected_tag == "v0.2.5"
         else V024_HUMAN_APPROVAL_KEYS
@@ -805,6 +819,7 @@ def _validate_v026_review_evidence(
     repo_root: Path,
     contract: dict[str, Any],
     phase: str,
+    expected_tag: str = "v0.2.6",
 ) -> dict[str, Any]:
     document = load_review_document(path, allow_v026_size=True)
     data = document.data
@@ -814,10 +829,11 @@ def _validate_v026_review_evidence(
         raise ReleaseReviewEvidenceError(
             "v0.2.6 requires all three independent review lanes"
         )
-    if set(data) != V026_TOP_LEVEL_KEYS or data.get("schema") != V026_REVIEW_SCHEMA:
-        raise ReleaseReviewEvidenceError(
-            "unknown or missing v0.2.6 review evidence keys"
-        )
+    if (
+        set(data) != V026_TOP_LEVEL_KEYS
+        or data.get("schema") != contract["review_evidence_schema"]
+    ):
+        raise ReleaseReviewEvidenceError("unknown or missing v2 review evidence keys")
     source_sha = data["source_sha"]
     base_sha = data["review_base_sha"]
     if (
@@ -978,7 +994,7 @@ def _validate_v026_review_evidence(
             data["human_approval"],
             source_sha,
             contract,
-            "v0.2.6",
+            expected_tag,
         )
         approval_time = _utc_datetime(data["human_approval"]["timestamp_utc"])
         latest_review_completion = max(
@@ -1019,7 +1035,8 @@ def validate_review_evidence(
     if evidence_path.is_symlink() or not evidence_path.is_file():
         raise ReleaseReviewEvidenceError("review evidence must be a regular file")
     contract = _release_contract(expected_tag)
-    if expected_tag == "v0.2.6":
+    profile = _review_evidence_profile(contract["review_evidence_schema"])
+    if profile == "v2":
         try:
             return _validate_v026_review_evidence(
                 evidence_path,
@@ -1028,6 +1045,7 @@ def validate_review_evidence(
                 Path(repo_root),
                 contract,
                 phase,
+                expected_tag,
             )
         except UnicodeEncodeError as exc:
             raise ReleaseReviewEvidenceError(
@@ -1035,7 +1053,7 @@ def validate_review_evidence(
             ) from exc
     if phase != "candidate":
         raise ReleaseReviewEvidenceError(
-            "source-review phase is available only for v0.2.6"
+            "source-review phase requires a v2 review evidence schema"
         )
     return _validate_legacy_review_evidence(
         evidence_path,

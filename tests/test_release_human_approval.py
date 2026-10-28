@@ -625,3 +625,59 @@ def test_v026_source_approval_v2_binds_owner_risk_decisions(monkeypatch):
     comment["body"] = comment["body"].replace(risk_digest, "d" * 64)
     with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
         verifier._validate_comment(comment, approval, source, "v0.2.6")
+
+
+def test_v027_source_approval_v2_uses_contract_authority(monkeypatch):
+    verifier = load_module("v027_human_verifier", HUMAN_VERIFIER)
+    source = "a" * 40
+    approval = {
+        "approver_login": "release-owner",
+        "reviewed_commit": source,
+        "timestamp_utc": "2026-10-29T00:20:00Z",
+        "scope_digest": "c" * 64,
+        "risk_decisions_sha256": "b" * 64,
+        "comment_id": 123456789,
+    }
+    contract = {
+        "promotion": {
+            "source_approval": {
+                "format": "GWEXPY-SOURCE-APPROVAL-v2",
+                "approver": "release-owner",
+            }
+        }
+    }
+    comment = {
+        "user": {"login": approval["approver_login"]},
+        "created_at": approval["timestamp_utc"],
+        "updated_at": approval["timestamp_utc"],
+        "body": "\n".join(
+            [
+                "GWEXPY-SOURCE-APPROVAL-v2",
+                "version=v0.2.7",
+                f"source_sha={source}",
+                f"scope_sha256={approval['scope_digest']}",
+                f"risk_sha256={approval['risk_decisions_sha256']}",
+                "decision=APPROVED",
+            ]
+        ),
+    }
+    monkeypatch.setattr(verifier, "_contract", lambda _tag: contract)
+    monkeypatch.setattr(
+        verifier, "_canonical_evidence_path", lambda *_args: Path("review.json")
+    )
+    monkeypatch.setattr(
+        verifier,
+        "_load_and_validate_evidence",
+        lambda *_args: {"human_approval": approval},
+    )
+    monkeypatch.setattr(verifier, "_fetch_comment", lambda *_args: comment)
+
+    reviewed = verifier.verify_human_approval(
+        repo_root=Path("."),
+        expected_tag="v0.2.7",
+        repository="example/gwexpy",
+        token="test-token",
+        api_url="https://api.example.invalid",
+    )
+
+    assert reviewed == source

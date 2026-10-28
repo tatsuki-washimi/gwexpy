@@ -19,6 +19,19 @@ PROMOTION_PAYLOAD_PREFIX = "release-payload-"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v2"
 V026_RECOVERY_CONTROL_REF = "refs/tags/v0.2.6-recovery-control-release-readback"
+V2_REVIEW_EVIDENCE_SCHEMAS = {
+    "gwexpy-v026-review-evidence-v2",
+    "gwexpy-v027-review-evidence-v2",
+}
+LEGACY_REVIEW_EVIDENCE_SCHEMAS = {
+    "gwexpy-v0113-review-evidence-v1",
+    "gwexpy-v0114-review-evidence-v1",
+    "gwexpy-v020-review-evidence-v1",
+    "gwexpy-v022-review-evidence-v1",
+    "gwexpy-v023-review-evidence-v1",
+    "gwexpy-v024-review-evidence-v1",
+    "gwexpy-v025-review-evidence-v2",
+}
 LOGIN = re.compile(r"^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$")
 IDENTIFIER = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 JOB_IDENTIFIER = re.compile(r"^[a-z0-9]+(?:[-_][a-z0-9]+)*$")
@@ -85,6 +98,15 @@ class ReleaseContractError(ValueError):
 
 class _DuplicateJSONKey(ValueError):
     """Raised when a release contract contains an ambiguous JSON object."""
+
+
+def review_evidence_profile(schema: str) -> str:
+    """Return the explicitly registered validator profile for a schema."""
+    if schema in V2_REVIEW_EVIDENCE_SCHEMAS:
+        return "v2"
+    if schema in LEGACY_REVIEW_EVIDENCE_SCHEMAS:
+        return "legacy"
+    raise ReleaseContractError(f"unsupported review evidence schema: {schema}")
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -235,10 +257,10 @@ def _validate_promotion(tag: str, value: object) -> dict[str, Any]:
     return value
 
 
-def _protected_refs(values: object) -> bool:
+def _protected_refs(values: object, *, allow_main_only: bool = False) -> bool:
     if (
         not isinstance(values, list)
-        or len(values) != 2
+        or len(values) not in ({1, 2} if allow_main_only else {2})
         or not all(isinstance(value, str) for value in values)
     ):
         return False
@@ -333,7 +355,7 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
             raise ReleaseContractError(f"invalid recovery_dispatch_ref for {tag}")
     review_base_sha = contract.get("review_base_sha")
     if review_base_sha is not None and (
-        tag not in {"v0.2.4", "v0.2.5", "v0.2.6"}
+        tag not in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7"}
         or not isinstance(review_base_sha, str)
         or SHA40.fullmatch(review_base_sha) is None
     ):
@@ -349,6 +371,13 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
     ):
         if not isinstance(contract[field], str) or not contract[field]:
             raise ReleaseContractError(f"invalid {field} for {tag}")
+    review_profile = review_evidence_profile(contract["review_evidence_schema"])
+    if tag == "v0.2.7" and (
+        review_profile != "v2"
+        or contract["review_evidence_schema"] != "gwexpy-v027-review-evidence-v2"
+        or review_base_sha is None
+    ):
+        raise ReleaseContractError(f"{tag} requires its frozen v2 review profile")
     artifact_prefix = contract["artifact_prefix"]
     if (
         not isinstance(artifact_prefix, str)
@@ -369,7 +398,9 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         raise ReleaseContractError(f"S-to-R paths omit the plan for {tag}")
     if contract["review_evidence_path"] not in contract["s_to_r_allowed_paths"]:
         raise ReleaseContractError(f"S-to-R paths omit review evidence for {tag}")
-    if not _protected_refs(contract["protected_refs"]):
+    if not _protected_refs(
+        contract["protected_refs"], allow_main_only=tag == "v0.2.7"
+    ) or (tag == "v0.2.7" and contract["protected_refs"] != ["main"]):
         raise ReleaseContractError(f"invalid protected refs for {tag}")
     if "promotion" in contract:
         _validate_promotion(tag, contract["promotion"])

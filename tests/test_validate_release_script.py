@@ -1086,3 +1086,92 @@ def test_v025_s_to_r_accepts_only_evidence_and_existing_checkboxes(
     validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.5")
     with pytest.raises(validator.ReleaseValidationError, match="distinct commits"):
         validator.validate_s_to_r(repo, source, source, expected_tag="v0.2.5")
+
+
+def _make_v027_s_to_r_repo(tmp_path: Path, *, valid_placeholder: bool = True):
+    validator = load_validator()
+    repo = tmp_path / "v027-review-repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan_path = "docs/developers/plans/v027-release-plan.md"
+    evidence_path = "docs/developers/plans/manifests/v027-review.json"
+    plan = repo / plan_path
+    evidence = repo / evidence_path
+    plan.parent.mkdir(parents=True)
+    evidence.parent.mkdir(parents=True)
+    plan.write_text("- [ ] source review\n", encoding="utf-8")
+    contract = {
+        "plan_path": plan_path,
+        "review_evidence_path": evidence_path,
+        "review_base_sha": "a" * 40,
+        "s_to_r_allowed_paths": sorted([plan_path, evidence_path]),
+    }
+    evidence.write_bytes(
+        validator._v027_empty_review_evidence_placeholder(contract["review_base_sha"])
+        if valid_placeholder
+        else b"not the v0.2.7 placeholder\n"
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    reviewed = git(repo, "rev-parse", "HEAD")
+    validator._release_contract = lambda _tag: contract
+    return validator, repo, plan, evidence, reviewed
+
+
+def test_v027_s_to_r_accepts_exact_placeholder_and_checkbox_approval(tmp_path: Path):
+    validator, repo, plan, evidence, reviewed = _make_v027_s_to_r_repo(tmp_path)
+    plan.write_text("- [x] source review\n", encoding="utf-8")
+    evidence.write_text(
+        '{"schema":"gwexpy-v027-review-evidence-v2"}\n', encoding="utf-8"
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "R")
+    source = git(repo, "rev-parse", "HEAD")
+
+    validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.7")
+
+
+def test_v027_s_to_r_rejects_nonplaceholder_and_out_of_allowlist_delta(tmp_path: Path):
+    validator, repo, plan, evidence, reviewed = _make_v027_s_to_r_repo(
+        tmp_path, valid_placeholder=False
+    )
+    evidence.write_text(
+        '{"schema":"gwexpy-v027-review-evidence-v2"}\n', encoding="utf-8"
+    )
+    plan.write_text("- [x] source review\n", encoding="utf-8")
+    (repo / "unreviewed.txt").write_text("not coordinator-owned\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "invalid R")
+    source = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="exact empty review evidence placeholder",
+    ):
+        validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.7")
+
+
+def test_v027_s_to_r_rejects_out_of_allowlist_delta(tmp_path: Path):
+    validator, repo, plan, evidence, reviewed = _make_v027_s_to_r_repo(tmp_path)
+    plan.write_text("- [x] source review\n", encoding="utf-8")
+    evidence.write_text(
+        '{"schema":"gwexpy-v027-review-evidence-v2"}\n', encoding="utf-8"
+    )
+    (repo / "unreviewed.txt").write_text("not coordinator-owned\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "R with unrelated change")
+    source = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError, match="outside coordinator audit paths"
+    ):
+        validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.7")
+
+
+def test_v027_s_to_r_rejects_same_commit(tmp_path: Path):
+    validator, repo, _plan, _evidence, reviewed = _make_v027_s_to_r_repo(tmp_path)
+
+    with pytest.raises(validator.ReleaseValidationError, match="distinct commits"):
+        validator.validate_s_to_r(repo, reviewed, reviewed, expected_tag="v0.2.7")

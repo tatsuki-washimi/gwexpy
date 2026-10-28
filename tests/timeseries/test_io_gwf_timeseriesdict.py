@@ -8,6 +8,7 @@ import pytest
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.timeseries._gwf_io import (
     _extract_gwf_read_args,
+    _preflight_gwf_local_sources,
     _resolve_gwf_format,
     read_gwf_timeseriesdict,
 )
@@ -15,6 +16,52 @@ from gwexpy.timeseries._gwf_io import (
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 AUX_CHANNEL = "K1:CAL-CS_PROC_DARM_CONTROL_DQ"
+
+
+@pytest.mark.parametrize("backend", ["framel", "lalframe", None])
+@pytest.mark.parametrize(
+    "source_kind", ["single", "multiple", "extensionless", "renamed"]
+)
+@pytest.mark.parametrize("reader_kind", ["timeseries", "timeseriesdict"])
+def test_missing_local_gwf_source_is_rejected_before_backend_read(
+    tmp_path, monkeypatch, backend, source_kind, reader_kind
+):
+    """Missing local frames fail in Python before native backend dispatch."""
+    import gwexpy.timeseries._gwf_io as gwf_io
+
+    missing = (
+        tmp_path
+        / {
+            "single": "missing.gwf",
+            "multiple": "missing.gwf",
+            "extensionless": "missing",
+            "renamed": "missing.dat",
+        }[source_kind]
+    )
+    source = [missing, tmp_path / "other.gwf"] if source_kind == "multiple" else missing
+
+    def forbidden_backend(*args, **kwargs):
+        raise AssertionError("GWF backend must not receive a missing local path")
+
+    monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_serial", forbidden_backend)
+    with pytest.raises(FileNotFoundError, match=missing.name):
+        if reader_kind == "timeseries":
+            TimeSeries.read(source, CHANNEL, format="gwf", backend=backend)
+        else:
+            TimeSeriesDict.read(source, CHANNEL, format="gwf", backend=backend)
+
+
+def test_gwf_missing_source_preflight_ignores_nonlocal_and_nonpath_sources(tmp_path):
+    """Only local path spellings are subject to the missing-file preflight."""
+    _preflight_gwf_local_sources("https://frames.example/test.gwf")
+    _preflight_gwf_local_sources("file:///remote-cache/test.gwf")
+    _preflight_gwf_local_sources("H1 TEST 1e3 1e0 remote/test.gwf")
+    _preflight_gwf_local_sources(["https://frames.example/test.gwf"])
+    _preflight_gwf_local_sources(iter(["test.gwf"]))
+    _preflight_gwf_local_sources(object())
+    filelist = tmp_path / "frames.ffl"
+    filelist.touch()
+    _preflight_gwf_local_sources(filelist)
 
 
 def has_gwf_backend(backend: str | None = None) -> bool:

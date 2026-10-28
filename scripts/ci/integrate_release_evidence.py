@@ -41,6 +41,7 @@ def integrate_review_evidence(
     """Attach the parsed approval and original file digest to the aggregate."""
     promotion = _load_sibling("release_promotion")
     review_validator = _load_sibling("validate_release_review_evidence")
+    contract_loader = _load_sibling("release_contract")
     try:
         contract = promotion.configured_contract(version)
         profile = promotion.candidate_profile(contract)
@@ -56,9 +57,18 @@ def integrate_review_evidence(
         ) from exc
     try:
         document = review_validator.load_review_document(
-            review_path, allow_v026_size=version == "0.2.6"
+            review_path,
+            allow_v026_size=(
+                contract_loader.review_evidence_profile(
+                    contract["review_evidence_schema"]
+                )
+                == "v2"
+            ),
         )
-    except review_validator.ReleaseReviewEvidenceError as exc:
+    except (
+        review_validator.ReleaseReviewEvidenceError,
+        contract_loader.ReleaseContractError,
+    ) as exc:
         raise IntegrationEvidenceError(f"invalid review evidence: {exc}") from exc
     human_approval = document.data.get("human_approval")
     if not isinstance(human_approval, dict):

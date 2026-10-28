@@ -853,12 +853,30 @@ def _local_module(name: str) -> Any:
     return module
 
 
-def load_candidate_review_document(path: Path, *, version: str) -> Any:
+def load_candidate_review_document(
+    path: Path,
+    *,
+    version: str | None = None,
+    release_contract: Mapping[str, Any] | None = None,
+) -> Any:
     """Use the readiness validator's shared loader for candidate evidence."""
     validator = _local_module("validate_release_review_evidence")
+    registry = _local_module("release_contract")
     try:
-        return validator.load_review_document(path, allow_v026_size=version == "0.2.6")
-    except validator.ReleaseReviewEvidenceError as exc:
+        selected_contract = release_contract
+        if selected_contract is None:
+            if version is None:
+                raise PromotionManifestError("release contract is required")
+            selected_contract = registry.release_contract(f"v{version}")
+        profile = registry.review_evidence_profile(
+            selected_contract["review_evidence_schema"]
+        )
+        return validator.load_review_document(path, allow_v026_size=profile == "v2")
+    except (
+        validator.ReleaseReviewEvidenceError,
+        registry.ReleaseContractError,
+        KeyError,
+    ) as exc:
         raise PromotionManifestError(f"invalid review evidence: {exc}") from exc
 
 
@@ -1368,7 +1386,9 @@ def verify_tag_candidate(
     )
 
     review_path = source_root / contract["review_evidence_path"]
-    review_document = load_candidate_review_document(review_path, version=version)
+    review_document = load_candidate_review_document(
+        review_path, release_contract=contract
+    )
     review = review_document.data
     release_notes = source_root / "release_notes" / f"v{version}.md"
     expected = {
@@ -1733,7 +1753,9 @@ def finalize_candidate(root: Path, version: str, output: Path) -> None:
         }
         review = root / contract["review_evidence_path"]
         notes = root / f"release_notes/v{version}.md"
-        review_document = load_candidate_review_document(review, version=version)
+        review_document = load_candidate_review_document(
+            review, release_contract=contract
+        )
         review_data = review_document.data
         for schema, evidence in aggregates:
             _require(

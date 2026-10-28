@@ -1117,6 +1117,37 @@ def test_candidate_validation_loads_v026_yaml_review_document(
     assert document.data["human_approval"]["comment_id"] == 6265784106
 
 
+def test_candidate_validation_uses_v027_v2_document_size_profile(
+    promotion, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from types import SimpleNamespace
+
+    module, _, _ = promotion
+    registry = SimpleNamespace(
+        release_contract=lambda _tag: {
+            "review_evidence_schema": "gwexpy-v027-review-evidence-v2"
+        },
+        review_evidence_profile=lambda _schema: "v2",
+        ReleaseContractError=ValueError,
+    )
+    original = module._local_module
+    monkeypatch.setattr(
+        module,
+        "_local_module",
+        lambda name: registry if name == "release_contract" else original(name),
+    )
+    path = tmp_path / "v027-review.yaml"
+    inner = json.dumps({"large_report_probe": "x" * (70 * 1024)}).encode("utf-8")
+    raw = b"review_evidence_json: |\n" + b"".join(
+        b"  " + line + b"\n" for line in inner.splitlines()
+    )
+    path.write_bytes(raw)
+
+    document = module.load_candidate_review_document(path, version="0.2.7")
+
+    assert document.raw_bytes == raw
+
+
 def test_candidate_validation_keeps_legacy_review_document_size_limit(
     promotion, tmp_path: Path
 ) -> None:

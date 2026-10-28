@@ -222,6 +222,7 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "v0.2.4",
         "v0.2.5",
         "v0.2.6",
+        "v0.2.7",
     }
 
     v0113 = data["releases"]["v0.1.13"]
@@ -787,6 +788,9 @@ def test_future_contracts_must_select_date_and_publication_tip_policies(
     future = dict(document["releases"]["v0.2.6"])
     future.pop("review_base_sha")
     future.pop("recovery_dispatch_ref")
+    future["review_base_sha"] = "a" * 40
+    future["review_evidence_schema"] = "gwexpy-v027-review-evidence-v2"
+    future["protected_refs"] = ["main"]
     future["tagger_date_policy"] = "independent"
     future["source_metadata_date_policy"] = "independent"
     future["publication_tip_policy"] = "qualified_candidate_ancestor"
@@ -848,15 +852,18 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         "v0.2.4",
         "v0.2.5",
         "v0.2.6",
+        "v0.2.7",
     }
     legacy_releases = {
-        tag: contract for tag, contract in values.items() if tag != "v0.2.6"
+        tag: contract
+        for tag, contract in values.items()
+        if tag not in {"v0.2.6", "v0.2.7"}
     }
     assert all("promotion" not in contract for contract in legacy_releases.values())
     assert all(
         key not in contract
         for tag, contract in values.items()
-        if tag != "v0.2.6"
+        if tag not in {"v0.2.6", "v0.2.7"}
         for key in (
             "tagger_date_policy",
             "source_metadata_date_policy",
@@ -868,6 +875,118 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         values["v0.2.5"]["review_evidence_schema"] == "gwexpy-v025-review-evidence-v2"
     )
     assert "promotion" in values["v0.2.6"]
+
+
+def test_v027_registered_contract_and_readiness_placeholder_are_operational() -> None:
+    contracts = load_contract_module()
+    contract = contracts.release_contract("v0.2.7")
+    plan_path = ROOT / contract["plan_path"]
+    evidence_path = ROOT / contract["review_evidence_path"]
+
+    assert contract["review_base_sha"] == "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd"
+    assert contract["protected_refs"] == ["main"]
+    assert contract["review_evidence_schema"] == "gwexpy-v027-review-evidence-v2"
+    assert contract["payload_schema"] == "gwexpy-v027-release-payload-v1"
+    assert (
+        contract["integration_evidence_schema"] == "gwexpy-v027-integration-evidence-v1"
+    )
+    assert contract["artifact_prefix"] == "v027-integration-evidence"
+    assert "recovery_dispatch_ref" not in contract
+    assert contract["promotion"]["release_go"] == {
+        "issue_number": 844,
+        "owner_login": "tatsuki-washimi",
+    }
+    expected_promotion = load_contract_module().release_contract("v0.2.6")["promotion"]
+    expected_promotion["release_go"] = {
+        "issue_number": 844,
+        "owner_login": "tatsuki-washimi",
+    }
+    assert contract["promotion"] == expected_promotion
+    assert contract["promotion"]["source_approval"] == {
+        "format": "GWEXPY-SOURCE-APPROVAL-v2",
+        "approver": "tatsuki-washimi",
+    }
+    assert contract["promotion"]["qualification_profile"] == "gwexpy-standard-v1"
+    assert (
+        contract["promotion"]["artifact_retention"]["configured_retention_days"] == 90
+    )
+    assert contract["tagger_date_policy"] == "independent"
+    assert contract["source_metadata_date_policy"] == "independent"
+    assert contract["publication_tip_policy"] == "qualified_candidate_ancestor"
+    assert contract["s_to_r_allowed_paths"] == sorted(
+        [contract["plan_path"], contract["review_evidence_path"]]
+    )
+    assert plan_path.is_file()
+    validator = load_release_validator()
+    assert (
+        evidence_path.read_bytes()
+        == validator._v027_empty_review_evidence_placeholder(
+            contract["review_base_sha"]
+        )
+    )
+
+
+def test_v027_review_lanes_cover_all_changes_from_frozen_review_base() -> None:
+    contracts = load_contract_module()
+    contract = contracts.release_contract("v0.2.7")
+    ancestry = subprocess.run(
+        [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            contract["review_base_sha"],
+            "HEAD",
+        ],
+        cwd=ROOT,
+        check=False,
+    )
+    assert ancestry.returncode == 0, "v0.2.7 Review Base must precede current source"
+    changed_paths = _changed_paths_between(ROOT, contract["review_base_sha"], "HEAD")
+    scope = {path for paths in contract["review_lanes"].values() for path in paths}
+
+    uncovered = sorted(
+        path for path in changed_paths if not _review_scope_covers(path, scope)
+    )
+
+    assert not uncovered, f"v0.2.7 review lanes omit changed paths: {uncovered}"
+
+
+def test_v027_operational_files_pass_registered_s_to_r_transition(
+    tmp_path: Path,
+) -> None:
+    contract = load_contract_module().release_contract("v0.2.7")
+    validator = load_release_validator()
+    repo = tmp_path / "v027-operational-transition"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+
+    for field in ("plan_path", "review_evidence_path"):
+        relative = contract[field]
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / relative).read_bytes())
+
+    git(repo, "add", contract["plan_path"], contract["review_evidence_path"])
+    git(repo, "commit", "-m", "S: registered v0.2.7 operational files")
+    reviewed = git(repo, "rev-parse", "HEAD")
+
+    plan = repo / contract["plan_path"]
+    plan.write_text(
+        plan.read_text(encoding="utf-8").replace("- [ ]", "- [x]", 1),
+        encoding="utf-8",
+    )
+    evidence = repo / contract["review_evidence_path"]
+    evidence.write_text(
+        'review_evidence_json: |\n  {"schema":"gwexpy-v027-review-evidence-v2"}\n',
+        encoding="utf-8",
+    )
+    git(repo, "add", contract["plan_path"], contract["review_evidence_path"])
+    git(repo, "commit", "-m", "R: populate coordinator-owned evidence")
+    source = git(repo, "rev-parse", "HEAD")
+
+    validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.7")
 
 
 def test_v026_uses_platform_independent_review_and_approval_contract() -> None:

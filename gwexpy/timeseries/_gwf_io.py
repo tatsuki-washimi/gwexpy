@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import errno
 import logging
 import multiprocessing
 import os
@@ -398,9 +399,9 @@ def _looks_like_ligo_cache_record(text: str) -> bool:
     )
 
 
-def _has_gwf_source_hazard(text: str) -> bool:
+def _has_gwf_source_hazard(text: str, *, include_cache_record: bool = True) -> bool:
     """Return whether one raw or decoded spelling is cache/URI/composite-like."""
-    if _looks_like_ligo_cache_record(text):
+    if include_cache_record and _looks_like_ligo_cache_record(text):
         return True
 
     is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(text)) or text.startswith(
@@ -418,9 +419,13 @@ def _has_gwf_source_hazard(text: str) -> bool:
     )
 
 
-def _is_local_gwf_frame_path_syntax(text: str) -> bool:
-    """Return whether one unresolved spelling is safe for a spawned reader."""
-    if not text.lower().endswith(".gwf") or _looks_like_ligo_cache_record(text):
+def _is_local_gwf_frame_path_syntax(
+    text: str, *, require_gwf_suffix: bool = True, path_hint: bool = False
+) -> bool:
+    """Return whether one unresolved spelling is a local GWF source path."""
+    if require_gwf_suffix and not text.lower().endswith(".gwf"):
+        return False
+    if _looks_like_ligo_cache_record(text) and not path_hint:
         return False
 
     stages = _decoded_gwf_validation_stages(text)
@@ -433,9 +438,49 @@ def _is_local_gwf_frame_path_syntax(text: str) -> bool:
         # must not be treated as an alternate source for resolver or worker.
         if stage != text and os.path.isfile(stage):
             return False
-        if _has_gwf_source_hazard(stage):
+        if _has_gwf_source_hazard(stage, include_cache_record=not path_hint):
             return False
     return True
+
+
+def _preflight_gwf_local_sources(source: Any) -> None:
+    """Raise a source-specific error for missing local GWF input paths.
+
+    Remote URLs, cache records, file-like objects, and other non-path inputs are
+    left to GWpy's existing source handling. This check runs before backend
+    dispatch because the native FrameL reader can segfault on a missing path.
+    """
+    sources = source if isinstance(source, (list, tuple)) else (source,)
+    for item in sources:
+        if not isinstance(item, (str, bytes, os.PathLike)):
+            continue
+        path = os.fspath(item)
+        if not isinstance(path, (str, bytes)):
+            continue
+        try:
+            text = os.fsdecode(path)
+        except (TypeError, UnicodeError):
+            continue
+        path_hint = (
+            isinstance(item, os.PathLike)
+            or text.startswith(("/", "./", "../", r"\\"))
+            or bool(_GWF_WINDOWS_DRIVE_RE.match(text))
+        )
+        if os.name != "nt" and (
+            _GWF_WINDOWS_DRIVE_RE.match(text) or text.startswith(r"\\")
+        ):
+            # These are valid structural source spellings for callers running
+            # on Windows, but they are not local filesystem paths on POSIX.
+            continue
+        if _is_local_gwf_frame_path_syntax(
+            text, require_gwf_suffix=False, path_hint=path_hint
+        ):
+            try:
+                os.stat(path)
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    errno.ENOENT, os.strerror(errno.ENOENT), path
+                ) from None
 
 
 def _is_normalized_filesystem_path(path: str | bytes) -> bool:

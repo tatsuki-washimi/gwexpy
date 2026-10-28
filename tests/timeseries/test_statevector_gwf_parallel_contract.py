@@ -547,6 +547,8 @@ def test_real_spawn_uses_decoded_payload_spans_for_all_public_gwf_readers(
     monkeypatch, tmp_path
 ) -> None:
     sources = [tmp_path / "K1-span-100-1.gwf", tmp_path / "K1-span-200-1.gwf"]
+    for source in sources:
+        source.touch()
     monkeypatch.setattr(
         gwf_io, "_read_gwf_timeseriesdict_worker", _decoded_timeseries_worker
     )
@@ -1176,9 +1178,15 @@ def test_parallel_readers_reject_bad_pathlike_before_io(
     ],
 )
 def test_all_public_readers_accept_structural_local_parallel_paths(
-    monkeypatch, reader, selector, worker_name, source
+    monkeypatch, tmp_path, reader, selector, worker_name, source
 ) -> None:
     _ImmediateExecutor.instances.clear()
+    monkeypatch.chdir(tmp_path)
+    source_text = os.fsdecode(os.fspath(source))
+    if os.name == "nt" or not isinstance(source, PureWindowsPath):
+        source_path = Path(source_text)
+        source_path.parent.mkdir(parents=True, exist_ok=True)
+        source_path.touch()
 
     def timeseries_worker(source, channels, start, end, backend, read_kwargs):
         del source, start, end, backend, read_kwargs
@@ -1226,7 +1234,7 @@ def test_all_public_readers_accept_structural_local_parallel_paths(
     ],
 )
 def test_all_public_parallel_readers_preserve_worker_import_error_provenance(
-    monkeypatch, reader, selector, worker_name
+    monkeypatch, tmp_path, reader, selector, worker_name
 ) -> None:
     _ImmediateExecutor.instances.clear()
     error = ImportError("worker backend import failure", "frame-extra")
@@ -1237,10 +1245,13 @@ def test_all_public_parallel_readers_preserve_worker_import_error_provenance(
     monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
     monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", _fake_span)
     monkeypatch.setattr(gwf_io, worker_name, failing_worker)
+    sources = [tmp_path / "early.gwf", tmp_path / "late.gwf"]
+    for source in sources:
+        source.touch()
 
     with pytest.raises(ImportError) as raised:
         reader(
-            [Path("early.gwf"), Path("late.gwf")],
+            sources,
             selector,
             format="gwf",
             parallel=2,
@@ -1253,7 +1264,7 @@ def test_all_public_parallel_readers_preserve_worker_import_error_provenance(
 
 @pytest.mark.parametrize("reader", [TimeSeries.read, TimeSeriesDict.read])
 def test_timeseries_serial_import_error_keeps_existing_normalized_public_error(
-    monkeypatch, reader
+    monkeypatch, tmp_path, reader
 ) -> None:
     error = ImportError("serial backend import failure")
     monkeypatch.setattr(
@@ -1261,8 +1272,10 @@ def test_timeseries_serial_import_error_keeps_existing_normalized_public_error(
         lambda *args, **kwargs: (_ for _ in ()).throw(error),
     )
 
+    source = tmp_path / "serial.gwf"
+    source.touch()
     with pytest.raises(ImportError, match="Missing optional dependency") as raised:
-        reader(Path("serial.gwf"), CHANNEL_A, format="gwf", parallel=1)
+        reader(source, CHANNEL_A, format="gwf", parallel=1)
     assert raised.value is not error
 
 
@@ -1338,6 +1351,7 @@ def test_segmentless_framel_filename_has_serial_parallel_parity_for_all_readers(
 
 def test_scalar_timeseries_gwf_read_preserves_nested_public_metadata(
     monkeypatch,
+    tmp_path,
 ) -> None:
     _ImmediateExecutor.instances.clear()
     source_payloads = []
@@ -1367,7 +1381,9 @@ def test_scalar_timeseries_gwf_read_preserves_nested_public_metadata(
     monkeypatch.setattr(
         "gwpy.timeseries.io.gwf.core.read_timeseriesdict", metadata_read
     )
-    sources = [Path("late.gwf"), Path("early.gwf")]
+    sources = [tmp_path / "late.gwf", tmp_path / "early.gwf"]
+    for source in sources:
+        source.touch()
     serial = TimeSeries.read(sources, CHANNEL_A, format="gwf", gap="ignore", parallel=1)
     parallel = TimeSeries.read(
         sources, CHANNEL_A, format="gwf", gap="ignore", parallel=2

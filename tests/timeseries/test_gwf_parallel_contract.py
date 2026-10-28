@@ -358,7 +358,9 @@ def test_gwf_parallel_rejects_empty_requested_series(monkeypatch) -> None:
         )
 
 
-def test_public_parallel_worker_type_error_is_not_translated(monkeypatch) -> None:
+def test_public_parallel_worker_type_error_is_not_translated(
+    monkeypatch, tmp_path
+) -> None:
     _ImmediateExecutor.instances.clear()
     monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
     monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", _fake_span)
@@ -367,10 +369,13 @@ def test_public_parallel_worker_type_error_is_not_translated(monkeypatch) -> Non
         raise TypeError("backend worker type error")
 
     monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_worker", worker_type_error)
+    sources = [tmp_path / "early.gwf", tmp_path / "late.gwf"]
+    for source in sources:
+        source.touch()
 
     with pytest.raises(TypeError, match="backend worker type error"):
         TimeSeriesDict.read(
-            [Path("early.gwf"), Path("late.gwf")],
+            sources,
             CHANNEL_A,
             format="gwf",
             parallel=2,
@@ -501,6 +506,8 @@ def test_public_gwf_parallel_runs_module_level_worker_in_spawn_child(
     monkeypatch, tmp_path
 ):
     sources = [tmp_path / "pid0.gwf", tmp_path / "pid1.gwf"]
+    for source in sources:
+        source.touch()
     monkeypatch.setattr(
         gwf_io,
         "_resolve_gwf_path_span",
