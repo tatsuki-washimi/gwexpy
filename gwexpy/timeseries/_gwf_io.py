@@ -763,7 +763,10 @@ def _normalize_gwf_parallel_sources(source: Any) -> _NormalizedGWFParallelSource
 
 
 def _prepare_gwf_parallel_source(
-    source: Any, fmt: Any, gwf_kwargs: dict[str, Any]
+    source: Any,
+    fmt: Any,
+    gwf_kwargs: dict[str, Any],
+    preflight_local_sources: bool = False,
 ) -> tuple[Any, str | None]:
     """Resolve GWF format without accessing a multi-worker PathLike twice.
 
@@ -776,7 +779,10 @@ def _prepare_gwf_parallel_source(
         gwf_format = _normalize_gwf_format(fmt) if isinstance(fmt, str) else None
         if gwf_format is None:
             return source, None
-        return _validate_gwf_parallel_source(source, gwf_kwargs), gwf_format
+        source = _validate_gwf_parallel_source(source, gwf_kwargs)
+        if preflight_local_sources:
+            _preflight_gwf_local_sources(source)
+        return source, gwf_format
 
     requested, workers = _normalize_gwf_parallel_kwargs(
         dict(gwf_kwargs),
@@ -784,7 +790,10 @@ def _prepare_gwf_parallel_source(
     )
     if requested and workers > 1:
         source = _validate_gwf_parallel_source(source, gwf_kwargs)
-    return source, _resolve_gwf_format(source, fmt)
+    gwf_format = _resolve_gwf_format(source, fmt)
+    if preflight_local_sources and gwf_format is not None:
+        _preflight_gwf_local_sources(source)
+    return source, gwf_format
 
 
 def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> Any:

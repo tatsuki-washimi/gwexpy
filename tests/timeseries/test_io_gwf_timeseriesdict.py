@@ -9,6 +9,7 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.timeseries._gwf_io import (
     _extract_gwf_read_args,
     _preflight_gwf_local_sources,
+    _prepare_gwf_parallel_source,
     _resolve_gwf_format,
     read_gwf_timeseriesdict,
 )
@@ -16,6 +17,17 @@ from gwexpy.timeseries._gwf_io import (
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 AUX_CHANNEL = "K1:CAL-CS_PROC_DARM_CONTROL_DQ"
+
+
+def test_gwf_source_preparation_only_preflights_when_requested(tmp_path):
+    missing = tmp_path / "missing.gwf"
+
+    source, gwf_format = _prepare_gwf_parallel_source(missing, None, {})
+
+    assert source is missing
+    assert gwf_format == "gwf"
+    with pytest.raises(FileNotFoundError, match=missing.name):
+        _prepare_gwf_parallel_source(missing, None, {}, True)
 
 
 @pytest.mark.parametrize("backend", ["framel", "lalframe", None])

@@ -46,7 +46,6 @@ from ._gwf_io import (
     _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
-    _preflight_gwf_local_sources,
     _prepare_gwf_parallel_source,
     _source_for_gwf_channel_listing,
     _validate_gwf_parallel_source,
@@ -253,10 +252,9 @@ class TimeSeries(
             return read_timeseries_csv(source, **reader_kwargs)
 
         source, gwf_format = _prepare_gwf_parallel_source(
-            source, kwargs.get("format"), kwargs
+            source, kwargs.get("format"), kwargs, True
         )
         if gwf_format is not None:
-            _preflight_gwf_local_sources(source)
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,

@@ -46,8 +46,13 @@ def test_v025_schema_selection_preserves_v024_nodes_and_semantics() -> None:
     assert evidence.VERSION == "0.2.6"
     assert evidence.PAYLOAD_SCHEMA == "gwexpy-v026-release-payload-v1"
     assert evidence.AGGREGATE_SCHEMA == "gwexpy-diaggui-qualification-evidence-v1"
+    evidence._select_version("0.2.7")
+    assert evidence.VERSION == "0.2.7"
+    assert evidence.PAYLOAD_SCHEMA == "gwexpy-v027-release-payload-v1"
+    assert evidence.CELL_SCHEMA == "gwexpy-diaggui-qualification-cell-v1"
+    assert evidence.AGGREGATE_SCHEMA == "gwexpy-diaggui-qualification-evidence-v1"
     with pytest.raises(evidence.DiagGUIQualificationError, match="unsupported"):
-        evidence._select_version("0.2.7")
+        evidence._select_version("99.88.77")
 
 
 def canonical_json(data: object) -> bytes:

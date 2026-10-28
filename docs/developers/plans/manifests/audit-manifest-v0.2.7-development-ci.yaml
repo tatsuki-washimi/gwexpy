@@ -1,0 +1,167 @@
+schema: gwexpy-development-ci-audit-v1
+skills:
+  - triage_ci
+  - superpowers:systematic-debugging
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+requested_model: GPT-6 Luna
+requested_reasoning_effort: high
+effective_runtime: unobserved
+artifact_status: modified-working-tree
+tested_base_commit: c934de56afe33724abdb17add87ad2b3318ae982
+working_tree_commit: c934de56afe33724abdb17add87ad2b3318ae982
+summary: >-
+  The PR 845 GWpy inventory failure was caused by source line metadata shifts
+  after adding the local GWF missing-path preflight at the TimeSeries and
+  TimeSeriesDict call sites. Public roots, exports, counterparts and signatures
+  did not change. The preflight now lives in the shared source preparation
+  helper and is enabled only for TimeSeries and TimeSeriesDict, preserving
+  StateVector behavior and the reviewed inventory without regenerating it.
+changed_files:
+  - gwexpy/timeseries/_gwf_io.py
+  - gwexpy/timeseries/collections.py
+  - gwexpy/timeseries/timeseries.py
+  - tests/timeseries/test_io_gwf_timeseriesdict.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.7-development-ci.yaml
+checks:
+  - name: focused-regression-original-red
+    command: >-
+      conda run -n gwexpy pytest -q
+      tests/timeseries/test_io_gwf_timeseriesdict.py::test_gwf_source_preparation_preflights_resolved_gwf_paths
+    result: failed-as-expected-before-fix
+    detail: This initial mock-based regression failed because the helper returned the
+      resolved format without preflighting. It was then replaced by a real filesystem
+      behavior regression to avoid mirroring implementation calls.
+  - name: focused-regression-final-green
+    command: >-
+      conda run -n gwexpy pytest -q
+      tests/timeseries/test_io_gwf_timeseriesdict.py::test_gwf_source_preparation_only_preflights_when_requested
+    result: passed
+    detail: Default mode returns the missing .gwf path unchanged; opt-in mode raises
+      FileNotFoundError with the missing filename.
+  - name: gwf-reader-and-parallel-contracts
+    command: >-
+      conda run -n gwexpy pytest -q
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+      tests/timeseries/test_gwf_parallel_contract.py
+      tests/timeseries/test_statevector_gwf_parallel_contract.py
+    result: passed
+    detail: 712 passed, 1 skipped; missing-path cases cover single/list sources,
+      extensionless and renamed paths, and FrameL, LALFrame and automatic backend selection.
+  - name: post-fix-integrated-10-file-suite
+    command: >-
+      memcap -m 6G -- conda run -n gwexpy python -m pytest
+      tests/test_v027_release_support.py
+      tests/test_v026_review_evidence_v2.py
+      tests/test_release_contracts.py
+      tests/test_validate_release_script.py
+      tests/test_release_promotion.py
+      tests/test_release_human_approval.py
+      tests/test_release_integration_evidence.py
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+      tests/timeseries/test_gwf_parallel_contract.py
+      tests/timeseries/test_statevector_gwf_parallel_contract.py -q
+    result: passed
+    detail: 1098 passed, 1 skipped in 70.94 seconds; focused 10-file integration suite,
+      not the full repository test suite.
+  - name: isolated-timeseriesdict-default-serial-missing-paths
+    command: >-
+      ulimit -c 0; timeout --signal=KILL 90s env
+      PYTHONPATH=<development worktree> PYTHONFAULTHANDLER=1
+      conda run -n gwexpy python -X faulthandler
+      <TMPDIR>/gwexpy-v027-missing-dict-isolated-v2.py
+    result: passed
+    detail: >-
+      12 of 12 actual TimeSeriesDict.read calls raised FileNotFoundError for the
+      expected filename without passing a parallel argument: single/list,
+      extensionless/renamed inputs x FrameL/LALFrame/automatic backend. Imports
+      resolved to the current development worktree; tracebacks included the GWF
+      preflight and no GWpy backend frames.
+  - name: qualification-profile-and-inventory-regressions
+    command: >-
+      memcap -m 4G -- conda run -n gwexpy python -m pytest
+      tests/test_diaggui_qualification_evidence.py
+      tests/test_qualification_skip_evidence.py
+      tests/test_gwpy_override_inventory.py -q
+    result: passed
+    detail: 276 passed in 100.03 seconds. Coverage includes registry-backed v0.2.7
+      qualifier profiles, fail-closed rejection of an unregistered version, and the
+      full inventory unit file.
+  - name: initial-shared-helper-integration-check
+    command: >-
+      conda run -n gwexpy pytest -q
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+      tests/timeseries/test_statevector_gwf_parallel_contract.py
+    result: failed-during-diagnostic-iteration
+    detail: The first helper draft preflighted StateVector sources as well; 12 StateVector
+      tests caught the behavior change. The final helper takes an opt-in flag, and only
+      the original TimeSeries and TimeSeriesDict callers enable it; the final three-suite
+      integration run passed.
+  - name: gwpy-override-inventory-gwpy-4.0.2
+    command: >-
+      conda run -n gwexpy python scripts/audit_gwpy_overrides.py --check
+      --require-terminal --execute-evidence
+      --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json
+      --oracle-python '4.0.2=@current'
+    result: passed
+    detail: 62 evidence selectors, 396 evidence cases, 575 inventory members.
+  - name: gwpy-override-inventory-gwpy-4.0.1
+    command: >-
+      conda run -p <pre-existing GWpy 4.0.1 environment> python
+      scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence
+      --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json
+      --oracle-python '4.0.1=@current'
+    result: passed
+    detail: 62 evidence selectors, 396 evidence cases, 575 inventory members;
+      upstream Matplotlib emitted 11 pending-deprecation warnings.
+  - name: ruff
+    command: >-
+      conda run -n gwexpy ruff check gwexpy/timeseries/_gwf_io.py
+      gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+    result: passed
+  - name: ruff-format
+    command: >-
+      conda run -n gwexpy ruff format --check gwexpy/timeseries/_gwf_io.py
+      gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+    result: passed
+  - name: mypy-changed-production-files
+    command: >-
+      conda run -n gwexpy mypy gwexpy/timeseries/_gwf_io.py
+      gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py
+    result: passed
+    detail: No issues found in the three changed production files.
+  - name: development-core-suite-before-inventory-fix
+    result: passed
+    detail: 1097 passed, 1 skipped.
+  - name: mypy-before-inventory-fix
+    result: baseline-only-errors
+    detail: 31 errors matched the recorded pre-existing baseline; no new errors.
+existing_ci_context:
+  pr: 845
+  run: 40785030811
+  before_fix: failed
+  failure: Both GWpy 4.0.1 and 4.0.2 jobs reported public root population drift.
+  after_fix_remote_rerun: not-performed
+pr_fast_ci_context:
+  run: 40785030903
+  state_at_observation: failed-before-local-fixes
+  result: 8 failed, 11651 passed, 397 skipped, 52 deselected, 7 xfailed.
+  failure_groups:
+    - Five failures from the stale public-root source-line inventory metadata, fixed locally.
+    - Two tests treated registered v0.2.7 as unsupported.
+    - One unknown-version fixture used registered v0.2.7 and failed earlier on candidate binding.
+  post_fix_remote_rerun: not-performed
+checks_omitted:
+  - Full pytest suite after the inventory fix.
+  - Sphinx documentation build.
+  - Remote CI rerun.
+physics_review:
+  applicable: false
+  summary: No physics, numerical, or data-model behavior changed.
+release_controls:
+  source_human_approval: not-performed
+  release_owner_go: not-performed
+  candidate_qualification: not-performed
+  protected_main_fast_forward_admission: not-performed

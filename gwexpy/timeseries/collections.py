@@ -55,7 +55,6 @@ from ._gwf_io import (
     _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
-    _preflight_gwf_local_sources,
     _prepare_gwf_parallel_source,
     _source_for_gwf_channel_listing,
     _validate_gwf_parallel_source,
@@ -410,9 +409,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 "format 'ats.mth5' supports TimeSeries.read only; "
                 "TimeSeriesDict.read is not supported"
             )
-        source, gwf_format = _prepare_gwf_parallel_source(source, fmt, kwargs)
-        if gwf_format is not None:
-            _preflight_gwf_local_sources(source)
+        source, gwf_format = _prepare_gwf_parallel_source(source, fmt, kwargs, True)
         try:
             p = Path(source)
         except TypeError:
