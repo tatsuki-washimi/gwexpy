@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-27T14:52:35Z",
-  "post_release_status": "pending_review",
+  "recorded_at_utc": "2026-10-28T13:17:44Z",
+  "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.6",
     "version": "0.2.6",
@@ -88,7 +88,7 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
@@ -97,15 +97,29 @@
           "sha256": "a20208327a2d7f28674b5d508b96cd205af003cb98f5fdf6e93d4f3cff98eb2f",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-10-27T01:38:15.479805+00:00\", \"doi\": \"10.5281/zenodo.23680359\", \"files\": [{\"checksum\": \"md5:e587201a22f3acc9be92d4915c6d08f6\", \"id\": \"03ce4042-06d9-4c2e-af21-00e0a6e13f5e\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.6.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/23680359/files/tatsuki-washimi/gwexpy-v0.2.6.zip/content\"}, \"size\": 36592642}], \"publication_date\": \"2026-10-27\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 23680359, \"updated\": \"2026-10-27T03:21:23.950134+00:00\"}"
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/issues/797#issuecomment-6432955280",
+          "sha256": null,
+          "observed_at_utc": "2026-10-28T07:29:17Z",
+          "observation": "Release Owner GitHub record confirms v0.2.6 Zenodo metadata-only correction to publication_date 2026-10-27, same DOI 10.5281/zenodo.23680359 and unchanged archive. Owner reaffirmed acceptance of this published date on 2026-10-28. No candidate/tag/Zenodo payload change requested."
         }
       ],
-      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "zenodo",
-      "readback_succeeded": true
+      "readback_succeeded": true,
+      "human_decision": {
+        "status": "complete",
+        "disposition": "accept-zenodo-publication-date",
+        "publication_date": "2026-10-27",
+        "approved_by": "tatsuki-washimi",
+        "approval_url": "https://github.com/tatsuki-washimi/gwexpy/issues/797#issuecomment-6432955280",
+        "rationale": "Accept the existing Zenodo v0.2.6 record publication date (2026-10-27) as the actual public record date; preserve frozen candidate source metadata date (2026-10-24) as independent historical source metadata."
+      }
     },
     "conda": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -114,15 +128,21 @@
           "sha256": "f206105161aea6388977bd87d717a1972ce64539a9f131df91b4ed2f2a6e0cef",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"pending_review\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "See separate feedstock PR and actual channel-package states",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
-        "conda_feedstock": "pending_review",
-        "conda_package": "pending_external"
+        "conda_feedstock": "complete",
+        "conda_package": "complete"
       }
     },
     "docs": {
@@ -172,12 +192,19 @@
       "readback_succeeded": true
     },
     "remote_cleanup": {
-      "status": "pending_external",
-      "actor": "GitHub Actions",
+      "status": "complete",
+      "actor": "tatsuki-washimi via GitHub API",
       "objective": "Assess remote branches using ancestry and open PRs",
-      "evidence": [],
-      "pending_reason": "Assessment missing",
-      "resume_condition": "Run read-only remote assessment"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+          "sha256": "8189f07f0d0bcd1369874fe56956ca3bbc9db9dd6f39c9c0c6c4477bfde24076",
+          "observed_at_utc": "2026-10-27T17:17:29Z",
+          "observation": "GitHub API readback at 2026-10-27T17:17:29Z verified that all 70 fixed-allowlist refs were deleted (0 already absent, 0 skipped), the 144 remaining refs exactly matched the initial inventory minus the allowlist, main stayed at d29fe2ce97ea1b7778c9be697651fe3f38b8c21f, all 7 Open PR heads and protected or explicitly held refs remained, all 4 v0.2.6-related tags were unchanged, and no API errors occurred. A fresh readback at 2026-10-27T17:35:00Z matched the saved 144-branch inventory and 7 Open PR records."
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "local_cleanup": {
       "status": "pending_external",
@@ -188,7 +215,7 @@
       "resume_condition": "Supply maintainer local-host assessment"
     },
     "conda_feedstock": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_feedstock",
       "evidence": [
@@ -197,15 +224,21 @@
           "sha256": "6f6e659195abdd7e0a218fc5802a5a6ecfe748742c44dd6547bf6ef5dc25e3fe",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"author\": \"regro-cf-autotick-bot\", \"head_branch\": \"0.2.6_h34e406\", \"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"merged_at\": null, \"number\": 16, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/16\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"b0d8b4be34c72893930abea2a9e5f6dc68c6783df39f8dc6068974353a3de5d8\", \"source_sha256\": \"b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.6.tar.gz\", \"version\": \"0.2.6\"}, \"status\": \"pending_review\", \"updated_at\": \"2026-10-27T03:34:08Z\"}"
+        },
+        {
+          "url": "https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls",
+          "sha256": "af451ce7ec4f3c13207b258bc90d898735975c1267979d3993f7f817f2ac1560",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"author\": \"regro-cf-autotick-bot\", \"head_branch\": \"0.2.6_h34e406\", \"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"merged_at\": \"2026-10-28T07:17:06Z\", \"number\": 16, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/16\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"b0d8b4be34c72893930abea2a9e5f6dc68c6783df39f8dc6068974353a3de5d8\", \"source_sha256\": \"b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.6.tar.gz\", \"version\": \"0.2.6\"}, \"status\": \"complete\", \"updated_at\": \"2026-10-28T07:18:41Z\"}"
         }
       ],
-      "pending_reason": "Feedstock maintainer review outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_feedstock",
       "readback_succeeded": false
     },
     "conda_package": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_package",
       "evidence": [
@@ -214,12 +247,18 @@
           "sha256": "779a41aabdbb234411a3856e5ded68787158ddea314ad2522491218a01baab70",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"inventory_files\": [], \"missing_from_repodata\": [], \"reason\": \"Exact build absent from final conda-forge repodata\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "c863894992f5072a01968421e5d3ae0c64e10e54b2dd48d3a609d30a26b47cb9",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"download_url\": \"//api.anaconda.org/download/conda-forge/gwexpy/0.2.6/noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"42657601907346e53b3ed37e842414cf\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120, \"subdir\": \"noarch\", \"timestamp\": 1793171883468, \"version\": \"0.2.6\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Exact build absent from final conda-forge repodata",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_package",
-      "readback_succeeded": false
+      "readback_succeeded": true
     }
   }
 }
