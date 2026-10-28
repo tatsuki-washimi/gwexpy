@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-27T17:42:09Z",
+  "recorded_at_utc": "2026-10-28T07:29:17Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.6",
@@ -88,7 +88,7 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
@@ -97,12 +97,26 @@
           "sha256": "a20208327a2d7f28674b5d508b96cd205af003cb98f5fdf6e93d4f3cff98eb2f",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-10-27T01:38:15.479805+00:00\", \"doi\": \"10.5281/zenodo.23680359\", \"files\": [{\"checksum\": \"md5:e587201a22f3acc9be92d4915c6d08f6\", \"id\": \"03ce4042-06d9-4c2e-af21-00e0a6e13f5e\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.6.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/23680359/files/tatsuki-washimi/gwexpy-v0.2.6.zip/content\"}, \"size\": 36592642}], \"publication_date\": \"2026-10-27\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 23680359, \"updated\": \"2026-10-27T03:21:23.950134+00:00\"}"
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/issues/797#issuecomment-6432955280",
+          "sha256": null,
+          "observed_at_utc": "2026-10-28T07:29:17Z",
+          "observation": "Release Owner GitHub record confirms v0.2.6 Zenodo metadata-only correction to publication_date 2026-10-27, same DOI 10.5281/zenodo.23680359 and unchanged archive. Owner reaffirmed acceptance of this published date on 2026-10-28. No candidate/tag/Zenodo payload change requested."
         }
       ],
-      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "zenodo",
-      "readback_succeeded": true
+      "readback_succeeded": true,
+      "human_decision": {
+        "status": "complete",
+        "disposition": "accept-zenodo-publication-date",
+        "publication_date": "2026-10-27",
+        "approved_by": "tatsuki-washimi",
+        "approval_url": "https://github.com/tatsuki-washimi/gwexpy/issues/797#issuecomment-6432955280",
+        "rationale": "Accept the existing Zenodo v0.2.6 record publication date (2026-10-27) as the actual public record date; preserve frozen candidate source metadata date (2026-10-24) as independent historical source metadata."
+      }
     },
     "conda": {
       "status": "pending_review",
