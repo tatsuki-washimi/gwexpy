@@ -15,6 +15,13 @@ Weekly activity through the immutable v0.2.6 release tag. The stacked bars group
 
 The snapshot ends at commit `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes.
 
+## [0.2.7] - 2026-11-03
+
+:::{include} ../../CHANGELOG.md
+:start-after: "## [0.2.7] - 2026-11-03"
+:end-before: "## [0.2.6] - 2026-10-24"
+:::
+
 ## [0.2.6] - 2026-10-24
 
 :::{include} ../../CHANGELOG.md
