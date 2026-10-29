@@ -415,7 +415,9 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     )
     assert f"Published on {PUBLISHED_V026_DATE} UTC" in redesigned_changelog
     assert "conda-forge feedstock [PR #16]" in redesigned_changelog
-    assert "channel package inventory still tops at 0.2.4" in redesigned_changelog
+    assert "merged on 2026-10-28 UTC" in redesigned_changelog
+    assert "0.2.6 is available on conda-forge" in redesigned_changelog
+    assert "open for review" not in redesigned_changelog
     assert "development-activity-v0.2.6.svg" in redesigned_changelog
     japanese_po = (
         REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
@@ -456,7 +458,7 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     assert f"Published on {PUBLISHED_V026_DATE} UTC" in redesigned_changelog
     assert "10.5281/zenodo.23680359" in redesigned_changelog
     assert "conda-forge" in redesigned_changelog
-    assert "0.2.4" in redesigned_changelog
+    assert "0.2.6 is available on conda-forge" in redesigned_changelog
     activity_csv = REPO_ROOT / (
         "docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv"
     )
@@ -475,6 +477,80 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
         if suffix:
             assert "週ごとのコミット数" in svg
             assert "Commits per week" not in svg
+
+
+def test_v026_changelog_reconciliation_manifest_is_valid_yaml() -> None:
+    manifest_path = (
+        REPO_ROOT
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.6-changelog-reconcile.yaml"
+    )
+
+    manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+
+    assert manifest["schema"] == "gwexpy-agent-audit-v1"
+    assert manifest["live_readback"]["status"] == (
+        "Docs correction review and Pages deployment remain pending."
+    )
+
+
+def test_japanese_inline_examples_preserve_matrix_and_pad_tokens() -> None:
+    modal_path = (
+        REPO_ROOT
+        / "docs_redesign/locales/ja/LC_MESSAGES/how-to/control/advanced_modal_analysis.po"
+    )
+    io_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/reference/io_capabilities.po"
+    )
+    with modal_path.open(encoding="utf-8") as stream:
+        modal_catalogue = pofile.read_po(stream, locale="ja")
+    with io_path.open(encoding="utf-8") as stream:
+        io_catalogue = pofile.read_po(stream, locale="ja")
+
+    matrix_messages = [
+        message
+        for message in modal_catalogue
+        if isinstance(message.id, str) and "H[i,j](f)" in message.id
+    ]
+    pad_messages = [
+        message
+        for message in io_catalogue
+        if isinstance(message.id, str) and "pad=<value>" in message.id
+    ]
+
+    assert len(matrix_messages) == 1
+    assert "H[i,j](f)" in matrix_messages[0].string
+    assert len(pad_messages) == 1
+    assert pad_messages[0].string.count("pad=<値>") == 2
+    assert "pad= <値>" not in pad_messages[0].string
+
+
+def test_v026_conda_forge_status_is_current_in_both_changelog_languages() -> None:
+    english = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    )
+    with catalogue_path.open(encoding="utf-8") as stream:
+        catalogue = pofile.read_po(stream, locale="ja")
+    message = catalogue.get(
+        "Published on 2026-10-27 UTC: [PyPI 0.2.6](https://pypi.org/project/gwexpy/0.2.6/), "
+        "[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), "
+        "and [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). "
+        "The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) "
+        "merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge."
+    )
+
+    assert "merged on 2026-10-28 UTC" in english
+    assert "version 0.2.6 is available on conda-forge" in english
+    assert message is not None
+    assert message.string == (
+        "2026-10-27（UTC）に公開しました：[PyPI 0.2.6](https://pypi.org/project/gwexpy/0.2.6/)、"
+        "[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6)、"
+        "[Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359)。"
+        "conda-forge feedstock の [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) は"
+        "2026-10-28（UTC）にマージされ、conda-forge では0.2.6のパッケージを利用できます。"
+    )
 
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:

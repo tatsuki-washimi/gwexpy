@@ -36,7 +36,7 @@ verification:
     - command: conda run -n gwexpy mypy scripts/ci/post_release_observers.py --follow-imports=silent
       result: passed; no issues in 1 source file
     - command: python scripts/check_public_docs.py --url https://tatsuki-washimi.github.io/gwexpy/docs/ --expected-revision 91b55dd02695c10413193c7d24b2950b13de2b9b
-      result: correctly rejected the current live site: EN missing detailed v0.2.6 history; JA missing the localized v0.2.6 SVG, using the English SVG, and missing detailed history
+      result: "correctly rejected the current live site: EN missing detailed v0.2.6 history; JA missing the localized v0.2.6 SVG, using the English SVG, and missing detailed history"
     - command: gh api -X GET repos/tatsuki-washimi/gwexpy/actions/runs/40497861405
       result: success for source 91b55dd02695c10413193c7d24b2950b13de2b9b; publisher verified bilingual HTML and artifact hashes, while the strengthened semantic readback found the Changelog defects above
     - command: git diff --check

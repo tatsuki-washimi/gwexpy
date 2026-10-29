@@ -1,6 +1,6 @@
 # Changelog
 
-Published on 2026-10-27 UTC: [PyPI 0.2.6](https://pypi.org/project/gwexpy/0.2.6/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) is open for review; the channel package inventory still tops at 0.2.4.
+Published on 2026-10-27 UTC: [PyPI 0.2.6](https://pypi.org/project/gwexpy/0.2.6/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge.
 
 ## v0.2.6 weekly development activity
 

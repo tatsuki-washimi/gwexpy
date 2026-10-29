@@ -10,7 +10,7 @@ Generate only the version being prepared, after its dated section has been
 finalized in `CHANGELOG.md`:
 
 ```bash
-python tools/gen_release_notes.py --version 0.2.6
+python tools/gen_release_notes.py --version 0.2.7
 ```
 
 The version must appear exactly once as a dated stable section in the
