@@ -33,7 +33,20 @@ msgstr "[週次 CSV データをダウンロード](/_static/downloads/developme
 msgid "The snapshot ends at commit `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
 msgstr "このスナップショットはコミット `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd` までを集計しています。英語版と日本語版は同じ週次データを使用します。棒の高さは週ごとの合計の対数を表し、色付きの区分はカテゴリの割合を示します。編集行数は追加行と削除行の合計で、生成ファイルとバイナリ変更は除外します。"
 
-# v0.2.6 source changelog; this source is a candidate, not a published release.
+# v0.2.7 source changelog; this source is a candidate, not a published release.
+msgid "[0.2.7] - 2026-11-03"
+msgstr "[0.2.7] - 2026-11-03"
+
+msgid "This maintenance release prevents nonexistent local GWF paths from reaching native readers in `TimeSeries` and `TimeSeriesDict`."
+msgstr "このメンテナンスリリースでは、存在しないローカル GWF パスが `TimeSeries` と `TimeSeriesDict` のネイティブリーダーに渡ることを防ぎます。"
+
+msgid "**Missing local GWF files**: `TimeSeries` and `TimeSeriesDict` now raise `FileNotFoundError` before passing a nonexistent local source to a native GWF reader, avoiding the process-crash risk reported in [#766](https://github.com/tatsuki-washimi/gwexpy/issues/766)."
+msgstr "**ローカル GWF ファイルの欠落**：`TimeSeries` と `TimeSeriesDict` は、存在しないローカルソースをネイティブ GWF リーダーに渡す前に `FileNotFoundError` を送出し、[#766](https://github.com/tatsuki-washimi/gwexpy/issues/766) で報告されたプロセスクラッシュのリスクを回避します。"
+
+msgid "**Release controls**: Register v0.2.7 with contract-selected v2 review evidence and a main-only protected-ref policy while preserving earlier release contracts."
+msgstr "**リリース管理**：契約で選択した v2 レビュー証跡と main のみの保護参照ポリシーで v0.2.7 を登録し、過去のリリース契約は維持します。"
+
+# v0.2.6 published release history.
 msgid "[0.2.6] - 2026-10-24"
 msgstr "[0.2.6] - 2026-10-24"
 

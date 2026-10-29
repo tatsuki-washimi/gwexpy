@@ -123,7 +123,7 @@ def test_pytest_collection_partitions_only_immutable_audit_replays():
     )
     for retained in (
         "test_public_release_sources_distinguish_published_and_pending_channels",
-        "test_published_history_and_v026_candidate_metadata_remain_distinct",
+        "test_published_history_and_v027_candidate_metadata_remain_distinct",
         "test_publish_workflow_requires_historical_gate_before_upload",
     ):
         assert any(item.endswith(f"::{retained}") for item in normal_items)

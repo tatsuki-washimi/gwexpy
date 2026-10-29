@@ -479,15 +479,15 @@ def test_main_rejects_invalid_calendar_date_under_independent_policy(
     assert "not a valid calendar date: 2026-02-30" in capsys.readouterr().out
 
 
-def test_repository_v026_release_identity_metadata_is_synchronized(monkeypatch, capsys):
+def test_repository_v027_release_identity_metadata_is_synchronized(monkeypatch, capsys):
     module = load_script_module()
     monkeypatch.chdir(ROOT)
 
-    assert module.get_version_from_py() == "0.2.6"
-    assert module.get_version_from_cff() == "0.2.6"
-    assert module.get_date_from_cff() == "2026-10-24"
-    assert module.get_version_from_zenodo() == "0.2.6"
-    assert module.get_date_from_zenodo() == "2026-10-24"
+    assert module.get_version_from_py() == "0.2.7"
+    assert module.get_version_from_cff() == "0.2.7"
+    assert module.get_date_from_cff() == "2026-11-03"
+    assert module.get_version_from_zenodo() == "0.2.7"
+    assert module.get_date_from_zenodo() == "2026-11-03"
 
     module.main()
 

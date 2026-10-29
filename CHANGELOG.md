@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.7] - 2026-11-03
+
+This maintenance release prevents nonexistent local GWF paths from reaching
+native readers in `TimeSeries` and `TimeSeriesDict`.
+
+### Fixed
+
+- **Missing local GWF files**: `TimeSeries` and `TimeSeriesDict` now raise
+  `FileNotFoundError` before passing a nonexistent local source to a native GWF
+  reader, avoiding the process-crash risk reported in [#766](https://github.com/tatsuki-washimi/gwexpy/issues/766).
+
+### Changed
+
+- **Release controls**: Register v0.2.7 with contract-selected v2 review evidence
+  and a main-only protected-ref policy while preserving earlier release contracts.
+
 ## [0.2.6] - 2026-10-24
 
 This maintenance release clarifies documentation contracts, refines diagnostic
@@ -1661,3 +1677,4 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 [0.1.0b1]: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1
 [0.2.5]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5
 [0.2.6]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.5...v0.2.6
+[0.2.7]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.6...v0.2.7
