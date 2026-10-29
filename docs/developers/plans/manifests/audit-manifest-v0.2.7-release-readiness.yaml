@@ -1,24 +1,1784 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v027-review-evidence-v2",
-    "source_sha": "",
+    "source_sha": "defa8efda80e58c9294b154ed6e2021b564ee58f",
     "review_base_sha": "a1ff8e2f18ef4e599727d6df6fdff61fce7019bd",
     "changed_path_map": {
-      "documentation": [],
-      "release-security": [],
-      "scientific-data-model": []
+      "documentation": [
+        "CHANGELOG.md",
+        "README.md",
+        "docs/developers/plans/20261029_v0.2.7_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-issue-606-docs-consolidation.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-817.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-818.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-819.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-820.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-822-docs-edge-readback.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-822-docs-publication-isolation.yaml",
+        "docs/developers/plans/manifests/audit-manifest-issue-822-docs-readback-retry.yaml",
+        "docs/developers/plans/manifests/audit-manifest-post-release-task3-20261027.yaml",
+        "docs/developers/plans/manifests/audit-manifest-post-release-task4-20261027.yaml",
+        "docs/developers/plans/manifests/audit-manifest-post-release-task5-20261027.yaml",
+        "docs/developers/plans/manifests/audit-manifest-post-release-task6-20261027.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-changelog-reconcile.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-post-release.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.7-development-ci.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.7-release-readiness.yaml",
+        "docs/developers/plans/manifests/issue-816-audit-v1.json",
+        "docs/developers/plans/manifests/issue-816-required-checks-v1.json",
+        "docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv",
+        "docs/developers/plans/reports/development-activity-v0.2.6-en-audit.csv",
+        "docs/developers/plans/reports/development-activity-v0.2.6-ja-audit.csv",
+        "docs/developers/plans/reports/post-release-cleanup-assessment-20261027.json",
+        "docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+        "docs/developers/plans/reports/remote-cleanup-manifest-pr-20261028.json",
+        "docs_redesign/README.md",
+        "docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv",
+        "docs_redesign/_static/images/development-activity-v0.2.6-ja.svg",
+        "docs_redesign/_static/images/development-activity-v0.2.6.svg",
+        "docs_redesign/about/changelog.md",
+        "docs_redesign/conf.py",
+        "docs_redesign/explanation/roadmap.md",
+        "docs_redesign/how-to/fitting/advanced_arima.ipynb",
+        "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/numerical_stability.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/verification_and_quality.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_bruco_advanced.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_bruco_ica_denoising.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_ml_preprocessing.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/index.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/advanced_bruco.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/advanced_coupling.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/index.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/fitting/advanced_arima.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/how-to/monitoring/index.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/reference/io_capabilities.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+        "docs_redesign/reference/io_capabilities.md",
+        "docs_redesign/release_status.json",
+        "docs_redesign/tutorials/installation.md",
+        "release_notes/README.md",
+        "release_notes/v0.2.7.md",
+        "tests/docs/test_check_public_docs_workflow.py",
+        "tests/docs/test_check_terms.py",
+        "tests/docs/test_docs_conf_runtime.py",
+        "tests/docs/test_docs_pages_publish.py",
+        "tests/docs/test_docs_redesign_public_content.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_po_utils.py",
+        "tests/docs/test_public_docs_pipeline.py",
+        "tests/docs/test_v023_release_closure.py",
+        "tests/docs/test_v024_publication_status.py"
+      ],
+      "release-security": [
+        ".github/actionlint.yaml",
+        ".github/workflows/actionlint.yml",
+        ".github/workflows/docs-pages-isolated.yml",
+        ".github/workflows/docs-pages.yml",
+        ".github/workflows/docs-pr.yml",
+        ".github/workflows/docs-redesign-preview-isolated.yml",
+        ".github/workflows/docs-redesign-preview.yml",
+        ".github/workflows/post-release.yml",
+        ".github/workflows/pr-fast.yml",
+        ".github/workflows/publish-release.yml",
+        ".github/workflows/repo-hygiene.yml",
+        ".github/workflows/test-compat-gwpy.yml",
+        ".zenodo.json",
+        "CITATION.cff",
+        "RELEASING.md",
+        "pyproject.toml",
+        "scripts/README.md",
+        "scripts/check_public_docs.py",
+        "scripts/check_release_metadata.py",
+        "scripts/check_terms.py",
+        "scripts/ci/docs_publish_guard.py",
+        "scripts/ci/integrate_release_evidence.py",
+        "scripts/ci/post_release.py",
+        "scripts/ci/post_release_observers.py",
+        "scripts/ci/reconcile_pypi_upload.py",
+        "scripts/ci/release_change_impact.py",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/release_promotion.py",
+        "scripts/ci/run_gate.py",
+        "scripts/ci/validate_github_release_readback.py",
+        "scripts/ci/validate_release_review_evidence.py",
+        "scripts/ci/verify_release_pypi_recovery.py",
+        "scripts/ci/verify_release_recovery.py",
+        "scripts/po_utils.py",
+        "scripts/prepare_public_docs.py",
+        "scripts/terms.csv",
+        "scripts/validate_release.py",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_gate_workflow_contract.py",
+        "tests/test_release_human_approval.py",
+        "tests/test_release_promotion.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_validate_release_script.py",
+        "tools/gen_release_notes.py",
+        "tools/publish_releases.sh"
+      ],
+      "scientific-data-model": [
+        "gwexpy/_version.py",
+        "gwexpy/timeseries/_gwf_io.py",
+        "gwexpy/timeseries/collections.py",
+        "gwexpy/timeseries/timeseries.py",
+        "tests/docs/test_check_public_docs_workflow.py",
+        "tests/docs/test_check_terms.py",
+        "tests/docs/test_docs_conf_runtime.py",
+        "tests/docs/test_docs_pages_publish.py",
+        "tests/docs/test_docs_redesign_public_content.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_po_utils.py",
+        "tests/docs/test_public_docs_pipeline.py",
+        "tests/docs/test_v023_release_closure.py",
+        "tests/docs/test_v024_publication_status.py",
+        "tests/interop/test_interop_docs_contract_sync.py",
+        "tests/io/test_io_docs_contract_sync.py",
+        "tests/test_check_release_metadata_script.py",
+        "tests/test_diaggui_qualification_evidence.py",
+        "tests/test_gen_release_notes.py",
+        "tests/test_gwpy_override_inventory.py",
+        "tests/test_issue_816_required_checks.py",
+        "tests/test_post_release_controller.py",
+        "tests/test_post_release_observers.py",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_qualification_skip_evidence.py",
+        "tests/test_reconcile_pypi_upload.py",
+        "tests/test_release_change_impact.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_gate_workflow_contract.py",
+        "tests/test_release_human_approval.py",
+        "tests/test_release_integration_evidence.py",
+        "tests/test_release_promotion.py",
+        "tests/test_release_pypi_recovery.py",
+        "tests/test_release_recovery.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_run_gate.py",
+        "tests/test_v025_historical_gate.py",
+        "tests/test_v027_release_support.py",
+        "tests/test_validate_release_script.py",
+        "tests/timeseries/test_gwf_parallel_contract.py",
+        "tests/timeseries/test_io_gwf_timeseriesdict.py",
+        "tests/timeseries/test_statevector_gwf_parallel_contract.py"
+      ]
     },
-    "entries": [],
+    "entries": [
+      {
+        "lane": "documentation",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "codex-subagent-documentation",
+        "execution_context_id": "documentation-impact-12b7626-20261029-01-s-to-r-fix-20261029",
+        "execution_environment": "Native Codex subagent on Linux x86_64 using Bash and Python 3.12; read-only impact review of the two changed test paths plus public metadata reads. Effective model and effort were not exposed and were not inferred.",
+        "started_at_utc": "2026-10-29T11:16:30Z",
+        "completed_at_utc": "2026-10-29T11:16:35Z",
+        "requested_model": "gpt-6-luna",
+        "requested_effort": "high",
+        "model_observation": {
+          "status": "unverified",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "Native Codex subagent result schema",
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "limitations": "Effective model and effort were not exposed by runtime and were not inferred.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "defa8efda80e58c9294b154ed6e2021b564ee58f",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "scope_digest": "f727620d3575e815411bf75ad17676374c174546176f4973f9e72af35ea19e04",
+        "path_ledger": [
+          {
+            "path": "CHANGELOG.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read new v0.2.7 entry and surrounding v0.2.6 history; checked fixed behavior against GWF preflight code, issue link, release date and comparison link."
+          },
+          {
+            "path": "README.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read badge diff and verified the new isolated Pages workflow path exists at S."
+          },
+          {
+            "path": "docs/developers/plans/20261029_v0.2.7_release_plan.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read full release plan; checked target date, Issue #844, S/base, all three lanes, approval boundaries, candidate status, and S-to-R allowed paths."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-606-docs-consolidation.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the docs consolidation record; checked canonical-source decision, legacy redirects, notebook provenance, pages triggers, test/build outcomes, and omitted live crawl."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-817.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed release-note audit checks and explicit publication exclusions; checked file list and the reported focused test/lint results."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-818-historical-audit-replay.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed replay inventory and marker partition claims; checked 23 replay cases, 12 normal cases, and historical/current scope boundaries."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-818.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the issue-818 audit scope, commands, findings/resolution record, and source-base identity."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-819.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the release-recovery audit; checked release/write state, recovery timeline, artifact/source bindings, and pending owner/external limits."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-820.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the advisory impact-report record; checked draft status, owner-adoption requirement, false publication authorization, and no active-contract change."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-822-docs-edge-readback.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the edge-readback incident record; checked expected digest, bounded retries, run/artifact IDs, final manifest count, and readback limitations."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-822-docs-publication-isolation.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed owner decision, scoped workflow permissions, source/artifact binding, publication ordering, live run/readback IDs, and stated branch-rule limitation."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-issue-822-docs-readback-retry.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed retry policy and evidence; checked attempt count, transient-503 boundary, unchanged artifact identity, and pending production follow-up."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-post-release-task3-20261027.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the task-3 audit and reviewed release observer scope, regression checks, baseline failure note, and omitted publication actions."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-post-release-task4-20261027.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the task-4 audit; checked read-only observer scope, docs eligibility, release-readback links, and explicit no-write limitations."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-post-release-task5-20261027.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed post-release publication facts, source/date separation, weekly activity binding, PR #16 state as recorded on 2026-10-27, and the source SHA."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-post-release-task6-20261027.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the cleanup assessment report identity and checked remote/local inventory counts, independent evidence sources, and the explicit no-removal boundary."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-changelog-reconcile.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read the complete audit record and confirmed the previously malformed line 39 now parses after quoting the colon-bearing scalar; release/readback claims remain historically scoped."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-post-release.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the post-release manifest and checked per-channel completion/pending statuses, source/tag identities, timestamps, and exact published artifact hashes."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-recovery.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the recovery audit and reviewed command outcomes, authorization boundary, source/artifact hashes, and remaining PyPI/Zenodo constraints."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.7-development-ci.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the development-CI audit schema, requested versus unobserved runtime, GWF regression evidence, changed-file list, and focused verification results."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.7-release-readiness.yaml",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the embedded JSON readiness placeholder and checked source SHA, lane arrays, entries, risk decisions, and human approval are intentionally empty pending formal review."
+          },
+          {
+            "path": "docs/developers/plans/manifests/issue-816-audit-v1.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed issue-816 audit metadata; checked base commit, 12 changed files, verification/omission fields, context source, and worktree evidence."
+          },
+          {
+            "path": "docs/developers/plans/manifests/issue-816-required-checks-v1.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed required-check policy; verified 23 contexts and protected branches main/maint/0.2 plus cost and ruleset notes."
+          },
+          {
+            "path": "docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read the complete changed content and contextual references in docs/developers/plans/manifests/v026-doc2-local-path-exceptions.tsv; checked its stated identity, status, and surrounding documentation links."
+          },
+          {
+            "path": "docs/developers/plans/reports/development-activity-v0.2.6-en-audit.csv",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read audit CSV header and first/last records; checked 2,274 commit rows span the bound initial commit through v0.2.6 source SHA, with explicit classification and excluded-line columns."
+          },
+          {
+            "path": "docs/developers/plans/reports/development-activity-v0.2.6-ja-audit.csv",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read the Japanese audit CSV header and first/last records; checked 2,274 commit rows share the same start/end SHAs and structured classification/exclusion columns as the English audit."
+          },
+          {
+            "path": "docs/developers/plans/reports/post-release-cleanup-assessment-20261027.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed remote/local snapshots and recommendation counts; checked 211 branches (71 eligible, 140 retain), 38 worktrees (5 retain, 33 hold), and no removal authorization."
+          },
+          {
+            "path": "docs/developers/plans/reports/remote-branch-cleanup-execution-20261028.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the 6,959-line execution audit; verified 70 deletion receipts, zero absent/skipped/API errors, 144 post-delete branches, readback structure, and path normalization."
+          },
+          {
+            "path": "docs/developers/plans/reports/remote-cleanup-manifest-pr-20261028.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the PR audit and follow-up; checked 70/144 evidence counts, 7-PR readback, no absolute local paths, and pending local-cleanup/review state."
+          },
+          {
+            "path": "docs_redesign/README.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read canonical-source and legacy-route changes; checked notebook source, output clearing, and documented redirect/retirement boundaries."
+          },
+          {
+            "path": "docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed header and all 225 records: 45 Monday weeks × 5 categories, one v0.2.6 target SHA on every row; digest matches the two chart metadata records and release-facts test."
+          },
+          {
+            "path": "docs_redesign/_static/images/development-activity-v0.2.6-ja.svg",
+            "methods": [
+              "structured-validation",
+              "visual-inspection"
+            ],
+            "status": "reviewed",
+            "note": "Read SVG metadata and rendered the Japanese figure; visually checked title, legends, weekly panels, v0.2.6 marker, coverage, and canonical CSV SHA-256."
+          },
+          {
+            "path": "docs_redesign/_static/images/development-activity-v0.2.6.svg",
+            "methods": [
+              "structured-validation",
+              "visual-inspection"
+            ],
+            "status": "reviewed",
+            "note": "Read SVG metadata and rendered the English figure; visually checked title, legends, weekly panels, v0.2.6 marker, coverage, and canonical CSV SHA-256."
+          },
+          {
+            "path": "docs_redesign/about/changelog.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read publication facts, v0.2.7/v0.2.6 include anchors, activity snapshot metadata, and release history; PR #16 now correctly says merged 2026-10-28 UTC and 0.2.6 is available on conda-forge."
+          },
+          {
+            "path": "docs_redesign/conf.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read the complete changed content and contextual references in docs_redesign/conf.py; checked its stated identity, status, and surrounding documentation links."
+          },
+          {
+            "path": "docs_redesign/explanation/roadmap.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read date and release-baseline changes; PR #16 status now says merged 2026-10-28 UTC and conda-forge 0.2.6 is available; publication links and directional language checked."
+          },
+          {
+            "path": "docs_redesign/how-to/fitting/advanced_arima.ipynb",
+            "methods": [
+              "full-diff-and-context",
+              "notebook-cell-review",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed notebook JSON and reviewed the changed Auto-ARIMA code cell and neighboring prose; checked bounded seasonal search settings, valid cell structure, and committed outputs."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read release-date/publication translations and v0.2.7/v0.2.6 headings; Japanese text now states PR #16 merged on 2026-10-28 UTC and 0.2.6 is available on conda-forge, consistent with GitHub and Anaconda readbacks."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/numerical_stability.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in numerical_stability.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read the changed Japanese roadmap translation; it now reports the 2026-10-28 PR #16 merge and conda-forge 0.2.6 availability, with no stale in-review or 0.2.4 latest claim."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/verification_and_quality.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in verification_and_quality.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_bruco_advanced.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in case_bruco_advanced.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_bruco_ica_denoising.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in case_bruco_ica_denoising.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_ml_preprocessing.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in case_ml_preprocessing.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/index.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in index.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/advanced_bruco.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in advanced_bruco.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/advanced_coupling.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in advanced_coupling.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/coupling/index.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in index.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/fitting/advanced_arima.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in advanced_arima.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/how-to/monitoring/index.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed msgid/msgstr pairs in index.po; checked terminology, mathematical/API token fidelity, and source/translation alignment."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/reference/io_capabilities.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read changed Japanese I/O entries and compared code tokens to English; detected split pad= <値> inline example and checked the new ATS/WIN/CSV/SDB translations."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Read English msgid and Japanese msgstr for the installation release note; both now identify conda-forge latest as 0.2.6 and link Zenodo record 23680359."
+          },
+          {
+            "path": "docs_redesign/reference/io_capabilities.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read all changed I/O capability statements and examples for ATS.MTH5, K-NET, WIN, CSV, and SDB; checked displayed Japanese counterparts and inline GWF pad usage."
+          },
+          {
+            "path": "docs_redesign/release_status.json",
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "status": "reviewed",
+            "note": "Parsed the two release-status fields; latest published release is 0.2.6 and introductory examples remain at 0.2.4."
+          },
+          {
+            "path": "docs_redesign/tutorials/installation.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read the installation availability note; it now gives conda-forge 0.2.6 and its matching Zenodo archive 23680359, verified against current package metadata."
+          },
+          {
+            "path": "release_notes/README.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read the version-specific generation instructions and publication boundary; the command now uses --version 0.2.7 for the 0.2.7 candidate."
+          },
+          {
+            "path": "release_notes/v0.2.7.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Read prepared release-note claims, issue link, install command, and canonical changelog link; checked GWF behavior claim against the source diff."
+          },
+          {
+            "path": "tests/docs/test_check_public_docs_workflow.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read new changelog-page assertions for localized SVG and detailed latest-release history; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_check_terms.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read PO translation/fuzzy filtering, physical alignment exception, and case-insensitive BruCo checks; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_docs_conf_runtime.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read workflow-path, required-check, build-input, and publication contract assertions; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_docs_pages_publish.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read artifact hashing, bilingual source binding, freshness ordering, rollback, symlink, and fail-closed tests; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_public_content.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read exact CSV cadence wording and Japanese translation contract; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read historical/candidate/public release facts, dates, activity digests, link and translation assertions, plus YAML, Japanese math/pad, roadmap and installation current-version regressions; focused test passed 18/18. Focused review confirms the registered empty placeholder at S and candidate-phase validation before the preparation checklist state is accepted; history assertions remain intact."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed prior release facts and the current 0.2.6/Zenodo 23680359 assertions in the impact addendum; focused test passed."
+          },
+          {
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read required protected-branch workflow trigger assertions after removing path filters; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_po_utils.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read context, multiline, plural, and obsolete-entry parser tests; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_public_docs_pipeline.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read notebook preparation and manifest/readback tests for exact bilingual bytes and retry behavior; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_v023_release_closure.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Read historical audit marker changes and closure-boundary assertions; this file ran in the documentation suite."
+          },
+          {
+            "path": "tests/docs/test_v024_publication_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed current 0.2.6 assertion while preserving historical 0.2.4 publication assertions; focused test passed; no science behavior change."
+          }
+        ],
+        "findings": [
+          {
+            "id": "DOC-001",
+            "severity": "medium",
+            "required": true,
+            "status": "resolved",
+            "summary": "The v0.2.6 changelog reconciliation audit manifest had an unquoted colon in a scalar and could not be parsed as YAML.",
+            "resolution": "Quoted the scalar. The focused documentation facts test successfully parses the manifest and checks its schema and status fields."
+          },
+          {
+            "id": "DOC-002",
+            "severity": "medium",
+            "required": true,
+            "status": "resolved",
+            "summary": "English and Japanese public release documentation had stale conda-forge PR #16 review status and v0.2.4 latest-package claims in the changelog, roadmap, and installation guidance.",
+            "resolution": "Updated the bilingual changelog, roadmap, and installation guidance to report PR #16 merged on 2026-10-28 and conda-forge version 0.2.6 availability, with the matching Zenodo archive link. Current sources, focused regression assertions, current GitHub/Anaconda readbacks, and final bilingual HTML output agree."
+          },
+          {
+            "id": "DOC-003",
+            "severity": "medium",
+            "required": true,
+            "status": "resolved",
+            "summary": "Japanese inline examples had damaged H[i,j](f) notation and split pad=<値> code tokens.",
+            "resolution": "Restored H[i,j](f) and both pad=<値> tokens. The focused test passes and final Japanese HTML renders each token intact."
+          },
+          {
+            "id": "DOC-004",
+            "severity": "low",
+            "required": false,
+            "status": "resolved",
+            "summary": "The release-note README example used version 0.2.6 while preparing v0.2.7.",
+            "resolution": "Updated the example to --version 0.2.7."
+          },
+          {
+            "id": "DOC-005",
+            "severity": "low",
+            "required": false,
+            "status": "resolved",
+            "summary": "Two documentation tests still expected the former current-install facts of conda-forge 0.2.4 and Zenodo record 22978439 after the public installation guidance had moved to v0.2.6.",
+            "resolution": "Updated current public-page expectations to conda-forge 0.2.6 and Zenodo record 23680359. Preserved the dated v0.2.4 publication and introductory-example assertions; both focused test files pass."
+          }
+        ],
+        "verdict": "APPROVED",
+        "report": "# Documentation lane source review\n\n## Review identity\n\n- Lane: `documentation`\n- Reviewed candidate: `d79950832e06d647a69354b04e5e1040e9638e81`\n- Fixed source S: `3d968cfc5073d00d15610d65589064a1df433615`\n- Review Base: `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`\n- Contract: `scripts/ci/release_contracts.json`, release `v0.2.7`\n- Contract scope roots: `CHANGELOG.md`, `README.md`, `ROADMAP.md`, `deliverables`, `docs`, `docs_redesign`, `release_notes`, `tests/docs`\n- Changed paths in Base..candidate: 141 total; 69 documentation-scope paths, all listed in UTF-8 byte order in `path-ledger.json`.\n- Scope-root tree digest: `7569017826cc49f2ed8d5f1a34aa251e40aee416624824cc163cc5f1fea96a40`.\n\nThe 69-path ledger is derived by expanding all eight contract roots against the Base..candidate diff. Prior full review of Base..S covered the original 68 documentation paths. This final review inspected each candidate change since S, and covered the two newly changed installation sources along with their translations and regression tests. The issue #820 advisory did not narrow scope.\n\n## Review performed\n\nReviewed the changed documentation, plans, audit manifests, release notes, gettext catalogs, notebooks, structured evidence, figures, and documentation tests in scope. The candidate changes since S include the corrected YAML scalar, corrected conda-forge facts in the English and Japanese changelog and roadmap, repaired Japanese `H[i,j](f)` and `pad=<値>` examples, corrected the release-note README command, and updated English/Japanese installation facts to 0.2.6. The added tests cover YAML parsing and bilingual changelog, roadmap, installation, matrix, and padding assertions.\n\nRead-only external checks confirmed conda-forge feedstock PR #16 is merged at `2026-10-28T07:17:06Z`, and the Anaconda package API reports `latest_version` 0.2.6. The English and Japanese changelog, roadmap, and installation text now agree with those facts. A sweep of current `docs_redesign` pages found no remaining open/in-review PR #16 claims or current/latest 0.2.4 conda-forge claims. Remaining 0.2.4 mentions are historical release entries or deliberately retained introductory example-version references. The root README says v0.2.0 is available on conda-forge; the API version list includes 0.2.0, so this true availability statement does not claim it is the latest package. The v0.2.6 Zenodo link remains record `23680359` / DOI `10.5281/zenodo.23680359`.\n\nInspected the final English and Japanese HTML outputs. The changelog and roadmap render the merged PR date and 0.2.6 availability. The installation pages render conda-forge latest as 0.2.6 and link Zenodo record 23680359. Japanese HTML renders `H[i,j](f)` as a single code token and each `pad=<値>` example as a single code token. The release-note README command now names `--version 0.2.7`.\n\n### Findings and dispositions\n\n1. **DOC-001 — Invalid YAML audit manifest (medium, required): resolved.** The line 39 scalar containing a colon is quoted. The focused test parses the manifest and checks its schema and status fields.\n2. **DOC-002 — Stale conda-forge facts (medium, required): resolved.** English and Japanese changelog, roadmap, and installation pages now state PR #16 merged on 2026-10-28 and 0.2.6 is available, including the matching Zenodo archive link in installation guidance. Current source and rendered output contain no stale review-status or 0.2.4 latest-package claim.\n3. **DOC-003 — Damaged Japanese inline examples (medium, required): resolved.** The Japanese modal-analysis translation preserves `H[i,j](f)`, and the I/O translation preserves both `pad=<値>` tokens. The focused regression test and final HTML inspection confirm the rendered forms.\n4. **DOC-004 — Old release-note command example (low, nonblocking): resolved.** `release_notes/README.md` now uses `--version 0.2.7`.\n\nNo unresolved documentation-lane finding remains. The independent documentation-lane verdict is **APPROVED**. This is not a judgment on other lanes, Source Human Approval, final release-owner authorization, or publication readiness.\n\n## Commands and results\n\n- `git diff --name-status a1ff8e2f18ef4e599727d6df6fdff61fce7019bd..d79950832e06d647a69354b04e5e1040e9638e81` — 141 changed paths total; contract expansion yields 69 documentation paths.\n- `git diff --name-status 3d968cfc5073d00d15610d65589064a1df433615..d79950832e06d647a69354b04e5e1040e9638e81` — inspected all 13 changed blobs since S, including the documentation fixes, the recovery verifier/test changes outside this lane, and focused documentation regression additions.\n- `git diff --check a1ff8e2f18ef4e599727d6df6fdff61fce7019bd..d79950832e06d647a69354b04e5e1040e9638e81` — passed with no whitespace errors.\n- `pytest tests/docs/test_docs_redesign_release_facts.py -q` — 18 passed.\n- `pytest tests/test_release_pypi_recovery.py -q` — 15 passed; run because the candidate also changes this adjacent release-recovery test and implementation, though these are outside the documentation lane.\n- `gh api -X GET repos/conda-forge/gwexpy-feedstock/pulls/16 --jq '{merged: .merged, merged_at: .merged_at, state: .state, html_url: .html_url}'` — confirmed merged, `2026-10-28T07:17:06Z`, closed.\n- `curl -sSf https://api.anaconda.org/package/conda-forge/gwexpy | jq '{name,latest_version,versions}'` — confirmed package `gwexpy`, latest version 0.2.6, and version list includes 0.2.6.\n- `rg` sweeps over `docs_redesign` Markdown, gettext catalogs, and notebooks for PR #16 review wording and current/latest conda-forge version claims — all current claims are corrected; remaining PR #16 mentions describe the merge, and remaining v0.2.4 mentions are historical/example context.\n- Candidate bilingual Sphinx build results were supplied by the coordinator; both HTML builds succeeded with notebook execution disabled. Inspected the generated English and Japanese changelog, roadmap, installation, modal-analysis, and I/O capability pages.\n- `rg -n -- '--version 0\\\\.2\\\\.[0-9]+' release_notes/README.md` — confirmed the README example uses 0.2.7.\n- `git status --porcelain=v1` — clean.\n\n## Checks not run\n\n- No full `tests/docs` or repository test suite, Ruff, MyPy, package build, or executed notebook build was run in this final re-review. The focused facts test and adjacent recovery test were run as listed above.\n- No live Pages deployment/readback or full external-link crawl was performed. Local Sphinx output validates rendered content, not deployed site state.\n\n---\n\n# Documentation lane impact re-review addendum\n\n## Review identity\n\n- Previously approved candidate: `d79950832e06d647a69354b04e5e1040e9638e81`\n- Reviewed impact commit: `12b7626161c3f452643a8119c84975411c6d07ef`\n- Parent: `d79950832e06d647a69354b04e5e1040e9638e81`\n- Scope: only the two test-file changes in this commit.\n- Existing full-scope documentation ledger: the two paths are already present in the 69-path Base..d799 ledger; no supplemental ledger is needed.\n\nThe requested 40-character SHA `12b762616f594f57d227ef5f8244f6e97b1e147a` did not resolve in the worktree. Verified HEAD is `12b7626161c3f452643a8119c84975411c6d07ef`; it has the expected parent and subject and changes exactly the two files below. This addendum binds to that verified full SHA.\n\n## Changes reviewed\n\n- `tests/docs/test_docs_redesign_release_status.py` now expects the current public release version 0.2.6, its Zenodo record 23680359, and the latest conda-forge package version 0.2.6. The intentional introductory example version remains 0.2.4.\n- `tests/docs/test_v024_publication_status.py` now expects 0.2.6 for current public install guidance, while retaining 0.2.4 assertions for the historical release manifest, publication report, GitHub Release, Zenodo record 22978439, conda-forge PR #14, historical package artifact, and example-version contract.\n\nThe old v0.2.4 assertions remain correctly dated historical facts. The manifest records v0.2.4 publication on 2026-09-26 and explicitly says conda-forge's latest version at that readback was 0.2.4; it does not describe the current package inventory. The current public source assertion separately expects latest release and conda-forge package version 0.2.6, while introductory examples deliberately remain pinned to 0.2.4.\n\nRead-only current records corroborate the distinction: GitHub Release v0.2.4 has `published_at` 2026-09-26T13:16:44Z; Zenodo record 22978439 is version 0.2.4 with DOI 10.5281/zenodo.22978439 and publication date 2026-09-26; the current Anaconda API lists both 0.2.4 and 0.2.6 and reports latest version 0.2.6.\n\nBoth updated focused tests pass. No new documentation-lane finding remains from these assertion changes. Addendum disposition: **APPROVED**.\n\n## Commands and results\n\n- `git rev-parse HEAD` and `git rev-list --parents -n1 HEAD` — verified HEAD `12b7626161c3f452643a8119c84975411c6d07ef` and parent `d79950832e06d647a69354b04e5e1040e9638e81`.\n- `git diff --name-status d79950832e06d647a69354b04e5e1040e9638e81..HEAD` — exactly two modified files, both named above.\n- `git diff --unified=15 d79950832e06d647a69354b04e5e1040e9638e81..HEAD -- tests/docs/test_docs_redesign_release_status.py tests/docs/test_v024_publication_status.py` — inspected both changed hunks and surrounding historical/public-status assertions.\n- `pytest tests/docs/test_docs_redesign_release_status.py -q` — 3 passed.\n- `pytest tests/docs/test_v024_publication_status.py -q` — 3 passed.\n- `gh api -X GET repos/tatsuki-washimi/gwexpy/releases/tags/v0.2.4` — confirmed non-draft, non-prerelease release published 2026-09-26T13:16:44Z.\n- `curl -sSf https://zenodo.org/api/records/22978439` — confirmed ID 22978439, version 0.2.4, DOI 10.5281/zenodo.22978439, publication date 2026-09-26.\n- `curl -sSf https://api.anaconda.org/package/conda-forge/gwexpy` — confirmed latest version 0.2.6 and retained 0.2.4 in the version list.\n- Prior full-scope `path-ledger.json` — confirmed both test files are already ledgered; no supplemental ledger was created.\n\n## Checks not run\n\n- No full documentation or repository test suite, Sphinx build, lint, type check, or external link crawl was run; this was an impact-scoped test-assertion review only.\n\n\n## Source-transition impact review addendum (2026-10-29)\n\n**APPROVED** for exact source `defa8efda80e58c9294b154ed6e2021b564ee58f` against prior source `12b7626161c3f452643a8119c84975411c6d07ef`. The focused documentation-lane review covered `tests/docs/test_docs_redesign_release_facts.py`. Source S is checked against the registered empty placeholder; Candidate R evidence is validated before the four preparation checklist items are accepted. Published-history assertions remain unchanged. No findings. Review completed at 2026-10-29T11:16:35Z. This is a limited changed-path impact review; the prior Review Base coverage carries forward.",
+        "raw_report_sha256": "51000a130f51ce8f53f1a389dcf474554ed83b9abf865ac353c1bebf512a57f2"
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "codex-subagent-release-security",
+        "execution_context_id": "security-impact-12b7626-release-security-01-s-to-r-fix-20261029",
+        "execution_environment": "Linux; read-only candidate worktree; narrow parent-to-candidate path and contract-scope check; no source edits or remote writes.",
+        "started_at_utc": "2026-10-29T11:16:32Z",
+        "completed_at_utc": "2026-10-29T11:16:35Z",
+        "requested_model": "gpt-6-luna",
+        "requested_effort": "high",
+        "model_observation": {
+          "status": "unverified",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "Native Codex subagent result schema",
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "limitations": "Effective model and effort were not exposed by runtime and were not inferred.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "defa8efda80e58c9294b154ed6e2021b564ee58f",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_validate_release_script.py",
+          "tools"
+        ],
+        "scope_digest": "8a60484229ed7909b307428d902183d6e296e19d512f77330b4eb3865bf5e348",
+        "path_ledger": [
+          {
+            "path": ".github/actionlint.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked the two scoped queue-key suppression rules."
+          },
+          {
+            "path": ".github/workflows/actionlint.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked trigger coverage for maintained branches."
+          },
+          {
+            "path": ".github/workflows/docs-pages-isolated.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Traced read-only build, artifact hashes, scoped publisher token, order checks and Pages readback."
+          },
+          {
+            "path": ".github/workflows/docs-pages.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked removal against isolated publisher replacement."
+          },
+          {
+            "path": ".github/workflows/docs-pr.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked required contexts and unconditional maintained-branch triggers."
+          },
+          {
+            "path": ".github/workflows/docs-redesign-preview-isolated.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Traced preview artifact validation, write boundary and stale-order protection."
+          },
+          {
+            "path": ".github/workflows/docs-redesign-preview.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked removal against isolated preview replacement."
+          },
+          {
+            "path": ".github/workflows/post-release.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Traced read-only resolver/observer and separately permissioned persistence."
+          },
+          {
+            "path": ".github/workflows/pr-fast.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked maint/0.2 PR/push trigger and path-filter removal."
+          },
+          {
+            "path": ".github/workflows/publish-release.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Traced candidate/recovery gates, credentials, approvals, writes and exact readbacks."
+          },
+          {
+            "path": ".github/workflows/repo-hygiene.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked maintained-branch PR trigger."
+          },
+          {
+            "path": ".github/workflows/test-compat-gwpy.yml",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked maintained-branch trigger and compatibility gate coverage."
+          },
+          {
+            "path": ".zenodo.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked release version/date/license and citation metadata."
+          },
+          {
+            "path": "CITATION.cff",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked version/date/repository citation identity."
+          },
+          {
+            "path": "RELEASING.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked procedure alignment for approval, candidate, recovery and publication."
+          },
+          {
+            "path": "pyproject.toml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked changed project/release configuration context."
+          },
+          {
+            "path": "scripts/README.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked command documentation against script behavior."
+          },
+          {
+            "path": "scripts/check_public_docs.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked rendered path, revision and manifest hash readbacks."
+          },
+          {
+            "path": "scripts/check_release_metadata.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked metadata date policy parsing and failures."
+          },
+          {
+            "path": "scripts/check_terms.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked PO scanning, exclusions and error handling."
+          },
+          {
+            "path": "scripts/ci/docs_publish_guard.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked path/symlink safety, hash manifest, source binding and ordering checks."
+          },
+          {
+            "path": "scripts/ci/integrate_release_evidence.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked schema-selected v2 loader and exception conversion."
+          },
+          {
+            "path": "scripts/ci/post_release.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked run/job/tag/manifest/handoff identity, artifact readback and CAS persistence."
+          },
+          {
+            "path": "scripts/ci/post_release_observers.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked external observer isolation and status/error/resume handling."
+          },
+          {
+            "path": "scripts/ci/reconcile_pypi_upload.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked manifest binding, PyPI subset/hash conflicts and missing-only copying."
+          },
+          {
+            "path": "scripts/ci/release_change_impact.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked normalized paths, all-lane fail-closed mapping and advisory-only output."
+          },
+          {
+            "path": "scripts/ci/release_contract.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked strict contract parsing, v2 profile and v0.2.7 policy invariants."
+          },
+          {
+            "path": "scripts/ci/release_contracts.json",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "structured-validation",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked v0.2.7 lanes, S-to-R allowlist, promotion schemas/jobs and policies."
+          },
+          {
+            "path": "scripts/ci/release_promotion.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked attempt-one artifact provenance, retry identity and manifest reuse."
+          },
+          {
+            "path": "scripts/ci/run_gate.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked default gate exclusions and explicit historical replay selection."
+          },
+          {
+            "path": "scripts/ci/validate_github_release_readback.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked exact release identity/assets/bytes and existing-release subset behavior."
+          },
+          {
+            "path": "scripts/ci/validate_release_review_evidence.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked profile dispatch, v2 approval requirements and phase binding."
+          },
+          {
+            "path": "scripts/ci/verify_release_pypi_recovery.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Re-reviewed cumulative candidate changes: newer malformed marker and edited Owner comments block stale GO fallback; later fresh canonical GO supersedes older malformed/edited comments. Focused 164-test recovery/controller suite passed."
+          },
+          {
+            "path": "scripts/ci/verify_release_recovery.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked edited/malformed recovery decision rejection and merged control PR identity."
+          },
+          {
+            "path": "scripts/po_utils.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked PO continuation, plural/context/obsolete syntax behavior."
+          },
+          {
+            "path": "scripts/prepare_public_docs.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked isolated output guard, notebook cleaning and build identity."
+          },
+          {
+            "path": "scripts/terms.csv",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked terminology and regex rules."
+          },
+          {
+            "path": "scripts/validate_release.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Checked date policies, empty v2 placeholder, S-to-R paths and outputs."
+          },
+          {
+            "path": "tests/test_publish_release_workflow.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed workflow contract tests."
+          },
+          {
+            "path": "tests/test_release_contracts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed contract invariant tests. Focused review confirms transition assertions retain the registered candidate validator and that the synthetic Source fixture loads both operational files from the reviewed Git revision."
+          },
+          {
+            "path": "tests/test_release_gate_workflow_contract.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed gate/workflow assertions and focused suite context."
+          },
+          {
+            "path": "tests/test_release_human_approval.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed exact-source approval tests."
+          },
+          {
+            "path": "tests/test_release_promotion.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed promotion identity/retry tests."
+          },
+          {
+            "path": "tests/test_release_review_evidence.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed; one stateful v0.2.6 test failed as reported."
+          },
+          {
+            "path": "tests/test_validate_release_script.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed and executed release validator tests."
+          },
+          {
+            "path": "tools/gen_release_notes.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Checked explicit single-version CLI and output behavior."
+          },
+          {
+            "path": "tools/publish_releases.sh",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace"
+            ],
+            "status": "reviewed",
+            "note": "Checked removal of legacy bulk publisher."
+          }
+        ],
+        "findings": [
+          {
+            "id": "SEC-001",
+            "severity": "high",
+            "required": true,
+            "status": "resolved",
+            "summary": "PyPI recovery authorization could fall back to stale Owner GO after a newer malformed or edited Owner comment.",
+            "resolution": "Validator now rejects a newer malformed marker, rejects an edited latest GO or any later edited Owner comment, and permits a fresh canonical GO with a later comment ID to supersede older malformed or edited comments. Regression tests cover these cases."
+          }
+        ],
+        "verdict": "APPROVED",
+        "report": "# Release-security lane evidence refresh\n\n## Scope and verdict\n\n- Fixed Source S: `3d968cfc5073d00d15610d65589064a1df433615`\n- Review Base: `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`\n- Candidate reviewed: `d79950832e06d647a69354b04e5e1040e9638e81` (candidate; not claimed on main)\n- Exact contract scope: `scripts/ci/release_contracts.json` → `releases.v0.2.7.review_lanes.release-security`\n- Base..candidate lane paths: 47, matching the prior approved contract scope.\n- Scope digest: `5840555a880881f6443467120b0fe45b837a0fde979e5e588b387b2a0a70d010`\n- Verdict: **APPROVED for candidate `d79950832e06d647a69354b04e5e1040e9638e81`**\n\nThe v2 scope digest uses `_scope_digest` over all 32 configured release-security scope roots sorted by UTF-8 byte order. Separately, I compared the 47 changed-path ledger blobs between previous approved candidate `445f1f05cd298d42cb884ea41b18d7e585907c0f` and this candidate; none changed, so all prior path reviews remain applicable.\n\n## Changes since the previous candidate\n\nThe previous approved candidate `445f1f05cd298d42cb884ea41b18d7e585907c0f` already covered the earlier release-history documentation updates. Since that candidate, only these paths changed:\n\n- `docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po`\n- `docs_redesign/tutorials/installation.md`\n- `tests/docs/test_docs_redesign_release_facts.py`\n\nI inspected each full diff. The English and Japanese installation pages update the conda-forge latest package and Zenodo archive from v0.2.4 to v0.2.6. The expanded documentation test asserts both language pages contain the current v0.2.6 facts and do not retain the v0.2.4 statement. These documentation/test changes are outside the release-security lane and do not change the v0.2.7 release contract, security policy, approval validator, workflow permissions, credentials, artifact provenance, publication behavior, or SEC-001 remediation.\n\n## Resolved finding retained\n\n**SEC-001 (high, required, resolved):** The earlier candidate's PyPI recovery validator could fall back to an earlier GO after a newer malformed or edited Owner comment. The approved fix tracks malformed marker IDs and edited Owner comment IDs from `created_at`/`updated_at`, requires the newest exact-candidate GO itself to be unedited, and rejects any later malformed marker or edited Owner comment. A fresh canonical GO with a later comment ID supersedes older malformed or edited comments. The behavior matches the existing recovery verifier's fail-closed ordering. Regression coverage exercises all these cases. The validator and recovery tests are unchanged since the approved fix candidate, and their blobs remain unchanged in this candidate. No stale authorization path remains.\n\nThe readiness file at the candidate remains the empty v2 placeholder, with no review entries, owner-risk decisions, or Source Human Approval. #820 remains advisory and does not narrow scope, transfer evidence, or authorize approval/publication.\n\n## Checks and results\n\n- `git diff --name-status 445f1f05cd298d42cb884ea41b18d7e585907c0f..d79950832e06d647a69354b04e5e1040e9638e81`: three documentation/PO/test paths listed above; none falls within release-security scope.\n- Contract-prefix enumeration of Base..candidate changed paths: matched the exact existing 47-path lane ledger.\n- `validate_release_review_evidence._scope_digest(repo, candidate, sorted(contract_scope_paths, key=UTF-8 bytes))` checks all roots and hashes `git ls-tree -r -z --full-tree candidate -- <32 sorted roots>` stdout: `5840555a880881f6443467120b0fe45b837a0fde979e5e588b387b2a0a70d010`.\n- Candidate readiness placeholder inspection: empty v2 placeholder maintained.\n- `git diff --check Base...candidate`: passed.\n- `pytest -q tests/docs/test_docs_redesign_release_facts.py`: **18 passed**.\n- `pytest -q tests/test_release_pypi_recovery.py tests/test_release_recovery.py tests/test_reconcile_pypi_upload.py tests/test_post_release_controller.py tests/test_post_release_observers.py tests/test_release_change_impact.py`: **164 passed**.\n- `ruff check scripts/ci/verify_release_pypi_recovery.py tests/test_release_pypi_recovery.py`: passed.\n- `ruff format --check scripts/ci/verify_release_pypi_recovery.py tests/test_release_pypi_recovery.py`: passed; both files already formatted.\n- No full repository suite, live workflow dispatch, external API write, release publication, or actionlint run was performed.\n\nThe candidate worktree was clean at initial and final inspection. No source edits or external posts were made during this refresh.\n\n---\n\n# Release-security carry-forward addendum\n\nCandidate `12b7626161c3f452643a8119c84975411c6d07ef` is a direct child of previously approved candidate `d79950832e06d647a69354b04e5e1040e9638e81`; its Base remains `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd` and fixed Source S remains `3d968cfc5073d00d15610d65589064a1df433615`.\n\nThe complete parent-to-candidate diff contains only `tests/docs/test_docs_redesign_release_status.py` and `tests/docs/test_v024_publication_status.py`. Both are under `tests/docs/`, which is not included in the v0.2.7 release-security contract's changed-path prefixes. The tests update expected public documentation facts from v0.2.4 to v0.2.6. No release-control source, release contract, workflow, credentials, approval logic, or publication behavior changed. The prior APPROVED lane review carries forward unchanged; SEC-001 remains resolved.\n\nThe v2 validator-compatible scope digest over the 32 UTF-8-byte-sorted contract roots is `5840555a880881f6443467120b0fe45b837a0fde979e5e588b387b2a0a70d010`. No full lane review or test suite was rerun for these out-of-scope assertion changes. No repository files or remote resources were modified.\n\nVerdict: **APPROVED carry-forward for this narrow impact check.**\n\n\n## Source-transition impact review addendum (2026-10-29)\n\n**APPROVED** for exact source `defa8efda80e58c9294b154ed6e2021b564ee58f` against prior source `12b7626161c3f452643a8119c84975411c6d07ef`. The focused release-security review covered `tests/test_release_contracts.py`. The tests retain candidate evidence validation, required review lanes, S-to-R validation, and pending qualification/publication requirements. The transition fixture loads the reviewed Source files from Git, preventing candidate evidence from leaking into synthetic Source S. No findings. Review completed at 2026-10-29T11:16:35Z. This is a limited changed-path impact review; the prior Review Base coverage carries forward.",
+        "raw_report_sha256": "b0b5382c45a6e71ef3a0eed4540e001e139d0a7ac609948ed9659acc82aa3e99"
+      },
+      {
+        "lane": "scientific-data-model",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "codex-subagent-scientific-data-model",
+        "execution_context_id": "gwexpy-science-impact-12b7626-s-to-r-fix-20261029",
+        "execution_environment": "Linux; read-only impact-scoped review of two existing test paths; focused diff and scope digest checks. Effective model and effort are unverified.",
+        "started_at_utc": "2026-10-29T11:16:34Z",
+        "completed_at_utc": "2026-10-29T11:16:41Z",
+        "requested_model": "gpt-6-luna",
+        "requested_effort": "high",
+        "model_observation": {
+          "status": "unverified",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "Native Codex subagent result schema",
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "limitations": "Effective model and effort were not exposed by runtime and were not inferred.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "defa8efda80e58c9294b154ed6e2021b564ee58f",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "scope_digest": "115fc710135867741434900ab1d48cd23cc470c32d79da67483fb32e16bff3de",
+        "path_ledger": [
+          {
+            "path": "gwexpy/_version.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Version constant advances from 0.2.6 to 0.2.7; no scientific API behavior changes."
+          },
+          {
+            "path": "gwexpy/timeseries/_gwf_io.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Inspected missing-local-GWF syntax classification, stat preflight ordering, and unchanged GWF reader dispatch."
+          },
+          {
+            "path": "gwexpy/timeseries/collections.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Inspected TimeSeriesDict GWF preflight call placement before channel discovery and backend access."
+          },
+          {
+            "path": "gwexpy/timeseries/timeseries.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Inspected TimeSeries GWF preflight call placement and unchanged result assembly delegation."
+          },
+          {
+            "path": "tests/docs/test_check_public_docs_workflow.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed changed public-docs workflow assertions and fixtures; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_check_terms.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed changed terminology assertions and fixtures; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_docs_conf_runtime.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed changed docs workflow assertions; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_docs_pages_publish.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed docs publication regression tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_public_content.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed changed scientific wording contract assertions; executable scientific behavior is unchanged."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Final impact review: updated release facts and Japanese H[i,j](f)/pad=<value> assertions; added EN/JA roadmap and installation release-version checks; no science assertions weakened or runtime changed. Focused impact review: release-state documentation assertions only; no scientific runtime or metadata behavior changed."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed prior release facts and the current 0.2.6/Zenodo 23680359 assertions in the impact addendum; focused test passed."
+          },
+          {
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed GWpy proxy workflow assertions; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_po_utils.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed PO parsing unit tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_public_docs_pipeline.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed docs preparation and readback tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_v023_release_closure.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed historical release audit markers; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/docs/test_v024_publication_status.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed current 0.2.6 assertion while preserving historical 0.2.4 publication assertions; focused test passed; no science behavior change."
+          },
+          {
+            "path": "tests/interop/test_interop_docs_contract_sync.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed interop docs-to-contract test migration; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/io/test_io_docs_contract_sync.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed I/O docs contract assertions and terminology; no scientific runtime behavior changed."
+          },
+          {
+            "path": "tests/test_check_release_metadata_script.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release metadata validation tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_diaggui_qualification_evidence.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release evidence schema selection assertions; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_gen_release_notes.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release notes CLI tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_gwpy_override_inventory.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed GWpy workflow trigger contract assertions; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_issue_816_required_checks.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed required CI context mapping tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_post_release_controller.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed post-release controller identity and persistence tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_post_release_observers.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed post-release observer tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_publish_release_workflow.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release workflow recovery contract tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_qualification_skip_evidence.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed qualification evidence schema tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_reconcile_pypi_upload.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed PyPI upload reconciliation tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_change_impact.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release change classification tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_contracts.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release contract validation tests; no scientific runtime behavior. Focused impact review: release-contract state and fixture provenance assertions only; no scientific requirements changed or weakened."
+          },
+          {
+            "path": "tests/test_release_gate_workflow_contract.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release gate workflow tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_human_approval.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed human approval validation tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_integration_evidence.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release integration evidence tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_promotion.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release promotion tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_pypi_recovery.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Final impact review: inspected edited-owner-comment and recovery marker precedence tests; release-control only."
+          },
+          {
+            "path": "tests/test_release_recovery.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release recovery tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_release_review_evidence.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release review evidence tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_run_gate.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed gate runner tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_v025_historical_gate.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed historical release gate markers; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_v027_release_support.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed v0.2.7 release contract support tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/test_validate_release_script.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed release validation tests; no scientific runtime behavior."
+          },
+          {
+            "path": "tests/timeseries/test_gwf_parallel_contract.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed GWF parallel and missing-source regression changes; focused GWF test group executed in exact-S review."
+          },
+          {
+            "path": "tests/timeseries/test_io_gwf_timeseriesdict.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed missing local source preflight cases; focused GWF test group executed in exact-S review."
+          },
+          {
+            "path": "tests/timeseries/test_statevector_gwf_parallel_contract.py",
+            "methods": [
+              "full-diff-and-context",
+              "source-or-workflow-trace",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Reviewed statevector GWF path fixtures and parallel contracts; focused GWF test group executed in exact-S review."
+          }
+        ],
+        "findings": [],
+        "verdict": "APPROVED",
+        "report": "# Scientific data model final impact review\n\n## Scope and decision\n\n- Candidate: `d79950832e06d647a69354b04e5e1040e9638e81`; review base: `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`; fixed prior source S: `3d968cfc5073d00d15610d65589064a1df433615`.\n- **APPROVED**. Base..candidate has the same 44 scientific-data-model scope paths as Base..S. Their sorted path-list SHA-256 values are identical: `b1f1e958ed9370474d6b656441f4992e3d8e00b5afdb9b228b253e6dcab1afb6`.\n- S..candidate changes two in-scope blobs: `tests/docs/test_docs_redesign_release_facts.py` and `tests/test_release_pypi_recovery.py`. The 42 other scoped paths carry forward from the exact-S review. No scientific runtime source changed.\n\n## Changed test review\n\n`tests/docs/test_docs_redesign_release_facts.py` updates public conda-forge release facts and adds documentation contract assertions for the Japanese `H[i,j](f)` and `pad=<value>` inline examples. The final candidate extends release-fact assertions to the public roadmap and installation page, including Japanese translations and the current conda-forge package/source archive version. These are publication facts, not numerical or data-model contracts. This path is in the configured `tests` scope. The changes add/refresh content assertions and do not remove or weaken science behavior assertions, nor change executable scientific code.\n\n`tests/test_release_pypi_recovery.py` adds release authorization tests for edited owner comments and marker precedence. These assertions concern release-control decision parsing only and have no scientific behavior impact.\n\nThe prior review analysis for GWF missing-local-source preflight, unchanged successful GWF read construction, units, metadata, axes, windows, `t0`, and `dt` carries forward because those source blobs are unchanged from S.\n\n## Verification performed\n\n- Sorted Base..S and Base..candidate scope path lists were hashed independently; both produced `b1f1e958ed9370474d6b656441f4992e3d8e00b5afdb9b228b253e6dcab1afb6`.\n- `git diff --raw 3d968cfc5073d00d15610d65589064a1df433615..445f1f05cd298d42cb884ea41b18d7e585907c0f -- benchmarks environment.yml gwexpy tests` — exactly the two test blobs above.\n- `git diff --raw 445f1f05cd298d42cb884ea41b18d7e585907c0f..d79950832e06d647a69354b04e5e1040e9638e81 -- benchmarks environment.yml gwexpy tests` — only `tests/docs/test_docs_redesign_release_facts.py` changed since the previous candidate.\n- `git diff --unified=12 445f1f05cd298d42cb884ea41b18d7e585907c0f..d79950832e06d647a69354b04e5e1040e9638e81 -- tests/docs/test_docs_redesign_release_facts.py` — complete diff inspected; it adds installation-page publication facts and translated catalog assertions only.\n- `git diff --check a1ff8e2f18ef4e599727d6df6fdff61fce7019bd..d79950832e06d647a69354b04e5e1040e9638e81` — passed (no output).\n- Candidate scope-root digest, computed using the contract scope roots, is `459f059e41debb02b46fe0b33f046dc24786120b6d8c95e858a7043413f49900`.\n- No tests were run for this final impact review.\n\n## Findings\n\nNo findings. This source-review decision does not replace human scientific approval or release qualification.\n\n---\n\n# Science lane impact addendum: `12b7626161c3f452643a8119c84975411c6d07ef`\n\n**Decision: APPROVED.** Candidate parent is `d79950832e06d647a69354b04e5e1040e9638e81`. Base..candidate remains 44 scientific-data-model paths. The sorted changed-path list digest is unchanged at `b1f1e958ed9370474d6b656441f4992e3d8e00b5afdb9b228b253e6dcab1afb6`; the candidate scope-root digest is `2039e9d062c53e12a16747bca0fb0f6f39d7c96b2a12fcea55e44cdf7cb1af03`.\n\nThe only in-scope hunks are assertion text in `tests/docs/test_docs_redesign_release_status.py` and `tests/docs/test_v024_publication_status.py`. They update the live conda-forge package and Zenodo archive assertions from 0.2.4 / the old DOI to the published 0.2.6 package and current archive DOI. Historical v0.2.4 source version, its publication DOI/URL, and historical release references remain asserted. No scientific runtime, numerical, metadata, axis, or I/O assertion changes or relaxations are present.\n\nChecks run by this reviewer: verified candidate and parent SHAs; inspected both complete diff hunks; counted 44 Base..candidate scope paths and recomputed the sorted-root digest; `git diff --check a1ff8e2f18ef4e599727d6df6fdff61fce7019bd..12b7626161c3f452643a8119c84975411c6d07ef` passed with no output. The coordinator reports both focused tests pass; I did not run them independently.\n\nNo findings. This addendum carries forward the prior approved science lane review; it does not replace human scientific approval or release qualification.\n\n\n## Source-transition impact review addendum (2026-10-29)\n\n**APPROVED** for exact source `defa8efda80e58c9294b154ed6e2021b564ee58f` against prior source `12b7626161c3f452643a8119c84975411c6d07ef`. The focused science-impact review covered both changed test files. The changes strengthen release-state assertions and fixture provenance only; they do not change scientific runtime, numerical, units, metadata, axis, or I/O behavior, and do not weaken scientific requirements. No findings. Review completed at 2026-10-29T11:16:41Z. This is a limited changed-path impact review; the prior Review Base coverage carries forward.",
+        "raw_report_sha256": "aa99990687d52773fe7621f6e109ab2e28b3587fc5015c060b760da40b6900d0"
+      }
+    ],
     "owner_risk_decisions": [],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0,
-      "risk_decisions_sha256": ""
+      "approver_login": "tatsuki-washimi",
+      "role": "release-owner",
+      "reviewed_commit": "defa8efda80e58c9294b154ed6e2021b564ee58f",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "scope_digest": "115fc710135867741434900ab1d48cd23cc470c32d79da67483fb32e16bff3de",
+      "timestamp_utc": "2026-10-29T11:47:50Z",
+      "verdict": "APPROVED",
+      "comment_id": 6495818722,
+      "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
   }
