@@ -6,11 +6,13 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
@@ -877,7 +879,9 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
     assert "promotion" in values["v0.2.6"]
 
 
-def test_v027_registered_contract_and_readiness_placeholder_are_operational() -> None:
+def test_v027_registered_contract_and_source_or_candidate_readiness_are_operational() -> (
+    None
+):
     contracts = load_contract_module()
     contract = contracts.release_contract("v0.2.7")
     plan_path = ROOT / contract["plan_path"]
@@ -918,12 +922,40 @@ def test_v027_registered_contract_and_readiness_placeholder_are_operational() ->
     )
     assert plan_path.is_file()
     validator = load_release_validator()
-    assert (
-        evidence_path.read_bytes()
-        == validator._v027_empty_review_evidence_placeholder(
-            contract["review_base_sha"]
-        )
+    plan_checkboxes = re.findall(
+        r"^- \[([ xX])\]", plan_path.read_text(encoding="utf-8"), re.MULTILINE
     )
+    assert plan_checkboxes
+    expected_placeholder = validator._v027_empty_review_evidence_placeholder(
+        contract["review_base_sha"]
+    )
+    if evidence_path.read_bytes() == expected_placeholder:
+        # Source S is deliberately unapproved and leaves every preparation
+        # checklist item open.
+        assert set(plan_checkboxes) == {" "}
+    else:
+        # Candidate R must carry valid candidate-phase evidence bound to S and
+        # may complete only the first four preparation steps.
+        review_validator = load_review_validator()
+        review = review_validator.validate_review_evidence(
+            evidence_path,
+            None,
+            set(contract["review_lanes"]),
+            ROOT,
+            expected_tag="v0.2.7",
+            phase="candidate",
+        )
+        reviewed = review["source_sha"]
+        candidate = _candidate_revision()
+        reviewed_plan = subprocess.check_output(
+            ["git", "show", f"{reviewed}:{contract['plan_path']}"],
+            cwd=ROOT,
+            text=True,
+        )
+        reviewed_checkboxes = re.findall(r"^- \[([ xX])\]", reviewed_plan, re.MULTILINE)
+        assert reviewed_checkboxes == [" "] * 8
+        validator.validate_s_to_r(ROOT, reviewed, candidate, expected_tag="v0.2.7")
+        assert plan_checkboxes == ["x"] * 4 + [" "] * 4
 
 
 def test_v027_review_lanes_cover_all_changes_from_frozen_review_base() -> None:
@@ -962,11 +994,20 @@ def test_v027_operational_files_pass_registered_s_to_r_transition(
     git(repo, "config", "user.name", "Release Test")
     git(repo, "config", "user.email", "release-test@example.invalid")
 
+    evidence_document = yaml.safe_load(
+        (ROOT / contract["review_evidence_path"]).read_text(encoding="utf-8")
+    )
+    review = json.loads(evidence_document["review_evidence_json"])
+    reviewed_source = review["source_sha"] or _candidate_revision()
     for field in ("plan_path", "review_evidence_path"):
         relative = contract[field]
         target = repo / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((ROOT / relative).read_bytes())
+        source_bytes = subprocess.check_output(
+            ["git", "show", f"{reviewed_source}:{relative}"],
+            cwd=ROOT,
+        )
+        target.write_bytes(source_bytes)
 
     git(repo, "add", contract["plan_path"], contract["review_evidence_path"])
     git(repo, "commit", "-m", "S: registered v0.2.7 operational files")

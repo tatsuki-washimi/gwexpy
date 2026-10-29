@@ -67,6 +67,38 @@ flowchart LR
 """
 
 
+def load_v027_review_validator():
+    path = REPO_ROOT / "scripts/ci/validate_release_review_evidence.py"
+    spec = importlib.util.spec_from_file_location(
+        "v027_review_evidence_for_docs_test", path
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_v027_release_contract():
+    path = REPO_ROOT / "scripts/ci/release_contract.py"
+    spec = importlib.util.spec_from_file_location("v027_contract_for_docs_test", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_v027_release_validator():
+    path = REPO_ROOT / "scripts/validate_release.py"
+    spec = importlib.util.spec_from_file_location("v027_release_for_docs_test", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 @pytest.mark.historical_audit
 def test_changelog_preserves_the_historical_v022_activity_snapshot() -> None:
     """Keep the earlier published snapshot and its provenance available."""
@@ -376,7 +408,41 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     assert "Status: **Preparation only.**" in candidate_plan_text
     assert "Tracking Issue [#844]" in candidate_plan_text
     candidate_checkboxes = re.findall(r"^- \[([ xX])\]", candidate_plan, re.MULTILINE)
-    assert candidate_checkboxes and set(candidate_checkboxes) == {" "}
+    assert candidate_checkboxes
+    candidate_readiness = yaml.safe_load(
+        (
+            REPO_ROOT
+            / "docs/developers/plans/manifests/audit-manifest-v0.2.7-release-readiness.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    candidate_evidence = json.loads(candidate_readiness["review_evidence_json"])
+    assert candidate_evidence["schema"] == "gwexpy-v027-review-evidence-v2"
+    candidate_manifest_path = (
+        REPO_ROOT
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.7-release-readiness.yaml"
+    )
+    contract = load_v027_release_contract().release_contract("v0.2.7")
+    expected_placeholder = (
+        load_v027_release_validator()._v027_empty_review_evidence_placeholder(
+            contract["review_base_sha"]
+        )
+    )
+    if candidate_evidence["source_sha"] == "":
+        # Source S retains the empty evidence placeholder and no completed steps.
+        assert candidate_manifest_path.read_bytes() == expected_placeholder
+        assert set(candidate_checkboxes) == {" "}
+    else:
+        # Candidate R records the approved S-to-R transition: the first four
+        # preparation steps are complete; qualification and publication remain pending.
+        load_v027_review_validator().validate_review_evidence(
+            candidate_manifest_path,
+            None,
+            None,
+            REPO_ROOT,
+            expected_tag="v0.2.7",
+            phase="candidate",
+        )
+        assert candidate_checkboxes == ["x"] * 4 + [" "] * 4
     releasing_text = " ".join(
         (REPO_ROOT / "RELEASING.md").read_text(encoding="utf-8").split()
     )
