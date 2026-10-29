@@ -75,7 +75,8 @@ def comment(comment_id: int, text: str, author="tatsuki-washimi"):
         "id": comment_id,
         "user": {"login": author},
         "body": text,
-        "created_at": f"2026-10-26T00:00:{comment_id % 60:02d}Z",
+        "created_at": "2026-10-26T00:00:00Z",
+        "updated_at": "2026-10-26T00:00:00Z",
     }
 
 
@@ -142,6 +143,42 @@ def test_later_canonical_owner_go_supersedes_an_older_malformed_marker():
             comment(100, body() + "\nunexpected=extra-field"),
             comment(101, body()),
         ],
+        owner_login="tatsuki-washimi",
+        expected=expected(),
+    )
+
+
+def test_newer_edited_owner_comment_without_marker_cannot_fall_back_to_earlier_go():
+    module = load_module()
+    edited = comment(101, "withdrawn")
+    edited["updated_at"] = "2026-10-26T00:01:41Z"
+
+    with pytest.raises(module.RecoveryApprovalError, match="edited"):
+        module.validate_recovery_decision(
+            [comment(100, body()), edited],
+            owner_login="tatsuki-washimi",
+            expected=expected(),
+        )
+
+
+def test_latest_matching_owner_go_cannot_authorize_after_being_edited():
+    module = load_module()
+    edited = comment(100, body())
+    edited["updated_at"] = "2026-10-26T00:01:40Z"
+
+    with pytest.raises(module.RecoveryApprovalError, match="edited"):
+        module.validate_recovery_decision(
+            [edited], owner_login="tatsuki-washimi", expected=expected()
+        )
+
+
+def test_new_canonical_go_supersedes_an_older_edited_owner_comment():
+    module = load_module()
+    edited = comment(101, "withdrawn")
+    edited["updated_at"] = "2026-10-26T00:01:41Z"
+
+    module.validate_recovery_decision(
+        [comment(100, body()), edited, comment(102, body())],
         owner_login="tatsuki-washimi",
         expected=expected(),
     )

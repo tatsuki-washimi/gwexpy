@@ -125,7 +125,7 @@ def validate_recovery_decision(
 ) -> None:
     """Require the latest Owner record for this candidate to cover missing files."""
     _require(isinstance(comments, Sequence), "GitHub issue comments are malformed")
-    matching: list[tuple[int, dict[str, Any]]] = []
+    matching: list[tuple[int, dict[str, Any], bool]] = []
     identity_fields = (
         "version",
         "tag",
@@ -134,6 +134,7 @@ def validate_recovery_decision(
         "promotion_manifest_sha256",
     )
     malformed_marker_ids: list[int] = []
+    edited_owner_comment_ids: list[int] = []
     for comment in comments:
         if not isinstance(comment, Mapping):
             continue
@@ -141,30 +142,38 @@ def validate_recovery_decision(
         login = user.get("login") if isinstance(user, Mapping) else None
         if not isinstance(login, str) or login.lower() != owner_login.lower():
             continue
-        body = comment.get("body")
-        if not isinstance(body, str) or not any(
-            line.strip() == MARKER for line in body.splitlines()
-        ):
-            continue
         comment_id = comment.get("id")
         if (
             not isinstance(comment_id, int)
             or isinstance(comment_id, bool)
             or comment_id <= 0
         ):
-            raise RecoveryApprovalError("recovery approval comment ID is invalid")
+            continue
+        edited = comment.get("created_at") != comment.get("updated_at")
+        if edited:
+            edited_owner_comment_ids.append(comment_id)
+        body = comment.get("body")
+        if not isinstance(body, str) or not any(
+            line.strip() == MARKER for line in body.splitlines()
+        ):
+            continue
         try:
             decision = parse_recovery_decision(body)
         except RecoveryApprovalError:
             malformed_marker_ids.append(comment_id)
             continue
         if all(decision[field] == expected[field] for field in identity_fields):
-            matching.append((comment_id, decision))
+            matching.append((comment_id, decision, edited))
     _require(bool(matching), "no matching Release Owner recovery decision exists")
-    latest_id, latest = max(matching, key=lambda item: item[0])
+    latest_id, latest, latest_edited = max(matching, key=lambda item: item[0])
+    _require(not latest_edited, "latest recovery authorization comment was edited")
     _require(
         not any(comment_id > latest_id for comment_id in malformed_marker_ids),
         "a newer malformed Release Owner recovery marker blocks authorization",
+    )
+    _require(
+        not any(comment_id > latest_id for comment_id in edited_owner_comment_ids),
+        "a later Release Owner comment was edited; issue a fresh recovery record",
     )
     _require(
         latest["decision"] == "GO", "latest Release Owner recovery decision is HOLD"
