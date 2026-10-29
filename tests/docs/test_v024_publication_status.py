@@ -166,7 +166,7 @@ def test_public_release_sources_distinguish_published_and_pending_channels() -> 
     joined = "\n".join(path.read_text(encoding="utf-8") for path in public_sources)
     normalized = " ".join(joined.split())
     assert "v0.2.4" in normalized
-    assert "latest conda-forge package is v0.2.4" in normalized
+    assert "latest conda-forge package is v0.2.6" in normalized
     assert "Zenodo DOI 10.5281/zenodo.22978439" in normalized
     assert "https://zenodo.org/records/22978439" in normalized
     assert "https://doi.org/10.5281/zenodo.22978439" not in normalized
