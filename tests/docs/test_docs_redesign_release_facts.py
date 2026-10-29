@@ -524,7 +524,7 @@ def test_japanese_inline_examples_preserve_matrix_and_pad_tokens() -> None:
     assert "pad= <値>" not in pad_messages[0].string
 
 
-def test_v026_conda_forge_status_is_current_in_both_changelog_languages() -> None:
+def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
     english = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -551,6 +551,34 @@ def test_v026_conda_forge_status_is_current_in_both_changelog_languages() -> Non
         "conda-forge feedstock の [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) は"
         "2026-10-28（UTC）にマージされ、conda-forge では0.2.6のパッケージを利用できます。"
     )
+
+    roadmap = (REPO_ROOT / "docs_redesign/explanation/roadmap.md").read_text(
+        encoding="utf-8"
+    )
+    roadmap_catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po"
+    )
+    with roadmap_catalogue_path.open(encoding="utf-8") as stream:
+        roadmap_catalogue = pofile.read_po(stream, locale="ja")
+    roadmap_msgid = (
+        "v0.2.6 was published on 2026-10-27 UTC to "
+        "[PyPI](https://pypi.org/project/gwexpy/0.2.6/) and "
+        "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), "
+        "and is archived at [Zenodo DOI 10.5281/zenodo.23680359]"
+        "(https://zenodo.org/records/23680359). The conda-forge feedstock "
+        "[PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) "
+        "merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge. "
+        "No next-minor release theme is committed; future work remains directional."
+    )
+    roadmap_message = roadmap_catalogue.get(roadmap_msgid)
+
+    assert "merged on 2026-10-28 UTC" in roadmap
+    assert "version 0.2.6 is available on conda-forge" in roadmap
+    assert "open for review" not in roadmap
+    assert "tops at 0.2.4" not in roadmap
+    assert roadmap_message is not None
+    assert "2026-10-28（UTC）にマージされ" in roadmap_message.string
+    assert "conda-forge では0.2.6のパッケージを利用できます" in (roadmap_message.string)
 
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
