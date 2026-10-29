@@ -22,7 +22,7 @@ The roadmap is public, but priorities can change based on research needs, mainte
 - Exact timing, interoperable persistence, deterministic provenance, and public
   GWpy compatibility were established in v0.2.0 and are retained by v0.2.6
 
-v0.2.6 was published on 2026-10-27 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.6/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and is archived at [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) is open for review; the channel package inventory still tops at 0.2.4. No next-minor release theme is committed; future work remains directional.
+v0.2.6 was published on 2026-10-27 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.6/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and is archived at [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge. No next-minor release theme is committed; future work remains directional.
 
 ## Directional Themes
 
