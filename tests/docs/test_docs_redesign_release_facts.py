@@ -580,6 +580,33 @@ def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
     assert "2026-10-28（UTC）にマージされ" in roadmap_message.string
     assert "conda-forge では0.2.6のパッケージを利用できます" in (roadmap_message.string)
 
+    installation = (REPO_ROOT / "docs_redesign/tutorials/installation.md").read_text(
+        encoding="utf-8"
+    )
+    installation_catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
+    )
+    with installation_catalogue_path.open(encoding="utf-8") as stream:
+        installation_catalogue = pofile.read_po(stream, locale="ja")
+    installation_msgid = (
+        "GWexpy {{ latest_release }} is available on "
+        "[PyPI](https://pypi.org/project/gwexpy/), the "
+        "[GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases), "
+        "and [conda-forge](https://anaconda.org/conda-forge/gwexpy). The latest "
+        "conda-forge package is v0.2.6. The v0.2.6 source is archived on "
+        "[Zenodo](https://zenodo.org/records/23680359). Check each install source "
+        "for its available versions."
+    )
+    installation_message = installation_catalogue.get(installation_msgid)
+    installation_text = " ".join(installation.split())
+
+    assert "The latest conda-forge package is v0.2.6." in installation_text
+    assert "v0.2.6 source is archived" in installation_text
+    assert "v0.2.4" not in installation_text
+    assert installation_message is not None
+    assert "conda-forge の最新パッケージは v0.2.6 です" in (installation_message.string)
+    assert "v0.2.6 のソースは" in installation_message.string
+
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
     english = (REPO_ROOT / "docs/web/en/user_guide/changelog.md").read_text(
