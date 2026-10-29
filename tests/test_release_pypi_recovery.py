@@ -114,6 +114,39 @@ def test_latest_bound_owner_decision_supersedes_an_earlier_hold():
     )
 
 
+@pytest.mark.parametrize(
+    "malformed_body",
+    [
+        body() + "\nunexpected=extra-field",
+        "GWEXPY-PYPI-RECOVERY-v1",
+    ],
+)
+def test_newer_malformed_owner_marker_cannot_fall_back_to_earlier_go(
+    malformed_body,
+):
+    module = load_module()
+
+    with pytest.raises(module.RecoveryApprovalError, match="malformed"):
+        module.validate_recovery_decision(
+            [comment(100, body()), comment(101, malformed_body)],
+            owner_login="tatsuki-washimi",
+            expected=expected(),
+        )
+
+
+def test_later_canonical_owner_go_supersedes_an_older_malformed_marker():
+    module = load_module()
+
+    module.validate_recovery_decision(
+        [
+            comment(100, body() + "\nunexpected=extra-field"),
+            comment(101, body()),
+        ],
+        owner_login="tatsuki-washimi",
+        expected=expected(),
+    )
+
+
 def test_approved_superset_can_resume_after_one_of_two_missing_files_uploaded():
     module = load_module()
     approved = {

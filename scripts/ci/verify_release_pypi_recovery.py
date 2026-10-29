@@ -133,6 +133,7 @@ def validate_recovery_decision(
         "candidate_run_id",
         "promotion_manifest_sha256",
     )
+    malformed_marker_ids: list[int] = []
     for comment in comments:
         if not isinstance(comment, Mapping):
             continue
@@ -141,23 +142,30 @@ def validate_recovery_decision(
         if not isinstance(login, str) or login.lower() != owner_login.lower():
             continue
         body = comment.get("body")
-        if not isinstance(body, str) or not body.startswith(MARKER + "\n"):
+        if not isinstance(body, str) or not any(
+            line.strip() == MARKER for line in body.splitlines()
+        ):
             continue
+        comment_id = comment.get("id")
+        if (
+            not isinstance(comment_id, int)
+            or isinstance(comment_id, bool)
+            or comment_id <= 0
+        ):
+            raise RecoveryApprovalError("recovery approval comment ID is invalid")
         try:
             decision = parse_recovery_decision(body)
         except RecoveryApprovalError:
+            malformed_marker_ids.append(comment_id)
             continue
         if all(decision[field] == expected[field] for field in identity_fields):
-            comment_id = comment.get("id")
-            if (
-                not isinstance(comment_id, int)
-                or isinstance(comment_id, bool)
-                or comment_id <= 0
-            ):
-                raise RecoveryApprovalError("recovery approval comment ID is invalid")
             matching.append((comment_id, decision))
     _require(bool(matching), "no matching Release Owner recovery decision exists")
-    _, latest = max(matching, key=lambda item: item[0])
+    latest_id, latest = max(matching, key=lambda item: item[0])
+    _require(
+        not any(comment_id > latest_id for comment_id in malformed_marker_ids),
+        "a newer malformed Release Owner recovery marker blocks authorization",
+    )
     _require(
         latest["decision"] == "GO", "latest Release Owner recovery decision is HOLD"
     )
