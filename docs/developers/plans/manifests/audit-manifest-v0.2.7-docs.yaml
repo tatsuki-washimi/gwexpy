@@ -1,0 +1,109 @@
+schema: gwexpy-agent-audit-v1
+task: v027-post-release-bilingual-docs
+date: 2026-10-31
+agent: Codex
+branch: post-release/v0.2.7-docs
+base_ref: main
+base_sha: bcf6e0c98b01249b742124676330d8f98a3adab2
+skills:
+  - prep_release
+  - docs-ja
+  - english-tech-writing
+  - japanese-tech-writing
+  - github-mcp-secret-filter
+  - superpowers:brainstorming
+  - superpowers:using-git-worktrees
+scope:
+  included:
+    - Update the active public docs_redesign release status, changelog, roadmap, installation guidance, and Japanese gettext catalogs for published v0.2.7.
+    - Distinguish the service-readback publication date, 2026-10-31 UTC, from the frozen release source and Zenodo metadata date, 2026-11-03.
+    - Record the pending Release Owner date disposition and the observed conda-forge state without claiming either is complete.
+    - Generate English and Japanese development-activity SVGs and one byte-identical weekly CSV from immutable tag v0.2.7.
+    - Update existing docs release-fact assertions to reflect the current publication state and activity snapshot.
+    - Remove the redundant duplicate Japanese "Fixed" catalog entry that caused msgfmt validation to fail.
+  excluded:
+    - No changes to the tagged source, release notes, tag, GitHub Release, PyPI files, or package build.
+    - Legacy docs/web content remains unchanged because docs_redesign is the active public Pages source.
+    - Zenodo date disposition, conda-forge publication, Pages deployment, and cleanup remain independently tracked post-release states.
+publication_facts:
+  version: 0.2.7
+  source_sha: bcf6e0c98b01249b742124676330d8f98a3adab2
+  candidate_run_id: 40872269842
+  publish_workflow_run_id: 41167180364
+  actual_publication_date_utc: 2026-10-31
+  github_release:
+    id: 429713488
+    url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7
+    published_at_utc: 2026-10-31T04:10:50Z
+  pypi:
+    status: published
+    wheel_sha256: 6f9a5a95bb2a19af35e50e30dc9c6ce8572e556fed21822a5eec04dd011b9721
+    sdist_sha256: 2d6f87435fe9f0729a4a08d6cb51d921388ddf82159ddbe9d9a90d20641cbcec
+  zenodo:
+    record_id: 23828442
+    doi: 10.5281/zenodo.23828442
+    record_created_at_utc: 2026-10-31T04:10:57Z
+    metadata_publication_date: 2026-11-03
+    release_owner_date_disposition: pending_review
+  conda_forge:
+    observed_at_utc: 2026-10-31
+    latest_available_version: 0.2.6
+    v027_feedstock_pr_or_package_observed: false
+    status: pending_external
+activity_snapshot:
+  ref: v0.2.7
+  resolved_commit: bcf6e0c98b01249b742124676330d8f98a3adab2
+  non_merge_commits: 2303
+  canonical_csv_sha256: 186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6
+  english_svg_sha256: 50c3839eee0854f22a07d61689555206e73053b903c7c316d8c70384c4f848e7
+  japanese_svg_sha256: 23d4bb7835e2d973d7fa6873cddd83684c61a9ca1b7027cafce354937cd515e0
+  csv_regenerated_for_both_languages: true
+  byte_identical_csvs: true
+  per_commit_audit_outputs: generated under task TMPDIR; not added to the public repository
+files:
+  - docs_redesign/release_status.json
+  - docs_redesign/about/changelog.md
+  - docs_redesign/explanation/roadmap.md
+  - docs_redesign/tutorials/installation.md
+  - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+  - docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po
+  - docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po
+  - docs_redesign/_static/images/development-activity-v0.2.7.svg
+  - docs_redesign/_static/images/development-activity-v0.2.7-ja.svg
+  - docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/docs/test_docs_redesign_release_status.py
+  - tests/docs/test_v024_publication_status.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.7-docs.yaml
+validation:
+  completed:
+    - cmd: git diff --check
+      result: passed
+    - cmd: jq -e '.latest_release == "0.2.7" and .intro_examples_release == "0.2.4"' docs_redesign/release_status.json
+      result: passed
+    - cmd: conda run -n gwexpy ruff format --check for the three changed docs contract test files
+      result: passed
+    - cmd: msgfmt --check for changelog.po, roadmap.po, and installation.po
+      result: passed; all three Japanese catalogs compile without diagnostics after consolidating the duplicate changelog entry
+    - cmd: scripts/generate_development_activity.py --ref v0.2.7 --language en/ja
+      result: passed; both runs resolved to bcf6e0c98b01249b742124676330d8f98a3adab2, each analyzed 2303 non-merge commits, and generated CSVs have the same SHA-256
+    - cmd: memcap -- conda run -n gwexpy python -m sphinx -b html -D nb_execution_mode=off (English and Japanese)
+      result: both builds succeeded from a disposable docs copy; rendering verified without notebook execution
+    - cmd: changelog_page_errors on rendered English and Japanese changelog pages with latest_release=0.2.7
+      result: passed for both languages; detailed release history and language-specific v0.2.7 activity SVGs are present
+  incomplete:
+    - cmd: memcap -- conda run -n gwexpy python -m sphinx -b html (default cached notebook execution)
+      result: manually interrupted after about 9 minutes at 25 percent of source reading; 29 of 66 notebook execution cache entries had completed. This is not recorded as a successful full executed build; the PR CI remains the full execution gate.
+  omitted:
+    - pytest was not run during this docs-authoring turn; required repository CI remains responsible for test gates.
+    - scripts/check_public_docs.py was not run on the no-execution build because its deployment checks require executed notebook evidence and derived figures.
+    - No full executed EN/JA Sphinx build is claimed.
+review:
+  human_review_required: true
+  physics_review_required: false
+  rationale: Documentation, translations, immutable reporting assets, and their release-fact assertions only; no runtime or data-model behavior changed.
+post_release_status:
+  github_release_and_pypi: complete
+  zenodo_record: published; date disposition pending review
+  conda_forge: pending external publication
+  pages_deployment_and_live_readback: pending external deployment after docs PR merge

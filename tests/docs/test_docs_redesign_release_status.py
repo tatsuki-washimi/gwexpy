@@ -26,7 +26,7 @@ def test_release_status_records_latest_published_and_example_releases() -> None:
     """Published-release metadata is independent from the development version."""
     status = json.loads(RELEASE_STATUS.read_text(encoding="utf-8"))
     assert status == {
-        "latest_release": "0.2.6",
+        "latest_release": "0.2.7",
         "intro_examples_release": "0.2.4",
     }
     assert _LEGACY_KEY not in status
@@ -40,10 +40,10 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
 
     install_source = INSTALLATION.read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }} is available on [PyPI]" in install_source
-    assert "The latest conda-forge package is v0.2.6." in " ".join(
-        install_source.split()
-    )
-    assert "https://zenodo.org/records/23680359" in install_source
+    assert "The latest package on [conda-forge]" in " ".join(install_source.split())
+    assert "is v0.2.6;" in " ".join(install_source.split())
+    assert "https://zenodo.org/records/23828442" in install_source
+    assert "publication_date` 2026-11-03" in install_source
 
     catalogue = (
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po"
@@ -57,8 +57,10 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
     ).read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }}" in install_catalogue
-    assert "conda-forge の最新パッケージは v0.2.6 です。" in install_catalogue
-    assert "https://zenodo.org/records/23680359" in install_catalogue
+    assert "conda-forge]" in install_catalogue
+    assert "最新パッケージはv0.2.6です" in install_catalogue
+    assert "https://zenodo.org/records/23828442" in install_catalogue
+    assert "publication_date` 2026-11-03" in install_catalogue
 
 
 def test_legacy_release_name_is_absent_from_live_docs_contract() -> None:

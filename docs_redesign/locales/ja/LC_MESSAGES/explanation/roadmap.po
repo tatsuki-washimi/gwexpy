@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the GWexpy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-15 21:59+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-10-31 04:21+0000\n"
+"Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: Japanese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,12 +19,12 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "*Last updated: 2026-10-27.*"
-msgstr "*最終更新: 2026-10-27。*"
+msgid "*Last updated: 2026-10-31.*"
+msgstr "*最終更新: 2026-10-31。*"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "**Released baseline**: the published v0.2.6 maintenance baseline and the v0.2.0 semantic contract"
-msgstr "**リリース済みの基準**：公開済みの v0.2.6 メンテナンス基準と v0.2.0 の semantic contract"
+msgid "**Released baseline**: the published v0.2.7 maintenance baseline and the v0.2.0 semantic contract"
+msgstr "**リリース済みの基準**：公開済みの v0.2.7 メンテナンス基準と v0.2.0 の semantic contract"
 
 #: docs_redesign/explanation/roadmap.md
 msgid "**Directional themes**: areas we may improve in upcoming iterations"
@@ -44,16 +43,16 @@ msgid "Exact timing, interoperable persistence, deterministic provenance, and pu
 msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で提供済みです。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "[v0.2.6](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6) is the current released maintenance baseline. It clarifies documentation contracts, refines diagnostics, and completes repository cleanup after moving the legacy in-tree GUI to the independent `pyaggui` project. It adds no public API, dependency, or storage format."
-msgstr "[v0.2.6](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6) は現在公開されているメンテナンス基準です。ドキュメント上の契約を明確化し、診断を改善し、旧来の同梱 GUI を独立した `pyaggui` プロジェクトへ移行した後のリポジトリ整理を完了しました。公開 API、依存関係、保存形式は追加していません。"
+msgid "[v0.2.7](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7) is the current released maintenance baseline. It raises `FileNotFoundError` before a missing local GWF path reaches a native reader in `TimeSeries` and `TimeSeriesDict`."
+msgstr "[v0.2.7](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7) は現在公開されているメンテナンス基準です。`TimeSeries` と `TimeSeriesDict` では、存在しないローカルGWFパスをnative readerに渡す前に `FileNotFoundError` を発生させます。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.6"
-msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.6 でも維持されています。"
+msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.7"
+msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.7 でも維持されています。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "v0.2.6 was published on 2026-10-27 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.6/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and is archived at [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge. No next-minor release theme is committed; future work remains directional."
-msgstr "v0.2.6 は 2026-10-27（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.6/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6) で公開され、[Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359) にアーカイブされています。conda-forge feedstock の [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) は2026-10-28（UTC）にマージされ、conda-forge では0.2.6のパッケージを利用できます。次の minor release のテーマは確定しておらず、今後の作業は方向性として扱います。"
+msgid "v0.2.7 was published on 2026-10-31 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.7/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). The [Zenodo record](https://zenodo.org/records/23828442) was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 feedstock PR or package was observed on conda-forge; version 0.2.6 remains available. No next-minor release theme is committed; future work remains directional."
+msgstr "v0.2.7 は2026-10-31（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.7/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7) で公開されました。[Zenodoレコード](https://zenodo.org/records/23828442) は同日に作成され、メタデータの `publication_date` は2026-11-03です。この日付に関するリリース責任者の判断は未完了です。2026-10-31（UTC）時点でv0.2.7のfeedstock PRとパッケージはconda-forge上で確認されておらず、利用可能な最新はv0.2.6です。次のminor releaseのテーマは確定しておらず、今後の作業は方向性として扱います。"
 
 #: docs_redesign/explanation/roadmap.md
 msgid "Directional Themes"
