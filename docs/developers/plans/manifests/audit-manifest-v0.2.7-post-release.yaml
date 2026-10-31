@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T08:51:15Z",
-  "post_release_status": "pending_external",
+  "recorded_at_utc": "2026-10-31T12:52:37Z",
+  "post_release_status": "blocked",
   "release": {
     "tag": "v0.2.7",
     "version": "0.2.7",
@@ -88,7 +88,7 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "complete",
+      "status": "blocked",
       "actor": "Zenodo record owner",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
@@ -115,12 +115,18 @@
           "sha256": "7ad023a2e2ff19c740f6e89bcd25424d371e719ddc8050f9f7ae53597e200c25",
           "observed_at_utc": "2026-10-31T08:01:59.371Z",
           "observation": "Release Owner supplied screenshot of Zenodo record showing Published October 31, 2026, Version 0.2.7, DOI 10.5281/zenodo.23828442 and ZIP tatsuki-washimi/gwexpy-v0.2.7.zip with displayed MD5 75f547e33441daf8a0bceea62262f24b matching pre-edit readback. Screenshot SHA-256 given here; screenshot UI observation, not independently fetched API or rehashed download."
+        },
+        {
+          "url": "https://zenodo.org/api/records?q=conceptrecid%3A19059422&all_versions=true&size=25",
+          "sha256": "8c45e40685d5a7acefdac5844fa88e2c5ea744eee7e4c538967daa62e0118e23",
+          "observed_at_utc": "2026-10-31T12:52:25Z",
+          "observation": "{\"reason\": \"Zenodo previously observed archive/date identity changed\"}"
         }
       ],
-      "pending_reason": "",
-      "resume_condition": "",
+      "pending_reason": "Zenodo previously observed archive/date identity changed",
+      "resume_condition": "Owner must resolve the identity conflict before resuming",
       "observer": "zenodo",
-      "readback_succeeded": true,
+      "readback_succeeded": false,
       "human_decision": {
         "decision": "correct_existing_record_publication_date",
         "approved_by": "Release Owner",
@@ -140,7 +146,7 @@
       }
     },
     "conda": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "Authenticated maintainer",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -167,15 +173,21 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T08:42:23Z",
           "observation": "Feedstock main build for merge commit f8aed24d8b7238eb7f09065d520929ec80dad430 completed successfully. The Anaconda API lists the resulting noarch 0.2.7 build with label main; channel repodata readback is still pending."
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
+          "observed_at_utc": "2026-10-31T12:52:25Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "The feedstock is merged and its main build succeeded. The package is listed and downloadable through the Anaconda API, but final channel repodata does not yet expose it.",
-      "resume_condition": "Recheck final conda-forge repodata and the direct channel URL; verify the same noarch build and SHA-256 before marking the channel package complete.",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
         "conda_feedstock": "complete",
-        "conda_package": "pending_external"
+        "conda_package": "complete"
       }
     },
     "docs": {
@@ -194,6 +206,12 @@
           "sha256": "1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04",
           "observed_at_utc": "2026-10-31T07:36:29.437Z",
           "observation": "Production Docs Pages workflow completed successfully with EN/JA live revision and artifact manifest-hash readback."
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "b2c981d82e6342241a71f97c1974f3885f2600d06933a05bcec7a6a14aea2526",
+          "observed_at_utc": "2026-10-31T12:52:37Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv\": \"186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6\", \"docs_redesign/_static/images/development-activity-v0.2.7-ja.svg\": \"23d4bb7835e2d973d7fa6873cddd83684c61a9ca1b7027cafce354937cd515e0\", \"docs_redesign/_static/images/development-activity-v0.2.7.svg\": \"50c3839eee0854f22a07d61689555206e73053b903c7c316d8c70384c4f848e7\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 853, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/853\"}, \"page_sha256\": {\"about/changelog.html\": \"629f97efae40b030ac021d2a1871fc2f3e6283be54070b8c5b73c161bae17a94\", \"ja/about/changelog.html\": \"b6acd6ff921a4ca8f973e14e5deb79e6adc23f01e7c7c17c5cc46b5f80128549\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41178707613, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"029ea550c37e2a7b36a1932cd3dfa3634b4f05a8\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -209,6 +227,12 @@
           "sha256": "1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04",
           "observed_at_utc": "2026-10-31T07:36:29.437Z",
           "observation": "Push-triggered Docs Pages run 41178707613 completed success for main revision 029ea550c37e2a7b36a1932cd3dfa3634b4f05a8; both build and publish jobs succeeded. Artifact docs-pages-41178707613-1 (ID 13034233892), uploaded digest sha256:1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04; publisher verified 2015 site files, live EN/JA expected revision and all live files against exact artifact manifest."
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "b2c981d82e6342241a71f97c1974f3885f2600d06933a05bcec7a6a14aea2526",
+          "observed_at_utc": "2026-10-31T12:52:37Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv\": \"186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6\", \"docs_redesign/_static/images/development-activity-v0.2.7-ja.svg\": \"23d4bb7835e2d973d7fa6873cddd83684c61a9ca1b7027cafce354937cd515e0\", \"docs_redesign/_static/images/development-activity-v0.2.7.svg\": \"50c3839eee0854f22a07d61689555206e73053b903c7c316d8c70384c4f848e7\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 853, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/853\"}, \"page_sha256\": {\"about/changelog.html\": \"629f97efae40b030ac021d2a1871fc2f3e6283be54070b8c5b73c161bae17a94\", \"ja/about/changelog.html\": \"b6acd6ff921a4ca8f973e14e5deb79e6adc23f01e7c7c17c5cc46b5f80128549\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41178707613, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"029ea550c37e2a7b36a1932cd3dfa3634b4f05a8\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -284,15 +308,21 @@
           "sha256": "85c300d434764c7ef72fec351df904fb9ef69d23753e285b37b5072d76b80194",
           "observed_at_utc": "2026-10-31T08:44:25Z",
           "observation": "Feedstock main recipe has context.version=0.2.7 and source SHA-256 2d6f87435fe9f0729a4a08d6cb51d921388ddf82159ddbe9d9a90d20641cbcec, matching the downloaded PyPI sdist. Main feedstock build 41185567069 completed successfully."
+        },
+        {
+          "url": "https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls",
+          "sha256": "ffa7ce6cd20d16620cd1a78205af544ad47c4aa034b824cd291bc6203f6634c3",
+          "observed_at_utc": "2026-10-31T12:52:25Z",
+          "observation": "{\"author\": \"tatsuki-washimi\", \"head_branch\": \"gwexpy-0.2.7-update\", \"head_sha\": \"948c58ddab512f16fd435e1500762cd62bfa3cc0\", \"merged_at\": \"2026-10-31T08:40:33Z\", \"number\": 17, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/17\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"948c58ddab512f16fd435e1500762cd62bfa3cc0\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"85c300d434764c7ef72fec351df904fb9ef69d23753e285b37b5072d76b80194\", \"source_sha256\": \"2d6f87435fe9f0729a4a08d6cb51d921388ddf82159ddbe9d9a90d20641cbcec\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.7.tar.gz\", \"version\": \"0.2.7\"}, \"status\": \"complete\", \"updated_at\": \"2026-10-31T08:40:33Z\"}"
         }
       ],
       "pending_reason": "",
       "resume_condition": "",
       "observer": "conda_feedstock",
-      "readback_succeeded": true
+      "readback_succeeded": false
     },
     "conda_package": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "Authenticated maintainer",
       "objective": "Observe conda_package",
       "evidence": [
@@ -319,12 +349,18 @@
           "sha256": "f602366db022bc04307dc3cc6194d694491b0bd5f5dd00163d551f392fdc1a91",
           "observed_at_utc": "2026-10-31T08:51:15Z",
           "observation": "Current repodata does not yet contain gwexpy 0.2.7; the direct channel artifact URL returned HTTP 404 at this observation. Final channel indexing is pending."
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "8fc4cfe8281bdfa214b5c17973e5ee58222ea95424009e1be219eca9d64c27d2",
+          "observed_at_utc": "2026-10-31T12:52:25Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"c3ad4989189e3da4f1bdaaf90046c5fd\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658, \"subdir\": \"noarch\", \"timestamp\": 1793436086503, \"version\": \"0.2.7\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "The 0.2.7 artifact is uploaded to the main label and downloadable through the Anaconda API, but final repodata and the direct channel URL have not caught up.",
-      "resume_condition": "Recheck current and final noarch repodata and the direct artifact URL; confirm version, build and SHA-256, then mark complete.",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_package",
-      "readback_succeeded": false
+      "readback_succeeded": true
     }
   }
 }
