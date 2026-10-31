@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T08:35:33Z",
+  "recorded_at_utc": "2026-10-31T08:38:22Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
@@ -141,7 +141,7 @@
     },
     "conda": {
       "status": "pending_external",
-      "actor": "GitHub Actions",
+      "actor": "Authenticated maintainer",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
         {
@@ -149,10 +149,22 @@
           "sha256": "5506e5200623ef686007d98b60c30925386f598b0dc8c7acb599a513a49edafa",
           "observed_at_utc": "2026-10-31T04:13:30Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"pending_external\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:34:19Z",
+          "observation": "Current channel package reports latest_version 0.2.6 and no files for 0.2.7. The PyPI 0.2.7 sdist uploaded at 2026-10-31T04:11:35Z and its SHA-256 matches the release manifest. No gwexpy pending-update entry was found. Manual feedstock PR #17 was opened from the maintainer fork; its lint and linux_64_ build checks are running."
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/17",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:38:22Z",
+          "observation": "Manual feedstock PR #17 was opened from tatsuki-washimi/gwexpy-feedstock at head 948c58ddab512f16fd435e1500762cd62bfa3cc0. The recipe version and verified sdist SHA-256 are updated. The conda-forge-linter and linux_64_ build checks are running; the PR has no review decision yet."
         }
       ],
-      "pending_reason": "See separate feedstock PR and actual channel-package states",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "Feedstock PR #17 is open with its lint and build checks running; no 0.2.7 channel package is published yet.",
+      "resume_condition": "After PR #17 passes required checks and review and is merged, verify the 0.2.7 build in final channel repodata.",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
@@ -226,7 +238,7 @@
           "url": "https://github.com/tatsuki-washimi/gwexpy/pull/852",
           "sha256": null,
           "observed_at_utc": "2026-10-31T08:35:33Z",
-          "observation": "Inspected 10 registered worktrees. Retain /home/washimi/work/gwexpy (release/v0.2.6-prep; 7 untracked path entries; local branch ahead 1/behind 13; active assistant processes use this checkout) and /home/washimi/HDD1TB/worktrees/gwexpy/v027-issue766-20261029 (six modified source/test files; no open file handles observed). Eight other worktrees are clean and are cleanup candidates, including /tmp/gwex-sha; none were removed. No tmux server or GWexpy/conda/release-named scratch entries were found under configured TMPDIR. Unrelated temporary files were left untouched."
+          "observation": "Inspected 10 registered worktrees. Retain the release/v0.2.6-prep checkout (7 untracked path entries; local branch ahead 1/behind 13; active assistant processes use this checkout) and work/v0.2.7-issue766-20261029 (six modified source/test files; no open file handles observed). Eight other worktrees are clean and are cleanup candidates; none were removed. No tmux server or GWexpy/conda/release-named scratch entries were found under configured TMPDIR. Unrelated temporary files were left untouched."
         }
       ],
       "pending_reason": "",
@@ -234,7 +246,7 @@
     },
     "conda_feedstock": {
       "status": "pending_external",
-      "actor": "GitHub Actions",
+      "actor": "Authenticated maintainer",
       "objective": "Observe conda_feedstock",
       "evidence": [
         {
@@ -248,16 +260,28 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T07:36:29.437Z",
           "observation": "Feedstock main recipe at d4346e3584013c9d00ae0d130ca5676017a03739 has context.version=0.2.6; PR list has no v0.2.7 feedstock PR; last v0.2.6 PR #16 merged 2026-10-28."
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pulls",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:34:19Z",
+          "observation": "Feedstock main recipe at d4346e3584013c9d00ae0d130ca5676017a03739 remains at 0.2.6; no v0.2.7 PR had been created before manual PR #17. Latest feedstock build was successful on 2026-10-28. No gwexpy pending-update entry was found in conda-forge-bot-data."
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/17",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:38:22Z",
+          "observation": "PR #17 is open from the maintainer fork. conda-forge-linter and linux_64_ checks are pending. No merge or channel publication is claimed."
         }
       ],
-      "pending_reason": "v0.2.7 feedstock PR not observed; main recipe remains 0.2.6",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "PR #17 is open; its linter and linux_64_ build checks are still running.",
+      "resume_condition": "Review completed checks and maintainer feedback; merge after required gates pass, then verify package publication.",
       "observer": "conda_feedstock",
       "readback_succeeded": false
     },
     "conda_package": {
       "status": "pending_external",
-      "actor": "GitHub Actions",
+      "actor": "Authenticated maintainer",
       "objective": "Observe conda_package",
       "evidence": [
         {
@@ -265,10 +289,16 @@
           "sha256": "779a41aabdbb234411a3856e5ded68787158ddea314ad2522491218a01baab70",
           "observed_at_utc": "2026-10-31T04:13:30Z",
           "observation": "{\"inventory_files\": [], \"missing_from_repodata\": [], \"reason\": \"Exact build absent from final conda-forge repodata\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:34:19Z",
+          "observation": "Anaconda package API reports latest_version=0.2.6 and zero files with version=0.2.7."
         }
       ],
-      "pending_reason": "Exact build absent from final conda-forge repodata",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "The channel still reports latest_version 0.2.6; no 0.2.7 build is published.",
+      "resume_condition": "After a feedstock update PR is merged and its build succeeds, verify version, build and source identity in final channel repodata.",
       "observer": "conda_package",
       "readback_succeeded": false
     }
