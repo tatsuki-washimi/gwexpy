@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T07:50:43.616Z",
+  "recorded_at_utc": "2026-10-31T08:01:59.371Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
@@ -88,7 +88,7 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "Zenodo record owner",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
@@ -109,10 +109,16 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T07:50:43.616Z",
           "observation": "Release Owner reports manual correction of publication date to 2026-10-31. Direct public Zenodo record API/page retrieval was unsuccessful in available tools; this is an owner report, not an independently validated post-edit readback."
+        },
+        {
+          "url": "https://zenodo.org/records/23828442",
+          "sha256": "7ad023a2e2ff19c740f6e89bcd25424d371e719ddc8050f9f7ae53597e200c25",
+          "observed_at_utc": "2026-10-31T08:01:59.371Z",
+          "observation": "Release Owner supplied screenshot of Zenodo record showing Published October 31, 2026, Version 0.2.7, DOI 10.5281/zenodo.23828442 and ZIP tatsuki-washimi/gwexpy-v0.2.7.zip with displayed MD5 75f547e33441daf8a0bceea62262f24b matching pre-edit readback. Screenshot SHA-256 given here; screenshot UI observation, not independently fetched API or rehashed download."
         }
       ],
-      "pending_reason": "Release Owner reports existing Zenodo record manually corrected to 2026-10-31; public API date and archive identity not independently read back",
-      "resume_condition": "Read Zenodo API record 23828442 to verify metadata.publication_date=2026-10-31, original DOI, archive file key/size/checksum; only then set complete",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "zenodo",
       "readback_succeeded": true,
       "human_decision": {
@@ -123,7 +129,14 @@
         "doi": "10.5281/zenodo.23828442",
         "observed_publication_date": "2026-11-03",
         "approved_publication_date": "2026-10-31",
-        "execution_status": "manual_edit_reported_public_readback_pending"
+        "execution_status": "completed_screenshot_readback"
+      },
+      "correction_readback": {
+        "method": "owner_supplied_screenshot",
+        "publication_date": "2026-10-31",
+        "doi": "10.5281/zenodo.23828442",
+        "archive_md5": "75f547e33441daf8a0bceea62262f24b",
+        "api_post_edit_readback": false
       }
     },
     "conda": {
