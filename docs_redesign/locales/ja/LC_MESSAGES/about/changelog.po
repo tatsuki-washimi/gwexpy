@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 16:50+0900\n"
-"PO-Revision-Date: 2026-09-29 00:00+0000\n"
+"PO-Revision-Date: 2026-10-31 04:21+0000\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
 "Language-Team: Japanese\n"
@@ -13,6 +13,30 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+# Post-publication v0.2.7 release facts and immutable activity snapshot.
+msgid "Published on 2026-10-31 UTC: [PyPI 0.2.7](https://pypi.org/project/gwexpy/0.2.7/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). The [Zenodo DOI 10.5281/zenodo.23828442](https://zenodo.org/records/23828442) record was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 conda-forge feedstock PR or package was observed, and the latest conda-forge package is v0.2.6."
+msgstr "2026-10-31（UTC）に [PyPI 0.2.7](https://pypi.org/project/gwexpy/0.2.7/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7) で公開しました。[Zenodo DOI 10.5281/zenodo.23828442](https://zenodo.org/records/23828442) のレコードは同日に作成され、メタデータの `publication_date` は2026-11-03です。この日付に関するRelease Ownerの判断は未完了です。2026-10-31（UTC）時点でv0.2.7のconda-forge feedstock PRとパッケージは確認されておらず、conda-forgeの最新パッケージはv0.2.6です。"
+
+# Keep the source-planned date distinct from the actual publication readback.
+msgid "The detailed v0.2.7 release-notes heading below retains the release source's planned date of 2026-11-03; service readbacks show the actual publication date as 2026-10-31 UTC."
+msgstr "詳細なv0.2.7リリースノートの見出しには、リリースソースが予定していた日付の2026-11-03が残っています。サービスのreadbackで確認した実際の公開日は2026-10-31（UTC）です。"
+
+# Immutable v0.2.7 activity snapshot.
+msgid "v0.2.7 weekly development activity"
+msgstr "v0.2.7 の週次開発活動"
+
+msgid "Weekly GWexpy development activity through v0.2.7, showing non-merge commits and edited source lines by category."
+msgstr "v0.2.7 までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数と編集されたソース行数を示します。"
+
+msgid "Weekly activity through the immutable v0.2.7 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.7."
+msgstr "不変の v0.2.7 リリースタグまでの週次活動です。積み上げ棒はカテゴリ別にマージを除くコミット数と編集されたソース行数を示し、リリースマーカーは v0.2.7 を含む到達可能な安定タグを示します。"
+
+msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.7-weekly.csv)"
+msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.7-weekly.csv)"
+
+msgid "The snapshot ends at commit `bcf6e0c98b01249b742124676330d8f98a3adab2`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
+msgstr "このスナップショットはコミット `bcf6e0c98b01249b742124676330d8f98a3adab2` までを集計しています。英語版と日本語版は同じ週次データを使用します。棒の高さは週ごとの合計の対数を表し、色付きの区分はカテゴリの割合を示します。編集行数は追加行と削除行の合計で、生成ファイルとバイナリ変更は除外します。"
 
 # Post-publication v0.2.6 release facts and immutable activity snapshot.
 msgid "Published on 2026-10-27 UTC: [PyPI 0.2.6](https://pypi.org/project/gwexpy/0.2.6/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), and [Zenodo DOI 10.5281/zenodo.23680359](https://zenodo.org/records/23680359). The conda-forge feedstock [PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge."
@@ -156,6 +180,12 @@ msgid "This patch improves the reliability of scientific-data I/O and reduces un
 msgstr "このパッチリリースでは、科学データの I/O の信頼性を高め、複数の読み込み・結合経路で不要な処理を減らします。公開 API、依存関係、保存スキーマは追加しません。未選択のネイティブ DTTXML ペイロードと同時書き込み中の SDB について明記した挙動を除き、検証済みの値、dtype、軸、単位を維持します。"
 
 #: ../../../CHANGELOG.md
+#: ../../../CHANGELOG.md:10
+#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1106
+#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1133
+#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1230
+#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1305
+#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1361
 msgid "Fixed"
 msgstr "修正"
 
@@ -2621,17 +2651,6 @@ msgid ""
 msgstr ""
 "**time**: `to_gps()` にオプトインの `dtype=` 出力モードを追加。デフォルトは引き続き GWpy 互換で、`dtype=float` / "
 "`dtype=\"float\"` は通常の float 値を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒単位の Quantity を返す。"
-
-#: ../../../CHANGELOG.md:10
-#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1106
-#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1133
-#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1230
-#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1305
-#: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1361 4a743bbc577449dc92b6d366784b6160
-#: 4efd623af0b04fbc9ae254ca80af1931 626121c680fc474cb3d7de22f373115c 89c0fe57c8794ed3aa08221049808af6
-#: adb8ce26d18f4b56af063f3df83a5688
-msgid "Fixed"
-msgstr "修正"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1108 3f7f16c97fa64f449b546a4fc27abfe4
 msgid ""

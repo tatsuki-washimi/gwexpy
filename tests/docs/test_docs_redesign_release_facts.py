@@ -39,6 +39,8 @@ CANDIDATE_V027_METADATA_DATE = "2026-11-03"
 CANDIDATE_V027_HISTORY_ENTRY = (
     f"[{CANDIDATE_V027_VERSION}] - {CANDIDATE_V027_METADATA_DATE}"
 )
+PUBLISHED_V027_VERSION = "0.2.7"
+PUBLISHED_V027_DATE = "2026-10-31"
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
@@ -193,7 +195,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
         (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
     version = PUBLISHED_V024_VERSION
-    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -255,8 +257,8 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_history_and_v027_candidate_metadata_remain_distinct():
-    """Keep published history distinct from the current v0.2.7 candidate."""
+def test_published_history_and_v027_source_metadata_remain_distinct():
+    """Keep actual publication facts distinct from frozen source metadata."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -432,8 +434,9 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
         assert candidate_manifest_path.read_bytes() == expected_placeholder
         assert set(candidate_checkboxes) == {" "}
     else:
-        # Candidate R records the approved S-to-R transition: the first four
-        # preparation steps are complete; qualification and publication remain pending.
+        # Preserve the Candidate R readiness manifest as a pre-publication
+        # phase snapshot; later qualification and publication evidence is tracked
+        # separately and must not rewrite the tagged source.
         load_v027_review_validator().validate_review_evidence(
             candidate_manifest_path,
             None,
@@ -464,7 +467,7 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     )
     assert "candidate records are historical" not in release_note_text.lower()
 
-    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
@@ -484,6 +487,7 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     assert "merged on 2026-10-28 UTC" in redesigned_changelog
     assert "0.2.6 is available on conda-forge" in redesigned_changelog
     assert "open for review" not in redesigned_changelog
+    assert "development-activity-v0.2.7.svg" in redesigned_changelog
     assert "development-activity-v0.2.6.svg" in redesigned_changelog
     japanese_po = (
         REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
@@ -515,12 +519,14 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
     assert "Published on PyPI" in release_note_text
     assert RELEASE_DOI_URL in release_note_text
 
-    # The redesign follows actual publication evidence while frozen source
-    # metadata above remains dated 2026-11-03 for the current candidate.
-    assert release_status["latest_release"] == PUBLISHED_V026_VERSION
+    # The redesign follows the actual publication readback while the frozen
+    # source metadata retains its original planned date of 2026-11-03.
+    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     assert CANDIDATE_V027_HISTORY_ENTRY in changelog
     assert PUBLISHED_V026_HISTORY_ENTRY in changelog
+    assert f"Published on {PUBLISHED_V027_DATE} UTC" in redesigned_changelog
+    assert "planned date of 2026-11-03" in redesigned_changelog
     assert f"Published on {PUBLISHED_V026_DATE} UTC" in redesigned_changelog
     assert "10.5281/zenodo.23680359" in redesigned_changelog
     assert "conda-forge" in redesigned_changelog
@@ -543,6 +549,25 @@ def test_published_history_and_v027_candidate_metadata_remain_distinct():
         if suffix:
             assert "週ごとのコミット数" in svg
             assert "Commits per week" not in svg
+    activity_v027_csv = REPO_ROOT / (
+        "docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv"
+    )
+    activity_v027_sha = (
+        "186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6"
+    )
+    assert hashlib.sha256(activity_v027_csv.read_bytes()).hexdigest() == (
+        activity_v027_sha
+    )
+    for suffix in ("", "-ja"):
+        svg = (
+            REPO_ROOT
+            / f"docs_redesign/_static/images/development-activity-v0.2.7{suffix}.svg"
+        ).read_text(encoding="utf-8")
+        assert (
+            "Target ref: v0.2.7; resolved SHA: "
+            "bcf6e0c98b01249b742124676330d8f98a3adab2" in svg
+        )
+        assert f"canonical CSV SHA-256: {activity_v027_sha}" in svg
 
 
 def test_v026_changelog_reconciliation_manifest_is_valid_yaml() -> None:
@@ -590,7 +615,7 @@ def test_japanese_inline_examples_preserve_matrix_and_pad_tokens() -> None:
     assert "pad= <値>" not in pad_messages[0].string
 
 
-def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
+def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
     english = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -618,6 +643,27 @@ def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
         "2026-10-28（UTC）にマージされ、conda-forge では0.2.6のパッケージを利用できます。"
     )
 
+    published_message = catalogue.get(
+        "Published on 2026-10-31 UTC: [PyPI 0.2.7](https://pypi.org/project/gwexpy/0.2.7/) "
+        "and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). "
+        "The [Zenodo DOI 10.5281/zenodo.23828442](https://zenodo.org/records/23828442) record "
+        "was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; "
+        "the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, "
+        "no v0.2.7 conda-forge feedstock PR or package was observed, and the latest "
+        "conda-forge package is v0.2.6."
+    )
+    assert "Published on 2026-10-31 UTC" in english
+    assert published_message is not None
+    assert "2026-11-03" in published_message.string
+    assert "この日付に関するRelease Ownerの判断は未完了" in published_message.string
+    planned_date_message = catalogue.get(
+        "The detailed v0.2.7 release-notes heading below retains the release source's planned date of "
+        "2026-11-03; service readbacks show the actual publication date as "
+        "2026-10-31 UTC."
+    )
+    assert planned_date_message is not None
+    assert "実際の公開日は2026-10-31（UTC）です" in planned_date_message.string
+
     roadmap = (REPO_ROOT / "docs_redesign/explanation/roadmap.md").read_text(
         encoding="utf-8"
     )
@@ -627,24 +673,27 @@ def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
     with roadmap_catalogue_path.open(encoding="utf-8") as stream:
         roadmap_catalogue = pofile.read_po(stream, locale="ja")
     roadmap_msgid = (
-        "v0.2.6 was published on 2026-10-27 UTC to "
-        "[PyPI](https://pypi.org/project/gwexpy/0.2.6/) and "
-        "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6), "
-        "and is archived at [Zenodo DOI 10.5281/zenodo.23680359]"
-        "(https://zenodo.org/records/23680359). The conda-forge feedstock "
-        "[PR #16](https://github.com/conda-forge/gwexpy-feedstock/pull/16) "
-        "merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge. "
-        "No next-minor release theme is committed; future work remains directional."
+        "v0.2.7 was published on 2026-10-31 UTC to "
+        "[PyPI](https://pypi.org/project/gwexpy/0.2.7/) and "
+        "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). "
+        "The [Zenodo record](https://zenodo.org/records/23828442) was created on "
+        "2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the "
+        "Release Owner's date disposition remains pending. As of 2026-10-31 UTC, "
+        "no v0.2.7 feedstock PR or package was observed on conda-forge; version "
+        "0.2.6 remains available. No next-minor release theme is committed; "
+        "future work remains directional."
     )
     roadmap_message = roadmap_catalogue.get(roadmap_msgid)
 
-    assert "merged on 2026-10-28 UTC" in roadmap
-    assert "version 0.2.6 is available on conda-forge" in roadmap
+    assert "2026-10-31 UTC" in roadmap
+    assert "no v0.2.7 feedstock PR or package was observed on conda-forge" in roadmap
+    assert "version 0.2.6 remains available" in roadmap
     assert "open for review" not in roadmap
     assert "tops at 0.2.4" not in roadmap
     assert roadmap_message is not None
-    assert "2026-10-28（UTC）にマージされ" in roadmap_message.string
-    assert "conda-forge では0.2.6のパッケージを利用できます" in (roadmap_message.string)
+    assert "2026-11-03" in roadmap_message.string
+    assert "日付に関するリリース責任者の判断は未完了" in roadmap_message.string
+    assert "v0.2.6です" in roadmap_message.string
 
     installation = (REPO_ROOT / "docs_redesign/tutorials/installation.md").read_text(
         encoding="utf-8"
@@ -656,22 +705,30 @@ def test_v026_conda_forge_status_is_current_in_public_pages() -> None:
         installation_catalogue = pofile.read_po(stream, locale="ja")
     installation_msgid = (
         "GWexpy {{ latest_release }} is available on "
-        "[PyPI](https://pypi.org/project/gwexpy/), the "
-        "[GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases), "
-        "and [conda-forge](https://anaconda.org/conda-forge/gwexpy). The latest "
-        "conda-forge package is v0.2.6. The v0.2.6 source is archived on "
-        "[Zenodo](https://zenodo.org/records/23680359). Check each install source "
-        "for its available versions."
+        "[PyPI](https://pypi.org/project/gwexpy/) and the "
+        "[GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases). "
+        "The latest package on [conda-forge](https://anaconda.org/conda-forge/gwexpy) "
+        "is v0.2.6; no v0.2.7 package was observed "
+        "as of 2026-10-31 UTC. The [v0.2.7 Zenodo record]"
+        "(https://zenodo.org/records/23828442) was created on 2026-10-31 UTC and "
+        "lists metadata `publication_date` 2026-11-03. The Release Owner's date "
+        "disposition is pending. Check each install source for its available versions."
     )
     installation_message = installation_catalogue.get(installation_msgid)
     installation_text = " ".join(installation.split())
 
-    assert "The latest conda-forge package is v0.2.6." in installation_text
-    assert "v0.2.6 source is archived" in installation_text
-    assert "v0.2.4" not in installation_text
+    assert "The latest package on [conda-forge]" in installation_text
+    assert "is v0.2.6;" in installation_text
+    assert "no v0.2.7 package was observed as of 2026-10-31 UTC" in installation_text
+    assert "publication_date` 2026-11-03" in installation_text
+    assert "date disposition is pending" in installation_text
     assert installation_message is not None
-    assert "conda-forge の最新パッケージは v0.2.6 です" in (installation_message.string)
-    assert "v0.2.6 のソースは" in installation_message.string
+    assert (
+        "[conda-forge](https://anaconda.org/conda-forge/gwexpy) "
+        "で確認できる最新パッケージはv0.2.6です"
+    ) in installation_message.string
+    assert "2026-11-03" in installation_message.string
+    assert "リリース責任者の判断は未完了" in installation_message.string
 
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
