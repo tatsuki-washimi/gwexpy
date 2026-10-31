@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T07:36:29.437Z",
-  "post_release_status": "pending_review",
+  "recorded_at_utc": "2026-10-31T07:38:54.029Z",
+  "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
     "version": "0.2.7",
@@ -88,8 +88,8 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_review",
-      "actor": "GitHub Actions",
+      "status": "pending_external",
+      "actor": "Zenodo record owner",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
         {
@@ -97,12 +97,28 @@
           "sha256": "dbbe6d8df6462026d065da4a3ade99a0bad3e7ecfc408442f942805e278d009c",
           "observed_at_utc": "2026-10-31T04:13:30Z",
           "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-10-31T04:10:57.546637+00:00\", \"doi\": \"10.5281/zenodo.23828442\", \"files\": [{\"checksum\": \"md5:75f547e33441daf8a0bceea62262f24b\", \"id\": \"6be4ff61-6755-4c7b-8367-e4e5579a7fd5\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.7.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/23828442/files/tatsuki-washimi/gwexpy-v0.2.7.zip/content\"}, \"size\": 37156102}], \"publication_date\": \"2026-11-03\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 23828442, \"updated\": \"2026-10-31T04:10:57.767272+00:00\"}"
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/pull/852",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T07:38:54.029Z",
+          "observation": "Release Owner explicitly selected correction of the existing Zenodo v0.2.7 metadata publication_date to the actual public date 2026-10-31; no Zenodo-side edit is claimed. Previously observed metadata date was 2026-11-03."
         }
       ],
-      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "Owner approved editing existing Zenodo record 23828442 publication_date 2026-11-03 -> 2026-10-31; edit and readback still pending",
+      "resume_condition": "Edit Publication date of existing Zenodo record to 2026-10-31 via authorized record owner; save and republish metadata, then confirm via public API the date, same record ID/DOI and unchanged archive file identity/checksum",
       "observer": "zenodo",
-      "readback_succeeded": true
+      "readback_succeeded": true,
+      "human_decision": {
+        "decision": "correct_existing_record_publication_date",
+        "approved_by": "Release Owner",
+        "approved_on": "2026-10-31",
+        "record_id": 23828442,
+        "doi": "10.5281/zenodo.23828442",
+        "observed_publication_date": "2026-11-03",
+        "approved_publication_date": "2026-10-31",
+        "execution_status": "approved_pending_zenodo_edit"
+      }
     },
     "conda": {
       "status": "pending_external",
