@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T04:13:30Z",
+  "recorded_at_utc": "2026-10-31T07:36:29.437Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.7",
@@ -126,28 +126,55 @@
       }
     },
     "docs": {
-      "status": "pending_review",
-      "actor": "Release Owner",
+      "status": "complete",
+      "actor": "Release Owner / GitHub Actions",
       "objective": "Prepare and review EN/JA release/history updates",
-      "evidence": [],
-      "pending_reason": "Docs preparation and human review outstanding",
-      "resume_condition": "Record GitHub/PyPI/Zenodo observations, prepare docs, then human review"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/pull/853",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T07:36:29.437Z",
+          "observation": "EN/JA docs PR #853 squash-merged to main at 029ea550c37e2a7b36a1932cd3dfa3634b4f05a8 (2026-10-31T06:58:17Z); head 24522a9a65ebf51f09e1c07aed8c5f4b4d4c823e passed 23/23 checks."
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613",
+          "sha256": "1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04",
+          "observed_at_utc": "2026-10-31T07:36:29.437Z",
+          "observation": "Production Docs Pages workflow completed successfully with EN/JA live revision and artifact manifest-hash readback."
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "pages": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Verify live EN/JA revision and artifact manifest hash",
-      "evidence": [],
-      "pending_reason": "Deployment not observed",
-      "resume_condition": "After docs merge, run isolated Pages and revision/hash readback"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613",
+          "sha256": "1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04",
+          "observed_at_utc": "2026-10-31T07:36:29.437Z",
+          "observation": "Push-triggered Docs Pages run 41178707613 completed success for main revision 029ea550c37e2a7b36a1932cd3dfa3634b4f05a8; both build and publish jobs succeeded. Artifact docs-pages-41178707613-1 (ID 13034233892), uploaded digest sha256:1e7307d20790cea1b9a4c4a5bbdd618aef35d612398f5d52b923ae1efe9aef04; publisher verified 2015 site files, live EN/JA expected revision and all live files against exact artifact manifest."
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "remote_cleanup": {
       "status": "pending_external",
       "actor": "GitHub Actions",
       "objective": "Assess remote branches using ancestry and open PRs",
-      "evidence": [],
-      "pending_reason": "Assessment missing",
-      "resume_condition": "Run read-only remote assessment"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/branches",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T07:36:29.437Z",
+          "observation": "Read-only v0.2.7 branch subset: post-release/v0.2.7 active PR #852, docs PR #853 squash-merged (branch not ancestral), candidate-r-defa8ef, pypi-recovery-fix, source-prep and work/development branches are main ancestors; candidate-r-20261029 diverged. No deletion performed."
+        }
+      ],
+      "pending_reason": "Read-only partial v0.2.7 remote assessment recorded; full inventory and retain/remove/no-action disposition outstanding",
+      "resume_condition": "Finish remote assessment against open PRs, ancestry, protected refs; retain or remove only by separate authorization"
     },
     "local_cleanup": {
       "status": "pending_external",
@@ -167,9 +194,15 @@
           "sha256": "a6c038aa728e4859af04d42b82064b274e3230ef85e59c23fd5438245efb4f58",
           "observed_at_utc": "2026-10-31T04:13:30Z",
           "observation": "{\"reason\": \"Exact-version feedstock PR absent\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/blob/d4346e3584013c9d00ae0d130ca5676017a03739/recipe/recipe.yaml",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T07:36:29.437Z",
+          "observation": "Feedstock main recipe at d4346e3584013c9d00ae0d130ca5676017a03739 has context.version=0.2.6; PR list has no v0.2.7 feedstock PR; last v0.2.6 PR #16 merged 2026-10-28."
         }
       ],
-      "pending_reason": "Exact-version feedstock PR absent",
+      "pending_reason": "v0.2.7 feedstock PR not observed; main recipe remains 0.2.6",
       "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
       "observer": "conda_feedstock",
       "readback_succeeded": false
