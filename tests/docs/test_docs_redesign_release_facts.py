@@ -723,9 +723,10 @@ def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
     assert "publication_date` 2026-11-03" in installation_text
     assert "date disposition is pending" in installation_text
     assert installation_message is not None
-    assert "conda-forge で確認できる最新パッケージはv0.2.6です" in (
-        installation_message.string
-    )
+    assert (
+        "[conda-forge](https://anaconda.org/conda-forge/gwexpy) "
+        "で確認できる最新パッケージはv0.2.6です"
+    ) in installation_message.string
     assert "2026-11-03" in installation_message.string
     assert "リリース責任者の判断は未完了" in installation_message.string
 

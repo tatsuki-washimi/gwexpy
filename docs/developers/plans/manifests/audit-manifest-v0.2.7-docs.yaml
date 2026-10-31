@@ -23,7 +23,7 @@ scope:
     - Generate English and Japanese development-activity SVGs and one byte-identical weekly CSV from immutable tag v0.2.7.
     - Update existing docs release-fact assertions to reflect the current publication state and activity snapshot.
     - Remove the redundant duplicate Japanese "Fixed" catalog entry that caused msgfmt validation to fail.
-    - Resolve the three PR #853 CI assertion failures by matching the translated Japanese text, pinning published v0.2.7 review checks to Candidate R, and syncing the retained pytest collection name.
+    - Resolve the three original PR #853 CI assertion failures and the first-rerun conda-forge translation-link assertion by matching the catalog's Japanese wording, pinning published v0.2.7 review checks to Candidate R, and syncing the retained pytest collection name.
   excluded:
     - No changes to the tagged source, release notes, tag, GitHub Release, PyPI files, or package build.
     - Legacy docs/web content remains unchanged because docs_redesign is the active public Pages source.
@@ -104,15 +104,28 @@ validation:
       result: passed; 1 test
     - cmd: conda run -n gwexpy pytest tests/test_run_gate.py::test_pytest_collection_partitions_only_immutable_audit_replays -q
       result: passed; 1 test
+    - cmd: conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py::test_v027_release_status_and_v026_conda_forge_history_are_current -q
+      result: passed; assertion now accounts for the conda-forge Markdown link in the Japanese catalog
+    - cmd: rerun all five focused PR #853 failure/revision/collection tests individually
+      result: passed; all five test nodes passed
     - cmd: conda run -n gwexpy ruff check and ruff format --check on the three changed Python test files
       result: passed; Ruff check clean and all three files already formatted
   incomplete:
     - cmd: memcap -- conda run -n gwexpy python -m sphinx -b html (default cached notebook execution)
       result: manually interrupted after about 9 minutes at 25 percent of source reading; 29 of 66 notebook execution cache entries had completed. This is not recorded as a successful full executed build; the PR CI remains the full execution gate.
   omitted:
-    - The complete pytest suite was not run locally; four focused tests for this follow-up passed, and required PR CI remains the broader test gate.
+    - The complete pytest suite was not run locally; five focused tests for this follow-up passed, and required PR CI remains the broader test gate.
     - scripts/check_public_docs.py was not run on the no-execution build because its deployment checks require executed notebook evidence and derived figures.
     - No full executed EN/JA Sphinx build is claimed.
+  prior_ci_follow_up:
+    original_failed_run_id: 41170840014
+    original_failed_job_id: 124448263261
+    original_failure_count: 3
+    first_follow_up_run_id: 41173840161
+    first_follow_up_job_id: 124457188698
+    first_follow_up_result: failed; 1 failed, 11603 passed, 462 skipped, 52 deselected, 7 xfailed
+    first_follow_up_failure: Japanese test expectation omitted the Markdown link between conda-forge and the following translated phrase
+    next_ci: pending for this follow-up commit
 review:
   human_review_required: true
   physics_review_required: false
