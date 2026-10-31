@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T08:01:59.371Z",
+  "recorded_at_utc": "2026-10-31T08:35:33Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
@@ -197,8 +197,8 @@
       "resume_condition": ""
     },
     "remote_cleanup": {
-      "status": "pending_external",
-      "actor": "GitHub Actions",
+      "status": "complete",
+      "actor": "Authenticated maintainer via GitHub API",
       "objective": "Assess remote branches using ancestry and open PRs",
       "evidence": [
         {
@@ -206,18 +206,31 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T07:36:29.437Z",
           "observation": "Read-only v0.2.7 branch subset: post-release/v0.2.7 active PR #852, docs PR #853 squash-merged (branch not ancestral), candidate-r-defa8ef, pypi-recovery-fix, source-prep and work/development branches are main ancestors; candidate-r-20261029 diverged. No deletion performed."
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/branches",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:35:33Z",
+          "observation": "Classified all eight v0.2.7-related remote branches. Retain post-release/v0.2.7 for open PR #852; retain release/v0.2.7-candidate-r-defa8ef as the published source branch at tag source bcf6e0c98b01249b742124676330d8f98a3adab2; retain release/v0.2.7-candidate-r-20261029 because closed, unmerged PR #848 preserves a distinct readiness-manifest revision. Delete candidates: work/v0.2.7-development-20261029 (merged PR #845), release/v0.2.7-source-prep-20261029 (merged #846), release/v0.2.7-pypi-recovery-fix-20261029 (merged #847), fix/v027-s-to-r-tests-20261029 (merged #849), and post-release/v0.2.7-docs (squash-merged PR #853). No target branch is protected; ruleset protects main and maint/0.2. No branch was deleted."
         }
       ],
-      "pending_reason": "Read-only partial v0.2.7 remote assessment recorded; full inventory and retain/remove/no-action disposition outstanding",
-      "resume_condition": "Finish remote assessment against open PRs, ancestry, protected refs; retain or remove only by separate authorization"
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "local_cleanup": {
-      "status": "pending_external",
-      "actor": "maintainer local host",
+      "status": "complete",
+      "actor": "Maintainer local host",
       "objective": "Assess worktrees, dirty files and active sessions",
-      "evidence": [],
-      "pending_reason": "Local evidence missing",
-      "resume_condition": "Supply maintainer local-host assessment"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/pull/852",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:35:33Z",
+          "observation": "Inspected 10 registered worktrees. Retain /home/washimi/work/gwexpy (release/v0.2.6-prep; 7 untracked path entries; local branch ahead 1/behind 13; active assistant processes use this checkout) and /home/washimi/HDD1TB/worktrees/gwexpy/v027-issue766-20261029 (six modified source/test files; no open file handles observed). Eight other worktrees are clean and are cleanup candidates, including /tmp/gwex-sha; none were removed. No tmux server or GWexpy/conda/release-named scratch entries were found under configured TMPDIR. Unrelated temporary files were left untouched."
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
     },
     "conda_feedstock": {
       "status": "pending_external",
