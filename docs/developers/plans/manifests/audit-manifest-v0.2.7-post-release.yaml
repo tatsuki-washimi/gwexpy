@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T07:38:54.029Z",
+  "recorded_at_utc": "2026-10-31T07:50:43.616Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
@@ -103,10 +103,16 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T07:38:54.029Z",
           "observation": "Release Owner explicitly selected correction of the existing Zenodo v0.2.7 metadata publication_date to the actual public date 2026-10-31; no Zenodo-side edit is claimed. Previously observed metadata date was 2026-11-03."
+        },
+        {
+          "url": "https://zenodo.org/records/23828442",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T07:50:43.616Z",
+          "observation": "Release Owner reports manual correction of publication date to 2026-10-31. Direct public Zenodo record API/page retrieval was unsuccessful in available tools; this is an owner report, not an independently validated post-edit readback."
         }
       ],
-      "pending_reason": "Owner approved editing existing Zenodo record 23828442 publication_date 2026-11-03 -> 2026-10-31; edit and readback still pending",
-      "resume_condition": "Edit Publication date of existing Zenodo record to 2026-10-31 via authorized record owner; save and republish metadata, then confirm via public API the date, same record ID/DOI and unchanged archive file identity/checksum",
+      "pending_reason": "Release Owner reports existing Zenodo record manually corrected to 2026-10-31; public API date and archive identity not independently read back",
+      "resume_condition": "Read Zenodo API record 23828442 to verify metadata.publication_date=2026-10-31, original DOI, archive file key/size/checksum; only then set complete",
       "observer": "zenodo",
       "readback_succeeded": true,
       "human_decision": {
@@ -117,7 +123,7 @@
         "doi": "10.5281/zenodo.23828442",
         "observed_publication_date": "2026-11-03",
         "approved_publication_date": "2026-10-31",
-        "execution_status": "approved_pending_zenodo_edit"
+        "execution_status": "manual_edit_reported_public_readback_pending"
       }
     },
     "conda": {
