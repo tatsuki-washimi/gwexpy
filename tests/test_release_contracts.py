@@ -23,6 +23,7 @@ V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
 V024_RELEASE_SOURCE = "522e52a082925da4dd37966d82a7616bdd2a5248"
 V025_RELEASE_SOURCE = "3439fba41dcc644af12870d91bee794524098fb4"
+V027_RELEASE_SOURCE = "bcf6e0c98b01249b742124676330d8f98a3adab2"
 V024_MANIFEST = (
     ROOT
     / "docs"
@@ -161,6 +162,19 @@ def _v024_review_revision(candidate: str) -> str:
         capture_output=True,
     )
     return V024_RELEASE_SOURCE if ancestor.returncode == 0 else candidate
+
+
+def _v027_review_revision(candidate: str) -> str:
+    """Pin populated v0.2.7 evidence checks to the immutable release source."""
+    if not _git_commit_available(V027_RELEASE_SOURCE):
+        return candidate
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", V027_RELEASE_SOURCE, candidate],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return V027_RELEASE_SOURCE if ancestor.returncode == 0 else candidate
 
 
 def _git_file_at_revision(revision: str, path: str) -> bytes:
@@ -946,7 +960,7 @@ def test_v027_registered_contract_and_source_or_candidate_readiness_are_operatio
             phase="candidate",
         )
         reviewed = review["source_sha"]
-        candidate = _candidate_revision()
+        candidate = _v027_review_revision(_candidate_revision())
         reviewed_plan = subprocess.check_output(
             ["git", "show", f"{reviewed}:{contract['plan_path']}"],
             cwd=ROOT,
@@ -961,19 +975,20 @@ def test_v027_registered_contract_and_source_or_candidate_readiness_are_operatio
 def test_v027_review_lanes_cover_all_changes_from_frozen_review_base() -> None:
     contracts = load_contract_module()
     contract = contracts.release_contract("v0.2.7")
+    candidate = _v027_review_revision(_candidate_revision())
     ancestry = subprocess.run(
         [
             "git",
             "merge-base",
             "--is-ancestor",
             contract["review_base_sha"],
-            "HEAD",
+            candidate,
         ],
         cwd=ROOT,
         check=False,
     )
     assert ancestry.returncode == 0, "v0.2.7 Review Base must precede current source"
-    changed_paths = _changed_paths_between(ROOT, contract["review_base_sha"], "HEAD")
+    changed_paths = _changed_paths_between(ROOT, contract["review_base_sha"], candidate)
     scope = {path for paths in contract["review_lanes"].values() for path in paths}
 
     uncovered = sorted(
