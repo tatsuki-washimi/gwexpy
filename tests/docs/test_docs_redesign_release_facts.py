@@ -655,7 +655,7 @@ def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
     assert "Published on 2026-10-31 UTC" in english
     assert published_message is not None
     assert "2026-11-03" in published_message.string
-    assert "日付に関するリリース責任者の判断は未完了" in published_message.string
+    assert "この日付に関するRelease Ownerの判断は未完了" in published_message.string
     planned_date_message = catalogue.get(
         "The detailed v0.2.7 release-notes heading below retains the release source's planned date of "
         "2026-11-03; service readbacks show the actual publication date as "
