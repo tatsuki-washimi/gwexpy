@@ -452,7 +452,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.7</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/12b7626161c3f452643a8119c84975411c6d07ef">12b76261</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/029ea550c37e2a7b36a1932cd3dfa3634b4f05a8">029ea550</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -468,11 +468,11 @@
 <h1>Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading">#</a></h1>
 <p>This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.</p>
-<p><em>Last updated: 2026-10-27.</em></p>
+<p><em>Last updated: 2026-10-31.</em></p>
 <section id="how-to-read-this-page">
 <h2>How to Read This Page<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Released baseline</strong>: the published v0.2.6 maintenance baseline and the v0.2.0 semantic contract</p></li>
+<li><p><strong>Released baseline</strong>: the published v0.2.7 maintenance baseline and the v0.2.0 semantic contract</p></li>
 <li><p><strong>Directional themes</strong>: areas we may improve in upcoming iterations</p></li>
 <li><p><strong>Mid-term</strong>: work we want to expose more broadly after the current docs and API cleanup</p></li>
 <li><p><strong>Long-term</strong>: exploratory directions that are useful but not yet scheduled</p></li>
@@ -482,13 +482,13 @@ It is intended as a lightweight overview rather than a release contract.</p>
 <section id="current-release-baseline">
 <h2>Current Release Baseline<a class="headerlink" href="#current-release-baseline" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6">v0.2.6</a> is the current released maintenance baseline. It clarifies documentation contracts, refines diagnostics, and completes repository cleanup after moving the legacy in-tree GUI to the independent <code class="docutils literal notranslate"><span class="pre">pyaggui</span></code> project. It adds no public API, dependency, or storage format.</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7">v0.2.7</a> is the current released maintenance baseline. It raises <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code> before a missing local GWF path reaches a native reader in <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></li>
 <li><p>v0.2.0 establishes the container-arithmetic baseline: predictable units,
 metadata propagation, and explicit failures instead of silent type downgrades</p></li>
 <li><p>Exact timing, interoperable persistence, deterministic provenance, and public
-GWpy compatibility were established in v0.2.0 and are retained by v0.2.6</p></li>
+GWpy compatibility were established in v0.2.0 and are retained by v0.2.7</p></li>
 </ul>
-<p>v0.2.6 was published on 2026-10-27 UTC to <a class="reference external" href="https://pypi.org/project/gwexpy/0.2.6/">PyPI</a> and <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.6">GitHub Releases</a>, and is archived at <a class="reference external" href="https://zenodo.org/records/23680359">Zenodo DOI 10.5281/zenodo.23680359</a>. The conda-forge feedstock <a class="reference external" href="https://github.com/conda-forge/gwexpy-feedstock/pull/16">PR #16</a> merged on 2026-10-28 UTC, and version 0.2.6 is available on conda-forge. No next-minor release theme is committed; future work remains directional.</p>
+<p>v0.2.7 was published on 2026-10-31 UTC to <a class="reference external" href="https://pypi.org/project/gwexpy/0.2.7/">PyPI</a> and <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7">GitHub Releases</a>. The <a class="reference external" href="https://zenodo.org/records/23828442">Zenodo record</a> was created on 2026-10-31 UTC and lists metadata <code class="docutils literal notranslate"><span class="pre">publication_date</span></code> 2026-11-03; the Release Owner’s date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 feedstock PR or package was observed on conda-forge; version 0.2.6 remains available. No next-minor release theme is committed; future work remains directional.</p>
 </section>
 <section id="directional-themes">
 <h2>Directional Themes<a class="headerlink" href="#directional-themes" title="Link to this heading">#</a></h2>
