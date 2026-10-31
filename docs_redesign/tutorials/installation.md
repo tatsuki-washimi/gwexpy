@@ -7,12 +7,14 @@ myst:
 # Installation Guide
 
 :::{note}
-GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/),
-the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases),
-and [conda-forge](https://anaconda.org/conda-forge/gwexpy). The latest conda-forge
-package is v0.2.6. The v0.2.6 source is archived on
-[Zenodo](https://zenodo.org/records/23680359).
-Check each install source for its available versions.
+GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/)
+and the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases).
+The latest package on [conda-forge](https://anaconda.org/conda-forge/gwexpy) is
+v0.2.6; no v0.2.7 package was observed as of 2026-10-31 UTC. The [v0.2.7 Zenodo
+record](https://zenodo.org/records/23828442)
+was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03.
+The Release Owner's date disposition is pending. Check each install source for
+its available versions.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
