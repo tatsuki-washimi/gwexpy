@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-10-31T08:38:22Z",
+  "recorded_at_utc": "2026-10-31T08:51:15Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.7",
@@ -161,14 +161,20 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T08:38:22Z",
           "observation": "Manual feedstock PR #17 was opened from tatsuki-washimi/gwexpy-feedstock at head 948c58ddab512f16fd435e1500762cd62bfa3cc0. The recipe version and verified sdist SHA-256 are updated. The conda-forge-linter and linux_64_ build checks are running; the PR has no review decision yet."
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/actions/runs/41185567069",
+          "sha256": null,
+          "observed_at_utc": "2026-10-31T08:42:23Z",
+          "observation": "Feedstock main build for merge commit f8aed24d8b7238eb7f09065d520929ec80dad430 completed successfully. The Anaconda API lists the resulting noarch 0.2.7 build with label main; channel repodata readback is still pending."
         }
       ],
-      "pending_reason": "Feedstock PR #17 is open with its lint and build checks running; no 0.2.7 channel package is published yet.",
-      "resume_condition": "After PR #17 passes required checks and review and is merged, verify the 0.2.7 build in final channel repodata.",
+      "pending_reason": "The feedstock is merged and its main build succeeded. The package is listed and downloadable through the Anaconda API, but final channel repodata does not yet expose it.",
+      "resume_condition": "Recheck final conda-forge repodata and the direct channel URL; verify the same noarch build and SHA-256 before marking the channel package complete.",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
-        "conda_feedstock": "pending_external",
+        "conda_feedstock": "complete",
         "conda_package": "pending_external"
       }
     },
@@ -245,7 +251,7 @@
       "resume_condition": ""
     },
     "conda_feedstock": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "Authenticated maintainer",
       "objective": "Observe conda_feedstock",
       "evidence": [
@@ -271,13 +277,19 @@
           "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/17",
           "sha256": null,
           "observed_at_utc": "2026-10-31T08:38:22Z",
-          "observation": "PR #17 is open from the maintainer fork. conda-forge-linter and linux_64_ checks are pending. No merge or channel publication is claimed."
+          "observation": "PR #17 was merged at 2026-10-31T08:40:33Z with merge commit f8aed24d8b7238eb7f09065d520929ec80dad430 after the linter and linux_64_ checks passed."
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/blob/f8aed24d8b7238eb7f09065d520929ec80dad430/recipe/recipe.yaml",
+          "sha256": "85c300d434764c7ef72fec351df904fb9ef69d23753e285b37b5072d76b80194",
+          "observed_at_utc": "2026-10-31T08:44:25Z",
+          "observation": "Feedstock main recipe has context.version=0.2.7 and source SHA-256 2d6f87435fe9f0729a4a08d6cb51d921388ddf82159ddbe9d9a90d20641cbcec, matching the downloaded PyPI sdist. Main feedstock build 41185567069 completed successfully."
         }
       ],
-      "pending_reason": "PR #17 is open; its linter and linux_64_ build checks are still running.",
-      "resume_condition": "Review completed checks and maintainer feedback; merge after required gates pass, then verify package publication.",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_feedstock",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "conda_package": {
       "status": "pending_external",
@@ -295,10 +307,22 @@
           "sha256": null,
           "observed_at_utc": "2026-10-31T08:34:19Z",
           "observation": "Anaconda package API reports latest_version=0.2.6 and zero files with version=0.2.7."
+        },
+        {
+          "url": "https://api.anaconda.org/download/conda-forge/gwexpy/0.2.7/noarch/gwexpy-0.2.7-pyhc364b38_0.conda",
+          "sha256": "c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f",
+          "observed_at_utc": "2026-10-31T08:44:25Z",
+          "observation": "Anaconda API lists the 0.2.7 package with label main, subdir noarch, build pyhc364b38_0, build number 0 and upload time 2026-10-31T08:42:15.012Z. The downloaded .conda artifact SHA-256 matches this metadata."
+        },
+        {
+          "url": "https://conda.anaconda.org/conda-forge/noarch/current_repodata.json",
+          "sha256": "f602366db022bc04307dc3cc6194d694491b0bd5f5dd00163d551f392fdc1a91",
+          "observed_at_utc": "2026-10-31T08:51:15Z",
+          "observation": "Current repodata does not yet contain gwexpy 0.2.7; the direct channel artifact URL returned HTTP 404 at this observation. Final channel indexing is pending."
         }
       ],
-      "pending_reason": "The channel still reports latest_version 0.2.6; no 0.2.7 build is published.",
-      "resume_condition": "After a feedstock update PR is merged and its build succeeds, verify version, build and source identity in final channel repodata.",
+      "pending_reason": "The 0.2.7 artifact is uploaded to the main label and downloadable through the Anaconda API, but final repodata and the direct channel URL have not caught up.",
+      "resume_condition": "Recheck current and final noarch repodata and the direct artifact URL; confirm version, build and SHA-256, then mark complete.",
       "observer": "conda_package",
       "readback_succeeded": false
     }
