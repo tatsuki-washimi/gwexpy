@@ -413,6 +413,36 @@ class TestStandardizeTransform:
         restored = st.inverse_transform(standardized)
         np.testing.assert_allclose(restored.value, ts.value, atol=1e-10)
 
+    def test_integer_timeseries_keeps_fractional_standard_scores(self):
+        ts = TimeSeries(
+            [1, 2, 3],
+            t0=7 * u.s,
+            dt=0.5 * u.s,
+            unit=u.m,
+            name="integer input",
+            channel="H1:INT",
+        )
+        st = StandardizeTransform()
+        standardized = st.fit_transform(ts)
+        np.testing.assert_allclose(np.mean(standardized.value), 0, atol=1e-12)
+        np.testing.assert_allclose(np.std(standardized.value), 1, atol=1e-12)
+        assert standardized.unit == u.dimensionless_unscaled
+        assert standardized.t0 == ts.t0
+        assert standardized.dt == ts.dt
+        assert standardized.name == ts.name
+        assert str(standardized.channel) == str(ts.channel)
+        restored = st.inverse_transform(standardized)
+        np.testing.assert_allclose(restored.value, ts.value)
+        assert restored.unit == ts.unit
+
+    def test_complex_timeseries_centers_real_and_imaginary_parts(self):
+        ts = TimeSeries([1.0 + 2.0j, 2.0 + 3.0j, 3.0 + 5.0j], dt=1 * u.s, unit=u.V)
+        st = StandardizeTransform()
+        scaled = st.fit_transform(ts)
+        np.testing.assert_allclose(np.mean(scaled.value), 0, atol=1e-12)
+        assert np.iscomplexobj(scaled.value)
+        np.testing.assert_allclose(st.inverse_transform(scaled).value, ts.value)
+
     def test_robust_timeseries(self):
         ts = _make_ts()
         st = StandardizeTransform(robust=True)
@@ -574,24 +604,332 @@ class TestStandardizeTransform:
     # -- multivariate=True paths --
 
     def test_multivariate_dict(self):
-        # multivariate=True converts dict -> matrix for joint standardization.
-        # The restore step calls to_dict() on the result matrix; whether it
-        # returns a dict or a matrix depends on the collection param stored.
         tsd = _make_tsd()
         st = StandardizeTransform(multivariate=True)
         result = st.fit_transform(tsd)
-        # Result is either a TimeSeriesDict or TimeSeriesMatrix depending on
-        # whether _restore_collection succeeds for this collection type.
-        assert isinstance(result, (TimeSeriesDict, TimeSeriesMatrix))
+        assert isinstance(result, TimeSeriesMatrix)
+        assert all(unit == u.dimensionless_unscaled for unit in result.units.flat)
+        assert result.channel_names == list(tsd)
+        restored = st.inverse_transform(result)
+        assert isinstance(restored, TimeSeriesDict)
+        assert list(restored) == list(tsd)
+        for key in tsd:
+            np.testing.assert_allclose(restored[key].value, tsd[key].value)
+            assert restored[key].unit == tsd[key].unit
 
     def test_multivariate_list(self):
-        # multivariate=True converts list -> matrix for joint standardization.
         tsl = _make_tsl()
         st = StandardizeTransform(multivariate=True)
         result = st.fit_transform(tsl)
-        # Result is either a TimeSeriesList or TimeSeriesMatrix depending on
-        # whether _restore_collection succeeds for this collection type.
-        assert isinstance(result, (TimeSeriesList, TimeSeriesMatrix))
+        assert isinstance(result, TimeSeriesMatrix)
+        assert all(unit == u.dimensionless_unscaled for unit in result.units.flat)
+        restored = st.inverse_transform(result)
+        assert isinstance(restored, TimeSeriesList)
+        for actual, original in zip(restored, tsl, strict=True):
+            np.testing.assert_allclose(actual.value, original.value)
+            assert actual.unit == original.unit
+
+    def test_unknown_method_rejected(self):
+        with pytest.raises(ValueError, match="method"):
+            StandardizeTransform(method="unknown")
+
+    def test_robust_flag_resolves_unknown_method(self):
+        ts = TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s)
+        result = StandardizeTransform(method="unknown", robust=True).fit_transform(ts)
+        np.testing.assert_allclose(np.nanmedian(result.value), 0.0)
+
+    def test_multivariate_channel_converts_compatible_units(self):
+        series = TimeSeriesDict(
+            {
+                "volts": TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s, unit=u.V),
+                "millivolts": TimeSeries(
+                    [1000.0, 2000.0, 3000.0], dt=1 * u.s, unit=u.mV
+                ),
+            }
+        )
+        st = StandardizeTransform(multivariate=True, axis="channel")
+        scaled = st.fit_transform(series)
+        np.testing.assert_allclose(scaled.value[0], scaled.value[1])
+        assert all(unit == u.dimensionless_unscaled for unit in scaled.units.flat)
+        restored = st.inverse_transform(scaled)
+        assert restored["volts"].unit == u.V
+        assert restored["millivolts"].unit == u.mV
+        np.testing.assert_allclose(
+            restored["millivolts"].value, [1000.0, 2000.0, 3000.0]
+        )
+
+    def test_multivariate_channel_rejects_incompatible_units(self):
+        series = TimeSeriesList(
+            [
+                TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s, unit=u.V),
+                TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s, unit=u.m),
+            ]
+        )
+        with pytest.raises(ValueError, match="unit"):
+            StandardizeTransform(multivariate=True, axis="channel").fit(series)
+
+    def test_matrix_channel_inverse_restores_each_numeric_unit(self):
+        matrix = TimeSeriesMatrix(
+            np.array([[[1.0, 2.0, 3.0]], [[300.0, 400.0, 500.0]]]),
+            dt=1 * u.s,
+            units=np.array([[u.m], [u.cm]], dtype=object),
+        )
+        st = StandardizeTransform(axis="channel")
+        scaled = st.fit_transform(matrix)
+        restored = st.inverse_transform(scaled)
+        np.testing.assert_allclose(restored.value, matrix.value)
+        assert [unit for unit in restored.units.flat] == [u.m, u.cm]
+
+    def test_matrix_channel_promotes_float16_before_unit_conversion(self):
+        matrix = TimeSeriesMatrix(
+            np.array([[[1.0, 2.0, 3.0]], [[1000.0, 2000.0, 3000.0]]], dtype=np.float16),
+            dt=1 * u.s,
+            units=np.array([[u.km], [u.m]], dtype=object),
+        )
+        st = StandardizeTransform(axis="channel")
+        scaled = st.fit_transform(matrix)
+        assert np.all(np.isfinite(scaled.value))
+        restored = st.inverse_transform(scaled)
+        np.testing.assert_allclose(restored.value, matrix.value, rtol=1e-3)
+
+    def test_matrix_channel_preserves_complex_values(self):
+        matrix = TimeSeriesMatrix(
+            np.array([[[1.0 + 2.0j, 2.0 + 3.0j]], [[300.0 + 400.0j, 400.0 + 500.0j]]]),
+            dt=1 * u.s,
+            units=np.array([[u.m], [u.cm]], dtype=object),
+        )
+        st = StandardizeTransform(axis="channel")
+        scaled = st.fit_transform(matrix)
+        assert np.iscomplexobj(scaled.value)
+        restored = st.inverse_transform(scaled)
+        np.testing.assert_allclose(restored.value, matrix.value)
+
+    def test_multivariate_time_permits_different_units(self):
+        series = TimeSeriesList(
+            [
+                TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s, unit=u.V),
+                TimeSeries([4.0, 6.0, 8.0], dt=1 * u.s, unit=u.m),
+            ]
+        )
+        st = StandardizeTransform(multivariate=True, axis="time")
+        scaled = st.fit_transform(series)
+        np.testing.assert_allclose(scaled.value[:, 0, :].mean(axis=-1), 0.0)
+        restored = st.inverse_transform(scaled)
+        assert [ts.unit for ts in restored] == [u.V, u.m]
+
+    def test_multivariate_dict_restores_metadata_and_order(self):
+        series = TimeSeriesDict(
+            {
+                "second": TimeSeries(
+                    [2.0, 4.0, 6.0],
+                    t0=12 * u.s,
+                    dt=0.5 * u.s,
+                    unit=u.mV,
+                    name="sensor two",
+                    channel="H1:TWO",
+                ),
+                "first": TimeSeries(
+                    [1.0, 3.0, 5.0],
+                    t0=12 * u.s,
+                    dt=0.5 * u.s,
+                    unit=u.V,
+                    name="sensor one",
+                    channel="H1:ONE",
+                ),
+            }
+        )
+        st = StandardizeTransform(multivariate=True, axis="time")
+        scaled = st.fit_transform(series)
+        assert scaled.channel_names == ["second", "first"]
+        restored = st.inverse_transform(scaled)
+        assert list(restored) == ["second", "first"]
+        for key, original in series.items():
+            actual = restored[key]
+            np.testing.assert_allclose(actual.value, original.value)
+            np.testing.assert_allclose(actual.times.value, original.times.value)
+            assert actual.unit == original.unit
+            assert actual.name == original.name
+            assert str(actual.channel) == str(original.channel)
+
+    def test_multivariate_intersection_inverse_restores_original_times(self):
+        series = TimeSeriesList(
+            [
+                TimeSeries([1.0, 2.0, 3.0, 4.0], t0=0 * u.s, dt=1 * u.s, unit=u.V),
+                TimeSeries([10.0, 20.0, 30.0, 40.0], t0=1 * u.s, dt=1 * u.s, unit=u.m),
+            ]
+        )
+        st = StandardizeTransform(multivariate=True)
+        scaled = st.fit_transform(series)
+        restored = st.inverse_transform(scaled)
+        assert isinstance(restored, TimeSeriesList)
+        for actual, original in zip(restored, series, strict=True):
+            np.testing.assert_allclose(actual.value, original.value)
+            np.testing.assert_allclose(actual.times.value, original.times.value)
+            assert actual.unit == original.unit
+
+    def test_multivariate_resampled_intersection_inverse_uses_aligned_grid(self):
+        series = TimeSeriesList(
+            [
+                TimeSeries(
+                    [1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dt=1 * u.s, unit=u.V, name="fast"
+                ),
+                TimeSeries([2.0, 3.0, 4.0, 5.0], dt=1.5 * u.s, unit=u.m, name="slow"),
+            ]
+        )
+        st = StandardizeTransform(multivariate=True)
+        aligned = st.fit_transform(series)
+        restored = st.inverse_transform(aligned)
+        assert isinstance(restored, TimeSeriesList)
+        assert [ts.name for ts in restored] == ["fast", "slow"]
+        assert [ts.unit for ts in restored] == [u.V, u.m]
+        for index, ts in enumerate(restored):
+            np.testing.assert_allclose(ts.times.value, aligned.times.value)
+            np.testing.assert_allclose(ts.value, st.params["meta"].value[index, 0])
+
+    def test_multivariate_inverse_preserves_fit_time_axis_units(self):
+        series = TimeSeriesList(
+            [
+                TimeSeries([1.0, 2.0, 3.0], t0=2 * u.min, dt=1 * u.min, unit=u.V),
+                TimeSeries([4.0, 5.0, 6.0], t0=2 * u.min, dt=1 * u.min, unit=u.m),
+            ]
+        )
+        st = StandardizeTransform(multivariate=True)
+        restored = st.inverse_transform(st.fit_transform(series))
+        for actual, original in zip(restored, series, strict=True):
+            assert actual.times.unit == u.min
+            assert actual.t0 == original.t0
+            assert actual.dt == original.dt
+            np.testing.assert_allclose(actual.value, original.value)
+
+    def test_multivariate_reused_at_new_t0_restores_output_times(self):
+        fit_series = TimeSeriesList(
+            [
+                TimeSeries([1.0, 2.0, 3.0], t0=0 * u.s, dt=1 * u.s, unit=u.V),
+                TimeSeries([4.0, 5.0, 6.0], t0=0 * u.s, dt=1 * u.s, unit=u.m),
+            ]
+        )
+        new_series = TimeSeriesList(
+            [
+                TimeSeries([2.0, 4.0, 6.0], t0=10 * u.s, dt=1 * u.s, unit=u.V),
+                TimeSeries([7.0, 8.0, 9.0], t0=10 * u.s, dt=1 * u.s, unit=u.m),
+            ]
+        )
+        st = StandardizeTransform(multivariate=True)
+        st.fit(fit_series)
+        restored = st.inverse_transform(st.transform(new_series))
+        for actual, original in zip(restored, new_series, strict=True):
+            np.testing.assert_allclose(actual.value, original.value)
+            np.testing.assert_allclose(actual.times.value, original.times.value)
+            assert actual.unit == original.unit
+
+    def test_multivariate_inverse_unknown_dict_key_raises(self):
+        series = TimeSeriesDict({"known": TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s)})
+        st = StandardizeTransform(multivariate=True)
+        transformed = st.fit_transform(series)
+        transformed.channel_names = ["unknown"]
+        with pytest.raises(KeyError):
+            st.inverse_transform(transformed)
+
+    def test_multivariate_dict_inverse_uses_channel_labels_after_reorder(self):
+        series = TimeSeriesDict(
+            {
+                "a": TimeSeries([1.0, 2.0, 3.0], dt=1 * u.s, unit=u.m),
+                "b": TimeSeries([10.0, 20.0, 50.0], dt=1 * u.s, unit=u.m),
+            }
+        )
+        st = StandardizeTransform(multivariate=True)
+        transformed = st.fit_transform(series)
+        reordered = TimeSeriesMatrix(
+            transformed.value[::-1].copy(),
+            times=transformed.times,
+            channel_names=["b", "a"],
+            units=transformed.units[::-1].copy(),
+        )
+        restored = st.inverse_transform(reordered)
+        assert list(restored) == ["a", "b"]
+        for key in series:
+            np.testing.assert_allclose(restored[key].value, series[key].value)
+
+    def test_nan_is_retained_through_roundtrip(self):
+        ts = TimeSeries([1.0, np.nan, 3.0], dt=1 * u.s, unit=u.V)
+        st = StandardizeTransform()
+        scaled = st.fit_transform(ts)
+        assert np.isnan(scaled.value[1])
+        restored = st.inverse_transform(scaled)
+        np.testing.assert_allclose(restored.value, ts.value, equal_nan=True)
+        assert restored.unit == u.V
+
+    def test_constant_and_tiny_scales(self):
+        constant = TimeSeries([5.0, 5.0, 5.0], dt=1 * u.s, unit=u.m)
+        with pytest.warns(UserWarning, match="constant"):
+            scaled = StandardizeTransform().fit_transform(constant)
+        np.testing.assert_array_equal(scaled.value, [0.0, 0.0, 0.0])
+        tiny = TimeSeries([0.0, 1e-21, 2e-21], dt=1 * u.s, unit=u.m)
+        st = StandardizeTransform()
+        np.testing.assert_allclose(
+            st.fit_transform(tiny).value, [-1.224744871, 0.0, 1.224744871]
+        )
+        np.testing.assert_allclose(
+            st.inverse_transform(st.transform(tiny)).value,
+            tiny.value,
+            rtol=1e-12,
+            atol=0,
+        )
+        extremely_tiny = TimeSeries([0.0, 1e-200, 2e-200], dt=1 * u.s)
+        normalized = StandardizeTransform().fit_transform(extremely_tiny)
+        np.testing.assert_allclose(normalized.value, [-1.224744871, 0.0, 1.224744871])
+
+    @pytest.mark.parametrize(
+        "values",
+        [np.array([60000.0, 60000.0], dtype=np.float16), np.array([1e308, 1e308])],
+    )
+    def test_large_finite_constant_is_centered_zero(self, values):
+        ts = TimeSeries(values, dt=1 * u.s)
+        with pytest.warns(UserWarning, match="constant"):
+            scaled = StandardizeTransform().fit_transform(ts)
+        np.testing.assert_array_equal(scaled.value, [0.0, 0.0])
+
+    def test_large_complex_constant_is_exactly_zero(self):
+        ts = TimeSeries(
+            np.array([1e308 + 1e308j, 1e308 + 1e308j]),
+            dt=1 * u.s,
+            unit=u.V,
+        )
+        with pytest.warns(UserWarning, match="constant"):
+            scaled = StandardizeTransform().fit_transform(ts)
+        np.testing.assert_array_equal(scaled.value, [0.0 + 0.0j, 0.0 + 0.0j])
+
+    def test_very_large_complex_constant_timeseries_and_matrix(self):
+        value = 1.7e308 + 1.7e308j
+        ts = TimeSeries(np.array([value, value]), dt=1 * u.s, unit=u.V)
+        matrix = TimeSeriesMatrix(
+            np.array([[[value, value]], [[value, value]]]), dt=1 * u.s
+        )
+        for source in (ts, matrix):
+            with pytest.warns(UserWarning, match="constant"):
+                scaled = StandardizeTransform().fit_transform(source)
+            np.testing.assert_array_equal(scaled.value, np.zeros_like(scaled.value))
+
+    @pytest.mark.parametrize("value", [1e308, 1.7e308 + 1.7e308j])
+    def test_robust_large_constant_timeseries_and_matrix(self, value):
+        ts = TimeSeries(np.array([value, value]), dt=1 * u.s, unit=u.V)
+        matrix = TimeSeriesMatrix(
+            np.array([[[value, value]], [[value, value]]]), dt=1 * u.s
+        )
+        for source in (ts, matrix):
+            with pytest.warns(UserWarning, match="constant"):
+                scaled = StandardizeTransform(robust=True).fit_transform(source)
+            np.testing.assert_array_equal(scaled.value, np.zeros_like(scaled.value))
+
+    def test_zero_mad_nonconstant_raises(self):
+        ts = TimeSeries([0.0, 0.0, 0.0, 1.0], dt=1 * u.s)
+        with pytest.raises(ValueError, match="MAD|scale"):
+            StandardizeTransform(robust=True).fit(ts)
+
+    @pytest.mark.parametrize("values", [[np.nan, np.nan], [1.0, np.inf, 2.0]])
+    def test_nonfinite_scale_raises(self, values):
+        with pytest.raises(ValueError, match="scale"):
+            StandardizeTransform().fit(TimeSeries(values, dt=1 * u.s))
 
     def test_supports_inverse_is_true(self):
         assert StandardizeTransform.supports_inverse is True
