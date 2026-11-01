@@ -1207,12 +1207,17 @@ def standardize_matrix(
     - For ``method='zscore'``: ``standardized = (x - nanmean) / nanstd``
     - For ``method='robust'``: ``standardized = (x - nanmedian) / (1.4826 * MAD)``
     - Output unit is always ``dimensionless_unscaled`` regardless of input unit.
+    - For ``axis='channel'``, compatible element units are converted to the
+      first element's unit before pooling. Incompatible units raise
+      ``ValueError``. For ``axis='time'``, elements are independent and may
+      have incompatible units.
 
     Raises
     ------
     ValueError
         If ``axis`` is not ``'time'`` or ``'channel'``.
         If ``method`` is not ``'zscore'`` or ``'robust'``.
+        If ``axis='channel'`` and element units are incompatible.
 
     Examples
     --------
@@ -1239,7 +1244,29 @@ def standardize_matrix(
             f"Supported methods are 'zscore', 'robust'."
         )
 
-    val = matrix.value.copy()
+    # Cross-channel unit conversion can overflow a float16/float32 work array
+    # even when the standardized result is finite. Promote to at least
+    # float64, retaining complex values when present. Integer inputs also
+    # need floating arithmetic to avoid truncation.
+    integer_input = np.issubdtype(matrix.value.dtype, np.integer)
+    if axis == "channel" or integer_input:
+        val = matrix.value.astype(np.result_type(matrix.value.dtype, np.float64))
+    else:
+        val = matrix.value.copy()
+
+    if axis == "channel":
+        units = matrix.units
+        if units.size:
+            reference_unit = u.Unit(units.flat[0])
+            for index in np.ndindex(units.shape):
+                try:
+                    factor = u.Unit(units[index]).to(reference_unit)
+                except (u.UnitConversionError, TypeError, ValueError) as exc:
+                    raise ValueError(
+                        "Cannot standardize across channels with incompatible "
+                        f"element units: {units[index]} and {reference_unit}"
+                    ) from exc
+                val[index] *= factor
 
     # TimeSeriesMatrix layout: (rows, cols, time) or (channels, time).
     # Time is always the last axis (-1).
@@ -1262,31 +1289,20 @@ def standardize_matrix(
 
     scale = np.where(scale == 0, 1.0, scale)
 
-    # Create new matrix with same metadata
-    if np.issubdtype(matrix.value.dtype, np.integer):
-        val_float = matrix.value.astype("float64")
-        new_mat = matrix.__class__(
-            val_float, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit
-        )
-        if hasattr(matrix, "channel_names"):
-            try:
-                channel_names = getattr(matrix, "channel_names")
-            except AttributeError:
-                channel_names = None
-            if channel_names is not None:
-                new_mat.channel_names = channel_names
+    # The matrix copy/cast methods retain independent element, axis, and
+    # user metadata. In particular, integer inputs must not be reconstructed
+    # from bare values, which would discard per-element metadata.
+    if integer_input:
+        new_mat = matrix.astype("float64")
     else:
         new_mat = matrix.copy()
 
     # Update values
     new_mat.value[:] = (val - med) / scale
 
-    # Set unit to dimensionless
-    if hasattr(new_mat, "unit"):
-        try:
-            new_mat.unit = u.dimensionless_unscaled
-        except AttributeError:
-            pass
+    # TimeSeriesMatrix stores units per element, not in a scalar .unit field.
+    for element_meta in new_mat.meta.flat:
+        element_meta.unit = u.dimensionless_unscaled
 
     return new_mat
 
