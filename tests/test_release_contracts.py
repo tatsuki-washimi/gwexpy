@@ -239,6 +239,7 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "v0.2.5",
         "v0.2.6",
         "v0.2.7",
+        "v0.2.8",
     }
 
     v0113 = data["releases"]["v0.1.13"]
@@ -869,17 +870,18 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         "v0.2.5",
         "v0.2.6",
         "v0.2.7",
+        "v0.2.8",
     }
     legacy_releases = {
         tag: contract
         for tag, contract in values.items()
-        if tag not in {"v0.2.6", "v0.2.7"}
+        if tag not in {"v0.2.6", "v0.2.7", "v0.2.8"}
     }
     assert all("promotion" not in contract for contract in legacy_releases.values())
     assert all(
         key not in contract
         for tag, contract in values.items()
-        if tag not in {"v0.2.6", "v0.2.7"}
+        if tag not in {"v0.2.6", "v0.2.7", "v0.2.8"}
         for key in (
             "tagger_date_policy",
             "source_metadata_date_policy",

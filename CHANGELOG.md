@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.8] - 2026-11-04
+
+This maintenance release enforces physical unit consistency and collection/matrix restoration contracts across signal thresholding and time-series preprocessing pipelines.
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After (v0.2.8) | Reference |
+|---|---|---|---|
+| **PercentileThreshold unit validation** | When `bkg_table` unit conversion failed, emitted a `UserWarning` and fell back to raw numeric values without conversion; exceptions were suppressed in Coupling analysis. | Raises `astropy.units.UnitConversionError` when `bkg_table` unit conversion fails. Explicitly converts compatible units before threshold comparison. Exception propagates through Coupling analysis. | #767, PR #856 |
+| **Matrix standardization element units** | `standardize_matrix` retained input element units in `meta.units` and `units` despite subtracting mean and dividing by scale. | `standardize_matrix` sets output element units to `dimensionless_unscaled`. Preserves input units in original matrix and preserves non-unit metadata. | #768, PR #857 |
+| **Matrix cross-channel pooling (`axis='channel'`)** | Mixed units in matrix caused arbitrary pooling or unhandled behavior. | Converts compatible units to first channel's unit before cross-channel pooling. Rejects incompatible units with `ValueError` (wrapping `UnitConversionError`). | #768, #769, PR #857, PR #858 |
+| **StandardizeTransform collection restoration** | While `_restore_collection()` restored collection types, restored collection elements (`TimeSeriesDict`, `TimeSeriesList`) lost their original physical units, metadata was degraded, and roundtrip contracts were not guaranteed. | `StandardizeTransform` preserves collection type, keys/order, original physical units, and metadata at fit. `inverse_transform` strictly restores original collection types, keys/order, original physical units, and metadata, guaranteeing roundtrip consistency. | #769, PR #858 |
+| **StandardizeTransform degeneracy handling** | Silently replaced zero scale (`scale == 0`) with 1.0, masking constant or zero-scale series without warning. | Finite constant series are centered to zero and standardized with scale forced to 1.0, emitting a `UserWarning`. Non-constant series with zero scale (MAD=0) or non-finite scales raise `ValueError`. `standardize_matrix` legacy path is preserved. | #769, PR #858 |
+
+### Fixed
+
+- **Physical unit validation in PercentileThreshold**: When `bkg_table` unit conversion fails, raises `astropy.units.UnitConversionError` instead of falling back to raw numeric values with a warning. Compatible units are explicitly converted, and exceptions propagate to Coupling analysis (#767, PR #856).
+- **Dimensionless matrix standardization and cross-channel units**: `standardize_matrix` now sets output element units to `dimensionless_unscaled` while preserving input series units and non-unit metadata. For `axis='channel'`, compatible units are converted before pooling, and incompatible units raise `ValueError` (#768, PR #857).
+- **Collection restoration in StandardizeTransform**: `StandardizeTransform` preserves original collection types, physical units, and metadata during fit. With `multivariate=True`, forward transformation yields `TimeSeriesMatrix`, and `inverse_transform` strictly restores the original collection type (`TimeSeriesDict`, `TimeSeriesList`), keys/order, physical units, and metadata. For `axis='channel'`, compatible units are converted and incompatible units raise `ValueError` (wrapping `UnitConversionError`). Finite constant series are standardized to zero with scale=1.0 and an informative warning, while non-constant series with zero scale (MAD=0) or non-finite scales raise `ValueError` (#769, PR #858).
+
 ## [0.2.7] - 2026-11-03
 
 This maintenance release prevents nonexistent local GWF paths from reaching

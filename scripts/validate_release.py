@@ -89,10 +89,10 @@ review_evidence_json: |
 """
 
 
-def _v027_empty_review_evidence_placeholder(review_base_sha: str) -> bytes:
-    """Build the exact empty v2 evidence wrapper for a frozen v0.2.7 base."""
+def _empty_v2_review_evidence_placeholder(schema: str, review_base_sha: str) -> bytes:
+    """Build the exact empty v2 evidence wrapper for a frozen review base."""
     document = {
-        "schema": "gwexpy-v027-review-evidence-v2",
+        "schema": schema,
         "source_sha": "",
         "review_base_sha": review_base_sha,
         "changed_path_map": {
@@ -117,6 +117,13 @@ def _v027_empty_review_evidence_placeholder(review_base_sha: str) -> bytes:
     encoded = json.dumps(document, indent=2, ensure_ascii=False)
     indented = "\n".join(f"  {line}" for line in encoded.splitlines())
     return f"review_evidence_json: |\n{indented}\n".encode()
+
+
+def _v027_empty_review_evidence_placeholder(review_base_sha: str) -> bytes:
+    """Keep the v0.2.7 placeholder helper for existing release tests."""
+    return _empty_v2_review_evidence_placeholder(
+        "gwexpy-v027-review-evidence-v2", review_base_sha
+    )
 
 
 class ReleaseValidationError(ValueError):
@@ -498,7 +505,7 @@ def validate_s_to_r(
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
     if (
-        expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7"}
+        expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7", "v0.2.8"}
         and reviewed_commit == source_sha
     ):
         raise ReleaseValidationError(
@@ -535,7 +542,7 @@ def validate_s_to_r(
             str(contract["review_evidence_path"]),
             expected_tag,
         )
-    elif expected_tag == "v0.2.7":
+    elif expected_tag in {"v0.2.7", "v0.2.8"}:
         try:
             source = _git_bytes(
                 root,
@@ -544,14 +551,19 @@ def validate_s_to_r(
             )
         except ReleaseValidationError as exc:
             raise ReleaseValidationError(
-                "v0.2.7 reviewed source must contain the exact empty review evidence placeholder"
+                f"{expected_tag} reviewed source must contain the exact empty review evidence placeholder"
             ) from exc
-        placeholder = _v027_empty_review_evidence_placeholder(
-            str(contract["review_base_sha"])
+        review_base_sha = str(contract["review_base_sha"])
+        placeholder = (
+            _v027_empty_review_evidence_placeholder(review_base_sha)
+            if expected_tag == "v0.2.7"
+            else _empty_v2_review_evidence_placeholder(
+                str(contract["review_evidence_schema"]), review_base_sha
+            )
         )
         if source != placeholder:
             raise ReleaseValidationError(
-                "v0.2.7 reviewed source must contain the exact empty review evidence placeholder"
+                f"{expected_tag} reviewed source must contain the exact empty review evidence placeholder"
             )
     allowed_paths = set(cast(list[str], contract["s_to_r_allowed_paths"]))
     if not paths <= allowed_paths:
@@ -590,7 +602,7 @@ def validate_release(
     contract = _release_contract(expected_tag)
     artifact_prefix = str(contract["artifact_prefix"])
     if (
-        expected_tag in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7"}
+        expected_tag in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7", "v0.2.8"}
         and review_evidence is None
     ):
         raise ReleaseValidationError(f"{expected_tag} requires release review evidence")
