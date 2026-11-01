@@ -564,7 +564,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.7</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/029ea550c37e2a7b36a1932cd3dfa3634b4f05a8">029ea550</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bcd0e224746d67fc6955af97f69db677920f14fc">bcd0e224</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -582,16 +582,26 @@
 <dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">LIGOTimeGPS</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS" title="Link to this definition">#</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">SwigPyObject</span></code></p>
-<p>::tagLIGOTimeGPS</p>
+<p>Proxy of C tagLIGOTimeGPS struct.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">REAL8</span> <span class="pre">t</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.__init__" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INT4</span> <span class="pre">gpssec</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INT4</span> <span class="pre">gpssec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INT8</span> <span class="pre">gpsnan</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char</span> <span class="pre">const</span> <span class="pre">*</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">src</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS" title="gwexpy.time.LIGOTimeGPS"><span class="pre">LIGOTimeGPS</span></a></span></span></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.__init__" title="gwexpy.time.LIGOTimeGPS.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.__init__" title="gwexpy.time.LIGOTimeGPS.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(...)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">acquire</span></code></p></td>
