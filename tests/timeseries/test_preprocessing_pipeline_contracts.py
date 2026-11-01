@@ -89,6 +89,7 @@ def test_pipeline_standardize_inverse_restores_values_and_time_metadata():
     np.testing.assert_allclose(restored.value, ts.value)
     assert restored.t0 == ts.t0
     assert restored.dt == ts.dt
+    assert transformed.unit == u.dimensionless_unscaled
     assert restored.unit == ts.unit
     assert restored.name == ts.name
 
@@ -157,7 +158,7 @@ def test_multivariate_standardize_list_inverse_uses_flat_to_list_restoration():
         np.testing.assert_allclose(restored_series.value, original_series.value)
         assert restored_series.t0 == original_series.t0
         assert restored_series.dt == original_series.dt
-        assert restored_series.unit == u.dimensionless_unscaled
+        assert restored_series.unit == original_series.unit
 
 
 def test_pca_result_summary_and_metadata_are_passive_contracts():

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import warnings
 from collections.abc import Sequence
 from typing import Any, Literal
 
@@ -217,6 +218,10 @@ class StandardizeTransform(Transform):
     ):
         super().__init__()
         self.method = "robust" if robust else method
+        if self.method not in {"zscore", "robust"}:
+            raise ValueError(f"Unknown standardization method: {self.method}")
+        if axis not in {"time", "channel"}:
+            raise ValueError(f"Unknown standardization axis: {axis}")
         self.ddof = ddof
         self.axis = axis
         self.multivariate = multivariate
@@ -224,42 +229,160 @@ class StandardizeTransform(Transform):
         self.params: dict[str, Any] | None = None
 
     def _compute_stats_ts(self, ts: TimeSeries):
+        dtype = np.complex128 if np.iscomplexobj(ts.value) else np.float64
+        values = np.asarray(ts.value, dtype=dtype)
         if self.method == "robust":
-            center = np.nanmedian(ts.value)
-            scale = 1.4826 * np.nanmedian(np.abs(ts.value - center))
+            center = self._stable_median(values)
+            scale = 1.4826 * np.nanmedian(np.abs(values - center))
         else:
-            center = np.nanmean(ts.value)
-            scale = np.nanstd(ts.value, ddof=self.ddof)
-        if scale == 0:
-            scale = 1.0
-        return float(center), float(scale)
+            center = self._stable_mean(values)
+            scale = self._stable_std(values)
+        center, scale = self._checked_stats(values, center, scale)
+        return center.item(), float(scale)
 
-    def _compute_stats_matrix(self, mat: TimeSeriesMatrix):
-        val = np.asarray(mat.value)
+    def _stable_mean(self, values, *, axis=None):
+        """Compute a finite mean without overflowing the raw sum."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            magnitude = np.nanmax(
+                self._safe_magnitude(values), axis=axis, keepdims=axis is not None
+            )
+            divisor = np.where(magnitude == 0, 1.0, magnitude)
+            mean = np.nanmean(values / divisor, axis=axis, keepdims=axis is not None)
+        with np.errstate(invalid="ignore"):
+            return mean * divisor
+
+    def _stable_median(self, values, *, axis=None):
+        """Find a median without overflowing the average of middle samples."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            magnitude = np.nanmax(
+                self._safe_magnitude(values), axis=axis, keepdims=axis is not None
+            )
+            divisor = np.where(magnitude == 0, 1.0, magnitude)
+            normalized = values / divisor
+            median = np.nanmedian(normalized, axis=axis, keepdims=axis is not None)
+            finite = np.where(np.isfinite(values), values, np.nan)
+            minimum = np.nanmin(finite, axis=axis, keepdims=axis is not None)
+            maximum = np.nanmax(finite, axis=axis, keepdims=axis is not None)
+        constant = np.isfinite(minimum) & (minimum == maximum)
+        with np.errstate(invalid="ignore"):
+            return np.where(constant, minimum, median * divisor)
+
+    def _stable_std(self, values, *, axis=None):
+        """Compute standard deviation without squaring tiny raw magnitudes."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            magnitude = np.nanmax(
+                self._safe_magnitude(values), axis=axis, keepdims=axis is not None
+            )
+            divisor = np.where(magnitude == 0, 1.0, magnitude)
+            normalized = values / divisor
+            scaled_std = np.nanstd(
+                normalized,
+                axis=axis,
+                ddof=self.ddof,
+                keepdims=axis is not None,
+            )
+        with np.errstate(invalid="ignore"):
+            return scaled_std * divisor
+
+    @staticmethod
+    def _safe_magnitude(values):
+        """Bound a complex value without overflowing its Euclidean magnitude."""
+        if np.iscomplexobj(values):
+            return np.maximum(np.abs(values.real), np.abs(values.imag))
+        return np.abs(values)
+
+    def _checked_stats(self, values, center, scale, *, axis=None):
+        """Center exact constants precisely and reject invalid scales."""
+        if not np.all(np.isfinite(scale)):
+            raise ValueError("Standardization scale must be finite")
+        finite = np.where(np.isfinite(values), values, np.nan)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            minimum = np.nanmin(finite, axis=axis, keepdims=axis is not None)
+            maximum = np.nanmax(finite, axis=axis, keepdims=axis is not None)
+        constant = np.isfinite(minimum) & np.isfinite(maximum) & (minimum == maximum)
+        if np.any(constant):
+            warnings.warn(
+                "Finite constant channel standardized to zero",
+                UserWarning,
+                stacklevel=3,
+            )
+        if np.any((scale == 0) & ~constant):
+            raise ValueError("Nonconstant channel has zero standardization scale (MAD)")
+        return np.where(constant, minimum, center), np.where(constant, 1.0, scale)
+
+    def _matrix_values(self, mat: TimeSeriesMatrix, target_unit=None):
+        dtype = np.complex128 if np.iscomplexobj(mat.value) else np.float64
+        values = np.asarray(mat.value, dtype=dtype).copy()
+        if self.axis == "channel":
+            if target_unit is None:
+                target_unit = u.Unit(mat.units.flat[0])
+            for index in np.ndindex(mat.units.shape):
+                try:
+                    values[index] *= u.Unit(mat.units[index]).to(target_unit)
+                except u.UnitConversionError as exc:
+                    raise ValueError(
+                        "Incompatible channel units for pooled standardization"
+                    ) from exc
+        return values
+
+    def _compute_stats_matrix(self, mat: TimeSeriesMatrix, target_unit=None):
+        val = self._matrix_values(mat, target_unit)
         np_axis = -1 if self.axis == "time" else (0, 1)
         if self.method == "robust":
-            center = np.nanmedian(val, axis=np_axis, keepdims=True)
+            center = self._stable_median(val, axis=np_axis)
             scale = 1.4826 * np.nanmedian(
                 np.abs(val - center), axis=np_axis, keepdims=True
             )
         else:
-            center = np.nanmean(val, axis=np_axis, keepdims=True)
-            scale = np.nanstd(val, axis=np_axis, ddof=self.ddof, keepdims=True)
-        scale = np.where(scale == 0, 1.0, scale)
+            center = self._stable_mean(val, axis=np_axis)
+            scale = self._stable_std(val, axis=np_axis)
+        center, scale = self._checked_stats(val, center, scale, axis=np_axis)
         return center, scale
+
+    def _collection_matrix(self, collection):
+        """Align a collection while retaining each channel's fit-time unit."""
+        originals = (
+            list(collection.values())
+            if isinstance(collection, TimeSeriesDict)
+            else list(collection)
+        )
+        if self.axis != "channel":
+            aligned = collection.to_matrix(align=self.align)
+            aligned.meta.units = np.array([[ts.unit] for ts in originals], dtype=object)
+            return aligned
+        target_unit = originals[0].unit
+        converted = []
+        for ts in originals:
+            try:
+                converted.append(ts.to(target_unit))
+            except u.UnitConversionError as exc:
+                raise ValueError(
+                    "Incompatible channel units for pooled standardization"
+                ) from exc
+        aligned = TimeSeriesList(converted).to_matrix(align=self.align)
+        aligned.meta.units = np.full((len(originals), 1), target_unit, dtype=object)
+        if isinstance(collection, TimeSeriesDict):
+            aligned.channel_names = list(collection)
+        return aligned
 
     def fit(self, x):
         """Fit standardization parameters (center, scale) for the input data."""
-        data, original = (
-            _to_matrix_from_collection(x, align=self.align)
-            if self.multivariate
-            else (x, None)
-        )
+        original = None
+        if self.multivariate and isinstance(x, TimeSeriesDict):
+            original = x.__class__({k: copy.deepcopy(v) for k, v in x.items()})
+        elif self.multivariate and isinstance(x, TimeSeriesList):
+            original = x.__class__([copy.deepcopy(v) for v in x])
+        data = self._collection_matrix(x) if original is not None else x
         if isinstance(data, TimeSeries):
             center, scale = self._compute_stats_ts(data)
             self.params = {"type": "ts", "center": center, "scale": scale, "meta": data}
         elif isinstance(data, TimeSeriesMatrix):
-            center, scale = self._compute_stats_matrix(data)
+            pooled_unit = data.units.flat[0] if self.axis == "channel" else None
+            center, scale = self._compute_stats_matrix(data, pooled_unit)
             self.params = {
                 "type": "matrix",
                 "center": center,
@@ -267,30 +390,36 @@ class StandardizeTransform(Transform):
                 "axis": self.axis,
                 "meta": data,
                 "collection": original,
+                "pooled_unit": pooled_unit,
+                "units": data.units.copy(),
             }
         elif isinstance(data, TimeSeriesDict):
             stats = {k: self._compute_stats_ts(v) for k, v in data.items()}
-            self.params = {"type": "dict", "stats": stats}
+            self.params = {"type": "dict", "stats": stats, "meta": copy.deepcopy(data)}
         elif isinstance(data, TimeSeriesList):
             stats_list = [self._compute_stats_ts(v) for v in data]
-            self.params = {"type": "list", "stats": stats_list}
+            self.params = {
+                "type": "list",
+                "stats": stats_list,
+                "meta": copy.deepcopy(data),
+            }
         else:
             raise TypeError(f"Unsupported type for StandardizeTransform: {type(data)}")
         return self
 
     def _apply_ts(self, ts: TimeSeries, center: float, scale: float):
-        new_ts = ts.copy()
+        dtype = np.complex128 if np.iscomplexobj(ts.value) else np.float64
+        new_ts = ts.astype(dtype) / ts.unit
         new_ts.value[:] = (ts.value - center) / scale
-        try:
-            new_ts.unit = u.dimensionless_unscaled
-        except AttributeError:
-            pass
         return new_ts
 
-    def _apply_matrix(self, mat: TimeSeriesMatrix, center, scale):
-        val = (np.asarray(mat.value) - center) / scale
-        new_mat = mat.copy()
+    def _apply_matrix(self, mat: TimeSeriesMatrix, center, scale, pooled_unit=None):
+        val = (self._matrix_values(mat, pooled_unit) - center) / scale
+        new_mat = mat.astype(val.dtype)
         new_mat.value[:] = val
+        new_mat.meta.units = np.full(
+            mat.units.shape, u.dimensionless_unscaled, dtype=object
+        )
         return new_mat
 
     def transform(self, x):
@@ -300,20 +429,15 @@ class StandardizeTransform(Transform):
 
         assert self.params is not None
         params = copy.deepcopy(self.params)
-        data, original = (
-            _to_matrix_from_collection(x, align=self.align)
-            if self.multivariate
-            else (x, None)
+        data = (
+            self._collection_matrix(x) if self.multivariate and _is_collection(x) else x
         )
 
         if params["type"] == "ts" and isinstance(data, TimeSeries):
             return self._apply_ts(data, params["center"], params["scale"])
         if params["type"] == "matrix" and isinstance(data, TimeSeriesMatrix):
-            result = self._apply_matrix(data, params["center"], params["scale"])
-            return (
-                _restore_collection(result, params.get("collection"))
-                if self.multivariate
-                else result
+            return self._apply_matrix(
+                data, params["center"], params["scale"], params["pooled_unit"]
             )
         if params["type"] == "dict" and isinstance(data, TimeSeriesDict):
             out = data.__class__()
@@ -345,19 +469,110 @@ class StandardizeTransform(Transform):
         data = y
         if params["type"] == "ts" and isinstance(data, TimeSeries):
             center, scale = params["center"], params["scale"]
-            new_ts = data.copy()
+            dtype = np.complex128 if np.iscomplexobj(data.value) else np.float64
+            new_ts = data.astype(dtype) * params["meta"].unit
             new_ts.value[:] = data.value * scale + center
             return new_ts
         if params["type"] == "matrix" and isinstance(data, TimeSeriesMatrix):
             center, scale = params["center"], params["scale"]
-            val = data.value * scale + center
-            new_mat = data.copy()
-            new_mat.value[:] = val
-            return (
-                _restore_collection(new_mat, params.get("collection"))
-                if self.multivariate
-                else new_mat
+            original = params.get("collection")
+            row_by_key = None
+            if isinstance(original, TimeSeriesDict):
+                labels = list(data.channel_names)
+                keys = list(original)
+                if len(labels) != len(keys) or set(labels) != set(keys):
+                    unknown = set(labels) - set(keys)
+                    raise KeyError(
+                        f"Key '{next(iter(unknown), '<missing>')}' not present in fitted StandardizeTransform stats."
+                    )
+                row_by_key = {key: index for index, key in enumerate(labels)}
+                if center.shape[0] == len(keys):
+                    fitted_row = {key: index for index, key in enumerate(keys)}
+                    order = [fitted_row[key] for key in labels]
+                    center = center[order]
+                    scale = scale[order]
+            val = (
+                np.asarray(
+                    data.value,
+                    dtype=np.complex128 if np.iscomplexobj(data.value) else np.float64,
+                )
+                * scale
+                + center
             )
+            new_mat = data.astype(val.dtype)
+            new_mat.value[:] = val
+            if original is not None:
+                sources = (
+                    list(original.values())
+                    if isinstance(original, TimeSeriesDict)
+                    else list(original)
+                )
+                if data.shape[0] > len(sources):
+                    if isinstance(original, TimeSeriesDict):
+                        raise KeyError(
+                            "Unknown key in inverse StandardizeTransform matrix"
+                        )
+                    raise IndexError("No fitted stats for extra matrix channel")
+                out = original.__class__()
+                for index, source in enumerate(sources):
+                    row = (
+                        row_by_key[list(original)[index]]
+                        if row_by_key is not None
+                        else index
+                    )
+                    values = val[row, 0]
+                    if params["pooled_unit"] is not None:
+                        values = u.Quantity(values, params["pooled_unit"]).to_value(
+                            source.unit
+                        )
+                    restored = source.copy()
+                    source_times = source.times.to_value(data.times.unit)
+                    aligned_times = data.times.value
+                    tolerance = max(1e-9, float(np.max(np.spacing(source_times))) * 4)
+                    if len(source_times) == len(aligned_times):
+                        if not np.allclose(
+                            source_times, aligned_times, rtol=0, atol=tolerance
+                        ):
+                            restored.times = data.times
+                        restored.value[:] = values
+                    else:
+                        positions = np.searchsorted(source_times, aligned_times)
+                        valid = positions < len(source_times)
+                        matched = np.zeros(len(positions), dtype=bool)
+                        matched[valid] = np.isclose(
+                            source_times[positions[valid]],
+                            aligned_times[valid],
+                            rtol=0,
+                            atol=tolerance,
+                        )
+                        if np.all(matched):
+                            restored.value[positions] = values
+                        else:
+                            if len(source) >= len(values):
+                                restored = source[: len(values)].copy()
+                            else:
+                                restored = TimeSeries(
+                                    np.empty(len(values), dtype=val.dtype),
+                                    dt=source.dt,
+                                    unit=source.unit,
+                                    name=source.name,
+                                    channel=source.channel,
+                                )
+                            restored.times = data.times
+                            restored.value[:] = values
+                    if isinstance(out, TimeSeriesDict):
+                        out[list(original)[index]] = restored
+                    else:
+                        out.append(restored)
+                return out
+            if params["pooled_unit"] is not None:
+                for cell in np.ndindex(new_mat.units.shape):
+                    val[cell] = u.Quantity(val[cell], params["pooled_unit"]).to_value(
+                        params["units"][cell]
+                    )
+                new_mat.value[:] = val
+            new_mat.meta.units = params["units"].copy()
+            return new_mat
         if params["type"] == "dict" and isinstance(data, TimeSeriesDict):
             out = data.__class__()
             for k, ts in data.items():
@@ -366,7 +581,7 @@ class StandardizeTransform(Transform):
                         f"Key '{k}' not present in fitted StandardizeTransform stats."
                     )
                 center, scale = params["stats"][k]
-                new_ts = ts.copy()
+                new_ts = ts * params["meta"][k].unit if "meta" in params else ts.copy()
                 new_ts.value[:] = ts.value * scale + center
                 out[k] = new_ts
             return out
@@ -376,7 +591,9 @@ class StandardizeTransform(Transform):
                 if idx >= len(params["stats"]):
                     raise IndexError(f"No fitted stats for index {idx}")
                 center, scale = params["stats"][idx]
-                new_ts = ts.copy()
+                new_ts = (
+                    ts * params["meta"][idx].unit if "meta" in params else ts.copy()
+                )
                 new_ts.value[:] = ts.value * scale + center
                 out_list.append(new_ts)
             return out_list
