@@ -363,19 +363,12 @@ class PercentileThreshold(ThresholdStrategy):
                     p_val = aligned
 
                 if p.unit != target_unit:
-                    try:
-                        # Convert units if needed (Quantity support)
-                        from astropy.units import Quantity
+                    # Convert compatible units; let Astropy's UnitConversionError
+                    # propagate rather than combining physically incompatible values.
+                    from astropy.units import Quantity
 
-                        p_q = Quantity(p_val, p.unit)
-                        p_val = p_q.to(target_unit).value
-                    except Exception:
-                        warnings.warn(
-                            f"Unit conversion failed for bkg_table row: {p.unit} -> {target_unit}. "
-                            f"Using numeric values.",
-                            UserWarning,
-                            stacklevel=3,
-                        )
+                    p_q = Quantity(p_val, p.unit)
+                    p_val = p_q.to(target_unit).value
 
                 psd_values.append(p_val)
 
