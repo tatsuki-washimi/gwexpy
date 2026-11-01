@@ -381,7 +381,7 @@ def _validate_human_approval(
 ) -> None:
     keys = (
         V026_HUMAN_APPROVAL_KEYS
-        if expected_tag in {"v0.2.6", "v0.2.7"}
+        if expected_tag in {"v0.2.6", "v0.2.7", "v0.2.8"}
         else V025_HUMAN_APPROVAL_KEYS
         if expected_tag == "v0.2.5"
         else V024_HUMAN_APPROVAL_KEYS

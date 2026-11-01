@@ -1,0 +1,343 @@
+# hmodel route evidence for v0.2.8 lanes
+policy_sha256=e0cb66124ccf6e81c65e7606620a96527f6e468c6cec37baea7579b05f4d6ee5
+policy_file_commit=b921b42
+native capability source=collaboration.spawn_agent current tool schema; values are caller_asserted to hmodel
+effective model and effort are unobservable in Codex native v2; dispatch follows the first attempt only
+## Lane A: routine_coding
+{
+  "contract_version": 1,
+  "task_class": "routine_coding",
+  "role": "executor",
+  "platform": "codex",
+  "target_surface": "codex_subagent",
+  "candidates": [
+    {
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "high"
+    },
+    {
+      "model": "gpt-6-sol",
+      "effort": "medium"
+    }
+  ],
+  "selection_source": "policy_candidate",
+  "transport_capabilities": {
+    "native": {
+      "gpt-6-luna": [
+        "medium"
+      ],
+      "gpt-6-sol": [
+        "medium"
+      ]
+    },
+    "implicit": null,
+    "paseo": {},
+    "constraint": "native",
+    "provenance": {
+      "schema_version": 1,
+      "verification_boundary": "caller_asserted",
+      "native": {
+        "required_source": "spawn_agent_tool_schema"
+      },
+      "implicit": {
+        "required_source": "verified_runtime_metadata"
+      },
+      "paseo": {
+        "required_sources": [
+          "list_providers",
+          "list_models",
+          "inspect_provider"
+        ]
+      }
+    }
+  },
+  "primary": {
+    "provider": "openai",
+    "product_surface": "codex_subagent",
+    "model": {
+      "requested": "gpt-6-luna",
+      "effective": null,
+      "resolution_source": "router"
+    },
+    "reasoning": {
+      "requested_effort": "medium",
+      "effective_effort": null,
+      "resolution_source": "router"
+    },
+    "execution": {
+      "orchestration": "single_agent"
+    }
+  },
+  "dispatch_plan": {
+    "max_attempts": 2,
+    "attempts": [
+      {
+        "attempt_id": "attempt-1",
+        "model": "gpt-6-luna",
+        "effort": "medium",
+        "transport": "codex_native_explicit",
+        "status": "planned",
+        "dispatch": {
+          "spawn_agent": {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "fork_turns": "none"
+          },
+          "caller_supplies": [
+            "task_name",
+            "message"
+          ]
+        }
+      },
+      {
+        "attempt_id": "attempt-2",
+        "model": "gpt-6-sol",
+        "effort": "medium",
+        "transport": "codex_native_explicit",
+        "status": "planned",
+        "dispatch": {
+          "spawn_agent": {
+            "model": "gpt-6-sol",
+            "reasoning_effort": "medium",
+            "fork_turns": "none"
+          },
+          "caller_supplies": [
+            "task_name",
+            "message"
+          ]
+        }
+      }
+    ]
+  },
+  "excluded": [
+    {
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "transport": "codex_native_implicit",
+      "reason_code": "implicit_resolution_unverified"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "transport": "codex_native_explicit",
+      "reason_code": "model_not_in_native_override_allowlist"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "transport": "codex_native_implicit",
+      "reason_code": "implicit_resolution_unverified"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "reason_code": "transport_constrained"
+    },
+    {
+      "model": "gpt-6-sol",
+      "effort": "medium",
+      "transport": "codex_native_implicit",
+      "reason_code": "implicit_resolution_unverified"
+    }
+  ],
+  "grounding": {
+    "required": false
+  },
+  "policy_violation": false,
+  "warnings": [],
+  "policy_guard": {
+    "manual_explicit_only_models": {
+      "anthropic": [
+        "claude-fable-5-1"
+      ],
+      "openai": [
+        "gpt-6-astra"
+      ],
+      "google": []
+    }
+  },
+  "verifier": {
+    "deterministic_required": false,
+    "independent_llm": {
+      "required": false
+    }
+  },
+  "escalation": {
+    "coverage_failure": {
+      "action": "effort_up_one"
+    },
+    "capability_failure": {
+      "action": "model_tier_up_one"
+    },
+    "evidence_failure": {
+      "action": "add_grounding_and_verifier"
+    },
+    "assumption_failure": {
+      "action": "return_to_planner_or_architect"
+    },
+    "context_failure": {
+      "action": "fresh_subagent_or_compact"
+    }
+  },
+  "runtime_events": [],
+  "notes": "clear spec"
+}
+## Lanes B/C/RI: multi_file_feature_verified (shared route decision for this task family)
+{
+  "contract_version": 1,
+  "task_class": "multi_file_feature_verified",
+  "role": "executor",
+  "platform": "codex",
+  "target_surface": "codex_subagent",
+  "candidates": [
+    {
+      "model": "gpt-6-luna",
+      "effort": "xhigh"
+    },
+    {
+      "model": "gpt-6-sol",
+      "effort": "medium"
+    }
+  ],
+  "selection_source": "policy_candidate",
+  "transport_capabilities": {
+    "native": {
+      "gpt-6-luna": [
+        "medium"
+      ],
+      "gpt-6-sol": [
+        "medium"
+      ]
+    },
+    "implicit": null,
+    "paseo": {},
+    "constraint": "native",
+    "provenance": {
+      "schema_version": 1,
+      "verification_boundary": "caller_asserted",
+      "native": {
+        "required_source": "spawn_agent_tool_schema"
+      },
+      "implicit": {
+        "required_source": "verified_runtime_metadata"
+      },
+      "paseo": {
+        "required_sources": [
+          "list_providers",
+          "list_models",
+          "inspect_provider"
+        ]
+      }
+    }
+  },
+  "primary": {
+    "provider": "openai",
+    "product_surface": "codex_subagent",
+    "model": {
+      "requested": "gpt-6-sol",
+      "effective": null,
+      "resolution_source": "router"
+    },
+    "reasoning": {
+      "requested_effort": "medium",
+      "effective_effort": null,
+      "resolution_source": "router"
+    },
+    "execution": {
+      "orchestration": "single_agent"
+    }
+  },
+  "dispatch_plan": {
+    "max_attempts": 1,
+    "attempts": [
+      {
+        "attempt_id": "attempt-1",
+        "model": "gpt-6-sol",
+        "effort": "medium",
+        "transport": "codex_native_explicit",
+        "status": "planned",
+        "dispatch": {
+          "spawn_agent": {
+            "model": "gpt-6-sol",
+            "reasoning_effort": "medium",
+            "fork_turns": "none"
+          },
+          "caller_supplies": [
+            "task_name",
+            "message"
+          ]
+        }
+      }
+    ]
+  },
+  "excluded": [
+    {
+      "model": "gpt-6-luna",
+      "effort": "xhigh",
+      "transport": "codex_native_explicit",
+      "reason_code": "model_not_in_native_override_allowlist"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "xhigh",
+      "transport": "codex_native_implicit",
+      "reason_code": "implicit_resolution_unverified"
+    },
+    {
+      "model": "gpt-6-luna",
+      "effort": "xhigh",
+      "reason_code": "transport_constrained"
+    },
+    {
+      "model": "gpt-6-sol",
+      "effort": "medium",
+      "transport": "codex_native_implicit",
+      "reason_code": "implicit_resolution_unverified"
+    }
+  ],
+  "grounding": {
+    "required": false
+  },
+  "policy_violation": false,
+  "warnings": [],
+  "policy_guard": {
+    "manual_explicit_only_models": {
+      "anthropic": [
+        "claude-fable-5-1"
+      ],
+      "openai": [
+        "gpt-6-astra"
+      ],
+      "google": []
+    }
+  },
+  "verifier": {
+    "deterministic_required": true,
+    "independent_llm": {
+      "required": false
+    }
+  },
+  "escalation": {
+    "coverage_failure": {
+      "action": "effort_up_one"
+    },
+    "capability_failure": {
+      "action": "model_tier_up_one"
+    },
+    "evidence_failure": {
+      "action": "add_grounding_and_verifier"
+    },
+    "assumption_failure": {
+      "action": "return_to_planner_or_architect"
+    },
+    "context_failure": {
+      "action": "fresh_subagent_or_compact"
+    }
+  },
+  "runtime_events": [],
+  "notes": "clear spec AND strong tests -> Luna deep effort is economical"
+}
