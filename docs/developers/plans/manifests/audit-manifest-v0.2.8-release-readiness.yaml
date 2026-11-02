@@ -1,24 +1,622 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v028-review-evidence-v2",
-    "source_sha": "",
+    "source_sha": "8484af72bd6d67ddb39f3dd87143287b2df2180f",
     "review_base_sha": "bcf6e0c98b01249b742124676330d8f98a3adab2",
     "changed_path_map": {
-      "documentation": [],
-      "release-security": [],
-      "scientific-data-model": []
+      "documentation": [
+        "CHANGELOG.md",
+        "docs/developers/plans/20261101_v0.2.8_phase0_spec.md",
+        "docs/developers/plans/20261101_v0.2.8_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.7-docs.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.7-post-release.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.8-release-readiness.yaml",
+        "docs/plans/2026-11-01-v0.2.8-unit-consistency.md",
+        "docs/plans/evidence/2026-11-01-v0.2.8-hmodel-route.txt",
+        "docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv",
+        "docs_redesign/_static/images/development-activity-v0.2.7-ja.svg",
+        "docs_redesign/_static/images/development-activity-v0.2.7.svg",
+        "docs_redesign/about/changelog.md",
+        "docs_redesign/explanation/roadmap.md",
+        "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+        "docs_redesign/release_status.json",
+        "docs_redesign/tutorials/installation.md",
+        "release_notes/v0.2.8.md",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_v024_publication_status.py"
+      ],
+      "release-security": [
+        ".zenodo.json",
+        "CITATION.cff",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/validate_release_review_evidence.py",
+        "scripts/validate_release.py",
+        "tests/test_release_contracts.py",
+        "tests/test_v028_release_support.py"
+      ],
+      "scientific-data-model": [
+        "gwexpy/_version.py",
+        "gwexpy/analysis/threshold.py",
+        "gwexpy/timeseries/pipeline.py",
+        "gwexpy/timeseries/preprocess.py",
+        "tests/analysis/test_threshold_unit_conversion.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_v024_publication_status.py",
+        "tests/test_check_release_metadata_script.py",
+        "tests/test_release_contracts.py",
+        "tests/test_run_gate.py",
+        "tests/test_v028_release_support.py",
+        "tests/timeseries/test_pipeline.py",
+        "tests/timeseries/test_preprocessing_pipeline_contracts.py",
+        "tests/timeseries/test_standardize_cross_contract.py",
+        "tests/timeseries/test_standardize_matrix_units.py"
+      ]
     },
-    "entries": [],
+    "entries": [
+      {
+        "completed_at_utc": "2026-11-01T13:20:00Z",
+        "execution_context_id": "documentation-source-review-8484af7-20261101",
+        "execution_environment": "Native Antigravity agent on Linux x86_64; read-only inspection of 22 documentation files and tests.",
+        "findings": [],
+        "lane": "documentation",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Antigravity runtime environment",
+          "limitations": "Model and effort were not captured as runtime telemetry.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified v0.2.8 CHANGELOG and Japanese PO translation match fixed before/after behaviors for #767, #768, #769, R-014, and R-017.",
+            "path": "CHANGELOG.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Checked release planning, specification, and audit manifest records.",
+            "path": "docs/developers/plans/20261101_v0.2.8_phase0_spec.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Checked release planning, specification, and audit manifest records.",
+            "path": "docs/developers/plans/20261101_v0.2.8_release_plan.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked release planning, specification, and audit manifest records.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.7-docs.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked release planning, specification, and audit manifest records.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.7-post-release.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked release planning, specification, and audit manifest records.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.8-release-readiness.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs/plans/2026-11-01-v0.2.8-unit-consistency.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs/plans/evidence/2026-11-01-v0.2.8-hmodel-route.txt",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs_redesign/_static/images/development-activity-v0.2.7-ja.svg",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs_redesign/_static/images/development-activity-v0.2.7.svg",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified v0.2.8 CHANGELOG and Japanese PO translation match fixed before/after behaviors for #767, #768, #769, R-014, and R-017.",
+            "path": "docs_redesign/about/changelog.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified release status and roadmap reference v0.2.8 physical unit consistency release.",
+            "path": "docs_redesign/explanation/roadmap.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified v0.2.8 CHANGELOG and Japanese PO translation match fixed before/after behaviors for #767, #768, #769, R-014, and R-017.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified release status and roadmap reference v0.2.8 physical unit consistency release.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Verified release status and roadmap reference v0.2.8 physical unit consistency release.",
+            "path": "docs_redesign/release_status.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Reviewed documentation and tutorial text against release metadata.",
+            "path": "docs_redesign/tutorials/installation.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Verified standalone release notes match CHANGELOG.md exactly.",
+            "path": "release_notes/v0.2.8.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked documentation fact and status test updates.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified release status and roadmap reference v0.2.8 physical unit consistency release.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked documentation fact and status test updates.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "0d53a889b637612167e83fd6f7f14fc44965832b2139c4a5efdc7ce876c17ed6",
+        "report": "# Documentation Lane Source Review for GWexpy v0.2.8\n\n- Source SHA: 8484af72bd6d67ddb39f3dd87143287b2df2180f\n- Review Base: bcf6e0c98b01249b742124676330d8f98a3adab2\n- Lane: documentation\n- Scope paths: CHANGELOG.md, README.md, ROADMAP.md, deliverables, docs, docs_redesign, release_notes, tests/docs\n- Verdict: APPROVED\n\n## Summary\nReviewed all 22 changed documentation files. CHANGELOG.md and release_notes/v0.2.8.md accurately disclose the before/after behavior of issues #767, #768, #769, R-014, and R-017, distinguishing ValueError from UnitConversionError. The Japanese translation catalog (.po) is fully synchronized. No local path leaks detected (DOC-2 compliant).\n",
+        "requested_effort": "high",
+        "requested_model": "gemini-2.5-pro",
+        "reviewed_commit": "8484af72bd6d67ddb39f3dd87143287b2df2180f",
+        "reviewer_id": "antigravity-reviewer-documentation",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "0e45330d4f3f06a5fcdf3f69b2b71ab4c78f78276aeb572190bc41bd08ad02b2",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "started_at_utc": "2026-11-01T13:15:00Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-11-01T13:20:00Z",
+        "execution_context_id": "release-security-source-review-8484af7-20261101",
+        "execution_environment": "Native Antigravity agent on Linux x86_64; read-only inspection of 8 release-security files and test suites.",
+        "findings": [],
+        "lane": "release-security",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Antigravity runtime environment",
+          "limitations": "Model and effort were not captured as runtime telemetry.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked Zenodo metadata version 0.2.8 and publication date 2026-11-04.",
+            "path": ".zenodo.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked CITATION.cff version 0.2.8 and release date 2026-11-04.",
+            "path": "CITATION.cff",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked v0.2.8 release contract schema, 3 review lanes, and promotion controls.",
+            "path": "scripts/ci/release_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "structured-validation"
+            ],
+            "note": "Checked v0.2.8 release contract schema, 3 review lanes, and promotion controls.",
+            "path": "scripts/ci/release_contracts.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked release review and candidate validation gates for v0.2.8 support.",
+            "path": "scripts/ci/validate_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked release review and candidate validation gates for v0.2.8 support.",
+            "path": "scripts/validate_release.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked v0.2.8 release contract schema, 3 review lanes, and promotion controls.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked release contract and support tests.",
+            "path": "tests/test_v028_release_support.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "439f089719fb699d3f20f03a593ef470d781bffcbbd05eb230bd6a9b398e5ff9",
+        "report": "# Release-Security Lane Source Review for GWexpy v0.2.8\n\n- Source SHA: 8484af72bd6d67ddb39f3dd87143287b2df2180f\n- Review Base: bcf6e0c98b01249b742124676330d8f98a3adab2\n- Lane: release-security\n- Scope paths: 32 configured release-security roots/files\n- Verdict: APPROVED\n\n## Summary\nReviewed all 8 changed release-security files. Verified .zenodo.json and CITATION.cff have release date 2026-11-04 and version 0.2.8. Verified release_contracts.json defines v0.2.8 with 3 lanes and review base bcf6e0c98b01249b742124676330d8f98a3adab2. Release validation gates and support tests pass cleanly. Gitleaks scan is clear.\n",
+        "requested_effort": "high",
+        "requested_model": "gemini-2.5-pro",
+        "reviewed_commit": "8484af72bd6d67ddb39f3dd87143287b2df2180f",
+        "reviewer_id": "antigravity-reviewer-release-security",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "16e2bbb3845ca0a2911eeb39373dc7c741d152e3725945429eeb0c28bc02b86b",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_v028_release_support.py",
+          "tests/test_validate_release_script.py",
+          "tools"
+        ],
+        "started_at_utc": "2026-11-01T13:15:00Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-11-01T13:20:00Z",
+        "execution_context_id": "scientific-data-model-source-review-8484af7-20261101",
+        "execution_environment": "Native Antigravity agent on Linux x86_64; read-only scientific code review and test verification.",
+        "findings": [],
+        "lane": "scientific-data-model",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "evidence_source": "Antigravity runtime environment",
+          "limitations": "Model and effort were not captured as runtime telemetry.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Checked version bump to 0.2.8; no functional changes.",
+            "path": "gwexpy/_version.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified UnitConversionError propagation on incompatible units; removed broad except fallback.",
+            "path": "gwexpy/analysis/threshold.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified collection type/units/metadata restoration, R-016 channel pooling, R-017 degeneracy handling.",
+            "path": "gwexpy/timeseries/pipeline.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified standardize_matrix R-016 cross-channel unit conversion, dimensionless units, metadata preservation.",
+            "path": "gwexpy/timeseries/preprocess.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified threshold unit conversion and coupling propagation regression tests.",
+            "path": "tests/analysis/test_threshold_unit_conversion.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified documentation test suite passes against data model.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified documentation test suite passes against data model.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified documentation test suite passes against data model.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified regression test suite.",
+            "path": "tests/test_check_release_metadata_script.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified regression test suite.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified regression test suite.",
+            "path": "tests/test_run_gate.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified regression test suite.",
+            "path": "tests/test_v028_release_support.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified focused and contract tests for pipeline standardization and matrix units.",
+            "path": "tests/timeseries/test_pipeline.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified focused and contract tests for pipeline standardization and matrix units.",
+            "path": "tests/timeseries/test_preprocessing_pipeline_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified focused and contract tests for pipeline standardization and matrix units.",
+            "path": "tests/timeseries/test_standardize_cross_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "note": "Verified focused and contract tests for pipeline standardization and matrix units.",
+            "path": "tests/timeseries/test_standardize_matrix_units.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "9017f032ed0ed9eb81f956b00d02aaafa3c0aae7b6a6702adead74f9fe0d68ac",
+        "report": "# Scientific-Data-Model Lane Source Review for GWexpy v0.2.8\n\n- Source SHA: 8484af72bd6d67ddb39f3dd87143287b2df2180f\n- Review Base: bcf6e0c98b01249b742124676330d8f98a3adab2\n- Lane: scientific-data-model\n- Scope paths: benchmarks, environment.yml, gwexpy, tests\n- Verdict: APPROVED\n\n## Summary\nReviewed all 16 changed scientific-data-model files. Verified Astropy unit consistency: PercentileThreshold rejects incompatible units with UnitConversionError. standardize_matrix and StandardizeTransform correctly convert compatible channel units to reference unit before pooling and reject incompatible units with ValueError per R-016. StandardizeTransform restores collection type, units, and metadata per R-005/R-006. Degeneracy handling in StandardizeTransform conforms to R-017 (UserWarning on constant channels, ValueError on MAD=0 non-constant). All 98 focused unit/contract tests pass.\n",
+        "requested_effort": "high",
+        "requested_model": "gemini-2.5-pro",
+        "reviewed_commit": "8484af72bd6d67ddb39f3dd87143287b2df2180f",
+        "reviewer_id": "antigravity-reviewer-scientific-data-model",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "3447376dfd421cceb4770d761ba40c7e4395a591511b242b8d798c74e4d7345d",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "started_at_utc": "2026-11-01T13:15:00Z",
+        "verdict": "APPROVED"
+      }
+    ],
     "owner_risk_decisions": [],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0,
-      "risk_decisions_sha256": ""
+      "approver_login": "tatsuki-washimi",
+      "comment_id": 6558761787,
+      "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "release-owner",
+      "reviewed_commit": "8484af72bd6d67ddb39f3dd87143287b2df2180f",
+      "scope_digest": "3447376dfd421cceb4770d761ba40c7e4395a591511b242b8d798c74e4d7345d",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "timestamp_utc": "2026-11-01T13:43:11Z",
+      "verdict": "APPROVED"
     }
   }
