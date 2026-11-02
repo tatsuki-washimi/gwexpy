@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-11-01T13:39:54Z",
-  "post_release_status": "pending_review",
+  "recorded_at_utc": "2026-11-02T16:22:40Z",
+  "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.6",
     "version": "0.2.6",
@@ -146,7 +146,7 @@
       }
     },
     "docs": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "Release Owner",
       "objective": "Prepare and review EN/JA release/history updates",
       "evidence": [
@@ -179,15 +179,21 @@
           "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
           "observed_at_utc": "2026-11-01T13:39:54Z",
           "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "6a578ee07648b46b46ec67a4d311a06ec7f3b7d950d935c09463610f6f9c0de0",
+          "observed_at_utc": "2026-11-02T16:22:40Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Matching Docs Pages workflow is still running or not observed",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "docs",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "pages": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Verify live EN/JA revision and artifact manifest hash",
       "evidence": [
@@ -220,12 +226,18 @@
           "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
           "observed_at_utc": "2026-11-01T13:39:54Z",
           "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "6a578ee07648b46b46ec67a4d311a06ec7f3b7d950d935c09463610f6f9c0de0",
+          "observed_at_utc": "2026-11-02T16:22:40Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Matching Docs Pages workflow is still running or not observed",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "pages",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "remote_cleanup": {
       "status": "complete",
