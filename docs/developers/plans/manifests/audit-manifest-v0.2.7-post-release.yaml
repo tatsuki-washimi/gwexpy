@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.7",
-  "recorded_at_utc": "2026-11-01T13:40:14Z",
+  "recorded_at_utc": "2026-11-02T16:23:03Z",
   "post_release_status": "blocked",
   "release": {
     "tag": "v0.2.7",
@@ -218,6 +218,12 @@
           "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
           "observed_at_utc": "2026-11-01T13:40:14Z",
           "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "259a03d1e45a14c2ce75acd908e0198afbc246a4324ea31556c6aca3ea27f257",
+          "observed_at_utc": "2026-11-02T16:23:03Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv\": \"186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6\", \"docs_redesign/_static/images/development-activity-v0.2.7-ja.svg\": \"23d4bb7835e2d973d7fa6873cddd83684c61a9ca1b7027cafce354937cd515e0\", \"docs_redesign/_static/images/development-activity-v0.2.7.svg\": \"50c3839eee0854f22a07d61689555206e73053b903c7c316d8c70384c4f848e7\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -245,6 +251,12 @@
           "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
           "observed_at_utc": "2026-11-01T13:40:14Z",
           "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "259a03d1e45a14c2ce75acd908e0198afbc246a4324ea31556c6aca3ea27f257",
+          "observed_at_utc": "2026-11-02T16:23:03Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.7-weekly.csv\": \"186fd03f1b46fe9a20193c731d0cfe929561487ad1c6d2db8bc53c35d300c5b6\", \"docs_redesign/_static/images/development-activity-v0.2.7-ja.svg\": \"23d4bb7835e2d973d7fa6873cddd83684c61a9ca1b7027cafce354937cd515e0\", \"docs_redesign/_static/images/development-activity-v0.2.7.svg\": \"50c3839eee0854f22a07d61689555206e73053b903c7c316d8c70384c4f848e7\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -367,6 +379,12 @@
           "sha256": "8fc4cfe8281bdfa214b5c17973e5ee58222ea95424009e1be219eca9d64c27d2",
           "observed_at_utc": "2026-10-31T12:52:25Z",
           "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"c3ad4989189e3da4f1bdaaf90046c5fd\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658, \"subdir\": \"noarch\", \"timestamp\": 1793436086503, \"version\": \"0.2.7\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "7a739f047c1b0609752581f26ec9f8538286247830073548f4ae112711d850ff",
+          "observed_at_utc": "2026-11-02T16:22:53Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.7-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"license_family\": \"MIT\", \"md5\": \"c3ad4989189e3da4f1bdaaf90046c5fd\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658, \"subdir\": \"noarch\", \"timestamp\": 1793436086503, \"version\": \"0.2.7\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"c72a8ad973725370d1e390083310ed3e37d7b809ab1652f30ac9565f3038694f\", \"size\": 667658}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
