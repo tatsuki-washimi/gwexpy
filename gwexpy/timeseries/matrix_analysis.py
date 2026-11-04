@@ -318,6 +318,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat = self.copy()
         new_mat.value[:] = phi
         new_mat.unit = u.rad
+        new_mat.meta.units = np.full(new_mat.meta.shape, u.rad, dtype=object)
         return new_mat
 
     def _vectorized_degree(self: Any, unwrap: bool = False) -> Any:
@@ -330,6 +331,7 @@ class TimeSeriesMatrixAnalysisMixin:
         new_mat = self.copy()
         new_mat.value[:] = phi
         new_mat.unit = u.deg
+        new_mat.meta.units = np.full(new_mat.meta.shape, u.deg, dtype=object)
         return new_mat
 
     def radian(self: Any, unwrap: bool = False) -> Any:
