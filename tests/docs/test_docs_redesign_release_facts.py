@@ -199,7 +199,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
         (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
     version = PUBLISHED_V024_VERSION
-    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
+    assert release_status["latest_release"] == CANDIDATE_V028_VERSION
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -472,7 +472,7 @@ def test_published_history_and_v028_source_metadata_remain_distinct():
     )
     assert "candidate records are historical" not in release_note_text.lower()
 
-    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
+    assert release_status["latest_release"] == CANDIDATE_V028_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
@@ -526,7 +526,7 @@ def test_published_history_and_v028_source_metadata_remain_distinct():
 
     # The redesign follows the actual publication readback while the frozen
     # source metadata retains its original planned date of 2026-11-03.
-    assert release_status["latest_release"] == PUBLISHED_V027_VERSION
+    assert release_status["latest_release"] == CANDIDATE_V028_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     assert CANDIDATE_V028_HISTORY_ENTRY in changelog
     assert PUBLISHED_V027_HISTORY_ENTRY in changelog
@@ -621,7 +621,7 @@ def test_japanese_inline_examples_preserve_matrix_and_pad_tokens() -> None:
     assert "pad= <値>" not in pad_messages[0].string
 
 
-def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
+def test_v028_release_status_and_v027_conda_forge_history_are_current() -> None:
     english = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -691,15 +691,18 @@ def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
     )
     roadmap_message = roadmap_catalogue.get(roadmap_msgid)
 
-    assert "2026-10-31 UTC" in roadmap
-    assert "no v0.2.7 feedstock PR or package was observed on conda-forge" in roadmap
-    assert "version 0.2.6 remains available" in roadmap
+    assert "v0.2.8 was published on 2026-11-04 UTC" in roadmap
+    assert "no v0.2.8 update PR or package observed" in roadmap
     assert "open for review" not in roadmap
     assert "tops at 0.2.4" not in roadmap
-    assert roadmap_message is not None
-    assert "2026-11-03" in roadmap_message.string
-    assert "日付に関するリリース責任者の判断は未完了" in roadmap_message.string
-    assert "v0.2.6です" in roadmap_message.string
+    assert roadmap_message is None
+    assert "Release Owner's date disposition remains pending" in roadmap
+    assert any(
+        isinstance(message.id, str)
+        and "v0.2.8 was published on 2026-11-04 UTC" in message.id
+        and "この日付に関するRelease Ownerの判断は未完了" in message.string
+        for message in roadmap_catalogue
+    )
 
     installation = (REPO_ROOT / "docs_redesign/tutorials/installation.md").read_text(
         encoding="utf-8"
@@ -713,28 +716,59 @@ def test_v027_release_status_and_v026_conda_forge_history_are_current() -> None:
         "GWexpy {{ latest_release }} is available on "
         "[PyPI](https://pypi.org/project/gwexpy/) and the "
         "[GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases). "
-        "The latest package on [conda-forge](https://anaconda.org/conda-forge/gwexpy) "
-        "is v0.2.6; no v0.2.7 package was observed "
-        "as of 2026-10-31 UTC. The [v0.2.7 Zenodo record]"
-        "(https://zenodo.org/records/23828442) was created on 2026-10-31 UTC and "
-        "lists metadata `publication_date` 2026-11-03. The Release Owner's date "
-        "disposition is pending. Check each install source for its available versions."
+        "The [v0.2.8 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) "
+        "and [PyPI package](https://pypi.org/project/gwexpy/0.2.8/) were published on "
+        "2026-11-04 UTC. The [Zenodo record](https://zenodo.org/records/23934903) lists "
+        "version DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903), "
+        "archive `tatsuki-washimi/gwexpy-v0.2.8.zip`, and publication date 2026-11-04; "
+        "the Release Owner's date disposition is pending. As of 2026-11-04 UTC, the "
+        "conda-forge feedstock remains at v0.2.7, with no v0.2.8 update PR or package "
+        "observed. Check each install source for its available versions."
     )
     installation_message = installation_catalogue.get(installation_msgid)
     installation_text = " ".join(installation.split())
 
-    assert "The latest package on [conda-forge]" in installation_text
-    assert "is v0.2.6;" in installation_text
-    assert "no v0.2.7 package was observed as of 2026-10-31 UTC" in installation_text
-    assert "publication_date` 2026-11-03" in installation_text
+    assert "The [v0.2.8 GitHub Release]" in installation_text
+    assert "conda-forge feedstock remains at v0.2.7" in installation_text
+    assert "no v0.2.8 update PR or package observed" in installation_text
+    assert "publication date 2026-11-04" in installation_text
     assert "date disposition is pending" in installation_text
     assert installation_message is not None
-    assert (
-        "[conda-forge](https://anaconda.org/conda-forge/gwexpy) "
-        "で確認できる最新パッケージはv0.2.6です"
-    ) in installation_message.string
-    assert "2026-11-03" in installation_message.string
-    assert "リリース責任者の判断は未完了" in installation_message.string
+    assert "conda-forgeのfeedstockはv0.2.7のまま" in installation_message.string
+    assert "https://zenodo.org/records/23934903" in installation_message.string
+
+
+def test_v028_activity_snapshot_matches_immutable_release_tag() -> None:
+    static = REPO_ROOT / "docs_redesign/_static"
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    csv_path = static / "downloads/development-activity-v0.2.8-weekly.csv"
+    expected_sha = "196509a4cfb78a624ac2db62104d7718307abd6aa0769ca9e3e70e0b8db77fba"
+
+    assert "## v0.2.8 weekly development activity" in source
+    assert "development-activity-v0.2.8.svg" in source
+    assert "development-activity-v0.2.8-weekly.csv" in source
+    assert hashlib.sha256(csv_path.read_bytes()).hexdigest() == expected_sha
+    with csv_path.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    assert {row["target_ref"] for row in rows} == {"v0.2.8"}
+    assert {row["target_sha"] for row in rows} == {
+        "82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f"
+    }
+    assert sum(int(row["commit_count"]) for row in rows) == 2310
+    for suffix in ("", "-ja"):
+        svg = (static / f"images/development-activity-v0.2.8{suffix}.svg").read_text(
+            encoding="utf-8"
+        )
+        assert (
+            "Target ref: v0.2.8; resolved SHA: 82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f"
+            in svg
+        )
+        assert f"canonical CSV SHA-256: {expected_sha}" in svg
+        if suffix:
+            assert "週ごとのコミット数" in svg
+            assert "Commits per week" not in svg
 
 
 def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
