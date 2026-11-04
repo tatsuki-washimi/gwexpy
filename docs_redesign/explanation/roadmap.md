@@ -3,11 +3,11 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-10-31.*
+*Last updated: 2026-11-04.*
 
 ## How to Read This Page
 
-- **Released baseline**: the published v0.2.7 maintenance baseline and the v0.2.0 semantic contract
+- **Released baseline**: the published v0.2.8 maintenance baseline and the v0.2.0 semantic contract
 - **Directional themes**: areas we may improve in upcoming iterations
 - **Mid-term**: work we want to expose more broadly after the current docs and API cleanup
 - **Long-term**: exploratory directions that are useful but not yet scheduled
@@ -16,13 +16,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Current Release Baseline
 
-- [v0.2.7](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7) is the current released maintenance baseline. It raises `FileNotFoundError` before a missing local GWF path reaches a native reader in `TimeSeries` and `TimeSeriesDict`.
+- [v0.2.8](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) is the current released maintenance baseline. It validates physical units in `PercentileThreshold`, makes standardized matrix elements dimensionless, validates unit compatibility when pooling channels, and restores original collection types, units, and metadata in `StandardizeTransform`.
 - v0.2.0 establishes the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades
 - Exact timing, interoperable persistence, deterministic provenance, and public
-  GWpy compatibility were established in v0.2.0 and are retained by v0.2.7
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.8
 
-v0.2.7 was published on 2026-10-31 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.7/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). The [Zenodo record](https://zenodo.org/records/23828442) was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 feedstock PR or package was observed on conda-forge; version 0.2.6 remains available. No next-minor release theme is committed; future work remains directional.
+v0.2.8 was published on 2026-11-04 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo record](https://zenodo.org/records/23934903) lists version DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903), archive `tatsuki-washimi/gwexpy-v0.2.8.zip`, and metadata `publication_date` 2026-11-04; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, the conda-forge feedstock remains at v0.2.7, with no v0.2.8 update PR or package observed. No next-minor release theme is committed; future work remains directional.
 
 ## Directional Themes
 

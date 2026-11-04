@@ -1,5 +1,7 @@
 # Changelog
 
+Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, no v0.2.8 conda-forge feedstock PR or package was observed; the feedstock recipe remains at v0.2.7.
+
 Published on 2026-10-31 UTC: [PyPI 0.2.7](https://pypi.org/project/gwexpy/0.2.7/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). The [Zenodo DOI 10.5281/zenodo.23828442](https://zenodo.org/records/23828442) record was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 conda-forge feedstock PR or package was observed, and the latest conda-forge package is v0.2.6.
 
 The detailed v0.2.7 release-notes heading below retains the release source's planned date of 2026-11-03; service readbacks show the actual publication date as 2026-10-31 UTC.
