@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.8",
-  "recorded_at_utc": "2026-11-04T07:20:37Z",
+  "recorded_at_utc": "2026-11-04T11:38:24Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.8",
@@ -135,14 +135,20 @@
           "sha256": "2a99d1af7ddaf54e37f79efd26b35e2fb425ea0ca69276bbd14c8469781c5d70",
           "observed_at_utc": "2026-11-04T07:19:03Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"pending_external\", \"conda_package\": \"pending_external\"}, \"reason\": \"Latest 0.2.7; v0.2.8 feedstock update and package remain unobserved\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "d4aa590e41c48cb07e70fe3cfd21c053d67ef3a72bd356bdc91396e60a2fea18",
+          "observed_at_utc": "2026-11-04T11:38:24Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"pending_external\"}, \"readback_succeeded\": false, \"reason\": \"Feedstock PR #18 is merged and its build succeeded; Anaconda API shows the v0.2.8 artifact, but solver-visible noarch repodata has not indexed it yet.\"}"
         }
       ],
-      "pending_reason": "See separate feedstock PR and actual channel-package states",
-      "resume_condition": "Re-observe feedstock and package independently",
+      "pending_reason": "Feedstock PR #18 is merged and its build succeeded; Anaconda API shows the v0.2.8 artifact, but solver-visible noarch repodata has not indexed it yet.",
+      "resume_condition": "Re-observe noarch repodata and confirm the exact 0.2.8 build, SHA-256, size and upload metadata are registered for solver use.",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
-        "conda_feedstock": "pending_external",
+        "conda_feedstock": "complete",
         "conda_package": "pending_external"
       }
     },
@@ -225,7 +231,7 @@
       "observer": "maintainer local host"
     },
     "conda_feedstock": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_feedstock",
       "evidence": [
@@ -240,12 +246,18 @@
           "sha256": "d68922c2122c1631668d3493d4b0b0ebad4c7a1f02d801b07de6d33fab04c9dc",
           "observed_at_utc": "2026-11-04T07:19:03Z",
           "observation": "{\"default_branch_recipe\": {\"path\": \"recipe/recipe.yaml\", \"recipe_file_sha256\": \"85c300d434764c7ef72fec351df904fb9ef69d23753e285b37b5072d76b80194\", \"source_sha256\": \"2d6f87435fe9f0729a4a08d6cb51d921388ddf82159ddbe9d9a90d20641cbcec\", \"version\": \"0.2.7\"}, \"latest_release_pr\": {\"merge_commit\": \"f8aed24d8b7238eb7f09065d520929ec80dad430\", \"merged_at\": \"2026-10-31T08:40:33Z\", \"number\": 17, \"state\": \"closed\", \"title\": \"gwexpy v0.2.7\", \"url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/17\"}, \"matching_v0_2_8_prs\": [], \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/18",
+          "sha256": "5e04c24c1994ae78d882d5d50df65677737aa053e877b09cae3d35239e860d92",
+          "observed_at_utc": "2026-11-04T11:38:24Z",
+          "observation": "{\"build_run\": {\"conclusion\": \"success\", \"head_sha\": \"6bffcef4041fbe31772b25e0e1416d17d27d1975\", \"id\": 41821258639, \"run_started_at\": \"2026-11-04T11:29:17Z\", \"status\": \"completed\", \"updated_at\": \"2026-11-04T11:30:59Z\", \"url\": \"https://github.com/conda-forge/gwexpy-feedstock/actions/runs/41821258639\"}, \"pull\": {\"head_sha\": \"0b2dc2586f9e2e8c25be9a03fbfdc681392b650f\", \"merge_commit_sha\": \"6bffcef4041fbe31772b25e0e1416d17d27d1975\", \"merged_at\": \"2026-11-04T11:29:14Z\", \"number\": 18, \"state\": \"closed\", \"url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/18\"}, \"readback_succeeded\": true, \"recipe\": {\"head_sha\": \"0b2dc2586f9e2e8c25be9a03fbfdc681392b650f\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"967c1d1dc1486f45e2d3aa6c3a317ea050edfbd97f16cb7841aee32c350051b5\", \"source_sha256\": \"2393836500ebef9bf9bd133620f300259bc9180fb83c04a693c24f3c78d90d80\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.8.tar.gz\", \"version\": \"0.2.8\"}, \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "No v0.2.8 feedstock PR exists as of 2026-11-04; current recipe is v0.2.7",
-      "resume_condition": "Re-observe exact-version feedstock PR, recipe source SHA-256, CI and merge",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_feedstock",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "conda_package": {
       "status": "pending_external",
@@ -263,10 +275,16 @@
           "sha256": "76844937c9e68d49187ac7635c3c116e2a7064282e19da0a3a008e0f058b69e3",
           "observed_at_utc": "2026-11-04T07:19:03Z",
           "observation": "{\"latest_version\": \"0.2.7\", \"package_api_response_sha256\": \"dd886eda96ac9d43182e99a11e2e1efa18c468f85ca499686b206f335bec2416\", \"reason\": \"Exact build absent from package inventory and final conda-forge repodata\", \"status\": \"pending_external\", \"version_0_2_8_files\": [], \"versions\": [\"0.1.3\", \"0.1.11\", \"0.1.13\", \"0.1.14\", \"0.2.0\", \"0.2.2\", \"0.2.3\", \"0.2.4\", \"0.2.6\", \"0.2.7\"]}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "0e548b3a4f1e045fe99c473f1b9f5b4d46cb7376013fff08a835959220cbb62a",
+          "observed_at_utc": "2026-11-04T11:38:24Z",
+          "observation": "{\"anaconda_api\": {\"latest_version\": \"0.2.8\", \"url\": \"https://api.anaconda.org/package/conda-forge/gwexpy\", \"version_0_2_8_files\": [{\"basename\": \"noarch/gwexpy-0.2.8-pyhc364b38_0.conda\", \"build\": \"pyhc364b38_0\", \"build_number\": 0, \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.8-pyhc364b38_0.conda\", \"sha256\": \"f91836680b667a600778427339dc4d16eb27e20f4a8dfdd9d74d9198a91332fd\", \"size\": 669800, \"subdir\": \"noarch\", \"upload_time\": \"2026-11-04 11:30:53.982000+00:00\", \"version\": \"0.2.8\"}]}, \"inventory_files\": [\"noarch/gwexpy-0.2.8-pyhc364b38_0.conda\"], \"missing_from_repodata\": [\"noarch/gwexpy-0.2.8-pyhc364b38_0.conda\"], \"readback_succeeded\": false, \"reason\": \"Exact build absent from final conda-forge repodata\", \"solver_repodata\": {\"current_repodata.json\": {\"age_seconds\": null, \"cf_cache_status\": \"MISS\", \"etag\": \"\\\"afa814b829bad971c9e49bc8ed379788\\\"\", \"exact_file_registered\": false, \"last_modified\": \"Wed, 04 Nov 2026 11:28:46 GMT\", \"url\": \"https://conda.anaconda.org/conda-forge/noarch/current_repodata.json\"}, \"repodata.json\": {\"age_seconds\": null, \"cf_cache_status\": \"HIT\", \"etag\": \"\\\"28b6184b0f2e9c89766f13eb69b1989e\\\"\", \"exact_file_registered\": false, \"last_modified\": \"Wed, 04 Nov 2026 11:28:46 GMT\", \"url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\"}}, \"status\": \"pending_external\"}"
         }
       ],
-      "pending_reason": "No v0.2.8 build is listed in conda-forge inventory or repodata",
-      "resume_condition": "Re-observe version, build, distribution hash, upload time and final repodata",
+      "pending_reason": "Exact build absent from final conda-forge repodata",
+      "resume_condition": "Re-observe final and current noarch repodata and confirm the exact build, SHA-256, size, and upload metadata are registered for solver use.",
       "observer": "conda_package",
       "readback_succeeded": false
     }
