@@ -122,6 +122,37 @@ def test_degree_unwrap():
     assert result.shape == tsm.shape
 
 
+@pytest.mark.parametrize("method, expected_unit", [
+    ("radian", u.rad),
+    ("degree", u.deg),
+])
+@pytest.mark.parametrize("unwrap", [False, True])
+def test_phase_transforms_update_per_element_units_and_preserve_metadata(
+    method, expected_unit, unwrap
+):
+    meta = MetaDataMatrix(
+        [[MetaData(unit=u.m, name="sensor", channel="H1:PHASE")]]
+    )
+    values = np.array([[[1.0 + 1.0j, 0.0 + 1.0j]]])
+    original = TimeSeriesMatrix(
+        values, dt=0.1 * u.s, t0=2.0 * u.s, meta=meta
+    )
+
+    result = getattr(original, method)(unwrap=unwrap)
+
+    expected_angles = np.angle(values, deg=(method == "degree"))
+    np.testing.assert_allclose(result.value, expected_angles)
+    assert result.unit == expected_unit
+    assert np.all(result.units == expected_unit)
+    assert result[0, 0].unit == expected_unit
+    assert result[0, 0].name == "sensor"
+    assert str(result[0, 0].channel) == "H1:PHASE"
+    assert result.t0 == original.t0
+    assert result.dt == original.dt
+    assert original[0, 0].unit == u.m
+    np.testing.assert_array_equal(original.value, values)
+
+
 def test_vectorized_taper():
     tsm = _make_tsm()
     result = tsm._vectorized_taper()
