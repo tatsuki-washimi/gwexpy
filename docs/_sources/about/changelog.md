@@ -1,5 +1,20 @@
 # Changelog
 
+Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, no v0.2.8 conda-forge feedstock PR or package was observed; the feedstock recipe remains at v0.2.7.
+
+## v0.2.8 weekly development activity
+
+:::{figure} /_static/images/development-activity-v0.2.8.svg
+:alt: Weekly GWexpy development activity through v0.2.8, showing non-merge commits and edited source lines by category.
+:width: 100%
+
+Weekly activity through the immutable v0.2.8 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.8.
+:::
+
+[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.8-weekly.csv)
+
+The snapshot ends at commit `82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f`. It includes 2,310 non-merge commits. Both language versions use the same weekly data; its SHA-256 is `196509a4cfb78a624ac2db62104d7718307abd6aa0769ca9e3e70e0b8db77fba`. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes.
+
 Published on 2026-10-31 UTC: [PyPI 0.2.7](https://pypi.org/project/gwexpy/0.2.7/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.7). The [Zenodo DOI 10.5281/zenodo.23828442](https://zenodo.org/records/23828442) record was created on 2026-10-31 UTC and lists metadata `publication_date` 2026-11-03; the Release Owner's date disposition remains pending. As of 2026-10-31 UTC, no v0.2.7 conda-forge feedstock PR or package was observed, and the latest conda-forge package is v0.2.6.
 
 The detailed v0.2.7 release-notes heading below retains the release source's planned date of 2026-11-03; service readbacks show the actual publication date as 2026-10-31 UTC.
