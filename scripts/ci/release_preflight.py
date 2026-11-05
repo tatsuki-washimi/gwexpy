@@ -2,6 +2,7 @@
 """Run existing release validators for a phase and report their exit codes.
 
 Adds no new pass/fail rules; delegates to existing CLI scripts only.
+Steps without required inputs are reported as ``not_evaluated`` (not success).
 """
 
 from __future__ import annotations
@@ -11,9 +12,12 @@ import json
 import subprocess
 import sys
 from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Literal
 
 Phase = str
+Disposition = Literal["executed", "not_evaluated"]
 
 PHASES: tuple[Phase, ...] = (
     "preparation",
@@ -24,101 +28,195 @@ PHASES: tuple[Phase, ...] = (
 )
 
 
-def _commands(
-    repo_root: Path, release_tag: str, phase: Phase
-) -> list[tuple[str, list[str]]]:
+@dataclass(frozen=True)
+class PreflightInputs:
+    repo_root: Path
+    release_tag: str
+    review_evidence: Path | None = None
+    reviewed_commit: str | None = None
+    release_ref: str | None = None
+    repository: str | None = None
+    human_approval_evidence: Path | None = None
+    go_comment_id: int | None = None
+
+
+def _run(argv: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(argv, cwd=cwd, text=True, capture_output=True, check=False)
+
+
+def _executed(name: str, argv: list[str], proc: subprocess.CompletedProcess[str]) -> dict[str, Any]:
+    return {
+        "name": name,
+        "disposition": "executed",
+        "argv": argv,
+        "exit_code": proc.returncode,
+        "stdout_tail": (proc.stdout or "")[-500:],
+        "stderr_tail": (proc.stderr or "")[-500:],
+    }
+
+
+def _not_evaluated(name: str, *, reason: str) -> dict[str, Any]:
+    return {
+        "name": name,
+        "disposition": "not_evaluated",
+        "reason": reason,
+        "exit_code": None,
+    }
+
+
+def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
     py = sys.executable
-    root = repo_root.resolve()
-    rel = [
-        (
-            "release_contract_review_evidence_path",
-            [
-                py,
-                str(root / "scripts/ci/release_contract.py"),
-                "--review-evidence-path",
-                release_tag,
-            ],
-        ),
-        (
-            "check_release_metadata",
-            [py, str(root / "scripts/check_release_metadata.py")],
-        ),
-    ]
+    root = inputs.repo_root.resolve()
+    results: list[dict[str, Any]] = []
+
     if phase == "preparation":
-        return rel[:1]
+        argv = [
+            py,
+            str(root / "scripts/ci/release_contract.py"),
+            "--review-evidence-path",
+            inputs.release_tag,
+        ]
+        results.append(_executed("release_contract_review_evidence_path", argv, _run(argv, cwd=root)))
+        return results
+
     if phase == "source":
-        return [
-            (
-                "validate_release_review_evidence",
-                [
-                    py,
-                    str(root / "scripts/ci/validate_release_review_evidence.py"),
-                    "--help",
-                ],
-            ),
+        if inputs.review_evidence is None:
+            results.append(
+                _not_evaluated(
+                    "validate_release_review_evidence",
+                    reason="missing --review-evidence (validator not run)",
+                )
+            )
+            return results
+        argv = [
+            py,
+            str(root / "scripts/ci/validate_release_review_evidence.py"),
+            "--evidence",
+            str(inputs.review_evidence),
+            "--expected-tag",
+            inputs.release_tag,
+            "--repo-root",
+            str(root),
         ]
+        if inputs.reviewed_commit:
+            argv.extend(["--reviewed-commit", inputs.reviewed_commit])
+        results.append(_executed("validate_release_review_evidence", argv, _run(argv, cwd=root)))
+        if inputs.release_ref:
+            argv = [
+                py,
+                str(root / "scripts/validate_release.py"),
+                "--repo-root",
+                str(root),
+                "--release-ref",
+                inputs.release_ref,
+                "--expected-tag",
+                inputs.release_tag,
+            ]
+            if inputs.review_evidence:
+                argv.extend(["--review-evidence", str(inputs.review_evidence)])
+            results.append(_executed("validate_release_source", argv, _run(argv, cwd=root)))
+        else:
+            results.append(
+                _not_evaluated(
+                    "validate_release_source",
+                    reason="missing --release-ref (source validator not run)",
+                )
+            )
+        return results
+
     if phase == "candidate":
-        version = release_tag.removeprefix("v")
-        return [
-            (
-                "release_promotion_profile",
-                [
-                    py,
-                    str(root / "scripts/ci/release_promotion.py"),
-                    "profile",
-                    "--version",
-                    version,
-                ],
-            ),
+        version = inputs.release_tag.removeprefix("v")
+        argv = [
+            py,
+            str(root / "scripts/ci/release_promotion.py"),
+            "profile",
+            "--version",
+            version,
         ]
+        results.append(_executed("release_promotion_profile", argv, _run(argv, cwd=root)))
+        return results
+
     if phase == "prepublish":
-        return [
-            (
-                "verify_release_human_approval_help",
-                [
-                    py,
-                    str(root / "scripts/ci/verify_release_human_approval.py"),
-                    "--help",
-                ],
-            ),
-            (
-                "verify_release_go_help",
-                [py, str(root / "scripts/ci/verify_release_go.py"), "--help"],
-            ),
-        ]
+        missing: list[str] = []
+        if inputs.repository is None:
+            missing.append("--repository")
+        if inputs.human_approval_evidence is None:
+            missing.append("--human-approval-evidence")
+        if missing:
+            results.append(
+                _not_evaluated(
+                    "verify_release_human_approval",
+                    reason=f"missing {', '.join(missing)} (approval validator not run)",
+                )
+            )
+        else:
+            argv = [
+                py,
+                str(root / "scripts/ci/verify_release_human_approval.py"),
+                "--repo-root",
+                str(root),
+                "--expected-tag",
+                inputs.release_tag,
+                "--repository",
+                inputs.repository,
+                "--evidence",
+                str(inputs.human_approval_evidence),
+            ]
+            results.append(_executed("verify_release_human_approval", argv, _run(argv, cwd=root)))
+        if inputs.go_comment_id is None or inputs.repository is None:
+            results.append(
+                _not_evaluated(
+                    "verify_release_go",
+                    reason="missing --go-comment-id and/or --repository (GO validator not run)",
+                )
+            )
+        else:
+            results.append(
+                _not_evaluated(
+                    "verify_release_go",
+                    reason="verify_release_go has no stable CLI entrypoint; use release_promotion or dedicated script with full inputs",
+                )
+            )
+        return results
+
     if phase == "postrelease":
-        return [
-            (
-                "validate_github_release_readback_help",
-                [
-                    py,
-                    str(root / "scripts/ci/validate_github_release_readback.py"),
-                    "--help",
-                ],
-            ),
-        ]
+        results.append(
+            _not_evaluated(
+                "validate_github_release_readback",
+                reason="missing readback artifact paths (postrelease validator not run)",
+            )
+        )
+        return results
+
     raise ValueError(f"unknown phase: {phase}")
 
 
-def run_preflight(repo_root: Path, release_tag: str, phase: Phase) -> dict[str, object]:
-    results: list[dict[str, object]] = []
-    for name, argv in _commands(repo_root, release_tag, phase):
-        proc = subprocess.run(argv, cwd=repo_root, text=True, capture_output=True, check=False)
-        results.append(
-            {
-                "name": name,
-                "argv": argv,
-                "exit_code": proc.returncode,
-                "stdout_tail": (proc.stdout or "")[-500:],
-                "stderr_tail": (proc.stderr or "")[-500:],
-            }
-        )
+def run_preflight(inputs: PreflightInputs, phase: Phase) -> dict[str, object]:
+    results = _steps(inputs, phase)
+    executed = [item for item in results if item["disposition"] == "executed"]
+    not_evaluated = [item for item in results if item["disposition"] == "not_evaluated"]
+    executed_failures = [
+        item for item in executed if int(item["exit_code"]) != 0  # type: ignore[arg-type]
+    ]
     return {
-        "schema": "gwexpy-release-preflight-v1",
-        "release_tag": release_tag,
+        "schema": "gwexpy-release-preflight-v2",
+        "release_tag": inputs.release_tag,
         "phase": phase,
         "results": results,
+        "summary": {
+            "executed": len(executed),
+            "not_evaluated": len(not_evaluated),
+            "executed_failures": len(executed_failures),
+        },
     }
+
+
+def exit_code_for_payload(payload: dict[str, object]) -> int:
+    summary = payload.get("summary")
+    if not isinstance(summary, dict):
+        return 1
+    failures = summary.get("executed_failures", 0)
+    return 1 if isinstance(failures, int) and failures > 0 else 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -126,17 +224,35 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--release-tag", required=True)
     parser.add_argument("--phase", choices=PHASES, required=True)
+    parser.add_argument("--review-evidence", type=Path)
+    parser.add_argument("--reviewed-commit")
+    parser.add_argument("--release-ref")
+    parser.add_argument("--repository")
+    parser.add_argument("--human-approval-evidence", type=Path)
+    parser.add_argument("--go-comment-id", type=int)
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(list(argv) if argv is not None else None)
-    payload = run_preflight(args.repo_root, args.release_tag, args.phase)
+    inputs = PreflightInputs(
+        repo_root=args.repo_root,
+        release_tag=args.release_tag,
+        review_evidence=args.review_evidence,
+        reviewed_commit=args.reviewed_commit,
+        release_ref=args.release_ref,
+        repository=args.repository,
+        human_approval_evidence=args.human_approval_evidence,
+        go_comment_id=args.go_comment_id,
+    )
+    payload = run_preflight(inputs, args.phase)
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
         for item in payload["results"]:
             assert isinstance(item, dict)
-            print(f"{item['name']}: exit={item['exit_code']}")
-    worst = max(int(item["exit_code"]) for item in payload["results"])  # type: ignore[index]
-    return 0 if worst == 0 else 1
+            if item["disposition"] == "executed":
+                print(f"{item['name']}: executed exit={item['exit_code']}")
+            else:
+                print(f"{item['name']}: not_evaluated ({item['reason']})")
+    return exit_code_for_payload(payload)
 
 
 if __name__ == "__main__":
