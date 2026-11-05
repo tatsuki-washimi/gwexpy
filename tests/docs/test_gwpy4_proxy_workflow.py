@@ -26,7 +26,7 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     job = workflow["jobs"]["gwpy-compat"]
     strategy = job["strategy"]
     assert strategy["fail-fast"] is False
-    assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2"]
+    assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2", "4.1.0"]
     assert "matrix.gwpy" in job["name"]
     assert job["env"]["GWPY_VERSION"] == "${{ matrix.gwpy }}"
     assert job["env"]["EXPECTED_SOURCE_SHA"] == (
