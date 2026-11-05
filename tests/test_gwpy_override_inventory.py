@@ -2514,12 +2514,15 @@ def test_source_population_bytes_are_hash_seed_independent() -> None:
     assert outputs[0] == outputs[1]
 
 
-def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -> None:
+def test_workflow_runs_inventory_only_for_supported_oracle_versions() -> None:
     workflow = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    assert workflow["jobs"]["gwpy-compat"]["strategy"]["matrix"]["gwpy"] == [
+    matrix_versions = workflow["jobs"]["gwpy-compat"]["strategy"]["matrix"]["gwpy"]
+    assert matrix_versions == [
         "4.0.1",
         "4.0.2",
+        "4.1.0",
     ]
+    assert SUPPORTED_GWPY == ("4.0.1", "4.0.2")
     pull_request = workflow["on"]["pull_request"]
     assert set(pull_request["branches"]) >= {"main", "maint/0.2"}
     assert "paths" not in pull_request
@@ -2528,6 +2531,7 @@ def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -
     inventory = next(
         step for step in steps if step.get("name") == "Check GWpy override inventory"
     )
+    assert inventory["if"] == "matrix.gwpy != '4.1.0'"
     assert inventory["timeout-minutes"] == "12"
     command = " ".join(inventory["run"].split())
     assert "scripts/audit_gwpy_overrides.py --check" in command

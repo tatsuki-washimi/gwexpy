@@ -26,7 +26,7 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     job = workflow["jobs"]["gwpy-compat"]
     strategy = job["strategy"]
     assert strategy["fail-fast"] is False
-    assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2"]
+    assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2", "4.1.0"]
     assert "matrix.gwpy" in job["name"]
     assert job["env"]["GWPY_VERSION"] == "${{ matrix.gwpy }}"
     assert job["env"]["EXPECTED_SOURCE_SHA"] == (
@@ -119,10 +119,12 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     )
     assert steps.index(proxy_step) < full_index
     audit_step = by_name["Audit GWOSC live test selection"]
+    assert audit_step["if"] == "matrix.gwpy != '4.1.0'"
     audit_command = " ".join(audit_step["run"].replace("\\\n", " ").split())
     assert "scripts/ci/audit_gwosc_timeseries.py" in audit_command
     assert "gwosc-timeseries-audit.json" in audit_command
     assert "gwosc-timeseries-audit.log" in audit_command
+    assert "if" not in steps[full_index]
     assert steps.index(audit_step) < full_index
     full_command = " ".join(steps[full_index]["run"].replace("\\\n", " ").split())
     assert full_command == (
