@@ -119,10 +119,12 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     )
     assert steps.index(proxy_step) < full_index
     audit_step = by_name["Audit GWOSC live test selection"]
+    assert audit_step["if"] == "matrix.gwpy != '4.1.0'"
     audit_command = " ".join(audit_step["run"].replace("\\\n", " ").split())
     assert "scripts/ci/audit_gwosc_timeseries.py" in audit_command
     assert "gwosc-timeseries-audit.json" in audit_command
     assert "gwosc-timeseries-audit.log" in audit_command
+    assert "if" not in steps[full_index]
     assert steps.index(audit_step) < full_index
     full_command = " ".join(steps[full_index]["run"].replace("\\\n", " ").split())
     assert full_command == (
