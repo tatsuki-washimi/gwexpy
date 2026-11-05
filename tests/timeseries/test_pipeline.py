@@ -964,6 +964,73 @@ class TestWhitenTransform:
         # Shape must be preserved
         assert restored.shape[-1] == mat.shape[-1]
 
+    def test_inverse_transform_restores_fit_time_element_units(self):
+        matrix = TimeSeriesMatrix(
+            np.array(
+                [
+                    [[1.0, 2.0, 4.0, 8.0], [3.0, 5.0, 7.0, 11.0]],
+                    [[2.0, 4.0, 7.0, 13.0], [5.0, 8.0, 12.0, 17.0]],
+                ]
+            ),
+            dt=1 * u.s,
+            units=np.array([[u.m, u.cm], [u.V, u.s]], dtype=object),
+        )
+        transform_input = matrix.copy()
+        transform_input.meta.units = np.full(matrix.meta.shape, u.kg, dtype=object)
+        transform = WhitenTransform()
+
+        transform.fit(matrix)
+        transformed = transform.transform(transform_input)
+        restored = transform.inverse_transform(transformed)
+
+        assert [unit for unit in restored.units.flat] == [u.m, u.cm, u.V, u.s]
+
+    @pytest.mark.parametrize("collection_type", [TimeSeriesDict, TimeSeriesList])
+    def test_inverse_transform_restores_fit_time_collection_units(
+        self, collection_type
+    ):
+        fit_series = [
+            TimeSeries([1.0, 2.0, 4.0, 8.0], dt=1 * u.s, unit=u.V),
+            TimeSeries([3.0, 5.0, 7.0, 11.0], dt=1 * u.s, unit=u.m),
+        ]
+        transform_series = [
+            TimeSeries([2.0, 4.0, 7.0, 13.0], dt=1 * u.s, unit=u.kg),
+            TimeSeries([5.0, 8.0, 12.0, 17.0], dt=1 * u.s, unit=u.s),
+        ]
+        if collection_type is TimeSeriesDict:
+            fit_input = TimeSeriesDict(dict(zip(("A", "B"), fit_series)))
+            transform_input = TimeSeriesDict(dict(zip(("A", "B"), transform_series)))
+        else:
+            fit_input = TimeSeriesList(fit_series)
+            transform_input = TimeSeriesList(transform_series)
+        transform = WhitenTransform()
+
+        transform.fit(fit_input)
+        transformed = transform.transform(transform_input)
+        restored = transform.inverse_transform(transformed)
+
+        assert isinstance(restored, collection_type)
+        series = restored.values() if isinstance(restored, TimeSeriesDict) else restored
+        assert [ts.unit for ts in series] == [u.V, u.m]
+
+    def test_inverse_transform_restores_units_with_reduced_components(self):
+        matrix = TimeSeriesMatrix(
+            np.array(
+                [
+                    [[1.0, 2.0, 4.0, 8.0]],
+                    [[3.0, 5.0, 7.0, 11.0]],
+                ]
+            ),
+            dt=1 * u.s,
+            units=np.array([[u.V], [u.m]], dtype=object),
+        )
+        transform = WhitenTransform(n_components=1)
+
+        restored = transform.inverse_transform(transform.fit_transform(matrix))
+
+        assert restored.shape == (2, 1, 4)
+        assert [unit for unit in restored.units.flat] == [u.V, u.m]
+
     def test_inverse_transform_not_fitted_raises(self):
         wt = WhitenTransform()
         mat = _make_tsm()
