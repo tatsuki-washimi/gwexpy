@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from gwpy.detector.channel import (
-    BOOL_TYPES,
     QUOTE_REGEX,
     TYPE_CHECKING,
     Channel,

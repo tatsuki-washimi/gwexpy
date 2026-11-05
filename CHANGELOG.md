@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.9] - Unreleased
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After (v0.2.9) | Reference |
+|---|---|---|---|
+| **GWpy 4.1.0 imports** | Importing `gwexpy.detector.channel` or `gwexpy.plot.gps` failed because the proxy imported internal GWpy symbols removed in 4.1.0. | Both proxy modules import on GWpy 4.1.0 and retain their curated public re-exports. | #866 |
+
+### Fixed
+
+- **GWpy 4.1.0 compatibility**: Keep the detector-channel and GPS plotting proxies importable across the supported GWpy 4.x range (#866).
+
 ## [0.2.8] - 2026-11-04
 
 This maintenance release enforces physical unit consistency and collection/matrix restoration contracts across signal thresholding and time-series preprocessing pipelines.

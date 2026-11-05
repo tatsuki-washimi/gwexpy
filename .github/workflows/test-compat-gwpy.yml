@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gwpy: ["4.0.1", "4.0.2"]
+        gwpy: ["4.0.1", "4.0.2", "4.1.0"]
     defaults:
       run:
         shell: bash -leo pipefail {0}

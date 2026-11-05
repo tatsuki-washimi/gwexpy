@@ -166,6 +166,31 @@ def test_curated_proxy_exports_are_exact(
     assert tuple(module.__all__) == expected
 
 
+@pytest.mark.parametrize(
+    ("module_name", "owner_name", "public_names"),
+    [
+        (
+            "gwexpy.detector.channel",
+            "gwpy.detector.channel",
+            ("Channel", "ChannelList", "parse_unit", "to_gps"),
+        ),
+        (
+            "gwexpy.plot.gps",
+            "gwpy.plot.gps",
+            ("GPS_SCALES", "GPSScale", "register_gps_scale", "to_gps"),
+        ),
+    ],
+)
+def test_gwpy_submodule_proxies_import_and_keep_upstream_owners(
+    module_name: str, owner_name: str, public_names: tuple[str, ...]
+) -> None:
+    module = importlib.import_module(module_name)
+    owner = importlib.import_module(owner_name)
+
+    for name in public_names:
+        assert getattr(module, name) is getattr(owner, name)
+
+
 def test_parent_packages_resolve_curated_proxy_modules_in_fresh_interpreter() -> None:
     root = Path(__file__).resolve().parents[1]
     imports = (
