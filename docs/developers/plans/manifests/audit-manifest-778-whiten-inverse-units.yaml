@@ -1,0 +1,95 @@
+manifest_version: 1
+issue: 778
+lane: task-07
+project: GWexpy
+date: "2026-11-05"
+base_sha: 5cae17a037d7126ea87470ce13e7a47e780675e0
+source_commit: 3cbdd626f58ef4104a1a5d4bfffb10b8be721484
+status: ready_for_review
+stopped: false
+worktree: local SSD scratch worktree v029-pr778
+
+scope:
+  summary: Restore fit-time feature unit metadata in WhitenTransform.inverse_transform.
+  included:
+    - Capture per-feature input units in fit order before collection-to-matrix conversion.
+    - Restore those units on inverse-transformed output, including reduced-component reconstruction.
+    - Keep whitening numerics, accepted inputs, and exception behavior unchanged.
+    - Document the existing mixed-unit numerical dependence.
+  excluded:
+    - Unit conversion or rejection for mixed-unit whitening.
+    - The separate TimeSeries inverse_transform TypeError.
+    - HDF5 collection reader behavior in issue 771.
+
+changed_files:
+  - path: CHANGELOG.md
+    change: Add the v0.2.9 before/after disclosure and fix note for inverse whitening units.
+  - path: gwexpy/timeseries/pipeline.py
+    change: Capture fit-time feature units and restore them on inverse output.
+  - path: tests/timeseries/test_pipeline.py
+    change: Cover fit-time units, collection ordering, and reduced-component reconstruction.
+  - path: docs/developers/plans/manifests/audit-manifest-778-whiten-inverse-units.yaml
+    change: Record scope, review, validation, and omitted checks for this PR.
+
+integration_state:
+  integrated:
+    - Combined candidate worktree includes issues 770, 774, 778, and 866.
+    - Focused combined suite passed with 325 passed and 2 skipped on the GWpy 4.0.2 conda environment.
+  pending:
+    - Separate v0.2.9 PRs add release-note rows at the same top section; rebase and resolve CHANGELOG after an earlier PR merges, then rerun affected checks and review.
+    - Draft PR CI and human review.
+
+validation:
+  baseline:
+    - command: conda run -n gwexpy pytest tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py -q
+      result: 197 passed, 13 warnings.
+  final_verification:
+    - command: conda run -n gwexpy pytest tests/timeseries/test_matrix_analysis.py tests/interop/test_frequency.py tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 325 passed, 2 skipped, 20 warnings; combined candidate on GWpy 4.0.2.
+    - command: conda run -n gwexpy ruff check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: All checks passed.
+    - command: conda run -n gwexpy ruff format --check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: 10 files already formatted.
+    - command: git diff --check origin/main...HEAD
+      result: Passed.
+  omitted_checks:
+    - Full pytest tests/ suite was not run; focused and combined affected suites were run.
+    - Full MyPy suite was not run.
+    - GitHub PR CI has not run for this branch; it will run after publication.
+  check_physics_summary:
+    status: passed
+    findings:
+      - Feature unit ordering matches row-major matrix and existing Dict/List conversion order.
+      - The change restores fit-time metadata without changing whitening numerical operations or dimensional interpretation.
+      - Mixed-unit numerical dependence remains and is documented; algorithm changes are excluded.
+
+review:
+  code_review: No actionable findings.
+  python_review: No actionable findings; Ruff and diff checks passed.
+  physics_review: No blocking issue; mixed-unit limitation is documented.
+  github_review: pending.
+  human_review_required: true
+  human_review_reason: Review fit-time unit semantics before merge; apply needs-physics-review label. Formal Source Human Approval and Release Owner GO remain separate release gates.
+
+agent_audit:
+  skills_used:
+    - verify_physics
+    - gwexpy_conda_jobs
+    - pr-writer
+    - github-mcp-secret-filter
+    - model-effort-router
+  commands_executed:
+    - command: conda run -n gwexpy pytest tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py -q
+      result: 197 passed, 13 warnings.
+    - command: conda run -n gwexpy pytest tests/timeseries/test_matrix_analysis.py tests/interop/test_frequency.py tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 325 passed, 2 skipped, 20 warnings.
+    - command: conda run -n gwexpy ruff check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: Passed.
+    - command: conda run -n gwexpy ruff format --check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: Passed.
+    - command: git diff --check origin/main...HEAD
+      result: Passed.
+  omitted_checks:
+    - Full pytest tests/ suite.
+    - Full MyPy suite.
+    - GitHub PR CI pending PR publication.
