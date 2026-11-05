@@ -4,7 +4,7 @@ lane: task-13
 project: GWexpy
 date: "2026-11-05"
 base_sha: 5cae17a037d7126ea87470ce13e7a47e780675e0
-source_commit: 8a6ebf1bfba737615964bd01b695ae63814ec195
+source_commit: 08d42038a63587e2da166a244468c4541d47b17a
 status: ready_for_review
 stopped: false
 worktree: local SSD scratch worktree v029-pr866
@@ -14,6 +14,7 @@ scope:
   included:
     - Remove imports of upstream internal names BOOL_TYPES and get_scale_docs that are absent in GWpy 4.1.0 and unused in gwexpy.
     - Add GWpy 4.1.0 to the compatibility workflow matrix.
+    - Skip the GWpy 4.0.x override inventory oracle check in the 4.1.0 matrix cell while retaining proxy and timeseries compatibility checks.
     - Assert the proxy contract and the configured compatibility matrix.
   excluded:
     - Broader GWpy API migration or a dependency constraint change.
@@ -21,7 +22,7 @@ scope:
 
 changed_files:
   - path: .github/workflows/test-compat-gwpy.yml
-    change: Add GWpy 4.1.0 to the compatibility matrix.
+    change: Add GWpy 4.1.0 to the compatibility matrix and skip only the 4.0.x override inventory audit in that matrix cell.
   - path: CHANGELOG.md
     change: Add the v0.2.9 before/after compatibility note.
   - path: gwexpy/detector/channel.py
@@ -32,6 +33,8 @@ changed_files:
     change: Verify retained proxy symbols continue to resolve to their upstream owners.
   - path: tests/docs/test_gwpy4_proxy_workflow.py
     change: Keep the workflow matrix contract assertion synchronized with 4.1.0.
+  - path: tests/test_gwpy_override_inventory.py
+    change: Assert that the override inventory audit runs only for supported GWpy oracle versions.
   - path: docs/developers/plans/manifests/audit-manifest-866-gwpy-410-import-compatibility.yaml
     change: Record scope, review, validation, and omitted checks for this PR.
 
@@ -44,6 +47,11 @@ integration_state:
     - Draft PR CI and human review.
 
 validation:
+  pr_ci_before_fix:
+    - check: GWpy compatibility (4.1.0)
+      result: Failed at Check GWpy override inventory with unknown oracle version 4.1.0; the audit manifest covers GWpy 4.0.1 and 4.0.2.
+    - check: Ruff, mypy, pytest, and smoke build
+      result: Failed one stale workflow contract assertion expecting only 4.0.1 and 4.0.2; 11,728 passed, 397 skipped, 52 deselected, and 7 xfailed.
   baseline:
     - environment: Isolated GWpy 4.1.0 venv with the issue-reproduction worktree on PYTHONPATH.
       result: ImportError reproduced for both gwexpy.detector.channel (missing BOOL_TYPES) and gwexpy.plot.gps (missing get_scale_docs).
@@ -62,6 +70,11 @@ validation:
     - environment: GWpy 4.0.2 conda environment.
       command: conda run -n gwexpy pytest tests/timeseries/test_matrix_analysis.py tests/interop/test_frequency.py tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py -q
       result: 325 passed, 2 skipped, 20 warnings; combined candidate.
+    - environment: GWpy 4.0.2 conda environment.
+      command: conda run -n gwexpy pytest tests/test_gwpy_override_inventory.py::test_workflow_runs_inventory_only_for_supported_oracle_versions tests/docs/test_gwpy4_proxy_workflow.py::test_exact_gwpy_matrix_proxy_gate_is_wired -q
+      result: 2 passed after the CI fix.
+    - command: git diff --check
+      result: Passed.
     - command: conda run -n gwexpy ruff check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
       result: All checks passed.
     - command: conda run -n gwexpy ruff format --check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
@@ -71,7 +84,8 @@ validation:
   omitted_checks:
     - Full pytest tests/ suite was not run; focused and combined affected suites were run.
     - Full MyPy suite was not run.
-    - The compatibility workflow has not run on this PR branch; its 4.0.1, 4.0.2, and 4.1.0 jobs will run after publication.
+    - The corrected compatibility workflow has not run on the PR branch yet; rerun after the corrected commit is pushed.
+    - actionlint is unavailable in the local environment; the workflow YAML was parsed by the targeted pytest contract checks.
     - The gwexpy_conda_jobs helper-script invocation resolved the wrong root from its external skill copy and did not find the worktree test path; the focused test was rerun successfully with conda run from the worktree.
     - A combined full suite under GWpy 4.1.0 was not run locally.
   check_physics_summary:
@@ -81,7 +95,7 @@ validation:
 review:
   code_review: Initial review found the workflow contract test still listed only GWpy 4.0.1 and 4.0.2; fixed in 8a6ebf1bfba737615964bd01b695ae63814ec195. Follow-up review found no actionable issues.
   python_review: No actionable findings on the updated Python diff.
-  github_review: pending.
+  github_review: Review #5779122360 identified the unsupported GWpy 4.1.0 inventory oracle; CI logs also exposed a stale exact-matrix assertion, both addressed by skipping only the 4.1.0 inventory step and updating its workflow contract test.
   physics_review_required: false
 
 agent_audit:
@@ -92,6 +106,16 @@ agent_audit:
     - github-mcp-secret-filter
     - model-effort-router
   commands_executed:
+    - command: gh run view 41956359357 --repo tatsuki-washimi/gwexpy --log-failed
+      result: Confirmed GWpy 4.1.0 fails only at the inventory step with unknown oracle version 4.1.0.
+    - command: gh run view 41956359232 --repo tatsuki-washimi/gwexpy --log-failed
+      result: Confirmed one pytest failure from the stale 4.0.x-only matrix assertion; 11,728 passed, 397 skipped, 52 deselected, and 7 xfailed.
+    - command: conda run -n gwexpy pytest tests/test_gwpy_override_inventory.py::test_workflow_runs_inventory_only_for_supported_oracle_versions tests/docs/test_gwpy4_proxy_workflow.py::test_exact_gwpy_matrix_proxy_gate_is_wired -q
+      result: 2 passed.
+    - command: git diff --check
+      result: Passed.
+    - command: actionlint .github/workflows/test-compat-gwpy.yml
+      result: Omitted because actionlint is unavailable.
     - command: Isolated GWpy 4.1.0 import reproduction for gwexpy.detector.channel and gwexpy.plot.gps.
       result: Both imports failed before the fix due to removed upstream internal symbols.
     - command: python -m pytest tests/test_gwpy4_proxy_contract.py -q
