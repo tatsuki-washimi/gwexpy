@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.9] - Unreleased
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After (v0.2.9) | Reference |
+|---|---|---|---|
+| **WhitenTransform inverse units** | `inverse_transform()` reconstructed numerical values but returned dimensionless element units, including for mixed-unit inputs. | `fit()` records the input feature units and `inverse_transform()` restores them in feature order without changing the whitening calculation. | #778 |
+
+### Fixed
+
+- **WhitenTransform inverse units**: Restore fit-time per-feature units after inverse whitening for matrix and collection inputs (#778).
+
 ## [0.2.8] - 2026-11-04
 
 This maintenance release enforces physical unit consistency and collection/matrix restoration contracts across signal thresholding and time-series preprocessing pipelines.

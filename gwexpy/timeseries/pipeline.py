@@ -604,7 +604,14 @@ class StandardizeTransform(Transform):
 
 
 class WhitenTransform(Transform):
-    """Whiten TimeSeriesMatrix-like data with PCA or ZCA."""
+    """Whiten TimeSeriesMatrix-like data with PCA or ZCA.
+
+    Whitening operates on the input's numerical values without converting
+    feature units. For mixed-unit features, the whitening result therefore
+    depends on the numerical unit representation. Inverse transformation
+    restores the units recorded at fit time but does not resolve this
+    dimensional ambiguity.
+    """
 
     supports_inverse = True
 
@@ -627,6 +634,20 @@ class WhitenTransform(Transform):
         self.model: WhiteningModel | None = None
         self._channel_names: list[str] | None = None
         self._original_collection: TimeSeriesDict | TimeSeriesList | None = None
+        self._fit_units: np.ndarray | None = None
+
+    @staticmethod
+    def _units_for_input(x) -> np.ndarray | None:
+        """Return input feature units in the order used by whitening."""
+        if isinstance(x, TimeSeriesMatrix):
+            return x.units.copy().reshape(-1)
+        if isinstance(x, TimeSeriesDict):
+            return np.asarray([series.unit for series in x.values()], dtype=object)
+        if isinstance(x, TimeSeriesList):
+            return np.asarray([series.unit for series in x], dtype=object)
+        if isinstance(x, TimeSeries):
+            return np.asarray([x.unit], dtype=object)
+        return None
 
     def _to_matrix(self, x):
         if isinstance(x, TimeSeriesMatrix):
@@ -646,6 +667,7 @@ class WhitenTransform(Transform):
 
     def fit(self, x):
         """Fit whitening parameters for the input data."""
+        fit_units = self._units_for_input(x)
         mat_data = x
         original = None
         if self.multivariate:
@@ -663,6 +685,7 @@ class WhitenTransform(Transform):
         self.model = model
         self._channel_names = getattr(whitened, "channel_names", None)
         self._original_collection = original
+        self._fit_units = fit_units
         return self
 
     def transform(self, x):
@@ -719,6 +742,8 @@ class WhitenTransform(Transform):
         new_mat = TimeSeriesMatrix(
             X_rec, x0=mat_data.x0, dt=mat_data.dt, xunit=mat_data.xunit
         )
+        if self._fit_units is not None and self._fit_units.size == new_mat.meta.size:
+            new_mat.meta.units = self._fit_units.reshape(new_mat.meta.shape)
         return _restore_collection(new_mat, original)
 
 
