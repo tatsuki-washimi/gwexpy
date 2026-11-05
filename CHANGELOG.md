@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.9] - Unreleased
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After (v0.2.9) | Reference |
+|---|---|---|---|
+| **Matrix phase element units** | `TimeSeriesMatrix.radian()` and `.degree()` converted values and set the container unit, but element unit metadata could remain inconsistent. | Both methods set each element's unit to `rad` or `deg`, matching the converted values and container unit. | #770, PR #867 |
+
+### Fixed
+
+- **Matrix phase element units**: Keep per-element unit metadata consistent with the values returned by `radian()` and `degree()` (#770, PR #867).
+
 ## [0.2.8] - 2026-11-04
 
 This maintenance release enforces physical unit consistency and collection/matrix restoration contracts across signal thresholding and time-series preprocessing pipelines.
