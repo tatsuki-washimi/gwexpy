@@ -1,0 +1,116 @@
+manifest_version: 1
+issue: 866
+lane: task-13
+project: GWexpy
+date: "2026-11-05"
+base_sha: 5cae17a037d7126ea87470ce13e7a47e780675e0
+source_commit: 8a6ebf1bfba737615964bd01b695ae63814ec195
+status: ready_for_review
+stopped: false
+worktree: local SSD scratch worktree v029-pr866
+
+scope:
+  summary: Keep gwexpy detector-channel and GPS plotting proxies importable with GWpy 4.1.0.
+  included:
+    - Remove imports of upstream internal names BOOL_TYPES and get_scale_docs that are absent in GWpy 4.1.0 and unused in gwexpy.
+    - Add GWpy 4.1.0 to the compatibility workflow matrix.
+    - Assert the proxy contract and the configured compatibility matrix.
+  excluded:
+    - Broader GWpy API migration or a dependency constraint change.
+    - Recreating internal GWpy helpers inside gwexpy.
+
+changed_files:
+  - path: .github/workflows/test-compat-gwpy.yml
+    change: Add GWpy 4.1.0 to the compatibility matrix.
+  - path: CHANGELOG.md
+    change: Add the v0.2.9 before/after compatibility note.
+  - path: gwexpy/detector/channel.py
+    change: Stop importing the removed, unused GWpy BOOL_TYPES internal constant.
+  - path: gwexpy/plot/gps.py
+    change: Stop importing the removed, unused GWpy get_scale_docs helper.
+  - path: tests/test_gwpy4_proxy_contract.py
+    change: Verify retained proxy symbols continue to resolve to their upstream owners.
+  - path: tests/docs/test_gwpy4_proxy_workflow.py
+    change: Keep the workflow matrix contract assertion synchronized with 4.1.0.
+  - path: docs/developers/plans/manifests/audit-manifest-866-gwpy-410-import-compatibility.yaml
+    change: Record scope, review, validation, and omitted checks for this PR.
+
+integration_state:
+  integrated:
+    - Combined candidate worktree includes issues 770, 774, 778, and 866.
+    - Focused combined suite passed with 325 passed and 2 skipped on the GWpy 4.0.2 conda environment.
+  pending:
+    - Separate v0.2.9 PRs add release-note rows at the same top section; rebase and resolve CHANGELOG after an earlier PR merges, then rerun affected checks and review.
+    - Draft PR CI and human review.
+
+validation:
+  baseline:
+    - environment: Isolated GWpy 4.1.0 venv with the issue-reproduction worktree on PYTHONPATH.
+      result: ImportError reproduced for both gwexpy.detector.channel (missing BOOL_TYPES) and gwexpy.plot.gps (missing get_scale_docs).
+    - environment: GWpy 4.0.2 conda environment.
+      result: Both proxy imports succeeded before the fix.
+  final_verification:
+    - environment: Isolated GWpy 4.1.0 venv.
+      command: python -m pytest tests/test_gwpy4_proxy_contract.py -q
+      result: 44 passed, 3 skipped.
+    - environment: GWpy 4.0.2 conda environment.
+      command: conda run -n gwexpy pytest tests/test_gwpy4_proxy_contract.py -q
+      result: 47 passed.
+    - environment: GWpy 4.0.2 conda environment.
+      command: conda run -n gwexpy pytest tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 3 passed after updating the expected matrix.
+    - environment: GWpy 4.0.2 conda environment.
+      command: conda run -n gwexpy pytest tests/timeseries/test_matrix_analysis.py tests/interop/test_frequency.py tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 325 passed, 2 skipped, 20 warnings; combined candidate.
+    - command: conda run -n gwexpy ruff check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: All checks passed.
+    - command: conda run -n gwexpy ruff format --check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: 10 files already formatted.
+    - command: git diff --check origin/main...HEAD
+      result: Passed.
+  omitted_checks:
+    - Full pytest tests/ suite was not run; focused and combined affected suites were run.
+    - Full MyPy suite was not run.
+    - The compatibility workflow has not run on this PR branch; its 4.0.1, 4.0.2, and 4.1.0 jobs will run after publication.
+    - The gwexpy_conda_jobs helper-script invocation resolved the wrong root from its external skill copy and did not find the worktree test path; the focused test was rerun successfully with conda run from the worktree.
+    - A combined full suite under GWpy 4.1.0 was not run locally.
+  check_physics_summary:
+    status: not_applicable
+    reason: Import compatibility only; no numerical, axis, or physical-unit behavior changes.
+
+review:
+  code_review: Initial review found the workflow contract test still listed only GWpy 4.0.1 and 4.0.2; fixed in 8a6ebf1bfba737615964bd01b695ae63814ec195. Follow-up review found no actionable issues.
+  python_review: No actionable findings on the updated Python diff.
+  github_review: pending.
+  physics_review_required: false
+
+agent_audit:
+  skills_used:
+    - fix_errors
+    - gwexpy_conda_jobs
+    - pr-writer
+    - github-mcp-secret-filter
+    - model-effort-router
+  commands_executed:
+    - command: Isolated GWpy 4.1.0 import reproduction for gwexpy.detector.channel and gwexpy.plot.gps.
+      result: Both imports failed before the fix due to removed upstream internal symbols.
+    - command: python -m pytest tests/test_gwpy4_proxy_contract.py -q
+      result: 44 passed, 3 skipped in GWpy 4.1.0 venv.
+    - command: conda run -n gwexpy pytest tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 3 passed.
+    - command: conda run -n gwexpy pytest tests/timeseries/test_matrix_analysis.py tests/interop/test_frequency.py tests/timeseries/test_pipeline.py tests/signal/test_preprocessing.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py -q
+      result: 325 passed, 2 skipped, 20 warnings.
+    - command: conda run -n gwexpy ruff check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: Passed.
+    - command: conda run -n gwexpy ruff format --check gwexpy/timeseries/matrix_analysis.py tests/timeseries/test_matrix_analysis.py gwexpy/interop/frequency.py tests/interop/test_frequency.py gwexpy/timeseries/pipeline.py tests/timeseries/test_pipeline.py gwexpy/detector/channel.py gwexpy/plot/gps.py tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+      result: Passed.
+    - command: git diff --check origin/main...HEAD
+      result: Passed.
+  omitted_checks:
+    - Full pytest tests/ suite and full MyPy suite.
+    - Full combined test suite under GWpy 4.1.0.
+    - GitHub PR CI pending PR publication.
+
+limitations:
+  - Direct imports of the two removed upstream internal names through gwexpy proxy modules are no longer available; neither was a curated public re-export.
+  - GWpy 4.1.0 support is conditional on its compatibility matrix and this PR's CI result.
