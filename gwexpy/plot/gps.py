@@ -20,7 +20,6 @@ from gwpy.plot.gps import (
     cast,
     contextlib,
     from_gps,
-    get_scale_docs,
     get_scale_names,
     numpy,
     register_gps_scale,
