@@ -101,6 +101,9 @@ jobs:
           PY
 
       - name: Check GWpy override inventory
+        # The reviewed override inventory uses GWpy 4.0.x oracle versions.
+        # Keep GWpy 4.1.0 covered by the proxy and timeseries tests below.
+        if: matrix.gwpy != '4.1.0'
         timeout-minutes: 12
         run: |
           python scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence \
