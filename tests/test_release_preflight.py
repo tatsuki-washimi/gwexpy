@@ -51,6 +51,39 @@ def test_prepublish_without_inputs_does_not_run_help():
         assert argv is None
 
 
+def test_source_phase_uses_source_review_validator_phase(monkeypatch):
+    mod = load_module()
+    captured: list[list[str]] = []
+
+    def fake_run(argv, *, cwd):
+        captured.append(list(argv))
+        return subprocess.CompletedProcess(argv, 0, "source_review_status=READY\n", "")
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    inputs = mod.PreflightInputs(
+        repo_root=ROOT,
+        release_tag="v0.2.6",
+        review_evidence=ROOT / "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
+        reviewed_commit="a" * 40,
+    )
+    payload = mod.run_preflight(inputs, "source")
+    evidence_argv = payload["results"][0]["argv"]
+    assert evidence_argv is not None
+    phase_index = evidence_argv.index("--phase")
+    assert evidence_argv[phase_index + 1] == "source-review"
+    assert "--phase" in captured[0]
+
+
+def test_source_review_phase_accepts_empty_human_approval_fixture(tmp_path):
+    """Regression: source-review must validate pre-approval evidence, not candidate rules."""
+    from tests.test_v026_review_evidence_v2 import _fixture, _validate
+
+    validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
+    result = _validate(validator, repo, contract, source_sha, path, phase="source-review")
+    assert data["human_approval"]["verdict"] == ""
+    assert result["source_sha"] == source_sha
+
+
 def test_cli_json_preparation():
     proc = subprocess.run(
         [

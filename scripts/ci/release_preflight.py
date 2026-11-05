@@ -8,6 +8,7 @@ Steps without required inputs are reported as ``not_evaluated`` (not success).
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess
 import sys
@@ -40,6 +41,13 @@ class PreflightInputs:
     go_comment_id: int | None = None
 
 
+def _tool_root(fallback: Path) -> Path:
+    installed = Path(__file__).resolve().parents[2]
+    if (installed / "scripts/ci/validate_release_review_evidence.py").is_file():
+        return installed
+    return fallback.resolve()
+
+
 def _run(argv: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(argv, cwd=cwd, text=True, capture_output=True, check=False)
 
@@ -55,6 +63,45 @@ def _executed(name: str, argv: list[str], proc: subprocess.CompletedProcess[str]
     }
 
 
+def _load_validate_release_module(tool_root: Path) -> Any:
+    path = tool_root / "scripts" / "validate_release.py"
+    spec = importlib.util.spec_from_file_location("validate_release_preflight", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("validate_release.py is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _run_validate_s_to_r(
+    repo_root: Path,
+    tool_root: Path,
+    reviewed_commit: str,
+    release_ref: str,
+    expected_tag: str,
+) -> dict[str, Any]:
+    name = "validate_s_to_r"
+    label = [
+        "validate_s_to_r",
+        f"reviewed={reviewed_commit}",
+        f"release_ref={release_ref}",
+        f"tag={expected_tag}",
+    ]
+    try:
+        module = _load_validate_release_module(tool_root)
+        module.validate_s_to_r(
+            repo_root,
+            reviewed_commit,
+            release_ref,
+            expected_tag=expected_tag,
+        )
+    except Exception as exc:
+        proc = subprocess.CompletedProcess(label, 1, "", str(exc))
+        return _executed(name, label, proc)
+    proc = subprocess.CompletedProcess(label, 0, "validate_s_to_r=ok", "")
+    return _executed(name, label, proc)
+
+
 def _not_evaluated(name: str, *, reason: str) -> dict[str, Any]:
     return {
         "name": name,
@@ -67,12 +114,13 @@ def _not_evaluated(name: str, *, reason: str) -> dict[str, Any]:
 def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
     py = sys.executable
     root = inputs.repo_root.resolve()
+    tools = _tool_root(root)
     results: list[dict[str, Any]] = []
 
     if phase == "preparation":
         argv = [
             py,
-            str(root / "scripts/ci/release_contract.py"),
+            str(tools / "scripts/ci/release_contract.py"),
             "--review-evidence-path",
             inputs.release_tag,
         ]
@@ -88,38 +136,44 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
                 )
             )
             return results
+        reviewed_commit = inputs.reviewed_commit or inputs.release_ref
         argv = [
             py,
-            str(root / "scripts/ci/validate_release_review_evidence.py"),
+            str(tools / "scripts/ci/validate_release_review_evidence.py"),
             "--evidence",
             str(inputs.review_evidence),
             "--expected-tag",
             inputs.release_tag,
             "--repo-root",
             str(root),
+            "--phase",
+            "source-review",
         ]
-        if inputs.reviewed_commit:
-            argv.extend(["--reviewed-commit", inputs.reviewed_commit])
+        if reviewed_commit:
+            argv.extend(["--reviewed-commit", reviewed_commit])
         results.append(_executed("validate_release_review_evidence", argv, _run(argv, cwd=root)))
-        if inputs.release_ref:
-            argv = [
-                py,
-                str(root / "scripts/validate_release.py"),
-                "--repo-root",
-                str(root),
-                "--release-ref",
-                inputs.release_ref,
-                "--expected-tag",
-                inputs.release_tag,
-            ]
-            if inputs.review_evidence:
-                argv.extend(["--review-evidence", str(inputs.review_evidence)])
-            results.append(_executed("validate_release_source", argv, _run(argv, cwd=root)))
+        if inputs.release_ref and reviewed_commit and inputs.release_ref != reviewed_commit:
+            results.append(
+                _run_validate_s_to_r(
+                    root,
+                    tools,
+                    reviewed_commit,
+                    inputs.release_ref,
+                    inputs.release_tag,
+                )
+            )
+        elif inputs.release_ref:
+            results.append(
+                _not_evaluated(
+                    "validate_s_to_r",
+                    reason="release_ref equals reviewed commit; S-to-R delta check skipped",
+                )
+            )
         else:
             results.append(
                 _not_evaluated(
-                    "validate_release_source",
-                    reason="missing --release-ref (source validator not run)",
+                    "validate_s_to_r",
+                    reason="missing --release-ref (S-to-R binding not evaluated)",
                 )
             )
         return results
@@ -128,7 +182,7 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
         version = inputs.release_tag.removeprefix("v")
         argv = [
             py,
-            str(root / "scripts/ci/release_promotion.py"),
+            str(tools / "scripts/ci/release_promotion.py"),
             "profile",
             "--version",
             version,
@@ -152,7 +206,7 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
         else:
             argv = [
                 py,
-                str(root / "scripts/ci/verify_release_human_approval.py"),
+                str(tools / "scripts/ci/verify_release_human_approval.py"),
                 "--repo-root",
                 str(root),
                 "--expected-tag",
