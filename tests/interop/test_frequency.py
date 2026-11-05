@@ -189,7 +189,9 @@ class TestHdf5FrequencySeries:
             h5f["ch"].attrs["frequencies"] = [1.0, 2.0, 3.0, 4.0]
             h5f["ch"].attrs["frequency_unit"] = "kHz"
             result = from_hdf5_frequencyseries(FrequencySeries, h5f, "ch")
-        np.testing.assert_allclose(result.frequencies.to_value("Hz"), [1000, 2000, 3000, 4000])
+        np.testing.assert_allclose(
+            result.frequencies.to_value("Hz"), [1000, 2000, 3000, 4000]
+        )
 
     def test_hdf5_missing_frequency_unit_preserves_legacy_default(self, tmp_path):
         """Missing unit metadata retains the existing raw-frequency contract."""
@@ -199,7 +201,9 @@ class TestHdf5FrequencySeries:
             to_hdf5_frequencyseries(_make_fs(n=4), h5f, "ch")
             del h5f["ch"].attrs["frequency_unit"]
             result = from_hdf5_frequencyseries(FrequencySeries, h5f, "ch")
-        np.testing.assert_allclose(result.frequencies.to_value("Hz"), np.linspace(1, 10, 4))
+        np.testing.assert_allclose(
+            result.frequencies.to_value("Hz"), np.linspace(1, 10, 4)
+        )
 
     def test_overwrite_false_raises(self, tmp_path):
         h5py = pytest.importorskip("h5py")

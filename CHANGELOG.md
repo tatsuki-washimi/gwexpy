@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.9] - Unreleased
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After (v0.2.9) | Reference |
+|---|---|---|---|
+| **Invalid HDF5 frequency units** | An invalid nonempty `frequency_unit` was ignored and the numeric frequency axis was treated as Hz. | Astropy's unit parsing error is propagated. Valid frequency units still convert the axis, and a missing attribute keeps the existing fallback. | #774, PR #868 |
+
+### Fixed
+
+- **Invalid HDF5 frequency units**: Reject malformed nonempty unit metadata instead of silently labeling the frequency axis as Hz (#774, PR #868).
+
 ## [0.2.8] - 2026-11-04
 
 This maintenance release enforces physical unit consistency and collection/matrix restoration contracts across signal thresholding and time-series preprocessing pipelines.
