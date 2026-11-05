@@ -179,13 +179,9 @@ def from_hdf5_frequencyseries(cls: type[T], group: h5py.Group, path: str) -> T:
         f0 = attrs["f0"]
         freqs = f0 + np.arange(len(data)) * df
     if freqs is not None and freq_unit:
-        freqs = np.array(freqs) * 1.0
-        try:
-            import astropy.units as u
+        import astropy.units as u
 
-            freqs = freqs * u.Unit(freq_unit) if freq_unit else freqs
-        except (ImportError, ValueError):
-            pass
+        freqs = np.asarray(freqs) * u.Unit(freq_unit)
     unit = attrs.get("unit", "")
     name = attrs.get("name", None)
     epoch = attrs.get("epoch", None)
