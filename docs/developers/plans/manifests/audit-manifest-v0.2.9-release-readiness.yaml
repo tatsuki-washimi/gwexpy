@@ -1,24 +1,672 @@
 review_evidence_json: |
   {
-    "schema": "gwexpy-v029-review-evidence-v2",
-    "source_sha": "",
-    "review_base_sha": "82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f",
     "changed_path_map": {
-      "documentation": [],
-      "release-security": [],
-      "scientific-data-model": []
+      "documentation": [
+        "CHANGELOG.md",
+        "docs/developers/plans/20261105_v0.2.9_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-778-whiten-inverse-units.yaml",
+        "docs/developers/plans/manifests/audit-manifest-866-gwpy-410-import-compatibility.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.8-post-release.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.9-release-readiness.yaml",
+        "docs_redesign/_static/downloads/development-activity-v0.2.8-weekly.csv",
+        "docs_redesign/_static/images/development-activity-v0.2.8-ja.svg",
+        "docs_redesign/_static/images/development-activity-v0.2.8.svg",
+        "docs_redesign/about/changelog.md",
+        "docs_redesign/explanation/roadmap.md",
+        "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+        "docs_redesign/release_status.json",
+        "docs_redesign/tutorials/installation.md",
+        "release_notes/v0.2.9.md",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_v024_publication_status.py"
+      ],
+      "release-security": [
+        ".github/workflows/test-compat-gwpy.yml",
+        ".zenodo.json",
+        "CITATION.cff",
+        "scripts/ci/release_context.py",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/release_preflight.py",
+        "scripts/ci/validate_release_review_evidence.py",
+        "scripts/validate_release.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_v029_release_support.py"
+      ],
+      "scientific-data-model": [
+        "gwexpy/_version.py",
+        "gwexpy/detector/channel.py",
+        "gwexpy/interop/frequency.py",
+        "gwexpy/plot/gps.py",
+        "gwexpy/timeseries/matrix_analysis.py",
+        "gwexpy/timeseries/pipeline.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
+        "tests/docs/test_v024_publication_status.py",
+        "tests/interop/test_frequency.py",
+        "tests/test_check_release_metadata_script.py",
+        "tests/test_gwpy4_proxy_contract.py",
+        "tests/test_gwpy_override_inventory.py",
+        "tests/test_release_context.py",
+        "tests/test_release_contracts.py",
+        "tests/test_release_preflight.py",
+        "tests/test_release_review_evidence.py",
+        "tests/test_run_gate.py",
+        "tests/test_v029_release_support.py",
+        "tests/timeseries/test_matrix_analysis.py",
+        "tests/timeseries/test_pipeline.py"
+      ]
     },
-    "entries": [],
-    "owner_risk_decisions": [],
+    "entries": [
+      {
+        "completed_at_utc": "2026-11-06T07:08:53Z",
+        "execution_context_id": "codex-native-v029-documentation-s3-20261106t070831z",
+        "execution_environment": "Linux; Codex native subagent; independent read-only review of committed Source S3; no repository files modified.",
+        "findings": [],
+        "lane": "documentation",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": "{\"effective_values\": \"not independently observable from tool result\", \"requested_effort\": \"medium\", \"requested_model\": \"gpt-6-sol\", \"transport\": \"codex_native_explicit\"}",
+          "evidence_sha256": "7d7edde3c52e8e7ecc81c21435020b8cabcff36063964e28aa029002c1bf3ee5",
+          "evidence_source": "Codex native dispatch request and completed tool result schema",
+          "limitations": "The native tool result confirms task completion but exposes no effective runtime model or effort; requested settings are not treated as proof.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "CHANGELOG.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs/developers/plans/20261105_v0.2.9_release_plan.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs/developers/plans/manifests/audit-manifest-778-whiten-inverse-units.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs/developers/plans/manifests/audit-manifest-866-gwpy-410-import-compatibility.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.8-post-release.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.9-release-readiness.yaml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/_static/downloads/development-activity-v0.2.8-weekly.csv",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/_static/images/development-activity-v0.2.8-ja.svg",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/_static/images/development-activity-v0.2.8.svg",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/about/changelog.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/explanation/roadmap.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/release_status.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "docs_redesign/tutorials/installation.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "release_notes/v0.2.9.md",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the documentation lane; see report for findings assessment.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "b67027d8e9e811a1daecd187d3168c2488a44547470dac8c2345d61b97747662",
+        "report": "**APPROVED — no findings** for Source S3 `f5268175312d22aca902acf92335d9af6270e7f5` against `82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f`. The four adopted fixes are accurately described; the metadata date is 2026-11-07; there are no v0.2.9 publication claims; Japanese translations match the changed source text. The v0.2.8 activity CSV hash and SVG provenance match the immutable tag. The revised source-snapshot test inspects the exact S placeholder and validates candidate evidence before selecting S. Verification: 23 focused tests passed and `git diff --check` passed. No files were changed. Review window: 2026-11-06 07:08:31–07:08:53 UTC.",
+        "requested_effort": "medium",
+        "requested_model": "gpt-6-sol",
+        "reviewed_commit": "f5268175312d22aca902acf92335d9af6270e7f5",
+        "reviewer_id": "codex-subagent-review-docs-s3",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "dce39139405264b784bbcfd9382217248cb9c4c35e7b9746faa6ee962aceb84d",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "started_at_utc": "2026-11-06T07:08:31Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-11-06T07:09:52Z",
+        "execution_context_id": "codex-native-v029-release-security-s3-20261106t070836z",
+        "execution_environment": "Linux; Codex native subagent; independent read-only review of committed Source S3; no repository files modified.",
+        "findings": [],
+        "lane": "release-security",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": "{\"effective_values\": \"not independently observable from tool result\", \"requested_effort\": \"high\", \"requested_model\": \"gpt-6-sol\", \"transport\": \"codex_native_explicit\"}",
+          "evidence_sha256": "aaaadf078ef95166f79ae40322406ebac624883957d3180ea54ca8c853975a18",
+          "evidence_source": "Codex native dispatch request and completed tool result schema",
+          "limitations": "The native tool result confirms task completion but exposes no effective runtime model or effort; requested settings are not treated as proof.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": ".github/workflows/test-compat-gwpy.yml",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": ".zenodo.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "CITATION.cff",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/ci/release_context.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/ci/release_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/ci/release_contracts.json",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/ci/release_preflight.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/ci/validate_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "scripts/validate_release.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "tests/test_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the release-security lane; see report for findings assessment.",
+            "path": "tests/test_v029_release_support.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "e83a8cdef2d7695f05db0e2847444d22951e9650c0048f2e105515dd3ffe359c",
+        "report": "**APPROVED — no findings** for Source S3 `f5268175312d22aca902acf92335d9af6270e7f5` against `82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f`. The v0.2.9 contract, exact S→R allowlist, Source Approval binding, promotion workflow, and packaging metadata are consistent. The candidate snapshot test validates candidate evidence and the S→R delta before reading the source tree. The preflight loader now registers the imported validator module before executing its dataclass definitions and restores the prior binding on import failure. Verification: 538 selected release/workflow/promotion tests passed; Ruff check and format check passed for changed Python files; `git diff --check`, release metadata validation, and the v0.2.9 promotion profile check passed. A negative preflight invocation reached the S→R ancestry validator, confirming the former dataclass import exception is gone. No files were changed. Review window: 2026-11-06 07:08:36–07:09:52 UTC.",
+        "requested_effort": "high",
+        "requested_model": "gpt-6-sol",
+        "reviewed_commit": "f5268175312d22aca902acf92335d9af6270e7f5",
+        "reviewer_id": "codex-subagent-review-security-s3",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "3aba70ee811ab4c0151a400a67facda9e75f505c5db5f69b3b286243b8c06608",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_v029_release_support.py",
+          "tests/test_validate_release_script.py",
+          "tools"
+        ],
+        "started_at_utc": "2026-11-06T07:08:36Z",
+        "verdict": "APPROVED"
+      },
+      {
+        "completed_at_utc": "2026-11-06T07:08:41Z",
+        "execution_context_id": "codex-native-v029-science-s3-20261106t070834z",
+        "execution_environment": "Linux; Codex native subagent; independent read-only review of committed Source S3; no repository files modified.",
+        "findings": [],
+        "lane": "scientific-data-model",
+        "model_observation": {
+          "effective_effort": null,
+          "effective_model": null,
+          "evidence_record": "{\"effective_values\": \"not independently observable from tool result\", \"requested_effort\": \"medium\", \"requested_model\": \"gpt-6-sol\", \"transport\": \"codex_native_explicit\"}",
+          "evidence_sha256": "7d7edde3c52e8e7ecc81c21435020b8cabcff36063964e28aa029002c1bf3ee5",
+          "evidence_source": "Codex native dispatch request and completed tool result schema",
+          "limitations": "The native tool result confirms task completion but exposes no effective runtime model or effort; requested settings are not treated as proof.",
+          "self_reported_effort": null,
+          "self_reported_model": null,
+          "status": "unverified"
+        },
+        "path_ledger": [
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/_version.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/detector/channel.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/interop/frequency.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/plot/gps.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/timeseries/matrix_analysis.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "gwexpy/timeseries/pipeline.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/docs/test_gwpy4_proxy_workflow.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/docs/test_v024_publication_status.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/interop/test_frequency.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_check_release_metadata_script.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_gwpy4_proxy_contract.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_gwpy_override_inventory.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_release_context.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_release_contracts.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_release_preflight.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_release_review_evidence.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_run_gate.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/test_v029_release_support.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/timeseries/test_matrix_analysis.py",
+            "status": "reviewed"
+          },
+          {
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "note": "Independently reviewed for the scientific-data-model lane; see report for findings assessment.",
+            "path": "tests/timeseries/test_pipeline.py",
+            "status": "reviewed"
+          }
+        ],
+        "raw_report_sha256": "39f5dfc1cd4144cb026fa68eaa7b78ba8f947b3a21529f6db4ce481f6aa01007",
+        "report": "**APPROVED — no findings** for Source S3 `f5268175312d22aca902acf92335d9af6270e7f5` against `82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f`. The #770, #774, #778, and #866 behavior and tests remain scientifically and dimensionally consistent. The source-snapshot test now validates candidate evidence and S→R before selecting the exact source. `git diff --check` passed. The review was read-only; no additional tests were run by this reviewer. Review window: 2026-11-06 07:08:34–07:08:41 UTC.",
+        "requested_effort": "medium",
+        "requested_model": "gpt-6-sol",
+        "reviewed_commit": "f5268175312d22aca902acf92335d9af6270e7f5",
+        "reviewer_id": "codex-subagent-review-science-s3",
+        "reviewer_type": "ai-agent",
+        "role": "reviewer",
+        "scope_digest": "e757abe7e57961523ae2e7d751c209eaf66b9dc25b87f67ec4090d73e155279a",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "started_at_utc": "2026-11-06T07:08:34Z",
+        "verdict": "APPROVED"
+      }
+    ],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0,
-      "risk_decisions_sha256": ""
-    }
+      "approver_login": "tatsuki-washimi",
+      "comment_id": 6680193572,
+      "reviewed_commit": "f5268175312d22aca902acf92335d9af6270e7f5",
+      "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "role": "release-owner",
+      "scope_digest": "e757abe7e57961523ae2e7d751c209eaf66b9dc25b87f67ec4090d73e155279a",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "timestamp_utc": "2026-11-06T08:02:36Z",
+      "verdict": "APPROVED"
+    },
+    "owner_risk_decisions": [],
+    "review_base_sha": "82c177d5dab221f15c9c7c81ad86bbd91e2c5e7f",
+    "schema": "gwexpy-v029-review-evidence-v2",
+    "source_sha": "f5268175312d22aca902acf92335d9af6270e7f5"
   }
