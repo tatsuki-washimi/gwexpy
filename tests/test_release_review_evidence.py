@@ -372,9 +372,11 @@ def _assert_v026_candidate_record(validator, path: Path) -> None:
     assert data["human_approval"]["reviewed_commit"] == next(iter(commits))
 
     release_validator = load_release_validator()
-    head = _git(ROOT, "rev-parse", "HEAD")
+    # Validate the historical v0.2.6 candidate, not a later main tip that also
+    # contains unrelated releases and therefore cannot be an S-to-R transition.
+    candidate = _git(ROOT, "rev-parse", "refs/tags/v0.2.6^{commit}")
     release_validator.validate_s_to_r(
-        ROOT, next(iter(commits)), head, expected_tag="v0.2.6"
+        ROOT, next(iter(commits)), candidate, expected_tag="v0.2.6"
     )
 
 

@@ -23,6 +23,7 @@ V2_REVIEW_EVIDENCE_SCHEMAS = {
     "gwexpy-v026-review-evidence-v2",
     "gwexpy-v027-review-evidence-v2",
     "gwexpy-v028-review-evidence-v2",
+    "gwexpy-v029-review-evidence-v2",
 }
 LEGACY_REVIEW_EVIDENCE_SCHEMAS = {
     "gwexpy-v0113-review-evidence-v1",
@@ -356,7 +357,15 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
             raise ReleaseContractError(f"invalid recovery_dispatch_ref for {tag}")
     review_base_sha = contract.get("review_base_sha")
     if review_base_sha is not None and (
-        tag not in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7", "v0.2.8"}
+        tag
+        not in {
+            "v0.2.4",
+            "v0.2.5",
+            "v0.2.6",
+            "v0.2.7",
+            "v0.2.8",
+            "v0.2.9",
+        }
         or not isinstance(review_base_sha, str)
         or SHA40.fullmatch(review_base_sha) is None
     ):
@@ -376,6 +385,7 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
     frozen_review_schemas = {
         "v0.2.7": "gwexpy-v027-review-evidence-v2",
         "v0.2.8": "gwexpy-v028-review-evidence-v2",
+        "v0.2.9": "gwexpy-v029-review-evidence-v2",
     }
     if tag in frozen_review_schemas and (
         review_profile != "v2"
@@ -404,8 +414,11 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
     if contract["review_evidence_path"] not in contract["s_to_r_allowed_paths"]:
         raise ReleaseContractError(f"S-to-R paths omit review evidence for {tag}")
     if not _protected_refs(
-        contract["protected_refs"], allow_main_only=tag in {"v0.2.7", "v0.2.8"}
-    ) or (tag in {"v0.2.7", "v0.2.8"} and contract["protected_refs"] != ["main"]):
+        contract["protected_refs"],
+        allow_main_only=tag in {"v0.2.7", "v0.2.8", "v0.2.9"},
+    ) or (
+        tag in {"v0.2.7", "v0.2.8", "v0.2.9"} and contract["protected_refs"] != ["main"]
+    ):
         raise ReleaseContractError(f"invalid protected refs for {tag}")
     if "promotion" in contract:
         _validate_promotion(tag, contract["promotion"])
