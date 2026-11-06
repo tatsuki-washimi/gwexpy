@@ -67,8 +67,11 @@ def test_v029_readiness_files_are_open_and_use_exact_source_placeholder() -> Non
     plan = plan_path.read_text(encoding="utf-8")
 
     assert "Issue #871" in plan
-    assert "Release date: **Undecided.**" in plan
-    assert "until the Release Owner selects one" in plan
+    assert "Release Owner selected **2026-11-07**" in plan
+    assert (
+        "does not claim that GitHub Release, PyPI, or Zenodo publication happened"
+        in plan
+    )
     assert "release_date" not in contract
     assert "publication_date" not in contract
     checkboxes = re.findall(r"^- \[([ xX])\]", plan, re.MULTILINE)
