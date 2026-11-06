@@ -63,15 +63,34 @@ def test_v029_source_snapshot_preserves_open_plan_and_placeholder() -> None:
     contracts = _load_module("release_contract_v029_files", LOADER_PATH)
     contract = contracts.release_contract("v0.2.9")
     evidence_path = ROOT / contract["review_evidence_path"]
-    candidate_evidence = evidence_path.read_text(encoding="utf-8")
-    source_match = re.search(
-        r'^\s*"source_sha":\s*"([0-9a-f]{40})"',
-        candidate_evidence,
-        re.MULTILINE,
+    candidate_evidence = evidence_path.read_bytes()
+    validator = _load_module("validate_release_v029_files", VALIDATOR_PATH)
+    placeholder = validator._empty_v2_review_evidence_placeholder(
+        contract["review_evidence_schema"], contract["review_base_sha"]
     )
-    source_sha = (
-        source_match.group(1) if source_match else _git(ROOT, "rev-parse", "HEAD")
-    )
+    if candidate_evidence == placeholder:
+        source_sha = _git(ROOT, "rev-parse", "HEAD")
+    else:
+        evidence_validator = _load_module(
+            "review_evidence_v029_source_snapshot",
+            ROOT / "scripts" / "ci" / "validate_release_review_evidence.py",
+        )
+        candidate = evidence_validator.validate_review_evidence(
+            evidence_path,
+            reviewed_commit=None,
+            required_lanes=None,
+            repo_root=ROOT,
+            expected_tag="v0.2.9",
+            phase="candidate",
+        )
+        source_sha = candidate["source_sha"]
+        validator.validate_s_to_r(
+            ROOT,
+            source_sha,
+            _git(ROOT, "rev-parse", "HEAD"),
+            expected_tag="v0.2.9",
+        )
+
     source_plan = subprocess.check_output(
         ["git", "show", f"{source_sha}:{contract['plan_path']}"], cwd=ROOT
     ).decode("utf-8")
@@ -91,10 +110,7 @@ def test_v029_source_snapshot_preserves_open_plan_and_placeholder() -> None:
     checkboxes = re.findall(r"^- \[([ xX])\]", source_plan, re.MULTILINE)
     assert checkboxes and set(checkboxes) == {" "}
 
-    validator = _load_module("validate_release_v029_files", VALIDATOR_PATH)
-    assert source_evidence == validator._empty_v2_review_evidence_placeholder(
-        contract["review_evidence_schema"], contract["review_base_sha"]
-    )
+    assert source_evidence == placeholder
 
 
 def test_v029_requires_release_review_evidence() -> None:

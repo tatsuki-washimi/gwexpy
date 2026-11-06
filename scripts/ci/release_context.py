@@ -30,7 +30,9 @@ def _run(cmd: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _obs(value: Any, state: Observation, *, detail: str | None = None) -> dict[str, Any]:
+def _obs(
+    value: Any, state: Observation, *, detail: str | None = None
+) -> dict[str, Any]:
     payload: dict[str, Any] = {"state": state, "value": value}
     if detail:
         payload["detail"] = detail
@@ -52,7 +54,9 @@ def _git_tag(repo_root: Path, release_tag: str | None) -> dict[str, Any]:
         return _obs(None, "not_observed", detail="--release-tag not provided")
     if not RELEASE_TAG.fullmatch(release_tag):
         return _obs(release_tag, "conflict", detail="invalid release tag format")
-    proc = _run(["git", "rev-parse", f"refs/tags/{release_tag}^{{commit}}"], cwd=repo_root)
+    proc = _run(
+        ["git", "rev-parse", f"refs/tags/{release_tag}^{{commit}}"], cwd=repo_root
+    )
     if proc.returncode != 0:
         return _obs(None, "verified", detail=f"tag {release_tag} not present locally")
     sha = proc.stdout.strip()
@@ -165,7 +169,10 @@ def build_context(
         "schema": "gwexpy-release-context-v1",
         "repo_root": str(repo_root.resolve()),
         "release_tag": release_tag,
-        "git": {"head": _git_head(repo_root), "tag_commit": _git_tag(repo_root, release_tag)},
+        "git": {
+            "head": _git_head(repo_root),
+            "tag_commit": _git_tag(repo_root, release_tag),
+        },
         "workflows": _workflow_files(repo_root),
         "release_contracts": _release_contract_entry(repo_root, release_tag),
         "github": {

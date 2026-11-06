@@ -25,7 +25,11 @@ def test_preparation_runs_release_contract_only():
     mod = load_module()
     inputs = mod.PreflightInputs(repo_root=ROOT, release_tag="v0.2.8")
     payload = mod.run_preflight(inputs, "preparation")
-    assert payload["summary"] == {"executed": 1, "not_evaluated": 0, "executed_failures": 0}
+    assert payload["summary"] == {
+        "executed": 1,
+        "not_evaluated": 0,
+        "executed_failures": 0,
+    }
     step = payload["results"][0]
     assert step["disposition"] == "executed"
     assert step["exit_code"] == 0
@@ -39,6 +43,51 @@ def test_source_without_inputs_is_not_evaluated_not_success():
     assert payload["summary"]["executed_failures"] == 0
     assert payload["results"][0]["disposition"] == "not_evaluated"
     assert mod.exit_code_for_payload(payload) == 0
+
+
+def test_validate_release_loader_registers_dataclass_module():
+    mod = load_module()
+    validate_release = mod._load_validate_release_module(ROOT)
+
+    assert sys.modules[validate_release.__name__] is validate_release
+    assert callable(validate_release.validate_s_to_r)
+
+
+def test_source_phase_runs_s_to_r_validation_with_release_ref(monkeypatch):
+    mod = load_module()
+    calls = []
+
+    class FakeValidator:
+        @staticmethod
+        def validate_s_to_r(repo_root, source_sha, release_ref, *, expected_tag):
+            calls.append((repo_root, source_sha, release_ref, expected_tag))
+
+    def fake_run(argv, *, cwd):
+        return subprocess.CompletedProcess(argv, 0, "source_review_status=READY\n", "")
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    monkeypatch.setattr(
+        mod, "_load_validate_release_module", lambda _tool_root: FakeValidator
+    )
+    inputs = mod.PreflightInputs(
+        repo_root=ROOT,
+        release_tag="v0.2.9",
+        review_evidence=ROOT
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.9-release-readiness.yaml",
+        reviewed_commit="a" * 40,
+        release_ref="b" * 40,
+    )
+
+    payload = mod.run_preflight(inputs, "source")
+
+    assert payload["summary"] == {
+        "executed": 2,
+        "not_evaluated": 0,
+        "executed_failures": 0,
+    }
+    assert calls == [(ROOT, "a" * 40, "b" * 40, "v0.2.9")]
+    assert payload["results"][1]["name"] == "validate_s_to_r"
+    assert payload["results"][1]["stdout_tail"] == "validate_s_to_r=ok"
 
 
 def test_prepublish_without_inputs_does_not_run_help():
@@ -63,7 +112,8 @@ def test_source_phase_uses_source_review_validator_phase(monkeypatch):
     inputs = mod.PreflightInputs(
         repo_root=ROOT,
         release_tag="v0.2.6",
-        review_evidence=ROOT / "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
+        review_evidence=ROOT
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.6-release-readiness.yaml",
         reviewed_commit="a" * 40,
     )
     payload = mod.run_preflight(inputs, "source")
@@ -79,7 +129,9 @@ def test_source_review_phase_accepts_empty_human_approval_fixture(tmp_path):
     from tests.test_v026_review_evidence_v2 import _fixture, _validate
 
     validator, repo, contract, source_sha, data, path = _fixture(tmp_path)
-    result = _validate(validator, repo, contract, source_sha, path, phase="source-review")
+    result = _validate(
+        validator, repo, contract, source_sha, path, phase="source-review"
+    )
     assert data["human_approval"]["verdict"] == ""
     assert result["source_sha"] == source_sha
 

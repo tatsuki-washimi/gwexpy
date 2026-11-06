@@ -52,7 +52,9 @@ def _run(argv: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(argv, cwd=cwd, text=True, capture_output=True, check=False)
 
 
-def _executed(name: str, argv: list[str], proc: subprocess.CompletedProcess[str]) -> dict[str, Any]:
+def _executed(
+    name: str, argv: list[str], proc: subprocess.CompletedProcess[str]
+) -> dict[str, Any]:
     return {
         "name": name,
         "disposition": "executed",
@@ -69,7 +71,16 @@ def _load_validate_release_module(tool_root: Path) -> Any:
     if spec is None or spec.loader is None:
         raise RuntimeError("validate_release.py is unavailable")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    previous = sys.modules.get(spec.name)
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        if previous is None:
+            sys.modules.pop(spec.name, None)
+        else:
+            sys.modules[spec.name] = previous
+        raise
     return module
 
 
@@ -124,7 +135,11 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
             "--review-evidence-path",
             inputs.release_tag,
         ]
-        results.append(_executed("release_contract_review_evidence_path", argv, _run(argv, cwd=root)))
+        results.append(
+            _executed(
+                "release_contract_review_evidence_path", argv, _run(argv, cwd=root)
+            )
+        )
         return results
 
     if phase == "source":
@@ -151,8 +166,14 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
         ]
         if reviewed_commit:
             argv.extend(["--reviewed-commit", reviewed_commit])
-        results.append(_executed("validate_release_review_evidence", argv, _run(argv, cwd=root)))
-        if inputs.release_ref and reviewed_commit and inputs.release_ref != reviewed_commit:
+        results.append(
+            _executed("validate_release_review_evidence", argv, _run(argv, cwd=root))
+        )
+        if (
+            inputs.release_ref
+            and reviewed_commit
+            and inputs.release_ref != reviewed_commit
+        ):
             results.append(
                 _run_validate_s_to_r(
                     root,
@@ -187,7 +208,9 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
             "--version",
             version,
         ]
-        results.append(_executed("release_promotion_profile", argv, _run(argv, cwd=root)))
+        results.append(
+            _executed("release_promotion_profile", argv, _run(argv, cwd=root))
+        )
         return results
 
     if phase == "prepublish":
@@ -216,7 +239,9 @@ def _steps(inputs: PreflightInputs, phase: Phase) -> list[dict[str, Any]]:
                 "--evidence",
                 str(inputs.human_approval_evidence),
             ]
-            results.append(_executed("verify_release_human_approval", argv, _run(argv, cwd=root)))
+            results.append(
+                _executed("verify_release_human_approval", argv, _run(argv, cwd=root))
+            )
         if inputs.go_comment_id is None or inputs.repository is None:
             results.append(
                 _not_evaluated(
@@ -250,7 +275,9 @@ def run_preflight(inputs: PreflightInputs, phase: Phase) -> dict[str, object]:
     executed = [item for item in results if item["disposition"] == "executed"]
     not_evaluated = [item for item in results if item["disposition"] == "not_evaluated"]
     executed_failures = [
-        item for item in executed if int(item["exit_code"]) != 0  # type: ignore[arg-type]
+        item
+        for item in executed
+        if int(item["exit_code"]) != 0  # type: ignore[arg-type]
     ]
     return {
         "schema": "gwexpy-release-preflight-v2",
