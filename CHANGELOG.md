@@ -8,15 +8,15 @@
 
 | Area | Before | After (v0.2.9) | Reference |
 |---|---|---|---|
-| **Matrix phase element units** | `TimeSeriesMatrix.radian()` and `.degree()` converted values and set the container unit, but element unit metadata could remain inconsistent. | Both methods set each element's unit to `rad` or `deg`, matching the converted values and container unit. | #770, PR #867 |
-| **Invalid HDF5 frequency units** | An invalid nonempty `frequency_unit` was ignored and the numeric frequency axis was treated as Hz. | Astropy's unit parsing error is propagated. Valid frequency units still convert the axis, and a missing attribute keeps the existing fallback. | #774, PR #868 |
+| **Matrix phase values and units** | `radian()` and `degree()` copied the input dtype before assigning phase values. Integer inputs truncated fractional values, complex inputs retained a complex result dtype, and element unit metadata could disagree with the converted values. | Both methods return real floating-point phase values and set the matrix, `meta.units`, and each element's `TimeSeries.unit` to the matching `rad` or `deg`. The source matrix is unchanged. | #770, PR #867 |
+| **Invalid HDF5 frequency units** | An invalid nonempty `frequency_unit` could be ignored when no explicit frequency samples were stored; dimensionally invalid units could also label a numeric axis as frequency. | Every nonempty attribute is parsed and must be frequency-equivalent to Hz, even when the axis is derived from `df`/`f0` or left implicit. Malformed or incompatible values raise; valid frequency units convert the axis, and a missing attribute keeps the existing fallback. | #774, PR #868 |
 | **WhitenTransform inverse units** | `inverse_transform()` reconstructed numerical values but returned dimensionless element units, including for mixed-unit inputs. | `fit()` records the input feature units and `inverse_transform()` restores them in feature order without changing the whitening calculation. | #778 |
 | **GWpy 4.1.0 imports** | Importing `gwexpy.detector.channel` or `gwexpy.plot.gps` failed because the proxy imported internal GWpy symbols removed in 4.1.0. | Both proxy modules import on GWpy 4.1.0 and retain their curated public re-exports. | #866 |
 
 ### Fixed
 
-- **Matrix phase element units**: Keep per-element unit metadata consistent with the values returned by `radian()` and `degree()` (#770, PR #867).
-- **Invalid HDF5 frequency units**: Reject malformed nonempty unit metadata instead of silently labeling the frequency axis as Hz (#774, PR #868).
+- **Matrix phase values and units**: Return real floating-point results without integer truncation or a spurious complex dtype, and keep matrix and per-element unit metadata consistent with the returned radians or degrees (#770, PR #867).
+- **Invalid HDF5 frequency units**: Parse every nonempty `frequency_unit` attribute and reject malformed or non-frequency units, including when no explicit frequency samples are stored (#774, PR #868).
 - **WhitenTransform inverse units**: Restore fit-time per-feature units after inverse whitening for matrix and collection inputs (#778).
 - **GWpy 4.1.0 compatibility**: Keep the detector-channel and GPS plotting proxies importable across the supported GWpy 4.x range (#866).
 

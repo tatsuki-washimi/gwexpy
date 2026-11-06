@@ -14,9 +14,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+# v0.2.9 source candidate changelog.
+msgid "[0.2.9] - 2026-11-07"
+msgstr "[0.2.9] - 2026-11-07"
+
+msgid "Changed"
+msgstr "変更"
+
+msgid "Intentional Behavior Changes (Observable Divergence Disclosure)"
+msgstr "意図した挙動変更（観測可能な動作分岐の開示）"
+
+msgid "| Area | Before | After (v0.2.9) | Reference | |---|---|---|---| | **Matrix phase values and units** | `radian()` and `degree()` copied the input dtype before assigning phase values. Integer inputs truncated fractional values, complex inputs retained a complex result dtype, and element unit metadata could disagree with the converted values. | Both methods return real floating-point phase values and set the matrix, `meta.units`, and each element's `TimeSeries.unit` to the matching `rad` or `deg`. The source matrix is unchanged. | #770, PR #867 | | **Invalid HDF5 frequency units** | An invalid nonempty `frequency_unit` could be ignored when no explicit frequency samples were stored; dimensionally invalid units could also label a numeric axis as frequency. | Every nonempty attribute is parsed and must be frequency-equivalent to Hz, even when the axis is derived from `df`/`f0` or left implicit. Malformed or incompatible values raise; valid frequency units convert the axis, and a missing attribute keeps the existing fallback. | #774, PR #868 | | **WhitenTransform inverse units** | `inverse_transform()` reconstructed numerical values but returned dimensionless element units, including for mixed-unit inputs. | `fit()` records the input feature units and `inverse_transform()` restores them in feature order without changing the whitening calculation. | #778 | | **GWpy 4.1.0 imports** | Importing `gwexpy.detector.channel` or `gwexpy.plot.gps` failed because the proxy imported internal GWpy symbols removed in 4.1.0. | Both proxy modules import on GWpy 4.1.0 and retain their curated public re-exports. | #866 |"
+msgstr "| 領域 | 変更前 | 変更後 (v0.2.9) | 参照 | |---|---|---|---| | **行列の位相値と単位** | `radian()` と `degree()` は位相値を代入する前に入力 dtype を引き継いでいました。整数入力では小数の位相値が切り捨てられ、複素入力では結果 dtype が複素数のままになり、要素の単位メタデータが変換後の値と一致しない場合がありました。 | 両メソッドは実数の浮動小数点位相値を返し、行列、`meta.units`、各要素の `TimeSeries.unit` を `rad` または `deg` に一致させます。元の行列は変更しません。 | #770, PR #867 | | **不正な HDF5 周波数単位** | 明示的な周波数サンプルが保存されていない場合、不正な非空 `frequency_unit` が無視されることがありました。また、周波数次元でない単位でも数値軸が周波数として扱われる場合がありました。 | 非空属性はすべて解析し、軸が `df`/`f0` から導出される場合や暗黙の場合も含め、Hz と周波数次元が等価であることを要求します。不正または非互換な値は例外となり、有効な周波数単位は軸に適用されます。属性がない場合は従来のフォールバックを維持します。 | #774, PR #868 | | **WhitenTransform の逆変換単位** | `inverse_transform()` は数値を復元する一方で、混合単位入力を含め要素単位を無次元として返していました。 | `fit()` は入力特徴量の単位を記録し、`inverse_transform()` はホワイトニング計算を変えずに特徴量順に単位を復元します。 | #778 | | **GWpy 4.1.0 の import** | プロキシが GWpy 4.1.0 で削除された内部シンボルを読み込むため、`gwexpy.detector.channel` または `gwexpy.plot.gps` の import に失敗していました。 | 両プロキシモジュールは GWpy 4.1.0 で import でき、選定済みの公開再エクスポートを維持します。 | #866 |"
+
+msgid "Fixed"
+msgstr "修正"
+
+msgid "**Matrix phase values and units**: Return real floating-point results without integer truncation or a spurious complex dtype, and keep matrix and per-element unit metadata consistent with the returned radians or degrees (#770, PR #867)."
+msgstr "**行列の位相値と単位**：整数値の切り捨てや不要な複素 dtype を生じさせず、実数の浮動小数点結果を返します。行列と要素ごとの単位メタデータを、返されるラジアンまたは度に一致させます（#770、PR #867）。"
+
+msgid "**Invalid HDF5 frequency units**: Parse every nonempty `frequency_unit` attribute and reject malformed or non-frequency units, including when no explicit frequency samples are stored (#774, PR #868)."
+msgstr "**不正な HDF5 周波数単位**：すべての非空 `frequency_unit` 属性を解析し、明示的な周波数サンプルが保存されていない場合も含め、不正な単位や周波数次元でない単位を拒否します（#774、PR #868）。"
+
+msgid "**WhitenTransform inverse units**: Restore fit-time per-feature units after inverse whitening for matrix and collection inputs (#778)."
+msgstr "**WhitenTransform の逆変換単位**：行列およびコレクション入力の逆ホワイトニング後に、fit 時点の特徴量ごとの単位を復元します（#778）。"
+
+msgid "**GWpy 4.1.0 compatibility**: Keep the detector-channel and GPS plotting proxies importable across the supported GWpy 4.x range (#866)."
+msgstr "**GWpy 4.1.0 互換性**：サポート対象の GWpy 4.x で、検出器チャネルと GPS 描画のプロキシを import 可能に保ちます（#866）。"
+
 # v0.2.8 publication record and current conda-forge observation.
-msgid "Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, no v0.2.8 conda-forge feedstock PR or package was observed; the feedstock recipe remains at v0.2.7."
-msgstr "2026-11-04（UTC）に [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) で公開しました。[Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) には公開日2026-11-04とアーカイブ `tatsuki-washimi/gwexpy-v0.2.8.zip` が記録されています。この日付に関するRelease Ownerの判断は未完了です。2026-11-04（UTC）時点でv0.2.8のconda-forge feedstock PRとパッケージは確認されておらず、feedstockレシピはv0.2.7のままです。"
+msgid "Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`. The Release Owner accepted Zenodo's `publication_date` of 2026-11-04 at 2026-11-04T07:17:17Z. The conda-forge feedstock [PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18) merged at 2026-11-04T11:29:14Z and its build succeeded. Anaconda's package API listed the uploaded v0.2.8 artifact at 2026-11-04T11:30:53Z; as of 2026-11-04T11:38:24Z, both `current_repodata.json` and `repodata.json` lacked that artifact, so solver availability remained pending."
+msgstr "2026-11-04（UTC）に [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) で公開しました。[Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) には公開日2026-11-04とアーカイブ `tatsuki-washimi/gwexpy-v0.2.8.zip` が記録されています。Release Ownerは2026-11-04T07:17:17Zに、Zenodoの`publication_date`として2026-11-04を承認しました。conda-forge feedstockの[PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18)は2026-11-04T11:29:14Zにマージされ、ビルドは成功しました。AnacondaのパッケージAPIには2026-11-04T11:30:53Zにアップロードされたv0.2.8成果物が記録されていますが、2026-11-04T11:38:24Z時点では`current_repodata.json`と`repodata.json`のどちらにも見当たらず、solver経由の利用は保留中です。"
 
 # v0.2.8 immutable activity snapshot.
 msgid "v0.2.8 weekly development activity"
@@ -77,7 +105,7 @@ msgstr "[週次 CSV データをダウンロード](/_static/downloads/developme
 msgid "The snapshot ends at commit `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
 msgstr "このスナップショットはコミット `a1ff8e2f18ef4e599727d6df6fdff61fce7019bd` までを集計しています。英語版と日本語版は同じ週次データを使用します。棒の高さは週ごとの合計の対数を表し、色付きの区分はカテゴリの割合を示します。編集行数は追加行と削除行の合計で、生成ファイルとバイナリ変更は除外します。"
 
-# v0.2.8 source changelog; this source is a candidate, not a published release.
+# v0.2.8 published release history.
 msgid "[0.2.8] - 2026-11-04"
 msgstr "[0.2.8] - 2026-11-04"
 

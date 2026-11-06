@@ -315,8 +315,7 @@ class TimeSeriesMatrixAnalysisMixin:
         if unwrap:
             phi = np.unwrap(phi, axis=-1)
 
-        new_mat = self.copy()
-        new_mat.value[:] = phi
+        new_mat = self._component_result(phi, name=self.name)
         new_mat.unit = u.rad
         new_mat.meta.units = np.full(new_mat.meta.shape, u.rad, dtype=object)
         return new_mat
@@ -328,8 +327,7 @@ class TimeSeriesMatrixAnalysisMixin:
         if unwrap:
             phi = np.unwrap(phi, axis=-1, period=360.0)
 
-        new_mat = self.copy()
-        new_mat.value[:] = phi
+        new_mat = self._component_result(phi, name=self.name)
         new_mat.unit = u.deg
         new_mat.meta.units = np.full(new_mat.meta.shape, u.deg, dtype=object)
         return new_mat

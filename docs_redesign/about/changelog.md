@@ -1,6 +1,6 @@
 # Changelog
 
-Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, no v0.2.8 conda-forge feedstock PR or package was observed; the feedstock recipe remains at v0.2.7.
+Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`. The Release Owner accepted Zenodo's `publication_date` of 2026-11-04 at 2026-11-04T07:17:17Z. The conda-forge feedstock [PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18) merged at 2026-11-04T11:29:14Z and its build succeeded. Anaconda's package API listed the uploaded v0.2.8 artifact at 2026-11-04T11:30:53Z; as of 2026-11-04T11:38:24Z, both `current_repodata.json` and `repodata.json` lacked that artifact, so solver availability remained pending.
 
 ## v0.2.8 weekly development activity
 

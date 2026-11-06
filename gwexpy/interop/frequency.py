@@ -178,10 +178,18 @@ def from_hdf5_frequencyseries(cls: type[T], group: h5py.Group, path: str) -> T:
         df = attrs["df"]
         f0 = attrs["f0"]
         freqs = f0 + np.arange(len(data)) * df
-    if freqs is not None and freq_unit:
+    parsed_frequency_unit = None
+    if freq_unit:
         import astropy.units as u
 
-        freqs = np.asarray(freqs) * u.Unit(freq_unit)
+        parsed_frequency_unit = u.Unit(freq_unit)
+        if not parsed_frequency_unit.is_equivalent(u.Hz):
+            raise u.UnitConversionError(
+                "HDF5 frequency_unit must have frequency dimensions "
+                f"compatible with Hz, got {freq_unit!r}"
+            )
+    if freqs is not None and parsed_frequency_unit is not None:
+        freqs = np.asarray(freqs) * parsed_frequency_unit
     unit = attrs.get("unit", "")
     name = attrs.get("name", None)
     epoch = attrs.get("epoch", None)

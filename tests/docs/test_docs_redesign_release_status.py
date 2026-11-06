@@ -41,7 +41,9 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     install_source = INSTALLATION.read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }} is available on [PyPI]" in install_source
     assert "v0.2.8 GitHub Release" in install_source
-    assert "conda-forge feedstock remains at v0.2.7" in " ".join(install_source.split())
+    normalized_install_source = " ".join(install_source.split())
+    assert "conda-forge feedstock [PR #18]" in normalized_install_source
+    assert "solver availability remained pending" in normalized_install_source
     assert "https://zenodo.org/records/23934903" in install_source
     assert "publication date 2026-11-04" in install_source
 
@@ -59,7 +61,11 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     assert "GWexpy {{ latest_release }}" in install_catalogue
     assert "v0.2.8 GitHub Release" in install_catalogue
     assert "v0.2.8 GitHub Release" in install_catalogue
-    assert "feedstockはv0.2.7のまま" in install_catalogue
+    assert (
+        "PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18)は"
+        in install_catalogue
+    )
+    assert "solver経由の利用は保留中です" in install_catalogue
     assert "https://zenodo.org/records/23934903" in install_catalogue
     assert "公開日2026-11-04" in install_catalogue
 

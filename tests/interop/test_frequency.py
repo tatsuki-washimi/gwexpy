@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from astropy import units as u
 
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.interop.frequency import (
@@ -178,6 +179,26 @@ class TestHdf5FrequencySeries:
             to_hdf5_frequencyseries(_make_fs(n=4), h5f, "ch")
             h5f["ch"].attrs["frequency_unit"] = "not_a_unit"
             with pytest.raises(ValueError, match="not_a_unit"):
+                from_hdf5_frequencyseries(FrequencySeries, h5f, "ch")
+
+    def test_hdf5_invalid_frequency_unit_without_axis_metadata_raises(self, tmp_path):
+        """Invalid unit metadata is rejected even when no axis values exist."""
+        h5py = pytest.importorskip("h5py")
+        fp = tmp_path / "bad_frequency_unit_without_axis.h5"
+        with h5py.File(fp, "w") as h5f:
+            h5f.create_dataset("ch", data=np.arange(4))
+            h5f["ch"].attrs["frequency_unit"] = "not_a_unit"
+            with pytest.raises(ValueError, match="not_a_unit"):
+                from_hdf5_frequencyseries(FrequencySeries, h5f, "ch")
+
+    def test_hdf5_frequency_unit_must_have_frequency_dimensions(self, tmp_path):
+        """A parseable non-frequency unit is invalid for a frequency axis."""
+        h5py = pytest.importorskip("h5py")
+        fp = tmp_path / "length_frequency_unit.h5"
+        with h5py.File(fp, "w") as h5f:
+            to_hdf5_frequencyseries(_make_fs(n=4), h5f, "ch")
+            h5f["ch"].attrs["frequency_unit"] = "m"
+            with pytest.raises(u.UnitConversionError, match="frequency"):
                 from_hdf5_frequencyseries(FrequencySeries, h5f, "ch")
 
     def test_hdf5_khz_frequency_unit_converts_axis(self, tmp_path):

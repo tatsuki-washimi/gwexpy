@@ -141,6 +141,7 @@ def test_phase_transforms_update_per_element_units_and_preserve_metadata(
 
     expected_angles = np.angle(values, deg=(method == "degree"))
     np.testing.assert_allclose(result.value, expected_angles)
+    assert np.issubdtype(result.value.dtype, np.floating)
     assert result.unit == expected_unit
     assert all(unit == expected_unit for unit in result.units.flat)
     assert result[0, 0].unit == expected_unit
@@ -152,6 +153,29 @@ def test_phase_transforms_update_per_element_units_and_preserve_metadata(
         result.dt.to_value(u.s), original.dt.to_value(u.s), rtol=0, atol=1e-15
     )
     assert original[0, 0].unit == u.m
+    np.testing.assert_array_equal(original.value, values)
+
+
+@pytest.mark.parametrize(
+    "method, expected_values, expected_unit",
+    [
+        ("radian", [np.pi, 0.0], u.rad),
+        ("degree", [180.0, 0.0], u.deg),
+    ],
+)
+def test_phase_transforms_promote_integer_values_to_real_angles(
+    method, expected_values, expected_unit
+):
+    values = np.array([[[-1, 1]]], dtype=np.int16)
+    original = TimeSeriesMatrix(values, dt=0.1 * u.s, t0=2.0 * u.s)
+
+    result = getattr(original, method)()
+
+    np.testing.assert_allclose(result.value, np.array(expected_values)[None, None, :])
+    assert np.issubdtype(result.value.dtype, np.floating)
+    assert result.unit == expected_unit
+    assert all(unit == expected_unit for unit in result.units.flat)
+    assert result[0, 0].unit == expected_unit
     np.testing.assert_array_equal(original.value, values)
 
 
