@@ -59,30 +59,41 @@ def test_v029_contract_registers_the_separate_release_gates() -> None:
     assert contracts.review_evidence_profile(contract["review_evidence_schema"]) == "v2"
 
 
-def test_v029_readiness_files_are_open_and_use_exact_source_placeholder() -> None:
+def test_v029_source_snapshot_preserves_open_plan_and_placeholder() -> None:
     contracts = _load_module("release_contract_v029_files", LOADER_PATH)
     contract = contracts.release_contract("v0.2.9")
-    plan_path = ROOT / contract["plan_path"]
     evidence_path = ROOT / contract["review_evidence_path"]
-    plan = plan_path.read_text(encoding="utf-8")
+    candidate_evidence = evidence_path.read_text(encoding="utf-8")
+    source_match = re.search(
+        r'^\s*"source_sha":\s*"([0-9a-f]{40})"',
+        candidate_evidence,
+        re.MULTILINE,
+    )
+    source_sha = (
+        source_match.group(1) if source_match else _git(ROOT, "rev-parse", "HEAD")
+    )
+    source_plan = subprocess.check_output(
+        ["git", "show", f"{source_sha}:{contract['plan_path']}"], cwd=ROOT
+    ).decode("utf-8")
+    source_evidence = subprocess.check_output(
+        ["git", "show", f"{source_sha}:{contract['review_evidence_path']}"],
+        cwd=ROOT,
+    )
 
-    assert "Issue #871" in plan
-    assert "Release Owner selected **2026-11-07**" in plan
+    assert "Issue #871" in source_plan
+    assert "Release Owner selected **2026-11-07**" in source_plan
     assert (
         "does not claim that GitHub Release, PyPI, or Zenodo publication happened"
-        in plan
+        in source_plan
     )
     assert "release_date" not in contract
     assert "publication_date" not in contract
-    checkboxes = re.findall(r"^- \[([ xX])\]", plan, re.MULTILINE)
+    checkboxes = re.findall(r"^- \[([ xX])\]", source_plan, re.MULTILINE)
     assert checkboxes and set(checkboxes) == {" "}
 
     validator = _load_module("validate_release_v029_files", VALIDATOR_PATH)
-    assert (
-        evidence_path.read_bytes()
-        == validator._empty_v2_review_evidence_placeholder(
-            contract["review_evidence_schema"], contract["review_base_sha"]
-        )
+    assert source_evidence == validator._empty_v2_review_evidence_placeholder(
+        contract["review_evidence_schema"], contract["review_base_sha"]
     )
 
 
