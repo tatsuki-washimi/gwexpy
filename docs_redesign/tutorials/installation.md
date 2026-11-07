@@ -9,19 +9,17 @@ myst:
 :::{note}
 GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/)
 and the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases).
-The [v0.2.8 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8)
-and [PyPI package](https://pypi.org/project/gwexpy/0.2.8/) were published on
-2026-11-04 UTC. The [Zenodo record](https://zenodo.org/records/23934903) lists
-version DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903),
-archive `tatsuki-washimi/gwexpy-v0.2.8.zip`, and publication date 2026-11-04.
-The Release Owner accepted Zenodo's `publication_date` of 2026-11-04 at
-2026-11-04T07:17:17Z. The conda-forge feedstock
-[PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18) merged at
-2026-11-04T11:29:14Z and its build succeeded. Anaconda's package API listed the
-uploaded v0.2.8 artifact at 2026-11-04T11:30:53Z; as of 2026-11-04T11:38:24Z,
-both `current_repodata.json` and `repodata.json` lacked that artifact, so solver
-availability remained pending. Check each install source for its available
-versions.
+The [v0.2.9 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9)
+and [PyPI package](https://pypi.org/project/gwexpy/0.2.9/) were published on
+2026-11-07 UTC. The [Zenodo record](https://zenodo.org/records/24025939) lists
+version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939),
+archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and publication date 2026-11-07.
+The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at
+2026-11-07T05:45:00Z. The conda-forge feedstock
+[PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at
+2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on
+[conda-forge](https://anaconda.org/conda-forge/gwexpy). Check each install source
+for its available versions.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.

@@ -19,12 +19,12 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "*Last updated: 2026-11-04.*"
-msgstr "*最終更新: 2026-11-04。*"
+msgid "*Last updated: 2026-11-07.*"
+msgstr "*最終更新: 2026-11-07。*"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "**Released baseline**: the published v0.2.8 maintenance baseline and the v0.2.0 semantic contract"
-msgstr "**リリース済みの基準**：公開済みの v0.2.8 メンテナンス基準と v0.2.0 の semantic contract"
+msgid "**Released baseline**: the published v0.2.9 maintenance baseline and the v0.2.0 semantic contract"
+msgstr "**リリース済みの基準**：公開済みの v0.2.9 メンテナンス基準と v0.2.0 の semantic contract"
 
 #: docs_redesign/explanation/roadmap.md
 msgid "**Directional themes**: areas we may improve in upcoming iterations"
@@ -43,16 +43,16 @@ msgid "Exact timing, interoperable persistence, deterministic provenance, and pu
 msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で提供済みです。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "[v0.2.8](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) is the current released maintenance baseline. It validates physical units in `PercentileThreshold`, makes standardized matrix elements dimensionless, validates unit compatibility when pooling channels, and restores original collection types, units, and metadata in `StandardizeTransform`."
-msgstr "[v0.2.8](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) は現在公開されているメンテナンス基準です。`PercentileThreshold` で物理単位を検証し、標準化後の行列要素を無次元にし、チャネル間のプール時に単位の互換性を検証します。また、`StandardizeTransform` で元のコレクション型、単位、メタデータを復元します。"
+msgid "[v0.2.9](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) is the current released maintenance baseline. It aligns matrix phase calculations with physical units in radians or degrees, strictly validates HDF5 frequency units, restores feature units in `WhitenTransform.inverse_transform()`, and ensures import compatibility with GWpy 4.1.0."
+msgstr "[v0.2.9](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) は現在公開されているメンテナンス基準です。行列の位相計算でラジアンや度などの物理単位との整合性を保ち、HDF5周波数単位を厳密に検証し、`WhitenTransform.inverse_transform()` で特徴量単位を復元し、GWpy 4.1.0 との import 互換性を確保します。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.8"
-msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.8 でも維持されています。"
+msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.9"
+msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.9 でも維持されています。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "v0.2.8 was published on 2026-11-04 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo record](https://zenodo.org/records/23934903) lists version DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903), archive `tatsuki-washimi/gwexpy-v0.2.8.zip`, and metadata `publication_date` 2026-11-04. The Release Owner accepted Zenodo's `publication_date` of 2026-11-04 at 2026-11-04T07:17:17Z. The conda-forge feedstock [PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18) merged at 2026-11-04T11:29:14Z and its build succeeded. Anaconda's package API listed the uploaded v0.2.8 artifact at 2026-11-04T11:30:53Z; as of 2026-11-04T11:38:24Z, both `current_repodata.json` and `repodata.json` lacked that artifact, so solver availability remained pending. No next-minor release theme is committed; future work remains directional."
-msgstr "v0.2.8 は2026-11-04（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.8/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) で公開されました。[Zenodoレコード](https://zenodo.org/records/23934903) にはバージョン DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903)、アーカイブ `tatsuki-washimi/gwexpy-v0.2.8.zip`、メタデータの `publication_date` 2026-11-04 が記録されています。Release Ownerは2026-11-04T07:17:17Zに、Zenodoの`publication_date`として2026-11-04を承認しました。conda-forge feedstockの[PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18)は2026-11-04T11:29:14Zにマージされ、ビルドは成功しました。AnacondaのパッケージAPIには2026-11-04T11:30:53Zにアップロードされたv0.2.8成果物が記録されていますが、2026-11-04T11:38:24Z時点では`current_repodata.json`と`repodata.json`のどちらにも見当たらず、solver経由の利用は保留中です。次のminor releaseのテーマは確定しておらず、今後の作業は方向性として扱います。"
+msgid "v0.2.9 was published on 2026-11-07 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.9/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9). The [Zenodo record](https://zenodo.org/records/24025939) lists version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939), archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and metadata `publication_date` 2026-11-07. The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at 2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at 2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on conda-forge. No next-minor release theme is committed; future work remains directional."
+msgstr "v0.2.9 は2026-11-07（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.9/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) で公開されました。[Zenodoレコード](https://zenodo.org/records/24025939) にはバージョン DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939)、アーカイブ `tatsuki-washimi/gwexpy-v0.2.9.zip`、メタデータの `publication_date` 2026-11-07 が記録されています。Release Ownerは2026-11-07T05:45:00Zに、Zenodoの`publication_date`として2026-11-07を承認しました。conda-forge feedstockの[PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19)は2026-11-07T05:45:59Zにマージされ、ビルドは成功しました。バージョン 0.2.9 は conda-forge で利用可能です。次のminor releaseのテーマは確定しておらず、今後の作業は方向性として扱います。"
 
 #: docs_redesign/explanation/roadmap.md
 msgid "Directional Themes"
