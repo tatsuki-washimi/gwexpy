@@ -1,6 +1,28 @@
 # Changelog
 
-Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, no v0.2.8 conda-forge feedstock PR or package was observed; the feedstock recipe remains at v0.2.7.
+Published on 2026-11-07 UTC: [PyPI 0.2.9](https://pypi.org/project/gwexpy/0.2.9/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9). The [Zenodo DOI 10.5281/zenodo.24025939](https://zenodo.org/records/24025939) lists publication date 2026-11-07 and archive `tatsuki-washimi/gwexpy-v0.2.9.zip`. The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at 2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at 2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on conda-forge.
+
+## v0.2.9 weekly development activity
+
+:::{figure} /_static/images/development-activity-v0.2.9.svg
+:alt: Weekly GWexpy development activity through v0.2.9, showing non-merge commits and edited source lines by category.
+:width: 100%
+
+Weekly activity through the immutable v0.2.9 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.9.
+:::
+
+[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.9-weekly.csv)
+
+The snapshot ends at commit `4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e`. It includes 2,326 non-merge commits. Both language versions use the same weekly data; its SHA-256 is `2d793952c4aa6004257e280b76a757e8ef4532fdd586525be4d631d8afddcf3b`. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes.
+
+## [0.2.9] - 2026-11-07
+
+:::{include} ../../CHANGELOG.md
+:start-after: "## [0.2.9] - 2026-11-07"
+:end-before: "## [0.2.8] - 2026-11-04"
+:::
+
+Published on 2026-11-04 UTC: [PyPI 0.2.8](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo DOI 10.5281/zenodo.23934903](https://zenodo.org/records/23934903) lists publication date 2026-11-04 and archive `tatsuki-washimi/gwexpy-v0.2.8.zip`. The Release Owner accepted Zenodo's `publication_date` of 2026-11-04 at 2026-11-04T07:17:17Z. The conda-forge feedstock [PR #18](https://github.com/conda-forge/gwexpy-feedstock/pull/18) merged at 2026-11-04T11:29:14Z and its build succeeded. Anaconda's package API listed the uploaded v0.2.8 artifact at 2026-11-04T11:30:53Z; as of 2026-11-04T11:38:24Z, both `current_repodata.json` and `repodata.json` lacked that artifact, so solver availability remained pending.
 
 ## v0.2.8 weekly development activity
 

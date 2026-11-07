@@ -3,11 +3,11 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-11-04.*
+*Last updated: 2026-11-07.*
 
 ## How to Read This Page
 
-- **Released baseline**: the published v0.2.8 maintenance baseline and the v0.2.0 semantic contract
+- **Released baseline**: the published v0.2.9 maintenance baseline and the v0.2.0 semantic contract
 - **Directional themes**: areas we may improve in upcoming iterations
 - **Mid-term**: work we want to expose more broadly after the current docs and API cleanup
 - **Long-term**: exploratory directions that are useful but not yet scheduled
@@ -16,13 +16,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Current Release Baseline
 
-- [v0.2.8](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8) is the current released maintenance baseline. It validates physical units in `PercentileThreshold`, makes standardized matrix elements dimensionless, validates unit compatibility when pooling channels, and restores original collection types, units, and metadata in `StandardizeTransform`.
+- [v0.2.9](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) is the current released maintenance baseline. It aligns matrix phase calculations with physical units in radians or degrees, strictly validates HDF5 frequency units, restores feature units in `WhitenTransform.inverse_transform()`, and ensures import compatibility with GWpy 4.1.0.
 - v0.2.0 establishes the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades
 - Exact timing, interoperable persistence, deterministic provenance, and public
-  GWpy compatibility were established in v0.2.0 and are retained by v0.2.8
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.9
 
-v0.2.8 was published on 2026-11-04 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.8/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.8). The [Zenodo record](https://zenodo.org/records/23934903) lists version DOI [10.5281/zenodo.23934903](https://doi.org/10.5281/zenodo.23934903), archive `tatsuki-washimi/gwexpy-v0.2.8.zip`, and metadata `publication_date` 2026-11-04; the Release Owner's date disposition remains pending. As of 2026-11-04 UTC, the conda-forge feedstock remains at v0.2.7, with no v0.2.8 update PR or package observed. No next-minor release theme is committed; future work remains directional.
+v0.2.9 was published on 2026-11-07 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.9/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9). The [Zenodo record](https://zenodo.org/records/24025939) lists version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939), archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and metadata `publication_date` 2026-11-07. The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at 2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at 2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on conda-forge. No next-minor release theme is committed; future work remains directional.
 
 ## Directional Themes
 
