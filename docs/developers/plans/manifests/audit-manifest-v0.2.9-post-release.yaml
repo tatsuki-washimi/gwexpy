@@ -88,8 +88,8 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_review",
-      "actor": "GitHub Actions",
+      "status": "complete",
+      "actor": "Release Owner",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
         {
@@ -97,12 +97,27 @@
           "sha256": "b14f051f2c24eab80904a2ac3f7a21a4459d8d55af2b9d7e9d0c0a6459cd9d70",
           "observed_at_utc": "2026-11-07T02:02:53Z",
           "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-11-07T02:00:28.036957+00:00\", \"doi\": \"10.5281/zenodo.24025939\", \"files\": [{\"checksum\": \"md5:93b4c4d48dba1ea6b2b27a55be529a3b\", \"id\": \"d05b3f75-b0e7-40c3-b61c-5301fe305183\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.9.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/24025939/files/tatsuki-washimi/gwexpy-v0.2.9.zip/content\"}, \"size\": 37327243}], \"publication_date\": \"2026-11-07\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 24025939, \"updated\": \"2026-11-07T02:00:28.207211+00:00\"}"
+        },
+        {
+          "url": "https://zenodo.org/records/24025939",
+          "sha256": "c5c8379ad81b3ba611a31cc04934218b3c7eee157233451546351b6a5729f173",
+          "observed_at_utc": "2026-11-07T05:46:25Z",
+          "observation": "{\"human_decision\": {\"actor\": \"tatsuki-washimi\", \"decided_at_utc\": \"2026-11-07T05:45:00Z\", \"decision\": \"ACCEPT_PUBLICATION_DATE\", \"doi\": \"10.5281/zenodo.24025939\", \"publication_date\": \"2026-11-07\", \"record_id\": 24025939, \"role\": \"release-owner\"}}"
         }
       ],
-      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "zenodo",
-      "readback_succeeded": true
+      "readback_succeeded": true,
+      "human_decision": {
+        "actor": "tatsuki-washimi",
+        "role": "release-owner",
+        "decision": "ACCEPT_PUBLICATION_DATE",
+        "doi": "10.5281/zenodo.24025939",
+        "record_id": 24025939,
+        "publication_date": "2026-11-07",
+        "decided_at_utc": "2026-11-07T05:45:00Z"
+      }
     },
     "conda": {
       "status": "pending_external",
