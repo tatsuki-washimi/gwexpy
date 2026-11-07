@@ -17,6 +17,9 @@ from typing import cast
 RELEASE_TAG_PATTERN = re.compile(
     r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
 )
+POST_RELEASE_AUDIT_MANIFEST = re.compile(
+    r"^docs/developers/plans/manifests/audit-manifest-.+-post-release\.yaml$"
+)
 SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 V023_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = b"""\
@@ -537,6 +540,7 @@ def validate_s_to_r(
         "--",
     )
     paths = _parse_git_name_only_paths(changed)
+    paths = {path for path in paths if not POST_RELEASE_AUDIT_MANIFEST.match(path)}
     contract = _release_contract(expected_tag)
     if expected_tag == "v0.2.3":
         _validate_v023_review_source_placeholder(

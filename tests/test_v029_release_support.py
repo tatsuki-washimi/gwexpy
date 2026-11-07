@@ -84,10 +84,22 @@ def test_v029_source_snapshot_preserves_open_plan_and_placeholder() -> None:
             phase="candidate",
         )
         source_sha = candidate["source_sha"]
+        release_tip = _git(ROOT, "rev-parse", "v0.2.9^{commit}")
+        head = _git(ROOT, "rev-parse", "HEAD")
+        bind_tip = (
+            release_tip
+            if subprocess.run(
+                ["git", "merge-base", "--is-ancestor", release_tip, head],
+                cwd=ROOT,
+                check=False,
+            ).returncode
+            == 0
+            else head
+        )
         validator.validate_s_to_r(
             ROOT,
             source_sha,
-            _git(ROOT, "rev-parse", "HEAD"),
+            bind_tip,
             expected_tag="v0.2.9",
         )
 
