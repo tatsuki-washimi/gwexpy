@@ -14,6 +14,10 @@
 
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
 
+### Fixed
+
+- **Irregular `FrequencySeries` HDF5 write**: `FrequencySeries.write(format="hdf5")` raised `AttributeError: ... has no 'dx' member` for a non-uniform frequency axis and wrote nothing. Such a series now round-trips with exact frequency samples, values, `unit` and `name` for real and complex data, including as a member of `FrequencySeriesDict`/`FrequencySeriesList`. The axis is stored in the `xindex` dataset attribute that GWpy's reader already understands; the regular-axis layout (`x0`, `dx`, `xunit`) is unchanged. A file created for an irregular series uses the HDF5 1.8 format bound so that an axis longer than 64 KiB fits; writing such an axis into an already open file with the default bound raises an explanatory `OSError` (#881).
+
 ## [0.2.9] - 2026-11-07
 
 ### Changed
