@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import OrderedDict
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -44,6 +46,17 @@ def _decode_matrix_key(raw):
         return _normalize(json.loads(raw))
     except (json.JSONDecodeError, TypeError, ValueError):
         return str(raw)
+
+
+def _path_suffix(target: Any) -> str:
+    """Return the lower-case suffix of a single path-like, else ``""``.
+
+    File-like objects and lists/tuples of paths have no suffix to infer a
+    format from.
+    """
+    if isinstance(target, (str, os.PathLike)):
+        return Path(target).suffix.lower()
+    return ""
 
 
 def _encode_attrs_json(attrs: Any) -> str | None:
@@ -171,9 +184,28 @@ class SeriesMatrixIOMixin:
             raise ValueError(f"Unknown format: {format}")
 
     def write(self, target, format=None, **kwargs):
-        """Write the matrix to a file."""
-        from pathlib import Path
+        """Write the matrix to a file.
 
+        Parameters
+        ----------
+        target : str, path-like or file-like
+            Destination.
+        format : str, optional
+            File format.  If `None`, inferred from the extension of a
+            path-like ``target``.
+        **kwargs
+            Additional arguments passed to the writer.
+
+        Raises
+        ------
+        ValueError
+            If ``format`` is `None` and no format can be identified.  An
+            error raised by an identified or explicitly selected writer (for
+            example `OSError` or a missing optional backend `ImportError`)
+            propagates unchanged.
+
+        """
+        from astropy.io.registry import IORegistryError
         from gwpy.io.registry import default_registry as io_registry
 
         from gwexpy._bootstrap import register_all
@@ -181,7 +213,7 @@ class SeriesMatrixIOMixin:
         register_all()
 
         if format is None:
-            ext = Path(target).suffix.lower()
+            ext = _path_suffix(target)
             if ext in [".h5", ".hdf5", ".hdf"]:
                 format = "hdf5"
             elif ext == ".csv":
@@ -198,26 +230,19 @@ class SeriesMatrixIOMixin:
             df = self.to_pandas(format="wide")
             return df.to_parquet(target, **kwargs)
 
-        # Fall back to unified registry.  Any failure is re-raised unchanged
-        # when a format was given; only an *unidentified* format gets the
-        # friendlier message.  Preserve missing optional backend errors for
-        # auto-selected NetCDF and Zarr routes so their install hints remain
-        # actionable.
+        # Fall back to unified registry.  Only a genuine identification failure
+        # (the registry found no format for this target) gets the friendlier
+        # message; an error raised by an identified or explicitly selected
+        # writer (OSError, missing optional backend, ...) propagates unchanged.
         try:
             return io_registry.write(self, target, format=format, **kwargs)
-        except Exception as exc:
-            if (
-                format is None
-                and ext in {".nc", ".zarr"}
-                and isinstance(exc, ImportError)
-            ):
+        except IORegistryError as exc:
+            if format is not None:
                 raise
-            if format is None:
-                raise ValueError(
-                    f"Could not identify format for {target}. "
-                    "Please specify 'format' argument."
-                )
-            raise
+            raise ValueError(
+                f"Could not identify format for {target}. "
+                "Please specify 'format' argument."
+            ) from exc
 
     def to_hdf5(self, filepath, **kwargs):
         """Write matrix to HDF5 file.
@@ -358,35 +383,35 @@ class SeriesMatrixIOMixin:
         SeriesMatrix
             The loaded matrix.
 
+        Raises
+        ------
+        ValueError
+            If ``format`` is `None` and no format can be identified.  An
+            error raised by an identified or explicitly selected reader (for
+            example `FileNotFoundError` or a missing optional backend
+            `ImportError`) propagates unchanged.
+
         """
         import warnings
-        from pathlib import Path
 
         import h5py  # noqa: F401 - availability check
+        from astropy.io.registry import IORegistryError
         from gwpy.io.registry import default_registry as io_registry
 
         from gwexpy._bootstrap import register_all
 
         register_all()
 
-        if format is None:
-            ext = Path(source).suffix.lower()
-            if ext in [".h5", ".hdf5", ".hdf"]:
-                format = "hdf5"
+        # ``source`` may be a single path, a file-like object, or a list/tuple
+        # of paths (multi-store reads); only single path-likes have a suffix.
+        _ext = _path_suffix(source)
+        if format is None and _ext in [".h5", ".hdf5", ".hdf"]:
+            format = "hdf5"
 
         # CSV/Parquet are *wide value exports* (see ``to_pandas``/``write``);
         # they do not store row/col keys, per-element metadata, units or attrs.
         # Reading one back rebuilds a matrix with synthetic keys and no
         # metadata -- warn so this lossy import is not mistaken for a roundtrip.
-        # ``source`` may be a single path, a file-like object, or a list/tuple
-        # of paths (multi-store reads); only single path-likes have a suffix.
-        import os as _os
-
-        _ext = (
-            Path(source).suffix.lower()
-            if isinstance(source, (str, _os.PathLike))
-            else ""
-        )
         if (format in {"csv", "parquet"}) or (
             format is None and _ext in {".csv", ".parquet", ".pq"}
         ):
@@ -400,25 +425,19 @@ class SeriesMatrixIOMixin:
             )
 
         if format != "hdf5":
-            # Fall back to unified registry.  Re-raise unchanged when a format
-            # was given; only an unidentified format gets the friendlier
-            # message. Preserve missing optional NetCDF and Zarr backends on
-            # auto routes.
+            # Fall back to unified registry.  Only a genuine identification
+            # failure gets the friendlier message; an error raised by an
+            # identified or explicitly selected reader (missing file, backend
+            # failure, missing optional backend, ...) propagates unchanged.
             try:
                 return io_registry.read(cls, source, format=format, **kwargs)
-            except Exception as exc:
-                if (
-                    format is None
-                    and _ext in {".nc", ".zarr"}
-                    and isinstance(exc, ImportError)
-                ):
+            except IORegistryError as exc:
+                if format is not None:
                     raise
-                if format is None:
-                    raise ValueError(
-                        f"Could not identify format for {source}. "
-                        "Please specify 'format' argument."
-                    )
-                raise
+                raise ValueError(
+                    f"Could not identify format for {source}. "
+                    "Please specify 'format' argument."
+                ) from exc
 
         with h5py.File(source, "r") as f:
             data = f["data"][:]

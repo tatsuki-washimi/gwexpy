@@ -14,10 +14,12 @@
 
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
 | **SeriesMatrix HDF5 `attrs`** | `SeriesMatrix.write(format="hdf5")` / `to_hdf5()` silently omitted the whole `attrs_json` record when any `attrs` value was not JSON-serializable (for example an `astropy.units.Quantity`), and reported success. | The write raises `TypeError` naming the unsupported entries. The check runs before the target is opened, so an existing file is left untouched. JSON-serializable and empty `attrs` are written exactly as before. | #777 |
+| **SeriesMatrix format inference errors** | With `format=None`, `SeriesMatrix.read()` / `write()` replaced any error raised by an already identified reader or writer (missing file, unwritable target, backend failure) with `ValueError("Could not identify format ...")`. A file-like or list `source`/`target` failed earlier with a `TypeError` from path conversion. | Only a genuine identification failure raises that `ValueError`, now chained to the registry error. Errors raised after dispatch (`FileNotFoundError`, `PermissionError`, backend and optional-dependency errors) propagate unchanged. File-like and list arguments reach format identification. Explicit `format=` behavior is unchanged. | #775 |
 
 ### Fixed
 
 - **SeriesMatrix HDF5 `attrs`**: Stop silently dropping `attrs` that cannot be stored in the JSON-based `attrs_json` record; raise `TypeError` before the target file is opened or truncated (#777).
+- **SeriesMatrix format inference errors**: Report "Could not identify format" only when format identification itself fails, and let errors from an identified reader or writer propagate with their original type and message (#775).
 
 ## [0.2.9] - 2026-11-07
 
