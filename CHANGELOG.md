@@ -13,6 +13,11 @@
 ### Fixed
 
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
+| **SeriesMatrix HDF5 `attrs`** | `SeriesMatrix.write(format="hdf5")` / `to_hdf5()` silently omitted the whole `attrs_json` record when any `attrs` value was not JSON-serializable (for example an `astropy.units.Quantity`), and reported success. | The write raises `TypeError` naming the unsupported entries. The check runs before the target is opened, so an existing file is left untouched. JSON-serializable and empty `attrs` are written exactly as before. | #777 |
+
+### Fixed
+
+- **SeriesMatrix HDF5 `attrs`**: Stop silently dropping `attrs` that cannot be stored in the JSON-based `attrs_json` record; raise `TypeError` before the target file is opened or truncated (#777).
 
 ## [0.2.9] - 2026-11-07
 
