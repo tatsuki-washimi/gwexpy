@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+#### Intentional Behavior Changes (Observable Divergence Disclosure)
+
+| Area | Before | After | Reference |
+|---|---|---|---|
+| **Manifest-free HDF5 collection reads** | Reading an HDF5 file without a GWexpy collection manifest into a `TimeSeries`/`FrequencySeries`/`Spectrogram`/`Histogram` `Dict` or `List` skipped every entry that failed to decode, logging only at debug level. A partially unreadable file returned a shorter collection, and a fully unreadable file returned an empty one, with no user-visible signal. | Readable entries are still returned, and a `UserWarning` names each omitted entry and its failure. If entries exist and none can be read, `ValueError` is raised with the per-entry failures. A file with no entries still reads as an empty collection, and manifest-backed files keep failing closed on the first unreadable entry. | #771 |
+
+### Fixed
+
+- **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
+
 ## [0.2.9] - 2026-11-07
 
 ### Changed

@@ -8,6 +8,7 @@ from typing import Any, SupportsIndex, TypeVar, cast
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
+    SkippedHDF5Entries,
     detect_hdf5_layout,
     ensure_hdf5_file,
     has_hdf5_collection_manifest,
@@ -131,6 +132,7 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
                 keys = order or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(keys))
                 out = cls()
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in keys:
@@ -141,10 +143,11 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = h
+                    skipped.report()
                     return out
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
@@ -176,17 +179,18 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                                     _H,
                                     Histogram.read(grp, format="hdf5", path="data"),
                                 )
-                            except (KeyError, ValueError, TypeError, OSError):
+                            except (KeyError, ValueError, TypeError, OSError) as e1:
                                 try:
                                     h = cast(
                                         _H,
                                         Histogram.read(grp, format="hdf5", path=None),
                                     )
                                 except (KeyError, ValueError, TypeError, OSError) as e:
-                                    logger.debug("Skipping group %s: %s", grp_name, e)
+                                    skipped.record(grp_name, e, e1)
                                     continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = h
+                    skipped.report()
                     return out
         from astropy.io import registry
 
@@ -389,6 +393,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
                     manifest_layout = manifest_layout.decode("utf-8")
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(order))
                 out_items: list[Histogram] = []
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
@@ -397,9 +402,10 @@ class HistogramBaseList(PlotMixin, list[_H]):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         out_items.append(h)
+                    skipped.report()
                     return cast(Any, cls)(out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
@@ -422,13 +428,14 @@ class HistogramBaseList(PlotMixin, list[_H]):
                         else:
                             try:
                                 h = Histogram.read(grp, format="hdf5", path="data")
-                            except (KeyError, ValueError, TypeError, OSError):
+                            except (KeyError, ValueError, TypeError, OSError) as e1:
                                 try:
                                     h = Histogram.read(grp, format="hdf5", path=None)
                                 except (KeyError, ValueError, TypeError, OSError) as e:
-                                    logger.debug("Skipping group %s: %s", grp_name, e)
+                                    skipped.record(grp_name, e, e1)
                                     continue
                         out_items.append(h)
+                    skipped.report()
                     return cast(Any, cls)(out_items)
         from astropy.io import registry
 
