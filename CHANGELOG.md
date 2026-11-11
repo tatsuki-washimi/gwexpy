@@ -9,10 +9,12 @@
 | Area | Before | After | Reference |
 |---|---|---|---|
 | **Rayleigh Monte Carlo p-values** | `rayleigh_pvalue()` and `TimeSeries.rayleigh_test()` reported `min(1, 2·min(r_upper, r_lower)/N)`, which is exactly 0 when the observed statistic lies beyond every simulated value and exceeds the nominal size (0.05195 at nominal 0.05, `N=1000`). | Reports `min(1, 2·(min(r_upper, r_lower)+1)/(N+1))`. Every finite p-value changes by at most `2/(N+1)`; the minimum is `2/(N+1)`, so `p < 0.001` needs `n_monte_carlo >= 2000`. With `N=1000`, strict `p < 0.05` and `p < 0.01` decisions are unchanged. | #507 |
+| **GauCh statistic, null and p-values** | `compute_gauch()` and `TimeSeries.gauch()` took ASD samples from `TimeSeries.spectrogram()`, which averages periodograms, used a KS statistic with only the right ECDF endpoints, applied the Rayleigh model to every bin, and reported `max(r/N, 1/N)`. On white Gaussian noise about 57% of interior bins had `p <= 0.05`. | Each ASD sample is one Hann-windowed FFT segment. The statistic is the standard two-sided KS statistic. Interior bins use a fitted Rayleigh amplitude; DC and, for an even FFT length, Nyquist use a fitted half-normal amplitude. The p-value is `(r+1)/(N+1)`. On white Gaussian noise the rejection rate matches the nominal level. Every statistic and p-value changes. Segment overlaps other than 0 or 50% raise `ValueError`. | #879, #507 |
 
 ### Fixed
 
-- **Finite-sample Rayleigh p-values**: Rank the observed Rayleigh statistic among the `N + 1` exchangeable values, so a p-value is never 0 and the test size does not exceed the nominal level under the simulated null. Seeds, generators, caches, provenance, and NaN handling for DC, Nyquist, and non-finite bins are unchanged. `compute_gauch()` p-values are not changed (#507).
+- **Finite-sample Rayleigh p-values**: Rank the observed Rayleigh statistic among the `N + 1` exchangeable values, so a p-value is never 0 and the test size does not exceed the nominal level under the simulated null. Seeds, generators, caches, provenance, and NaN handling for DC, Nyquist, and non-finite bins are unchanged (#507).
+- **GauCh calibration**: Build the GauCh input from single-FFT ASD samples and use the same two-sided KS statistic for the observed data and the Monte Carlo null, with a half-normal model for the DC and Nyquist bins. `overlap=fftlength/2` now works and gives the KAGRA configuration; it previously failed inside GWpy. Output axes, provenance keys, seed and generator handling, and NaN for dead bins are unchanged (#879).
 
 ## [0.2.9] - 2026-11-07
 
