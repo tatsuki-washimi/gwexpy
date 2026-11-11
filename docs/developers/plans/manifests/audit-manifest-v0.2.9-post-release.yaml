@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.9",
-  "recorded_at_utc": "2026-11-08T13:42:18Z",
-  "post_release_status": "pending_external",
+  "recorded_at_utc": "2026-11-11T14:38:14Z",
+  "post_release_status": "retryable_failure",
   "release": {
     "tag": "v0.2.9",
     "version": "0.2.9",
@@ -120,7 +120,7 @@
       }
     },
     "conda": {
-      "status": "complete",
+      "status": "retryable_failure",
       "actor": "GitHub Actions",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -135,15 +135,21 @@
           "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
           "observed_at_utc": "2026-11-07T13:23:44Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "636cd727a35b5d9670600323a68d8e55aa26165337620271511f81e5f61812fb",
+          "observed_at_utc": "2026-11-11T14:38:14Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"retryable_failure\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "",
-      "resume_condition": "",
+      "pending_reason": "See separate feedstock PR and actual channel-package states",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
         "conda_feedstock": "complete",
-        "conda_package": "complete"
+        "conda_package": "retryable_failure"
       }
     },
     "docs": {
@@ -220,7 +226,7 @@
       "readback_succeeded": false
     },
     "conda_package": {
-      "status": "complete",
+      "status": "retryable_failure",
       "actor": "GitHub Actions",
       "objective": "Observe conda_package",
       "evidence": [
@@ -241,12 +247,18 @@
           "sha256": "1d4e146ab3378ded0f05f00f88f80222f7123e39a17471c2459ffe20e7108477",
           "observed_at_utc": "2026-11-08T13:42:18Z",
           "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.9-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.9-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"license_family\": \"MIT\", \"md5\": \"3c0ff7635fca142015b043c3e40337f5\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"20425d046dadc7a61fdfe72b3e5439c86f680638d2363551460b529b86ac363a\", \"size\": 669839, \"subdir\": \"noarch\", \"timestamp\": 1794030416031, \"version\": \"0.2.9\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"20425d046dadc7a61fdfe72b3e5439c86f680638d2363551460b529b86ac363a\", \"size\": 669839}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "e06df0f017cf61aed046c0a3abb0b846a583d71729816e59f03e4453af30a808",
+          "observed_at_utc": "2026-11-11T14:38:14Z",
+          "observation": "{\"reason\": \"Transport failure: TimeoutError\"}"
         }
       ],
-      "pending_reason": "",
-      "resume_condition": "",
+      "pending_reason": "Transport failure: TimeoutError",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
       "observer": "conda_package",
-      "readback_succeeded": true
+      "readback_succeeded": false
     }
   }
 }
