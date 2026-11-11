@@ -187,6 +187,11 @@ def estimate_psd(
     return res.view(FrequencySeries)
 
 
+def _is_window_array(window) -> bool:
+    """Return whether ``window`` is given as explicit samples, not a name."""
+    return isinstance(window, (list, np.ndarray))
+
+
 def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     """Calculate the variance inflation factor for Welch's method with overlap.
 
@@ -236,22 +241,37 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     float
         Multiplicative correction factor for the standard error.
 
+    Raises
+    ------
+    ValueError
+        If ``window`` is an explicit array that is not one-dimensional with
+        exactly ``nperseg`` samples.  Its autocorrelation at the segment
+        stride is then undefined, so no correction factor can be computed.
+
     """
     if window is None or nperseg is None or noverlap is None or n_blocks <= 1:
         return 1.0
 
-    try:
-        if isinstance(window, (list, np.ndarray)):
-            win_array = np.asarray(window)
-            if len(win_array) != nperseg:
-                return 1.0
-        else:
+    if _is_window_array(window):
+        win_array = np.asarray(window)
+        if win_array.ndim != 1:
+            raise ValueError(
+                f"window array must be one-dimensional, got shape {win_array.shape}"
+            )
+        if len(win_array) != nperseg:
+            raise ValueError(
+                f"window array has {len(win_array)} samples but nperseg is "
+                f"{nperseg}; the overlap correction needs a window of exactly "
+                "nperseg samples"
+            )
+    else:
+        try:
             win_array = get_window(window, nperseg)
-    except (ValueError, TypeError) as e:
-        warnings.warn(
-            f"Could not generate window '{window}': {e}. Assuming independent segments (factor=1.0)."
-        )
-        return 1.0
+        except (ValueError, TypeError) as e:
+            warnings.warn(
+                f"Could not generate window '{window}': {e}. Assuming independent segments (factor=1.0)."
+            )
+            return 1.0
 
     step = nperseg - noverlap
     if step <= 0:
@@ -765,7 +785,9 @@ def bootstrap_spectrogram(
 
                 stride_sec = fftlength_sec - overlap_sec
                 if stride_sec > 0 and fftlength_sec > 0:
-                    dummy_nperseg = 1000
+                    # A named window is sampled on a dummy segment; an
+                    # explicit window array fixes the segment length itself.
+                    dummy_nperseg = len(window) if _is_window_array(window) else 1000
                     dummy_step = max(
                         1, int(round(stride_sec / fftlength_sec * dummy_nperseg))
                     )
@@ -776,8 +798,12 @@ def bootstrap_spectrogram(
         else:
             # Heuristic from spectrogram metadata
             if overlap_ratio is not None and overlap_ratio > 1:
-                dummy_step = 100
-                dummy_nperseg = int(round(dummy_step * overlap_ratio))
+                if _is_window_array(window):
+                    dummy_nperseg = len(window)
+                    dummy_step = max(1, int(round(dummy_nperseg / overlap_ratio)))
+                else:
+                    dummy_step = 100
+                    dummy_nperseg = int(round(dummy_step * overlap_ratio))
                 if dummy_nperseg > dummy_step:
                     dummy_noverlap = dummy_nperseg - dummy_step
                     factor = calculate_correlation_factor(
