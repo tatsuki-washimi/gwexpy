@@ -130,12 +130,12 @@ def test_compute_gauch_dead_bin_yields_nan_pvalue():
     assert not np.any(res.pvalue_map.value == 0.0)
 
 
-# --- gauch: Monte-Carlo p-value is at least 1/(n_trials+1) (#7, #507) --------
+# --- gauch: Monte-Carlo p-value floored at 1/n_trials (#7) ------------------
 
 
-def test_lilliefors_pvalue_minimum_is_one_over_n_trials_plus_one():
+def test_lilliefors_pvalue_floored_at_one_over_n_trials():
     p = _get_rayleigh_lilliefors_pvalue(1e6, n=40, n_trials=10)
-    assert p == pytest.approx(1 / 11)
+    assert p == pytest.approx(0.1)
     assert p > 0.0
 
 
