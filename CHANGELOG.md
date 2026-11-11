@@ -13,6 +13,11 @@
 ### Fixed
 
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
+| **Spatial FFT round-trip coordinates** | `ScalarField.fft_space()` followed by `ifft_space()` rebuilt each spatial axis from the k bins alone. The axis always started at 0, so a nonzero origin was lost. A descending axis came back ascending (`-(n-1)·dx … 0`), and a two-sample axis was always treated as descending. Data values round-tripped correctly. | `fft_space()` records the start and direction of each transformed axis in private state, and `ifft_space()` restores the original coordinates, direction and unit; the state follows arithmetic on the k-space field. For a k-space field built directly, with nothing recorded, an ascending k axis still gives `0 … (n-1)·dx`, and a sign-flipped k axis now gives the descending `(n-1)·dx … 0`. The DFT coefficients, their ordering and normalization, and the k axis are unchanged; no origin-dependent phase factor is applied. | #544 |
+
+### Fixed
+
+- **Spatial FFT round-trip coordinates**: `ScalarField.fft_space()` → `ifft_space()` now returns the original spatial coordinates for ascending and descending axes with any origin, for each independently transformed axis (#544).
 
 ## [0.2.9] - 2026-11-07
 

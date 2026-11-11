@@ -569,6 +569,7 @@ class ScalarField(FieldBase):
         ]
         new_names = list(self.axis_names)
         new_space_domains = dict(self._space_domains)
+        new_space_origins = dict(getattr(self, "_space_origins", None) or {})
 
         for ax_name, ax_int in zip(axes, target_axes_int):
             ax_desc = self.axis(ax_name)
@@ -600,6 +601,13 @@ class ScalarField(FieldBase):
             del new_space_domains[ax_name]
             new_space_domains[new_name] = "k"
 
+            # The k bins fix the spacing but not where the real-space axis
+            # started or which way it ran; keep both for ifft_space.
+            new_space_origins[ax_name] = (
+                ax_desc.index[0].copy(),
+                dx_value < 0,
+            )
+
         result = ScalarField(
             dft,
             unit=self.unit,
@@ -613,6 +621,7 @@ class ScalarField(FieldBase):
         )
         result._validate_domain_units()
         self._propagate_gwex_attrs(result)
+        result._space_origins = new_space_origins
         return result
 
     def ifft_space(
@@ -693,6 +702,7 @@ class ScalarField(FieldBase):
         ]
         new_names = list(self.axis_names)
         new_space_domains = dict(self._space_domains)
+        new_space_origins = dict(getattr(self, "_space_origins", None) or {})
 
         for ax_name, ax_int in zip(axes, target_axes_int):
             # Derive real-space axis name from k-axis name
@@ -720,10 +730,19 @@ class ScalarField(FieldBase):
             dx_value = 2 * np.pi / (npts * abs(dk_value))
             dx_unit = 1 / dk_unit
 
-            # If k-axis was effectively "descending" (dk < 0),
-            # the reconstructed x-axis should also be descending
-            if dk_value < 0:
-                x_values = np.arange(npts - 1, -1, -1) * (-dx_value) * dx_unit
+            recorded = new_space_origins.pop(real_name, None)
+            if recorded is not None:
+                # The axis came from fft_space: restore its start and direction.
+                origin, descending = recorded
+                step = -dx_value if descending else dx_value
+                x_values = origin + (np.arange(npts) * step * dx_unit).to(
+                    getattr(origin, "unit", dx_unit)
+                )
+            elif dk_value < 0:
+                # No recorded source axis.  A sign-flipped k axis stands for a
+                # descending x axis, laid out over the same [0, (n-1)dx] range
+                # as the ascending fallback.
+                x_values = np.arange(npts - 1, -1, -1) * dx_value * dx_unit
             else:
                 x_values = np.arange(npts) * dx_value * dx_unit
             new_indices[ax_int] = x_values
@@ -747,6 +766,8 @@ class ScalarField(FieldBase):
         )
         result._validate_domain_units()
         self._propagate_gwex_attrs(result)
+        # Axes still in k-space keep their recorded origin; restored ones do not.
+        result._space_origins = new_space_origins
         return result
 
     def wavelength(self, axis: str | int) -> u.Quantity:
