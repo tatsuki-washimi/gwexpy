@@ -9,11 +9,10 @@
 | Area | Before | After | Reference |
 |---|---|---|---|
 | **Rayleigh Monte Carlo p-values** | `rayleigh_pvalue()` and `TimeSeries.rayleigh_test()` reported `min(1, 2·min(r_upper, r_lower)/N)`, which is exactly 0 when the observed statistic lies beyond every simulated value and exceeds the nominal size (0.05195 at nominal 0.05, `N=1000`). | Reports `min(1, 2·(min(r_upper, r_lower)+1)/(N+1))`. Every finite p-value changes by at most `2/(N+1)`; the minimum is `2/(N+1)`, so `p < 0.001` needs `n_monte_carlo >= 2000`. With `N=1000`, strict `p < 0.05` and `p < 0.01` decisions are unchanged. | #507 |
-| **GauCh Monte Carlo p-values** | `compute_gauch()` reported `max(r/N, 1/N)`. | Reports `(r+1)/(N+1)`. Every finite p-value changes by less than `1/N`; the minimum is `1/(N+1)`, so with `N=1000` the most extreme bins now satisfy a strict `p < 0.001`. The statistic and its null distribution are unchanged. | #507 |
 
 ### Fixed
 
-- **Finite-sample Monte Carlo p-values**: Rank the observed Rayleigh and GauCh statistics among the `N + 1` exchangeable values, so a p-value is never 0 and the test size does not exceed the nominal level under the simulated null. Seeds, generators, caches, provenance, and NaN handling for DC, Nyquist, dead, and non-finite bins are unchanged (#507).
+- **Finite-sample Rayleigh p-values**: Rank the observed Rayleigh statistic among the `N + 1` exchangeable values, so a p-value is never 0 and the test size does not exceed the nominal level under the simulated null. Seeds, generators, caches, provenance, and NaN handling for DC, Nyquist, and non-finite bins are unchanged. `compute_gauch()` p-values are not changed (#507).
 
 ## [0.2.9] - 2026-11-07
 

@@ -1,9 +1,10 @@
-"""Finite-sample Monte Carlo p-values for Rayleigh and GauCh (#507).
+"""Finite-sample Monte Carlo p-values for the Rayleigh test (#507).
 
 With ``N`` simulated null statistics, the observed statistic is ranked among
 ``N + 1`` values. The one-sided p-value is ``(r + 1) / (N + 1)`` where ``r``
 counts simulated statistics at least as extreme as the observed one. The
-Rayleigh test keeps its "double the smaller tail" convention.
+Rayleigh test keeps its "double the smaller tail" convention. The same
+correction for GauCh is deferred to its recalibration (#879).
 """
 
 from __future__ import annotations
@@ -14,13 +15,11 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-import gwexpy.statistics.gauch as gauch_module
 import gwexpy.statistics.rayleigh_test as rayleigh_module
 from gwexpy.spectrogram import Spectrogram
 from gwexpy.statistics.dq_flag import to_segments
-from gwexpy.statistics.gauch import _get_rayleigh_lilliefors_pvalue, compute_gauch
+from gwexpy.statistics.gauch import _get_rayleigh_lilliefors_pvalue
 from gwexpy.statistics.rayleigh_test import rayleigh_pvalue
-from gwexpy.timeseries import TimeSeries
 
 NULL = np.array([0.6, 0.8, 1.0, 1.3, 1.7])  # N = 5, sorted
 
@@ -190,117 +189,17 @@ def test_rayleigh_decisions_at_common_alpha_are_unchanged_for_n1000(alpha):
     np.testing.assert_array_equal(old < alpha, new < alpha)
 
 
-# --- GauCh: p = (r + 1) / (N + 1), r = #{D_sim >= D_obs} ---------------------------
+# --- GauCh is deliberately not changed here ----------------------------------------
 
 
-@pytest.mark.parametrize(
-    ("observed", "r"),
-    [(9.9, 0), (0.1, 5), (1.5, 1), (1.1, 2), (1.3, 2), (1.7, 1), (0.6, 5)],
-)
-def test_gauch_helper_rank_formula(monkeypatch, observed, r):
-    _fixed_null(monkeypatch, gauch_module, "_get_lilliefors_null_distribution", NULL)
-    assert np.count_nonzero(NULL >= observed) == r
+def test_gauch_pvalue_keeps_its_floor_until_the_null_is_recalibrated():
+    """GauCh keeps ``max(r/N, 1/N)``; its rank correction waits for #879.
 
-    p = _get_rayleigh_lilliefors_pvalue(observed, n=40, n_trials=5)
-
-    assert p == pytest.approx((r + 1) / 6, rel=1e-15)
-
-
-def test_gauch_helper_minimum_is_one_over_n_plus_one():
+    Moving the GauCh minimum from ``1/N`` to ``1/(N+1)`` would make bins
+    beyond the whole simulated null satisfy a strict ``p < 0.001`` at
+    ``N=1000``. The current GauCh statistic and null are not calibrated
+    (#879), so that correction is applied together with the recalibration.
+    """
     p = _get_rayleigh_lilliefors_pvalue(1e6, n=40, n_trials=10)
 
-    assert p == pytest.approx(1 / 11, rel=1e-15)
-
-
-def test_gauch_helper_maximum_is_one():
-    p = _get_rayleigh_lilliefors_pvalue(-1.0, n=40, n_trials=10)
-
-    assert p == 1.0
-
-
-def _noise(seed=3, duration=64.0, rate=128):
-    rng = np.random.default_rng(seed)
-    return TimeSeries(rng.normal(size=int(duration * rate)) * 1e-21, sample_rate=rate)
-
-
-def test_compute_gauch_matches_the_helper_per_bin():
-    """Both GauCh code paths must apply the same formula to the same null."""
-    n_trials, window = 60, 10
-    res = compute_gauch(
-        _noise(), fftlength=1.0, window=window, n_monte_carlo=n_trials, seed=11
-    )
-    stat = res.statistic_map.value
-    p = res.pvalue_map.value
-
-    for index in [(0, 3), (5, 20), (stat.shape[0] - 1, stat.shape[1] - 2)]:
-        expected = _get_rayleigh_lilliefors_pvalue(
-            float(stat[index]), n=window, n_trials=n_trials, seed=11
-        )
-        assert p[index] == pytest.approx(expected, rel=1e-15)
-
-
-def test_compute_gauch_pvalues_lie_on_the_rank_lattice():
-    n_trials = 60
-    res = compute_gauch(
-        _noise(), fftlength=1.0, window=10, n_monte_carlo=n_trials, seed=11
-    )
-    p = res.pvalue_map.value
-    p = p[np.isfinite(p)]
-
-    steps = p * (n_trials + 1)
-    np.testing.assert_allclose(steps, np.round(steps), atol=1e-9)
-    assert p.min() >= 1 / (n_trials + 1)
-    assert p.max() <= 1.0
-    assert res.metadata["n_monte_carlo"] == n_trials
-    assert res.metadata["seed"] == 11
-
-
-def test_compute_gauch_extreme_statistic_gets_the_minimum(monkeypatch):
-    n_trials = 25
-    _fixed_null(
-        monkeypatch,
-        gauch_module,
-        "_get_lilliefors_null_distribution",
-        np.full(n_trials, -1.0),  # every observed D exceeds the null
-    )
-    below = compute_gauch(_noise(), fftlength=1.0, window=10, n_monte_carlo=n_trials)
-    _fixed_null(
-        monkeypatch,
-        gauch_module,
-        "_get_lilliefors_null_distribution",
-        np.full(n_trials, 2.0),  # D <= 1 never reaches the null
-    )
-    above = compute_gauch(_noise(), fftlength=1.0, window=10, n_monte_carlo=n_trials)
-
-    np.testing.assert_allclose(below.pvalue_map.value, 1 / (n_trials + 1))
-    np.testing.assert_allclose(above.pvalue_map.value, 1.0)
-
-
-def test_compute_gauch_dead_bin_is_still_nan():
-    ts = TimeSeries(np.zeros(2048), sample_rate=256)
-
-    res = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50)
-
-    assert np.isnan(res.pvalue_map.value).all()
-
-
-def test_compute_gauch_seeded_result_is_reproducible():
-    kwargs = dict(fftlength=1.0, window=10, n_monte_carlo=60, seed=5)
-
-    first = compute_gauch(_noise(), **kwargs)
-    second = compute_gauch(_noise(), **kwargs)
-
-    np.testing.assert_array_equal(first.pvalue_map.value, second.pvalue_map.value)
-    np.testing.assert_array_equal(first.statistic_map.value, second.statistic_map.value)
-    assert first.pvalue_map.provenance == second.pvalue_map.provenance
-
-
-def test_gauch_size_is_controlled_under_exchangeability():
-    n = 200
-    r = np.arange(0, n + 1)  # every rank of the observed statistic
-    old = np.maximum(r / n, 1 / n)
-    new = (r + 1) / (n + 1)
-
-    for alpha in (0.005, 0.01, 0.05, 0.1, 0.5):
-        assert np.mean(new <= alpha) <= alpha
-    assert np.mean(old <= 0.005) > 0.005
+    assert p == pytest.approx(1 / 10, rel=1e-15)

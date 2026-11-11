@@ -11,7 +11,6 @@ import numpy as np
 
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
-from ._monte_carlo import upper_tail_rank_pvalue
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
@@ -74,13 +73,6 @@ def compute_gauch(
     Returns
     -------
     GauChResult
-
-    Notes
-    -----
-    The p-value is one-sided: ``p = (r + 1) / (N + 1)`` with
-    ``N = n_monte_carlo`` and ``r`` the number of simulated statistics
-    ``>=`` the observed one. The smallest reportable value is
-    ``1 / (N + 1)``. Through v0.2.9 it was ``max(r / N, 1 / N)`` (#507).
 
     """
     if rng is not None and seed is not None:
@@ -148,10 +140,14 @@ def compute_gauch(
     # rng/seed can bypass that cache (#464), so fetch the array directly.
     dist = _get_lilliefors_null_distribution(window, n_monte_carlo, rng=rng, seed=seed)
 
-    # p = (r + 1) / (N + 1) with r = count(dist >= dn): the observed statistic
-    # is ranked among the N + 1 exchangeable values (#507). The minimum is
-    # 1/(N+1), so -log10(p) stays finite downstream (issue #459).
-    pvalue_map = upper_tail_rank_pvalue(dist, statistic_map)
+    # p-value is (count of dist >= dn) / len(dist)
+    # searchsorted returns index where dn would be inserted to maintain order.
+    # idx = number of elements < dn.
+    # so count(dist >= dn) = len(dist) - idx.
+    # Floor at 1/len(dist): a Monte-Carlo p-value of exactly 0 is invalid and
+    # makes -log10(p)=Inf downstream (issue #459).
+    indices = np.searchsorted(dist, statistic_map)
+    pvalue_map = np.maximum((len(dist) - indices) / len(dist), 1.0 / len(dist))
 
     # A dead bin produced a NaN statistic above; searchsorted would map it to a
     # spurious p-value, so restore NaN explicitly for those bins.
@@ -293,5 +289,6 @@ def _get_rayleigh_lilliefors_pvalue(
 ) -> float:
     """Get the p-value using the (possibly cached) Lilliefors null distribution."""
     dist = _get_lilliefors_null_distribution(n, n_trials, rng=rng, seed=seed)
-    # Same rank formula as compute_gauch(): (r + 1) / (N + 1), never 0 (#507).
-    return float(upper_tail_rank_pvalue(dist, dn))
+    # Floor at 1/len(dist): a Monte-Carlo p-value of exactly 0 is invalid.
+    exceedance = float(np.sum(dist >= dn)) / len(dist)
+    return max(exceedance, 1.0 / len(dist))
