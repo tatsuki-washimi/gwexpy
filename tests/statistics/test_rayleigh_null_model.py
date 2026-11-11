@@ -81,14 +81,15 @@ def single_spectrogram():
 def _target_size(alpha, n_monte_carlo):
     """Achievable two-sided size of a Monte Carlo p-value.
 
-    The observed statistic and the ``N`` null draws are exchangeable, so
-    ``P(p <= 2k/N) = 2(k+1)/(N+1)`` with ``k = floor(alpha * N / 2)``. This
-    is *not* ``alpha``: at ``N=1000`` the nominal 0.05 is really 0.05195.
-    Centring a tolerance band on ``alpha`` would reject a correct
-    implementation.
+    The observed statistic and the ``N`` null draws are exchangeable, and
+    ``p = 2(k+1)/(N+1)`` with ``k = min(r_upper, r_lower)`` (#507), so
+    ``P(p <= alpha) = 2m/(N+1)`` with ``m = floor(alpha * (N+1) / 2)``. This
+    never exceeds ``alpha`` but is not equal to it: at ``N=1000`` the
+    nominal 0.05 is really 0.04995. Before #507 the estimator was ``2k/N``
+    and the size was ``2(floor(alpha*N/2)+1)/(N+1)``, 0.05195 at ``N=1000``.
     """
-    k = int(alpha * n_monte_carlo / 2)
-    return 2 * (k + 1) / (n_monte_carlo + 1)
+    m = int(alpha * (n_monte_carlo + 1) / 2)
+    return 2 * m / (n_monte_carlo + 1)
 
 
 class TestDegenerateSegmentCountGuard:
@@ -643,17 +644,20 @@ class TestKnownRemainingLimitations:
     """Pin states that are deliberately *not* fixed here, so they are visible."""
 
     @pytest.mark.long
-    def test_p_equals_zero_still_occurs(self, single_spectrogram):
-        """No finite-Monte-Carlo floor, unlike `compute_gauch`.
+    def test_p_is_never_zero(self, single_spectrogram):
+        """The smallest p-value is ``2/(N+1)``, reached but never undercut.
 
-        `gauch` clamps its p-values at ``1/N`` while this function can
-        report exactly 0, which downstream code may read as infinite
-        significance. Fixing the asymmetry is tracked separately (#507);
-        this test exists so removing the floor asymmetry is a visible,
-        deliberate change rather than a silent one.
+        Through v0.2.9 an observed statistic beyond every simulated value
+        scored exactly 0, which downstream code may read as infinite
+        significance; this test then asserted that zeros occurred, so the
+        change would be deliberate. #507 ranks the observed statistic among
+        ``N + 1`` values instead. The same white-noise pool still contains
+        statistics outside the simulated range; they now score ``2/(N+1)``.
         """
         pool = single_spectrogram.value[:, 1:-1].ravel()
-        assert np.count_nonzero(pool == 0.0) > 0
+        minimum = 2 / (single_spectrogram.n_monte_carlo + 1)
+        assert np.count_nonzero(pool == 0.0) == 0
+        assert pool.min() == pytest.approx(minimum, rel=1e-12)
 
     @pytest.mark.long
     def test_to_segments_still_vetoes_almost_every_time(self, single_spectrogram):
