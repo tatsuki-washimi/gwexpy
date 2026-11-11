@@ -13,6 +13,7 @@ from gwexpy.interop._optional import require_optional
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
+    SkippedHDF5Entries,
     detect_hdf5_layout,
     ensure_hdf5_file,
     has_hdf5_collection_manifest,
@@ -209,6 +210,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                 manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
+                # ``read`` extends the receiver in place, so judge this call's
+                # candidates rather than the size of the resulting list.
+                skipped = SkippedHDF5Entries(type(self).__name__, source, len(order))
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
                         try:
@@ -220,7 +224,8 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
+                    skipped.report()
                     self.extend(new_list)
                     return self
                 if layout == LAYOUT_GROUP:
@@ -242,7 +247,8 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
+                    skipped.report()
                     self.extend(new_list)
                     return self
             _h5py = require_optional("h5py")
@@ -628,6 +634,9 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                 layout = detect_hdf5_layout(h5f)
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
+                # ``read`` updates the receiver in place, so judge this call's
+                # candidates rather than the size of the resulting dict.
+                skipped = SkippedHDF5Entries(type(self).__name__, source, len(order))
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
                         try:
@@ -637,10 +646,11 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         key = keymap.get(ds_name, ds_name)
                         self[key] = s
+                    skipped.report()
                     return self
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
@@ -659,10 +669,11 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
                                 continue
                         key = keymap.get(grp_name, grp_name)
                         self[key] = s
+                    skipped.report()
                     return self
             _h5py = require_optional("h5py")
             with _h5py.File(source, "r") as f:

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+import warnings
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Any
 
 import h5py
 
@@ -19,6 +21,94 @@ LAYOUT_DATASET = "dataset-per-entry"
 LAYOUT_GROUP = "group-per-entry"
 
 _SAFE_KEY_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+# Number of per-entry failures spelled out in a diagnostic message.
+_MAX_REPORTED_FAILURES = 10
+
+
+class SkippedHDF5Entries:
+    """Per-entry read failures of one manifest-free HDF5 collection read.
+
+    A manifest-free file is read by discovery: every top-level entry is a
+    candidate, and a candidate that cannot be decoded is skipped.  This
+    records those skips for one ``read()`` call so that the omission is
+    reported instead of being silent.
+
+    Parameters
+    ----------
+    kind : str
+        Name of the collection class being read.
+    source : object
+        The file being read, used in messages only.
+    total : int
+        Number of candidate entries discovered by this call.
+
+    """
+
+    def __init__(self, kind: str, source: Any, total: int) -> None:
+        self.kind = kind
+        self.source = source
+        self.total = total
+        self.failures: list[tuple[str, BaseException, BaseException | None]] = []
+
+    def record(
+        self,
+        name: str,
+        exc: BaseException,
+        first: BaseException | None = None,
+    ) -> None:
+        """Record that candidate entry ``name`` failed to read with ``exc``.
+
+        ``first`` is the failure of an earlier read attempt on the same entry
+        (the group layout tries its ``data`` member before the group itself).
+        """
+        self.failures.append((str(name), exc, first))
+
+    @staticmethod
+    def _describe_one(
+        name: str, exc: BaseException, first: BaseException | None
+    ) -> str:
+        text = f"{name!r}: {type(exc).__name__}: {exc}"
+        if first is not None and str(first) != str(exc):
+            text += f" (first attempt: {type(first).__name__}: {first})"
+        return text
+
+    def _describe(self) -> str:
+        shown = self.failures[:_MAX_REPORTED_FAILURES]
+        detail = "; ".join(self._describe_one(*failure) for failure in shown)
+        hidden = len(self.failures) - len(shown)
+        if hidden > 0:
+            detail += f"; and {hidden} more"
+        return detail
+
+    def report(self, *, stacklevel: int = 3) -> None:
+        """Warn about a partial read, or raise if no candidate could be read.
+
+        Does nothing when every candidate was read, including the case of a
+        file with no candidate entries (a genuinely empty collection).
+
+        Raises
+        ------
+        ValueError
+            If candidate entries exist and none of them could be read.  The
+            first underlying failure is attached as ``__cause__``.
+
+        """
+        if not self.failures:
+            return
+        if len(self.failures) >= self.total:
+            msg = (
+                f"{self.kind}.read: none of the {self.total} HDF5 entries in "
+                f"{self.source!r} could be read: {self._describe()}"
+            )
+            raise ValueError(msg) from self.failures[0][1]
+        warnings.warn(
+            f"{self.kind}.read: {len(self.failures)} of {self.total} HDF5 "
+            f"entries in {self.source!r} could not be read and were omitted "
+            f"from the result: {self._describe()}",
+            UserWarning,
+            stacklevel=stacklevel,
+        )
 
 
 def safe_hdf5_key(text: str, *, default: str = "item") -> str:
