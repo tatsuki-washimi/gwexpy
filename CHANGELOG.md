@@ -9,10 +9,12 @@
 | Area | Before | After | Reference |
 |---|---|---|---|
 | **Manifest-free HDF5 collection reads** | Reading an HDF5 file without a GWexpy collection manifest into a `TimeSeries`/`FrequencySeries`/`Spectrogram`/`Histogram` `Dict` or `List` skipped every entry that failed to decode, logging only at debug level. A partially unreadable file returned a shorter collection, and a fully unreadable file returned an empty one, with no user-visible signal. | Readable entries are still returned, and a `UserWarning` names each omitted entry and its failure. If entries exist and none can be read, `ValueError` is raised with the per-entry failures. A file with no entries still reads as an empty collection, and manifest-backed files keep failing closed on the first unreadable entry. | #771 |
+| **Overlap standard-error correction with a window array** | `calculate_correlation_factor()` returned factor 1.0 without a warning when an explicit window array did not have `nperseg` samples. `bootstrap_spectrogram(window=<array>)` compared the array with an internal dummy segment length, so its error bars lost the overlap correction for any array that did not have exactly 1000 samples (or, without `fftlength`, the inferred dummy length). | `calculate_correlation_factor()` raises `ValueError` for a window array that is not one-dimensional with exactly `nperseg` samples. `bootstrap_spectrogram()` uses the array's own length as the segment length, so a window array receives the same overlap correction as the equivalent named window; its error bars grow by that factor when segments overlap. Named windows, the invalid-window-name warning and fallback, and the correction formula are unchanged. | #772 |
 
 ### Fixed
 
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
+- **Overlap standard-error correction with a window array**: Stop silently disabling the Welch overlap correction for explicit window arrays. A length or shape mismatch in `calculate_correlation_factor()` raises `ValueError`, and `bootstrap_spectrogram()` applies the correction to window arrays of any length (#772).
 
 ## [0.2.9] - 2026-11-07
 
