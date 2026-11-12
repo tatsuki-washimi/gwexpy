@@ -46,6 +46,41 @@ def _decode_matrix_key(raw):
         return str(raw)
 
 
+def _encode_attrs_json(attrs: Any) -> str | None:
+    """Encode matrix ``attrs`` for the HDF5 ``attrs_json`` attribute.
+
+    Returns `None` when there are no attrs to store.
+
+    Raises
+    ------
+    TypeError
+        If ``attrs`` cannot be represented in the JSON-based ``attrs_json``
+        format (for example an `astropy.units.Quantity` or array value, or a
+        circular reference).  The message names the offending top-level keys.
+
+    """
+    if attrs is None:
+        return None
+    try:
+        return json.dumps(attrs)
+    except (TypeError, ValueError) as exc:
+        bad: list[str] = []
+        if isinstance(attrs, dict):
+            for key, value in attrs.items():
+                try:
+                    json.dumps({key: value})
+                except (TypeError, ValueError):
+                    bad.append(f"{key!r} ({type(value).__name__})")
+        detail = f" Unsupported entries: {', '.join(bad)}." if bad else ""
+        msg = (
+            "SeriesMatrix attrs cannot be stored in HDF5: the 'attrs_json' "
+            "format only holds JSON-serializable values (str, int, float, "
+            f"bool, None, list, dict).{detail} Convert them to JSON-native "
+            f"values before writing. ({exc})"
+        )
+        raise TypeError(msg) from exc
+
+
 class SeriesMatrixIOMixin:
     """Mixin for SeriesMatrix I/O and display operations."""
 
@@ -185,8 +220,23 @@ class SeriesMatrixIOMixin:
             raise
 
     def to_hdf5(self, filepath, **kwargs):
-        """Write matrix to HDF5 file."""
+        """Write matrix to HDF5 file.
+
+        ``attrs`` are stored as JSON in the ``attrs_json`` file attribute.
+
+        Raises
+        ------
+        TypeError
+            If ``attrs`` contains a value that is not JSON-serializable.  The
+            check runs before the target is opened, so an existing file is
+            left untouched.
+
+        """
         import h5py  # noqa: F401 - availability check
+
+        # Validate before opening in truncate mode: a failed attrs encoding
+        # must neither drop the entry silently nor destroy an existing file.
+        attrs_json = _encode_attrs_json(getattr(self, "attrs", None))
 
         with h5py.File(filepath, "w", **kwargs) as f:
             f.attrs["name"] = str(getattr(self, "name", ""))
@@ -194,12 +244,8 @@ class SeriesMatrixIOMixin:
                 f.attrs["epoch"] = float(getattr(self, "epoch", 0.0))
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 pass
-            attrs_dict = getattr(self, "attrs", None)
-            if attrs_dict is not None:
-                try:
-                    f.attrs["attrs_json"] = json.dumps(attrs_dict)
-                except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                    pass
+            if attrs_json is not None:
+                f.attrs["attrs_json"] = attrs_json
             f.create_dataset("data", data=self.value)
             grp_x = f.create_group("xindex")
             if isinstance(self.xindex, u.Quantity):
