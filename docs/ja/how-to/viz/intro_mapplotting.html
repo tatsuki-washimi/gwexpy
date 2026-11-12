@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/viz/intro_mapplotting';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/viz/intro_mapplotting.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
 <h1>マッププロット: 基本<a class="headerlink" href="#map-plotting-basics" title="Link to this heading">#</a></h1>
 <p>このノートブックでは、全天 HEALPix 確率マップに <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code> を使用する方法と、検出器の位置の地理マップに <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code> を使用する方法を説明します。</p>
 <section id="skymap-all-sky-probability-maps">
-<h2>1. SkyMap: 全天確率マップ<a class="headerlink" href="#skymap-all-sky-probability-maps" title="Link to this heading">#</a></h2>
+<span id="1-skymap-all-sky-probability-maps"></span><h2>1. SkyMap: 全天確率マップ<a class="headerlink" href="#skymap-all-sky-probability-maps" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SkyMap</span></code> は、天球上の分布を表示するための特殊なプロットクラスです。<code class="docutils literal notranslate"><span class="pre">ligo.skymap</span></code> と連携して、HEALPix データを簡単に処理できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -617,7 +617,7 @@
 </div>
 </section>
 <section id="geomap-geographic-maps-with-pygmt">
-<h2>2. GeoMap：PyGMT による地理地図<a class="headerlink" href="#geomap-geographic-maps-with-pygmt" title="Link to this heading">#</a></h2>
+<span id="2-geomap-geographic-maps-with-pygmt"></span><h2>2. GeoMap：PyGMT による地理地図<a class="headerlink" href="#geomap-geographic-maps-with-pygmt" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">GeoMap</span></code> は <code class="docutils literal notranslate"><span class="pre">PyGMT</span></code> への Cartopy 風インターフェースを提供し、高品質な地理地図と重力波検出器の簡単な配置を可能にします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -657,7 +657,7 @@ libgmt.so: cannot open shared object file: No such file or directory)
 </div>
 </section>
 <section id="close-up-view-of-japan-region">
-<h2>3. 日本周辺のクローズアップ表示<a class="headerlink" href="#close-up-view-of-japan-region" title="Link to this heading">#</a></h2>
+<span id="3-close-up-view-of-japan-region"></span><h2>3. 日本周辺のクローズアップ表示<a class="headerlink" href="#close-up-view-of-japan-region" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">GeoMap</span></code> では、<code class="docutils literal notranslate"><span class="pre">region</span></code> 引数に ISO 3166-1 alpha-2 国コード（'JP', 'US' など）を指定することで、その国周辺を自動的にクローズアップして表示できます。 また、<code class="docutils literal notranslate"><span class="pre">add_scale_bar()</span></code> を使うことで、地図上に縮尺バーを追加できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

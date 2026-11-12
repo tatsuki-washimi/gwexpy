@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_dttxml_calibration';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 5.1 s · GWexpy 0.2.9
+      成功 · 4.2 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -612,7 +612,7 @@
 </div>
 </section>
 <section id="create-a-synthetic-dtt-xml-file">
-<h2>1. 合成 DTT XML ファイルの作成<a class="headerlink" href="#create-a-synthetic-dtt-xml-file" title="Link to this heading">#</a></h2>
+<span id="1-create-a-synthetic-dtt-xml-file"></span><h2>1. 合成 DTT XML ファイルの作成<a class="headerlink" href="#create-a-synthetic-dtt-xml-file" title="Link to this heading">#</a></h2>
 <p>実際の運用では既存の <code class="docutils literal notranslate"><span class="pre">.xml</span></code> ファイルを使いますが、 ここでは KAGRA 懸架系の伝達関数測定を模した合成ファイルを生成します。</p>
 <p>生成するファイルには以下の3種類の測定量が含まれます：</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -721,7 +721,7 @@
 </div>
 </section>
 <section id="inspect-channels">
-<h2>2. チャネルの確認<a class="headerlink" href="#inspect-channels" title="Link to this heading">#</a></h2>
+<span id="2-inspect-channels"></span><h2>2. チャネルの確認<a class="headerlink" href="#inspect-channels" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">extract_xml_channels()</span></code> はデータ本体を読み込まずにチャネル名と アクティブ状態だけを返します。大容量ファイルのクイックスキャンに便利です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -741,7 +741,7 @@
 </div>
 </section>
 <section id="load-measurement-products">
-<h2>3. 測定量の読み込み<a class="headerlink" href="#load-measurement-products" title="Link to this heading">#</a></h2>
+<span id="3-load-measurement-products"></span><h2>3. 測定量の読み込み<a class="headerlink" href="#load-measurement-products" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">load_dttxml_products()</span></code> returns a mapping keyed by product type.
 Frequency products are keyed by channel (PSD/ASD) or by
 <code class="docutils literal notranslate"><span class="pre">(channel_b,</span> <span class="pre">channel_a)</span></code> pairs (TF/COH). With <code class="docutils literal notranslate"><span class="pre">native=True</span></code>, each value
@@ -788,7 +788,7 @@ contains numpy arrays for <code class="docutils literal notranslate"><span class
 </div>
 </section>
 <section id="bode-plot-transfer-function">
-<h2>4. Bode プロット — 伝達関数の可視化<a class="headerlink" href="#bode-plot-transfer-function" title="Link to this heading">#</a></h2>
+<span id="4-bode-plot--transfer-function"></span><h2>4. Bode プロット — 伝達関数の可視化<a class="headerlink" href="#bode-plot-transfer-function" title="Link to this heading">#</a></h2>
 <p>TF データを取り出し、振幅と位相を周波数の関数としてプロットします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -843,7 +843,7 @@ contains numpy arrays for <code class="docutils literal notranslate"><span class
 </div>
 </section>
 <section id="coherence">
-<h2>5. コヒーレンス<a class="headerlink" href="#coherence" title="Link to this heading">#</a></h2>
+<span id="5-coherence"></span><h2>5. コヒーレンス<a class="headerlink" href="#coherence" title="Link to this heading">#</a></h2>
 <p>コヒーレンスは測定の信頼性指標です。1 に近いほど出力が入力で よく説明されることを意味します。0.9 以下の周波数帯は 信頼性が低く、フィッティングの対象から外すことが推奨されます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -878,7 +878,7 @@ contains numpy arrays for <code class="docutils literal notranslate"><span class
 </div>
 </section>
 <section id="fitting-a-resonant-system-model">
-<h2>6. 共振モデルのフィッティング<a class="headerlink" href="#fitting-a-resonant-system-model" title="Link to this heading">#</a></h2>
+<span id="6-fitting-a-resonant-system-model"></span><h2>6. 共振モデルのフィッティング<a class="headerlink" href="#fitting-a-resonant-system-model" title="Link to this heading">#</a></h2>
 <p>機械的共振付近の伝達関数は2次系で近似できます：</p>
 <div class="math notranslate nohighlight">
 \[H(f) = \frac{A \, f_0^2}{f_0^2 - f^2 + i\, f f_0 / Q}\]</div>

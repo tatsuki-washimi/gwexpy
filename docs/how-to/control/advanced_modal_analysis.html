@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/control/advanced_modal_analysis';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/control/advanced_modal_analysis.html" />
@@ -551,7 +551,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -603,7 +603,7 @@ foundation for actuation matrix calibration and active modal damping.</p>
 </div>
 </section>
 <section id="synthetic-multi-dof-frf">
-<h2>1. Synthetic Multi-DOF FRF<a class="headerlink" href="#synthetic-multi-dof-frf" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-multi-dof-frf"></span><h2>1. Synthetic Multi-DOF FRF<a class="headerlink" href="#synthetic-multi-dof-frf" title="Link to this heading">#</a></h2>
 <p>We simulate a <strong>3-DOF chain suspension</strong> — a simplified model of the
 KAGRA Type-B intermediate-mass (IM) stage — with three coupled pendulum
 modes.  The FRF matrix <code class="docutils literal notranslate"><span class="pre">H[i,j](f)</span></code> gives the response of DOF <em>i</em> to a
@@ -661,7 +661,7 @@ Modes: [0.38, 0.55, 0.72] Hz,  Q = [150.0, 80.0, 60.0]
 </div>
 </section>
 <section id="wrap-the-frf-in-a-gwexpy-frequencyseriesmatrix">
-<h2>2. Wrap the FRF in a gwexpy FrequencySeriesMatrix<a class="headerlink" href="#wrap-the-frf-in-a-gwexpy-frequencyseriesmatrix" title="Link to this heading">#</a></h2>
+<span id="2-wrap-the-frf-in-a-gwexpy-frequencyseriesmatrix"></span><h2>2. Wrap the FRF in a gwexpy FrequencySeriesMatrix<a class="headerlink" href="#wrap-the-frf-in-a-gwexpy-frequencyseriesmatrix" title="Link to this heading">#</a></h2>
 <p>Before running OMA we can already import the FRF into gwexpy using
 <code class="docutils literal notranslate"><span class="pre">build_frf_matrix()</span></code> — the same helper used internally by
 <code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code>.</p>
@@ -715,7 +715,7 @@ Frequency bins: 2000
 </div>
 </section>
 <section id="operational-modal-analysis-with-pyoma">
-<h2>3. Operational Modal Analysis with pyOMA<a class="headerlink" href="#operational-modal-analysis-with-pyoma" title="Link to this heading">#</a></h2>
+<span id="3-operational-modal-analysis-with-pyoma"></span><h2>3. Operational Modal Analysis with pyOMA<a class="headerlink" href="#operational-modal-analysis-with-pyoma" title="Link to this heading">#</a></h2>
 <p>We use the <strong>Frequency Domain Decomposition (FDD)</strong> algorithm from pyOMA.
 The <code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code> converter then packages the extracted modal
 parameters into either a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> (parameter summary) or a
@@ -782,7 +782,7 @@ Extracted modal parameters:
 </div>
 </section>
 <section id="convert-to-gwexpy-modal-summary-dataframe">
-<h2>4. Convert to gwexpy — Modal Summary DataFrame<a class="headerlink" href="#convert-to-gwexpy-modal-summary-dataframe" title="Link to this heading">#</a></h2>
+<span id="4-convert-to-gwexpy--modal-summary-dataframe"></span><h2>4. Convert to gwexpy — Modal Summary DataFrame<a class="headerlink" href="#convert-to-gwexpy-modal-summary-dataframe" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to pandas DataFrame via from_pyoma_results</span>
@@ -822,7 +822,7 @@ Stored metadata:
 </div>
 </section>
 <section id="mode-shape-visualisation">
-<h2>5. Mode-Shape Visualisation<a class="headerlink" href="#mode-shape-visualisation" title="Link to this heading">#</a></h2>
+<span id="5-mode-shape-visualisation"></span><h2>5. Mode-Shape Visualisation<a class="headerlink" href="#mode-shape-visualisation" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fn</span>   <span class="o">=</span> <span class="n">mode_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;frequency_Hz&quot;</span><span class="p">]</span>
@@ -853,7 +853,7 @@ Stored metadata:
 </div>
 </section>
 <section id="damping-vs-frequency-quality-assessment">
-<h2>6. Damping vs. Frequency — Quality Assessment<a class="headerlink" href="#damping-vs-frequency-quality-assessment" title="Link to this heading">#</a></h2>
+<span id="6-damping-vs-frequency--quality-assessment"></span><h2>6. Damping vs. Frequency — Quality Assessment<a class="headerlink" href="#damping-vs-frequency-quality-assessment" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -882,7 +882,7 @@ Stored metadata:
 </div>
 </section>
 <section id="frf-reconstruction-from-mode-shapes">
-<h2>7. FRF Reconstruction from Mode Shapes<a class="headerlink" href="#frf-reconstruction-from-mode-shapes" title="Link to this heading">#</a></h2>
+<span id="7-frf-reconstruction-from-mode-shapes"></span><h2>7. FRF Reconstruction from Mode Shapes<a class="headerlink" href="#frf-reconstruction-from-mode-shapes" title="Link to this heading">#</a></h2>
 <p>A key validation step: reconstruct the FRF from the extracted mode parameters
 and compare with the measured FRF.  Good agreement confirms the modal
 identification is accurate.</p>

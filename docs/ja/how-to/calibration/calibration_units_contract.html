@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/calibration/calibration_units_contract';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -608,14 +608,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Output directory: /tmp/gwexpy-t6-el6a96ww
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Output directory: /tmp/gwexpy-t6-okh04mhb
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="physical-signal-and-calibration-model">
-<h2>1. Physical Signal and Calibration Model<a class="headerlink" href="#physical-signal-and-calibration-model" title="Link to this heading">#</a></h2>
+<span id="1-physical-signal-and-calibration-model"></span><h2>1. Physical Signal and Calibration Model<a class="headerlink" href="#physical-signal-and-calibration-model" title="Link to this heading">#</a></h2>
 <p>3本の校正用正弦波注入ラインと広帯域背景変位ノイズを含む物理変位信号 <span class="math notranslate nohighlight">\(x_{\mathrm{phys}}(t)\)</span> [m] をシミュレーションします。</p>
 <p>測定器の読み出し系は、DCゲイン <span class="math notranslate nohighlight">\(G = 1.0 \times 10^9\,\mathrm{ct/m}\)</span>、高周波ロールオフ極 <span class="math notranslate nohighlight">\(f_p = 300\,\mathrm{Hz}\)</span>、零点 <span class="math notranslate nohighlight">\(f_z = 30\,\mathrm{Hz}\)</span>、および固定パイプライン遅延 <span class="math notranslate nohighlight">\(\tau = 4 / f_s\,\mathrm{s}\)</span> を持つ周波数依存の伝達関数 <span class="math notranslate nohighlight">\(C(f)\)</span> [count / m] を導入します。</p>
 <div class="cell docutils container">
@@ -687,7 +687,7 @@ Calibration response: 8193 bins, unit=ct / m
 </div>
 </section>
 <section id="calibration-recovery-and-harmonic-line-verification">
-<h2>2. Calibration Recovery and Harmonic Line Verification<a class="headerlink" href="#calibration-recovery-and-harmonic-line-verification" title="Link to this heading">#</a></h2>
+<span id="2-calibration-recovery-and-harmonic-line-verification"></span><h2>2. Calibration Recovery and Harmonic Line Verification<a class="headerlink" href="#calibration-recovery-and-harmonic-line-verification" title="Link to this heading">#</a></h2>
 <p>生のカウント <span class="math notranslate nohighlight">\(Y(f)\)</span> から変位 <span class="math notranslate nohighlight">\(X(f)\)</span> を復元校正するために、複素応答で除算します： $<span class="math notranslate nohighlight">\(X_{\mathrm{cal}}(f) = \frac{Y(f)}{C(f)}\)</span><span class="math notranslate nohighlight">\( 次元の整合性より次が成り立ちます： \)</span><span class="math notranslate nohighlight">\(\frac{\mathrm{ct}}{\mathrm{ct} / \mathrm{m}} = \mathrm{m}\)</span>$</p>
 <p>注入された3つのライン周波数において、振幅および位相の復元精度を検証します。</p>
 <div class="cell docutils container">
@@ -817,7 +817,7 @@ Calibration response: 8193 bins, unit=ct / m
 </div>
 </section>
 <section id="defensive-unit-grid-consistency-guards">
-<h2>3. Defensive Unit &amp; Grid Consistency Guards<a class="headerlink" href="#defensive-unit-grid-consistency-guards" title="Link to this heading">#</a></h2>
+<span id="3-defensive-unit--grid-consistency-guards"></span><h2>3. Defensive Unit &amp; Grid Consistency Guards<a class="headerlink" href="#defensive-unit-grid-consistency-guards" title="Link to this heading">#</a></h2>
 <p>以下の必須の安全性チェックを検証します：</p>
 <ol class="arabic simple">
 <li><p><strong>逆方向変換ガード</strong>: <span class="math notranslate nohighlight">\(Y \cdot C\)</span> の乗算や校正なしの <code class="docutils literal notranslate"><span class="pre">raw_counts.to(u.m)</span></code> は <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> を発生させる必要があります。</p></li>
@@ -888,7 +888,7 @@ Zero response safely handled: True
 </div>
 </section>
 <section id="spectral-densities-asd-psd-and-strain-sensitivity">
-<h2>4. Spectral Densities (ASD, PSD) and Strain Sensitivity<a class="headerlink" href="#spectral-densities-asd-psd-and-strain-sensitivity" title="Link to this heading">#</a></h2>
+<span id="4-spectral-densities-asd-psd-and-strain-sensitivity"></span><h2>4. Spectral Densities (ASD, PSD) and Strain Sensitivity<a class="headerlink" href="#spectral-densities-asd-psd-and-strain-sensitivity" title="Link to this heading">#</a></h2>
 <p>校正済み変位の振幅スペクトル密度（ASD）およびパワースペクトル密度（PSD）を算出し、検出器アーム長 <span class="math notranslate nohighlight">\(L = 3000\,\mathrm{m}\)</span> を用いて差動アームひずみ <span class="math notranslate nohighlight">\(h(f) = X(f) / L\)</span> に変換します：
 $<span class="math notranslate nohighlight">\(A_x(f) = \frac{A_y(f)}{|C(f)|} \quad [\mathrm{m} / \sqrt{\mathrm{Hz}}]\)</span><span class="math notranslate nohighlight">\(
 \)</span><span class="math notranslate nohighlight">\(P_x(f) = \frac{P_y(f)}{|C(f)|^2} = A_x(f)^2 \quad [\mathrm{m}^2 / \mathrm{Hz}]\)</span><span class="math notranslate nohighlight">\(
@@ -988,7 +988,7 @@ Units dimensional consistency valid: True
 </div>
 </section>
 <section id="visual-diagnostics-and-artifact-generation">
-<h2>5. Visual Diagnostics and Artifact Generation<a class="headerlink" href="#visual-diagnostics-and-artifact-generation" title="Link to this heading">#</a></h2>
+<span id="5-visual-diagnostics-and-artifact-generation"></span><h2>5. Visual Diagnostics and Artifact Generation<a class="headerlink" href="#visual-diagnostics-and-artifact-generation" title="Link to this heading">#</a></h2>
 <p>3つの必須診断図面を生成し、インライン表示します：</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">calibration_response.png</span></code>: <span class="math notranslate nohighlight">\(C(f)\)</span> のボード振幅・位相応答。</p></li>

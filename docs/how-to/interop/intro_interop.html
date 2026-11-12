@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/interop/intro_interop';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/interop/intro_interop.html" />
@@ -551,7 +551,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -747,9 +747,9 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="general-data-formats-data-infrastructure">
-<h2>1. General Data Formats &amp; Data Infrastructure<a class="headerlink" href="#general-data-formats-data-infrastructure" title="Link to this heading">#</a></h2>
+<span id="1-general-data-formats--data-infrastructure"></span><h2>1. General Data Formats &amp; Data Infrastructure<a class="headerlink" href="#general-data-formats-data-infrastructure" title="Link to this heading">#</a></h2>
 <section id="numpy-original-gwpy">
-<h3>1.1. NumPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#numpy-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="11-numpy-original-gwpy"></span><h3>1.1. NumPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#numpy-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>NumPy</strong>: NumPy is the foundational library for numerical computing in Python, providing multidimensional arrays and fast mathematical operations.
 📚 <a class="reference external" href="https://numpy.org/">NumPy Documentation</a></p>
@@ -757,7 +757,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <p>You can obtain NumPy arrays via <code class="docutils literal notranslate"><span class="pre">TimeSeries.value</span></code> or <code class="docutils literal notranslate"><span class="pre">np.asarray(ts)</span></code>.</p>
 </section>
 <section id="pandas-integration-original-gwpy">
-<h3>1.2. Pandas Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pandas-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="12-pandas-integration-original-gwpy"></span><h3>1.2. Pandas Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pandas-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Pandas</strong>: Pandas is a powerful library for data analysis and manipulation, providing flexible data structures through DataFrame and Series.
 📚 <a class="reference external" href="https://pandas.pydata.org/">Pandas Documentation</a></p>
@@ -822,7 +822,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="polars-gwexpy-new">
-<h3>1.3. Polars <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#polars-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="13-polars-gwexpy-new"></span><h3>1.3. Polars <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#polars-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Polars</strong>: Polars is a high-performance DataFrame library implemented in Rust, excelling at large-scale data processing.
 📚 <a class="reference external" href="https://pola.rs/">Polars Documentation</a></p>
@@ -867,7 +867,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="xarray-integration-original-gwpy">
-<h3>1.4. Xarray Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#xarray-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="14-xarray-integration-original-gwpy"></span><h3>1.4. Xarray Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#xarray-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>xarray</strong>: xarray is a library for multidimensional labeled arrays, widely used for manipulating NetCDF data and analyzing meteorological and earth science data.
 📚 <a class="reference external" href="https://docs.xarray.dev/">xarray Documentation</a></p>
@@ -930,7 +930,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="dask-integration-gwexpy-new">
-<h3>1.5. Dask Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#dask-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="15-dask-integration-gwexpy-new"></span><h3>1.5. Dask Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#dask-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Dask</strong>: Dask is a library for parallel computing that enables processing of large-scale data beyond NumPy/Pandas.
 📚 <a class="reference external" href="https://www.dask.org/">Dask Documentation</a></p>
@@ -973,7 +973,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="json-python-dict-to-json-gwexpy-new">
-<h3>1.6. JSON / Python Dict (to_json) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#json-python-dict-to-json-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="16-json--python-dict-to_json-gwexpy-new"></span><h3>1.6. JSON / Python Dict (to_json) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#json-python-dict-to-json-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>JSON</strong>: JSON (JavaScript Object Notation) is a lightweight data exchange format supported by the Python standard library.
 📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON Documentation</a></p>
@@ -1048,9 +1048,9 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </section>
 </section>
 <section id="database-storage-layer">
-<h2>2. Database &amp; Storage Layer<a class="headerlink" href="#database-storage-layer" title="Link to this heading">#</a></h2>
+<span id="2-database--storage-layer"></span><h2>2. Database &amp; Storage Layer<a class="headerlink" href="#database-storage-layer" title="Link to this heading">#</a></h2>
 <section id="hdf5-original-gwpy">
-<h3>2.1. HDF5 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#hdf5-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="21-hdf5-original-gwpy"></span><h3>2.1. HDF5 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#hdf5-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>HDF5</strong>: HDF5 is a hierarchical data format for efficiently storing and managing large-scale scientific data. It can be accessed from Python via the h5py library.
 📚 <a class="reference external" href="https://www.h5py.org/">HDF5 Documentation</a></p>
@@ -1110,7 +1110,7 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="sqlite-gwexpy-new">
-<h3>2.2. SQLite <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#sqlite-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="22-sqlite-gwexpy-new"></span><h3>2.2. SQLite <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#sqlite-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>SQLite</strong>: SQLite is a lightweight embedded SQL database engine included in the Python standard library.
 📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite Documentation</a></p>
@@ -1162,7 +1162,7 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="zarr-gwexpy-new">
-<h3>2.3. Zarr <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#zarr-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="23-zarr-gwexpy-new"></span><h3>2.3. Zarr <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#zarr-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Zarr</strong>: Zarr is a storage format for chunked, compressed multidimensional arrays with excellent cloud storage integration.
 📚 <a class="reference external" href="https://zarr.dev/">Zarr Documentation</a></p>
@@ -1233,7 +1233,7 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="netcdf4-gwexpy-new">
-<h3>2.4. netCDF4 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#netcdf4-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="24-netcdf4-gwexpy-new"></span><h3>2.4. netCDF4 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#netcdf4-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>netCDF4</strong>: netCDF4 is a standard format for meteorological, oceanographic, and earth science data with self-describing data structures.
 📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 Documentation</a></p>
@@ -1303,9 +1303,9 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </section>
 </section>
 <section id="computer-science-machine-learning-accelerated-computing">
-<h2>3. Computer Science, Machine Learning &amp; Accelerated Computing<a class="headerlink" href="#computer-science-machine-learning-accelerated-computing" title="Link to this heading">#</a></h2>
+<span id="3-computer-science-machine-learning--accelerated-computing"></span><h2>3. Computer Science, Machine Learning &amp; Accelerated Computing<a class="headerlink" href="#computer-science-machine-learning-accelerated-computing" title="Link to this heading">#</a></h2>
 <section id="pytorch-integration-gwexpy-new">
-<h3>3.1. PyTorch Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pytorch-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="31-pytorch-integration-gwexpy-new"></span><h3>3.1. PyTorch Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pytorch-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>PyTorch</strong>: PyTorch is a deep learning framework supporting dynamic computation graphs and GPU acceleration.
 📚 <a class="reference external" href="https://pytorch.org/">PyTorch Documentation</a></p>
@@ -1345,7 +1345,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="cupy-cuda-acceleration-gwexpy-new">
-<h3>3.2. CuPy (CUDA Acceleration) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cupy-cuda-acceleration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="32-cupy-cuda-acceleration-gwexpy-new"></span><h3>3.2. CuPy (CUDA Acceleration) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cupy-cuda-acceleration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>CuPy</strong>: CuPy is a NumPy-compatible GPU array library that enables high-speed computation using NVIDIA CUDA.
 📚 <a class="reference external" href="https://cupy.dev/">CuPy Documentation</a></p>
@@ -1393,7 +1393,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="tensorflow-integration-gwexpy-new">
-<h3>3.3. TensorFlow Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#tensorflow-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="33-tensorflow-integration-gwexpy-new"></span><h3>3.3. TensorFlow Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#tensorflow-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>TensorFlow</strong>: TensorFlow is a machine learning platform developed by Google, excelling at large-scale production environments.
 📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow Documentation</a></p>
@@ -1435,7 +1435,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="jax-integration-gwexpy-new">
-<h3>3.4. JAX Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#jax-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="34-jax-integration-gwexpy-new"></span><h3>3.4. JAX Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#jax-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>JAX</strong>: JAX is a high-performance numerical computing library developed by Google, featuring automatic differentiation and XLA compilation for acceleration.
 📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX Documentation</a></p>
@@ -1476,9 +1476,9 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </section>
 </section>
 <section id="astronomy-gravitational-wave-physics">
-<h2>4. Astronomy &amp; Gravitational Wave Physics<a class="headerlink" href="#astronomy-gravitational-wave-physics" title="Link to this heading">#</a></h2>
+<span id="4-astronomy--gravitational-wave-physics"></span><h2>4. Astronomy &amp; Gravitational Wave Physics<a class="headerlink" href="#astronomy-gravitational-wave-physics" title="Link to this heading">#</a></h2>
 <section id="pycbc-lal-original-gwpy">
-<h3>4.1. PyCBC / LAL <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pycbc-lal-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="41-pycbc--lal-original-gwpy"></span><h3>4.1. PyCBC / LAL <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pycbc-lal-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>LAL</strong>: LAL (LIGO Algorithm Library) is the official analysis library for LIGO/Virgo, providing the foundation for gravitational wave analysis.
 📚 <a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LAL Documentation</a></p>
@@ -1490,7 +1490,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <p>Provides compatibility with standard gravitational wave analysis tools.</p>
 </section>
 <section id="astropy-integration-original-gwpy">
-<h3>4.2. Astropy Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#astropy-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="42-astropy-integration-original-gwpy"></span><h3>4.2. Astropy Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#astropy-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Astropy</strong>: Astropy is a Python library for astronomy, supporting coordinate transformations, time system conversions, unit systems, and more.
 📚 <a class="reference external" href="https://www.astropy.org/">Astropy Documentation</a></p>
@@ -1547,7 +1547,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="specutils-integration-gwexpy-new">
-<h3>4.3. Specutils Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#specutils-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="43-specutils-integration-gwexpy-new"></span><h3>4.3. Specutils Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#specutils-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>specutils</strong>: specutils is an Astropy-affiliated package for manipulating and analyzing astronomical spectral data.
 📚 <a class="reference external" href="https://specutils.readthedocs.io/">specutils Documentation</a></p>
@@ -1590,7 +1590,7 @@ Units and frequency axes are properly preserved.</p>
 </div>
 </section>
 <section id="pyspeckit-integration-gwexpy-new">
-<h3>4.4. Pyspeckit Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pyspeckit-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="44-pyspeckit-integration-gwexpy-new"></span><h3>4.4. Pyspeckit Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pyspeckit-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>PySpecKit</strong>: PySpecKit is a spectral analysis toolkit for radio astronomy, supporting spectral line fitting and more.
 📚 <a class="reference external" href="https://pyspeckit.readthedocs.io/">PySpecKit Documentation</a></p>
@@ -1629,9 +1629,9 @@ Units and frequency axes are properly preserved.</p>
 </section>
 </section>
 <section id="particle-physics-high-energy-physics">
-<h2>5. Particle Physics &amp; High Energy Physics<a class="headerlink" href="#particle-physics-high-energy-physics" title="Link to this heading">#</a></h2>
+<span id="5-particle-physics--high-energy-physics"></span><h2>5. Particle Physics &amp; High Energy Physics<a class="headerlink" href="#particle-physics-high-energy-physics" title="Link to this heading">#</a></h2>
 <section id="cern-root-integration-gwexpy-new">
-<h3>5.1. CERN ROOT Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cern-root-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="51-cern-root-integration-gwexpy-new"></span><h3>5.1. CERN ROOT Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cern-root-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>ROOT</strong>: ROOT is a data analysis framework for high-energy physics developed by CERN.
 📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
@@ -1701,7 +1701,7 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="recovering-from-root-objects-from-root">
-<h3>5.2. Recovering from ROOT Objects (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)<a class="headerlink" href="#recovering-from-root-objects-from-root" title="Link to this heading">#</a></h3>
+<span id="52-recovering-from-root-objects-from_root"></span><h3>5.2. Recovering from ROOT Objects (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)<a class="headerlink" href="#recovering-from-root-objects-from-root" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>ROOT</strong>: ROOT is a data analysis framework for high-energy physics developed by CERN.
 📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
@@ -1737,9 +1737,9 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="geophysics-seismology-electromagnetics">
-<h2>6. Geophysics, Seismology &amp; Electromagnetics<a class="headerlink" href="#geophysics-seismology-electromagnetics" title="Link to this heading">#</a></h2>
+<span id="6-geophysics-seismology--electromagnetics"></span><h2>6. Geophysics, Seismology &amp; Electromagnetics<a class="headerlink" href="#geophysics-seismology-electromagnetics" title="Link to this heading">#</a></h2>
 <section id="obspy-original-gwpy">
-<h3>6.1. ObsPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#obspy-original-gwpy" title="Link to this heading">#</a></h3>
+<span id="61-obspy-original-gwpy"></span><h3>6.1. ObsPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#obspy-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>ObsPy</strong>: ObsPy is a Python library for acquiring, processing, and analyzing seismological data, supporting formats like MiniSEED.
 📚 <a class="reference external" href="https://docs.obspy.org/">ObsPy Documentation</a></p>
@@ -1813,7 +1813,7 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="simpeg-integration-gwexpy-new">
-<h3>6.2. SimPEG Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#simpeg-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="62-simpeg-integration-gwexpy-new"></span><h3>6.2. SimPEG Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#simpeg-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>SimPEG</strong>: SimPEG is a simulation and estimation framework for geophysical inverse problems.
 📚 <a class="reference external" href="https://simpeg.xyz/">SimPEG Documentation</a></p>
@@ -1861,7 +1861,7 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="mth5-mtpy-gwexpy-new">
-<h3>6.3. MTH5 / MTpy <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mth5-mtpy-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="63-mth5--mtpy-gwexpy-new"></span><h3>6.3. MTH5 / MTpy <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mth5-mtpy-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>MTH5</strong>: MTH5 is an HDF5-based data format for magnetotelluric (MT) data.
 📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 Documentation</a></p>
@@ -1904,14 +1904,14 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-07T08:10:03.607395+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmpvip7t14a.h5 in mode a</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-11T23:54:26.659204+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmp_vm7javb.h5 in mode a</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-07T08:10:03.833321+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpvip7t14a.h5</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-11T23:54:26.828465+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmp_vm7javb.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to temporary MTH5 file
-<span class=" -Color -Color-Bold">2026-11-07T08:10:03.876146+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpvip7t14a.h5</span>
+<span class=" -Color -Color-Bold">2026-11-11T23:54:26.858582+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmp_vm7javb.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from MTH5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
@@ -1929,9 +1929,9 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="acoustics-audio-analysis">
-<h2>7. Acoustics &amp; Audio Analysis<a class="headerlink" href="#acoustics-audio-analysis" title="Link to this heading">#</a></h2>
+<span id="7-acoustics--audio-analysis"></span><h2>7. Acoustics &amp; Audio Analysis<a class="headerlink" href="#acoustics-audio-analysis" title="Link to this heading">#</a></h2>
 <section id="librosa-pydub-gwexpy-new">
-<h3>7.1. Librosa / Pydub <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#librosa-pydub-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="71-librosa--pydub-gwexpy-new"></span><h3>7.1. Librosa / Pydub <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#librosa-pydub-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>pydub</strong>: pydub is a simple library for audio file manipulation (editing, conversion, effects).
 📚 <a class="reference external" href="https://github.com/jiaaro/pydub">pydub Documentation</a></p>
@@ -1980,9 +1980,9 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="medical-biosignal-analysis">
-<h2>8. Medical &amp; Biosignal Analysis<a class="headerlink" href="#medical-biosignal-analysis" title="Link to this heading">#</a></h2>
+<span id="8-medical--biosignal-analysis"></span><h2>8. Medical &amp; Biosignal Analysis<a class="headerlink" href="#medical-biosignal-analysis" title="Link to this heading">#</a></h2>
 <section id="mne-python-gwexpy-new">
-<h3>8.1. MNE-Python <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mne-python-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="81-mne-python-gwexpy-new"></span><h3>8.1. MNE-Python <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mne-python-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>MNE</strong>: MNE-Python is a library for analyzing EEG and MEG data, widely used in neuroscience research.
 📚 <a class="reference external" href="https://mne.tools/">MNE Documentation</a></p>
@@ -2044,7 +2044,7 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="elephant-quantities-integration-gwexpy-new">
-<h3>8.2. Elephant / quantities Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#elephant-quantities-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="82-elephant--quantities-integration-gwexpy-new"></span><h3>8.2. Elephant / quantities Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#elephant-quantities-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>’s <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> and <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> can interconvert with <code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> objects.
 This is useful for integration with Elephant and Neo.</p>
 <p>Note: Requires <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> beforehand.</p>
@@ -2085,7 +2085,7 @@ This is useful for integration with Elephant and Neo.</p>
 </div>
 </section>
 <section id="neo-gwexpy-new">
-<h3>8.3. Neo <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#neo-gwexpy-new" title="Link to this heading">#</a></h3>
+<span id="83-neo-gwexpy-new"></span><h3>8.3. Neo <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#neo-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>Neo</strong>: Neo is a data structure library for electrophysiology data (neuroscience), supporting input/output to various formats.
 📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo Documentation</a></p>
@@ -2144,10 +2144,10 @@ This is useful for integration with Elephant and Neo.</p>
 </section>
 </section>
 <section id="acoustics-simulation-extra-libraries">
-<h2>9. Acoustics &amp; Simulation (Extra Libraries)<a class="headerlink" href="#acoustics-simulation-extra-libraries" title="Link to this heading">#</a></h2>
+<span id="9-acoustics--simulation-extra-libraries"></span><h2>9. Acoustics &amp; Simulation (Extra Libraries)<a class="headerlink" href="#acoustics-simulation-extra-libraries" title="Link to this heading">#</a></h2>
 <p>The following sections cover four additional interoperability modules for room acoustics simulation, electromagnetic field simulation, unstructured mesh data, and multitaper spectral estimation.</p>
 <section id="pyroomacoustics-room-impulse-response">
-<h3>9.1. Pyroomacoustics — Room Impulse Response<a class="headerlink" href="#pyroomacoustics-room-impulse-response" title="Link to this heading">#</a></h3>
+<span id="91-pyroomacoustics--room-impulse-response"></span><h3>9.1. Pyroomacoustics — Room Impulse Response<a class="headerlink" href="#pyroomacoustics-room-impulse-response" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>pyroomacoustics</strong> simulates room acoustics and provides room impulse responses (RIR).
 <code class="docutils literal notranslate"><span class="pre">room.rir</span></code> follows the convention <code class="docutils literal notranslate"><span class="pre">rir[mic_index][source_index]</span></code> (outer index = microphone).</p>
@@ -2190,7 +2190,7 @@ Tip: room.rir convention is rir[mic_index][source_index]
 </div>
 </section>
 <section id="openems-hdf5-electromagnetic-field-dump">
-<h3>9.2. OpenEMS — HDF5 Electromagnetic Field Dump<a class="headerlink" href="#openems-hdf5-electromagnetic-field-dump" title="Link to this heading">#</a></h3>
+<span id="92-openems--hdf5-electromagnetic-field-dump"></span><h3>9.2. OpenEMS — HDF5 Electromagnetic Field Dump<a class="headerlink" href="#openems-hdf5-electromagnetic-field-dump" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>openEMS</strong> writes field data to HDF5. If datasets carry <code class="docutils literal notranslate"><span class="pre">&quot;Time&quot;</span></code> (TD) or <code class="docutils literal notranslate"><span class="pre">&quot;frequency&quot;</span></code> (FD) attributes, physical values are used for axis0. Otherwise, integer indices are used as fallback.</p>
 </div></blockquote>
@@ -2239,7 +2239,7 @@ axis0 contains physical time values (1e-9, 2e-9, 3e-9 s)
 </div>
 </section>
 <section id="meshio-unstructured-mesh-scalarfield">
-<h3>9.3. Meshio — Unstructured Mesh → ScalarField<a class="headerlink" href="#meshio-unstructured-mesh-scalarfield" title="Link to this heading">#</a></h3>
+<span id="93-meshio--unstructured-mesh--scalarfield"></span><h3>9.3. Meshio — Unstructured Mesh → ScalarField<a class="headerlink" href="#meshio-unstructured-mesh-scalarfield" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p><strong>meshio</strong> reads 40+ mesh formats (VTK, XDMF, Gmsh, …). Only <code class="docutils literal notranslate"><span class="pre">point_data</span></code> is supported for interpolation. If only <code class="docutils literal notranslate"><span class="pre">cell_data</span></code> is present, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised — convert to <code class="docutils literal notranslate"><span class="pre">point_data</span></code> first.</p>
 </div></blockquote>
@@ -2283,7 +2283,7 @@ Value at centre ≈ 0.500
 </div>
 </section>
 <section id="multitaper-spectral-estimation">
-<h3>9.4. Multitaper Spectral Estimation<a class="headerlink" href="#multitaper-spectral-estimation" title="Link to this heading">#</a></h3>
+<span id="94-multitaper-spectral-estimation"></span><h3>9.4. Multitaper Spectral Estimation<a class="headerlink" href="#multitaper-spectral-estimation" title="Link to this heading">#</a></h3>
 <blockquote>
 <div><p>Two multitaper packages are supported: <strong>multitaper</strong> (Prieto) via <code class="docutils literal notranslate"><span class="pre">from_mtspec</span></code> and <strong>mtspec</strong> (Krischer) via <code class="docutils literal notranslate"><span class="pre">from_mtspec_array</span></code>.
 Pass <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeries</span></code> to always get a plain spectrum; pass <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeriesDict</span></code> to include confidence intervals when available.</p>
@@ -2336,9 +2336,9 @@ Pass <code class="docutils literal notranslate"><span class="pre">cls=FrequencyS
 cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#39;, &#39;ci_upper&#39;]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5301/297830298.py:17: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeries&#39; (&lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; -&gt; &lt;class &#39;__main__._FS&#39;&gt;)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5006/297830298.py:17: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeries&#39; (&lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; -&gt; &lt;class &#39;__main__._FS&#39;&gt;)
   ConverterRegistry.register_constructor(&quot;FrequencySeries&quot;, _FS)
-/tmp/ipykernel_5301/297830298.py:18: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeriesDict&#39; (&lt;class &#39;gwexpy.frequencyseries.collections.FrequencySeriesDict&#39;&gt; -&gt; &lt;class &#39;__main__._FSD&#39;&gt;)
+/tmp/ipykernel_5006/297830298.py:18: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeriesDict&#39; (&lt;class &#39;gwexpy.frequencyseries.collections.FrequencySeriesDict&#39;&gt; -&gt; &lt;class &#39;__main__._FSD&#39;&gt;)
   ConverterRegistry.register_constructor(&quot;FrequencySeriesDict&quot;, _FSD)
 </pre></div>
 </div>
@@ -2358,7 +2358,7 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
 </ul>
 </section>
 <section id="summary">
-<h2>10. Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<span id="10-summary"></span><h2>10. Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides interoperability with a wide variety of domain-specific libraries, enabling seamless integration with existing ecosystems.</p>
 </section>
 </section>

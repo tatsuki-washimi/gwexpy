@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/advanced_hht';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -605,7 +605,7 @@
 </div>
 </div>
 <section id="theoretical-background-and-advantages-of-hht">
-<h2>1. HHTの理論的背景と利点<a class="headerlink" href="#theoretical-background-and-advantages-of-hht" title="Link to this heading">#</a></h2>
+<span id="1-theoretical-background-and-advantages-of-hht"></span><h2>1. HHTの理論的背景と利点<a class="headerlink" href="#theoretical-background-and-advantages-of-hht" title="Link to this heading">#</a></h2>
 <section id="what-is-hht-hilbert-huang-transform">
 <h3>HHT（ヒルベルト–黄変換）とは？<a class="headerlink" href="#what-is-hht-hilbert-huang-transform" title="Link to this heading">#</a></h3>
 <p>HHT は非線形・非定常な信号データを解析するための強力な手法です。 主に2つのプロセスで構成されます:</p>
@@ -630,7 +630,7 @@
 </section>
 </section>
 <section id="simulation-reproducing-sasi-modes">
-<h2>2. シミュレーション：SASIモードの再現<a class="headerlink" href="#simulation-reproducing-sasi-modes" title="Link to this heading">#</a></h2>
+<span id="2-simulation-reproducing-sasi-modes"></span><h2>2. シミュレーション：SASIモードの再現<a class="headerlink" href="#simulation-reproducing-sasi-modes" title="Link to this heading">#</a></h2>
 <p>重力崩壊型超新星（CCSN）の重力波解析において、<strong>SASI（定在降着衝撃不安定性）</strong> と呼ばれる不安定性は重要な観測対象です。 ここでは、SASIからの重力波を模した <strong>サイン・ガウシアン</strong> 信号を生成して解析します（参考文献: Takeda et al. 2021）。</p>
 <p>Sine-Gaussian 信号は次式で表されます： $<span class="math notranslate nohighlight">\( h(t) = A \exp\left( - \left( \frac{2\pi (t - t_0)}{t_{\text{width}}} \right)^2 \right) \sin(2\pi f_0 t) \)</span>$</p>
 <div class="cell docutils container">
@@ -688,7 +688,7 @@
 </div>
 </section>
 <section id="comparative-analysis-stft-vs-hht">
-<h2>3. 比較分析：STFT vs HHT<a class="headerlink" href="#comparative-analysis-stft-vs-hht" title="Link to this heading">#</a></h2>
+<span id="3-comparative-analysis-stft-vs-hht"></span><h2>3. 比較分析：STFT vs HHT<a class="headerlink" href="#comparative-analysis-stft-vs-hht" title="Link to this heading">#</a></h2>
 <p>同じ信号に STFT（スペクトログラム）と HHT（ヒルベルトスペクトル）を適用し、分解能の違いを比較します。</p>
 <p><strong>注意</strong>: 以下の結果では、STFT の方がノイズに対してロバストに見え、信号がよりクリアに見える場合があります。 これは、標準的な EMD がノイズの影響を受けやすく「モード混合」を起こすためです。 この問題は、次のセクションで紹介する <strong>EEMD</strong> を使用することで大幅に改善されますが、まずは HHT の基本的な動作を確認しましょう。</p>
 <blockquote>
@@ -800,7 +800,7 @@
 </div>
 </section>
 <section id="application-mode-extraction-and-parameter-estimation-with-eemd">
-<h2>4. 応用：EEMDによるモード抽出とパラメータ推定<a class="headerlink" href="#application-mode-extraction-and-parameter-estimation-with-eemd" title="Link to this heading">#</a></h2>
+<span id="4-application-mode-extraction-and-parameter-estimation-with-eemd"></span><h2>4. 応用：EEMDによるモード抽出とパラメータ推定<a class="headerlink" href="#application-mode-extraction-and-parameter-estimation-with-eemd" title="Link to this heading">#</a></h2>
 <section id="applying-eemd">
 <h3>EEMDの適用<a class="headerlink" href="#applying-eemd" title="Link to this heading">#</a></h3>
 <p>上記の単純な EMD の結果では、ノイズの影響により周波数が振動したり、本来の 130Hz 信号が複数の IMF に分割される（モード混合）ことがあります。 <strong>EEMD（Ensemble EMD）</strong> を使用することでこれを改善できます。</p>
@@ -869,7 +869,7 @@
 </section>
 </section>
 <section id="hilbert-spectrum-hhtspectrogram">
-<h2>5. ヒルベルトスペクトル (HHTSpectrogram)<a class="headerlink" href="#hilbert-spectrum-hhtspectrogram" title="Link to this heading">#</a></h2>
+<span id="5-hilbert-spectrum-hhtspectrogram"></span><h2>5. ヒルベルトスペクトル (HHTSpectrogram)<a class="headerlink" href="#hilbert-spectrum-hhtspectrogram" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">output='spectrogram'</span></code> を指定すると時間-周波数マップを得られます。<code class="docutils literal notranslate"><span class="pre">HHTSpectrogram.plot()</span></code> は既定で対数スケールです。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -905,7 +905,7 @@
 </div>
 </section>
 <section id="low-level-apis-optional">
-<h2>6. 低レベルAPIについて（任意）<a class="headerlink" href="#low-level-apis-optional" title="Link to this heading">#</a></h2>
+<span id="6-low-level-apis-optional"></span><h2>6. 低レベルAPIについて（任意）<a class="headerlink" href="#low-level-apis-optional" title="Link to this heading">#</a></h2>
 <p>詳細制御が必要な場合は以下を直接使用できます:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">emd()</span></code>（分解）</p></li>

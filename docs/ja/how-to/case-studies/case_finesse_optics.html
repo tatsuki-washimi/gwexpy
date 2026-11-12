@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_finesse_optics';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_finesse_optics.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 5.5 s · GWexpy 0.2.9
+      成功 · 4.5 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -611,7 +611,7 @@
 </div>
 </section>
 <section id="finesse-3-model-fabry-perot-cavity">
-<h2>1. Finesse 3 モデル — Fabry-Pérot キャビティ<a class="headerlink" href="#finesse-3-model-fabry-perot-cavity" title="Link to this heading">#</a></h2>
+<span id="1-finesse-3-model--fabry-pérot-cavity"></span><h2>1. Finesse 3 モデル — Fabry-Pérot キャビティ<a class="headerlink" href="#finesse-3-model-fabry-perot-cavity" title="Link to this heading">#</a></h2>
 <p>以下のセルで、単純な Fabry-Pérot キャビティ（ミラー + ビームスプリッター）を 構築し、入力ミラードライブからキャビティ透過光への伝達関数を計算します。</p>
 <p>Finesse 3 がインストールされていない場合は、等価な光学キャビティの解析式に フォールバックします。どちらのパスも同一の gwexpy オブジェクトを生成します。</p>
 <div class="cell docutils container">
@@ -674,7 +674,7 @@ FrequencySeries: 500 bins, df_min=1.019 (log-spaced)
 </div>
 </section>
 <section id="multi-dof-transfer-function-matrix">
-<h2>2. 多自由度（マルチ DOF）伝達関数マトリクス<a class="headerlink" href="#multi-dof-transfer-function-matrix" title="Link to this heading">#</a></h2>
+<span id="2-multi-dof-transfer-function-matrix"></span><h2>2. 多自由度（マルチ DOF）伝達関数マトリクス<a class="headerlink" href="#multi-dof-transfer-function-matrix" title="Link to this heading">#</a></h2>
 <p>実際の干渉計には複数の自由度（DARM、CARM、MICH 等）があります。 複数の出力/入力 DOF ペアがある場合、<code class="docutils literal notranslate"><span class="pre">from_finesse_frequency_response</span></code> は 自動的に <strong>FrequencySeriesDict</strong> を返します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -736,7 +736,7 @@ FrequencySeries: 500 bins, df_min=1.019 (log-spaced)
 </div>
 </section>
 <section id="noise-projection">
-<h2>3. ノイズプロジェクション<a class="headerlink" href="#noise-projection" title="Link to this heading">#</a></h2>
+<span id="3-noise-projection"></span><h2>3. ノイズプロジェクション<a class="headerlink" href="#noise-projection" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">from_finesse_noise</span></code> は Finesse 3 の <code class="docutils literal notranslate"><span class="pre">NoiseProjectionSolution</span></code> を、<code class="docutils literal notranslate"><span class="pre">&quot;&lt;output_node&gt;:</span> <span class="pre">&lt;noise_source&gt;&quot;</span></code> をキーとする <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code> に変換します。</p>
 <p>光共振器における典型的なノイズ源：</p>
 <ul class="simple">
@@ -800,7 +800,7 @@ FrequencySeries: 500 bins, df_min=1.019 (log-spaced)
 </div>
 </section>
 <section id="simulation-vs-measurement-overlay">
-<h2>4. シミュレーション vs. 測定データのオーバーレイ比較<a class="headerlink" href="#simulation-vs-measurement-overlay" title="Link to this heading">#</a></h2>
+<span id="4-simulation-vs-measurement-overlay"></span><h2>4. シミュレーション vs. 測定データのオーバーレイ比較<a class="headerlink" href="#simulation-vs-measurement-overlay" title="Link to this heading">#</a></h2>
 <p>Finesse ↔ gwexpy ブリッジの最大の利点は、シミュレーションと 現場測定を同一のオブジェクトで比較できることです。 ここでは、ゲイン誤差と寄生共振を含む合成「測定値」をオーバーレイします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

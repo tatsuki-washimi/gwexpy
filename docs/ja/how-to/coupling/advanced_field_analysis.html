@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/coupling/advanced_field_analysis';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/coupling/advanced_field_analysis.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -604,7 +604,7 @@
 </div>
 </section>
 <section id="synthetic-beam-profile-data">
-<h2>1. 合成ビームプロファイルデータの生成<a class="headerlink" href="#synthetic-beam-profile-data" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-beam-profile-data"></span><h2>1. 合成ビームプロファイルデータの生成<a class="headerlink" href="#synthetic-beam-profile-data" title="Link to this heading">#</a></h2>
 <p>1 m × 1 m の鏡面上の 64 空間点で、100 時間ステップにわたり測定したレーザービームの光強度を表す 4 次元 <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を作成します。</p>
 <p>ビームはガウス型プロファイルを持ち、重心位置がゆっくりとランダムウォークします。これは光学素子の熱ドリフトを模擬したものです。</p>
 <div class="cell docutils container">
@@ -661,7 +661,7 @@ Units: W / m2
 </div>
 </section>
 <section id="mean-beam-profile-and-variance-map">
-<h2>2. 平均ビームプロファイルと分散マップ<a class="headerlink" href="#mean-beam-profile-and-variance-map" title="Link to this heading">#</a></h2>
+<span id="2-mean-beam-profile-and-variance-map"></span><h2>2. 平均ビームプロファイルと分散マップ<a class="headerlink" href="#mean-beam-profile-and-variance-map" title="Link to this heading">#</a></h2>
 <p>時間方向に平均すると平均的なビーム形状が得られます。分散マップは強度の揺らぎが最も大きい場所を示し、通常はポインティングジッタが増幅されるビーム端になります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -701,7 +701,7 @@ Peak variance       : 0.0006  (edge &gt; centre as expected)
 </div>
 </section>
 <section id="spatial-psd-wavenumber-spectrum">
-<h2>3. 空間 PSD — 波数スペクトル<a class="headerlink" href="#spatial-psd-wavenumber-spectrum" title="Link to this heading">#</a></h2>
+<span id="3-spatial-psd--wavenumber-spectrum"></span><h2>3. 空間 PSD — 波数スペクトル<a class="headerlink" href="#spatial-psd-wavenumber-spectrum" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> は空間 x 軸に沿ったパワースペクトル密度を計算します。波数スペクトルはビームの空間周波数成分を明らかにします。ガウスビームの波数スペクトルはガウス型になります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -763,7 +763,7 @@ Peak variance       : 0.0006  (edge &gt; centre as expected)
 </div>
 </section>
 <section id="wavefield-propagation-and-time-delay-map">
-<h2>4. 波動場伝播と時間遅延マップ<a class="headerlink" href="#wavefield-propagation-and-time-delay-map" title="Link to this heading">#</a></h2>
+<span id="4-wavefield-propagation-and-time-delay-map"></span><h2>4. 波動場伝播と時間遅延マップ<a class="headerlink" href="#wavefield-propagation-and-time-delay-map" title="Link to this heading">#</a></h2>
 <p>分散加速度計アレイで測定した地震波動場シナリオです。 <code class="docutils literal notranslate"><span class="pre">time_delay_map()</span></code> は各センサーの到着時刻を参照センサーに対して推定し、 見かけの伝播速度を求めます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -840,7 +840,7 @@ Time axis range: 0.000 – 0.995 s
 </div>
 </section>
 <section id="coherence-map">
-<h2>5. コヒーレンスマップ<a class="headerlink" href="#coherence-map" title="Link to this heading">#</a></h2>
+<span id="5-coherence-map"></span><h2>5. コヒーレンスマップ<a class="headerlink" href="#coherence-map" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">coherence_map()</span></code> は、各空間位置と基準位置との間のコヒーレンスを周波数の関数として計算します。特定の周波数で高いコヒーレンスが見られる場合は相関した振動を示します。例えば共通の地震モードや、複数位置で観測される光共振器の共鳴です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -881,7 +881,7 @@ Time axis range: 0.000 – 0.995 s
 </div>
 </section>
 <section id="vectorfield-gradient-and-norm">
-<h2>6. VectorField：勾配とノルム<a class="headerlink" href="#vectorfield-gradient-and-norm" title="Link to this heading">#</a></h2>
+<span id="6-vectorfield-gradient-and-norm"></span><h2>6. VectorField：勾配とノルム<a class="headerlink" href="#vectorfield-gradient-and-norm" title="Link to this heading">#</a></h2>
 <p>磁場や速度のようなベクトル的性質を持つ物理場には、<code class="docutils literal notranslate"><span class="pre">VectorField</span></code> が複数の <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> 成分を保持します。ここではビーム強度の勾配を計算します。これは波面センシングに有用です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

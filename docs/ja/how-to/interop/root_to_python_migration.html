@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/interop/root_to_python_migration';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -608,14 +608,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Artifact directory: /tmp/gwexpy-t7-w8xoaaw9
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Artifact directory: /tmp/gwexpy-t7-0wiy821b
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="decay-model-and-rebinning-semantics">
-<h2>1. Decay Model and Rebinning Semantics<a class="headerlink" href="#decay-model-and-rebinning-semantics" title="Link to this heading">#</a></h2>
+<span id="1-decay-model-and-rebinning-semantics"></span><h2>1. Decay Model and Rebinning Semantics<a class="headerlink" href="#decay-model-and-rebinning-semantics" title="Link to this heading">#</a></h2>
 <p>振幅 <span class="math notranslate nohighlight">\(A\)</span> が基準時刻 <span class="math notranslate nohighlight">\(t = 0.1\,\mathrm{s}\)</span> で定義される指数関数的 <span class="math notranslate nohighlight">\(-60\,\mathrm{dB}\)</span> 残響減衰モデルを定義します： $<span class="math notranslate nohighlight">\(y(t) = A \cdot 1000^{(0.1 - t) / \mathrm{RT}_{60}}\)</span><span class="math notranslate nohighlight">\( \)</span>t = 0.1,\mathrm{s}<span class="math notranslate nohighlight">\( で \)</span>y = A<span class="math notranslate nohighlight">\(、\)</span>t = 0.1 + \mathrm{RT}<em>{60}<span class="math notranslate nohighlight">\( で \)</span>y = A / 1000<span class="math notranslate nohighlight">\(（\)</span>-60,\mathrm{dB}<span class="math notranslate nohighlight">\(）となります。信号の立ち上がりは \)</span>t</em>{\mathrm{onset}} = 0.05,\mathrm{s}<span class="math notranslate nohighlight">\( であり、標準フィッティング区間 \)</span>t \in [0.05, 0.5],\mathrm{s}$ の全域にわたって有効な減衰データが提供されます。</p>
 <p>ペア単位のリビンは2つの連続する時間ビンを結合します： $<span class="math notranslate nohighlight">\(t_{\mathrm{rebin}} = \frac{t_{2i} + t_{2i+1}}{2}, \quad y_{\mathrm{rebin}} = y_{2i} + y_{2i+1}, \quad \sigma_{\mathrm{rebin}} = \sqrt{\sigma_{2i}^2 + \sigma_{2i+1}^2}\)</span>$</p>
 <div class="cell docutils container">
@@ -666,7 +666,7 @@ Rebin semantics verified: True
 </div>
 </section>
 <section id="multi-trial-synthetic-simulation-160-trials">
-<h2>2. Multi-Trial Synthetic Simulation (160 Trials)<a class="headerlink" href="#multi-trial-synthetic-simulation-160-trials" title="Link to this heading">#</a></h2>
+<span id="2-multi-trial-synthetic-simulation-160-trials"></span><h2>2. Multi-Trial Synthetic Simulation (160 Trials)<a class="headerlink" href="#multi-trial-synthetic-simulation-160-trials" title="Link to this heading">#</a></h2>
 <p>20周波数帯域（中心周波数 500 Hz〜1450 Hz、50 Hz刻み）にわたる8回の音響イベントをシミュレーションし、計160回の試行を生成します。各試行には以下が含まれます：</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">np.std(...,</span> <span class="pre">ddof=0)</span></code> を用いて <span class="math notranslate nohighlight">\([-0.5, 0.0]\,\mathrm{s}\)</span> から基線ノイズを推定します。</p></li>
@@ -805,7 +805,7 @@ Median relative RT60 error across accepted trials: 0.51%
 </div>
 </section>
 <section id="band-aggregation-and-summary-statistics">
-<h2>3. Band Aggregation and Summary Statistics<a class="headerlink" href="#band-aggregation-and-summary-statistics" title="Link to this heading">#</a></h2>
+<span id="3-band-aggregation-and-summary-statistics"></span><h2>3. Band Aggregation and Summary Statistics<a class="headerlink" href="#band-aggregation-and-summary-statistics" title="Link to this heading">#</a></h2>
 <p>各周波数帯域について、採択されたすべての試行にわたる要約統計量を算出します：</p>
 <ul class="simple">
 <li><p>採択されたイベント数 <span class="math notranslate nohighlight">\(N_{\mathrm{acc}}\)</span></p></li>
@@ -850,7 +850,7 @@ Median relative RT60 error across accepted trials: 0.51%
 </div>
 </section>
 <section id="visual-diagnostics-and-artifact-generation">
-<h2>4. Visual Diagnostics and Artifact Generation<a class="headerlink" href="#visual-diagnostics-and-artifact-generation" title="Link to this heading">#</a></h2>
+<span id="4-visual-diagnostics-and-artifact-generation"></span><h2>4. Visual Diagnostics and Artifact Generation<a class="headerlink" href="#visual-diagnostics-and-artifact-generation" title="Link to this heading">#</a></h2>
 <p>3つの必須診断図面を生成し、インライン表示します：</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">figures/rt60_sample_fit.png</span></code>: 生データ、リビン後データ、フィットモデル、残差を示す代表的フィット図。</p></li>
@@ -927,7 +927,7 @@ Median relative RT60 error across accepted trials: 0.51%
 </div>
 </section>
 <section id="defensive-verification-and-quality-metrics">
-<h2>5. Defensive Verification and Quality Metrics<a class="headerlink" href="#defensive-verification-and-quality-metrics" title="Link to this heading">#</a></h2>
+<span id="5-defensive-verification-and-quality-metrics"></span><h2>5. Defensive Verification and Quality Metrics<a class="headerlink" href="#defensive-verification-and-quality-metrics" title="Link to this heading">#</a></h2>
 <p>以下の項目を検証します：</p>
 <ol class="arabic simple">
 <li><p><strong>root_native_no_root_required</strong>: CERN ROOT が要求されず、インポートされていないことを確認。</p></li>
@@ -1109,9 +1109,9 @@ Median relative RT60 error across accepted trials: 0.51%
     },
     &quot;rt60_known_truth&quot;: {
       &quot;passed&quot;: true,
-      &quot;observed&quot;: 0.005132155394796867,
+      &quot;observed&quot;: 0.005132155430066931,
       &quot;criterion&quot;: &quot;median relative error &lt; 0.05 against known synthetic RT60&quot;,
-      &quot;median_relative_error&quot;: 0.005132155394796867,
+      &quot;median_relative_error&quot;: 0.005132155430066931,
       &quot;threshold&quot;: 0.05
     },
     &quot;rt60_table_integrity&quot;: {

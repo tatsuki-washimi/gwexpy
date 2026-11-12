@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/translations.js?v=4755f45a"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/migration';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/migration.html" />
@@ -549,7 +549,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -566,7 +566,7 @@
 <p>このガイドは、GWexpy のリリース間にある破壊的変更と既存コードの移行方法をまとめます。</p>
 <p>プロジェクト横断の <a class="reference internal" href="../explanation/gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>は、GWpy 対応 API の既定挙動を規定します。以下のrelease固有noteは、その契約内の変更を説明します。</p>
 <section id="v0-2-0">
-<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
+<span id="v020"></span><h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
 <section id="lazy-registration">
 <h3>遅延登録<a class="headerlink" href="#lazy-registration" title="Link to this heading">#</a></h3>
 <p>通常の <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> は、constructor と I/O handler を即時登録しなくなりました。対応する公開 I/O entry point は、必要な handler をオンデマンドで登録します。application が constructor と I/O の完全な surface を最初から明示的に登録する必要がある場合だけ、<code class="docutils literal notranslate"><span class="pre">gwexpy.register_all()</span></code> を呼んでください。</p>
@@ -585,10 +585,10 @@
 </section>
 </section>
 <section id="v0-1-1">
-<h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
+<span id="v011"></span><h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
 </section>
 <section id="lorentzian-peak-parameters">
-<h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
+<span id="1-lorentzian-peak-parameters"></span><h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.peaks.lorentzian_line()</span></code> の <code class="docutils literal notranslate"><span class="pre">fwhm</span></code>（半値全幅, Full Width at Half Maximum）パラメータは、内部の数学的実装や一般的なスペクトルモデリングの慣習に合わせて <code class="docutils literal notranslate"><span class="pre">gamma</span></code>（半値半幅, Half Width at Half Maximum）に改名されました。</p>
 <section id="how-to-migrate">
 <h3>移行方法<a class="headerlink" href="#how-to-migrate" title="Link to this heading">#</a></h3>
@@ -607,10 +607,10 @@
 </section>
 </section>
 <section id="spectral-fitting-generalized-least-squares">
-<h2>2. Spectral Fitting (Generalized Least Squares)<a class="headerlink" href="#spectral-fitting-generalized-least-squares" title="Link to this heading">#</a></h2>
+<span id="2-spectral-fitting-generalized-least-squares"></span><h2>2. Spectral Fitting (Generalized Least Squares)<a class="headerlink" href="#spectral-fitting-generalized-least-squares" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">stride</span></code> パラメータは <code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code> から削除されました。これは内部の <code class="docutils literal notranslate"><span class="pre">scipy.signal.periodogram</span></code> 呼び出しでエラーを引き起こす、サポートされていないキーワード引数だったためです。</p>
 <section id="id1">
-<h3>移行方法<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<span id="how-to-migrate-1"></span><h3>移行方法<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code> の呼び出しから <code class="docutils literal notranslate"><span class="pre">stride</span></code> キーワード引数を削除するだけです。この関数は現在、<code class="docutils literal notranslate"><span class="pre">fftlength</span></code> と <code class="docutils literal notranslate"><span class="pre">overlap</span></code> を通じてデータのセグメント分割を正しく管理します。</p>
 <p><strong>旧 (v0.1.0):</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
@@ -626,10 +626,10 @@
 </section>
 </section>
 <section id="segmenttable-lazy-loading">
-<h2>3. SegmentTable Lazy Loading<a class="headerlink" href="#segmenttable-lazy-loading" title="Link to this heading">#</a></h2>
+<span id="3-segmenttable-lazy-loading"></span><h2>3. SegmentTable Lazy Loading<a class="headerlink" href="#segmenttable-lazy-loading" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SegmentTable.add_series_column()</span></code> の <code class="docutils literal notranslate"><span class="pre">loader</span></code> 引数は、インデックスを取るファクトリ（<code class="docutils literal notranslate"><span class="pre">loader(i)</span></code>）ではなく、単一の <code class="docutils literal notranslate"><span class="pre">segment</span></code> 引数を取る呼び出し可能オブジェクト（<code class="docutils literal notranslate"><span class="pre">loader(segment)</span></code>）を期待するようになりました。</p>
 <section id="id2">
-<h3>移行方法<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<span id="how-to-migrate-2"></span><h3>移行方法<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>loader 関数を、行の <code class="docutils literal notranslate"><span class="pre">segment</span></code>（区間）を直接受け取るよう更新してください。</p>
 <p><strong>旧 (v0.1.0):</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_factory</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>

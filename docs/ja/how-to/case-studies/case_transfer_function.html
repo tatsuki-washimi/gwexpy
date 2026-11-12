@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_transfer_function';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 13.7 s · GWexpy 0.2.9
+      成功 · 17.7 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -616,7 +616,7 @@
 </div>
 </div>
 <section id="generating-experimental-data-simulation">
-<h2>1. 実験データの生成（シミュレーション）<a class="headerlink" href="#generating-experimental-data-simulation" title="Link to this heading">#</a></h2>
+<span id="1-generating-experimental-data-simulation"></span><h2>1. 実験データの生成（シミュレーション）<a class="headerlink" href="#generating-experimental-data-simulation" title="Link to this heading">#</a></h2>
 <p>仮想的な実験を行います。</p>
 <ul class="simple">
 <li><p><strong>システム</strong>: 2次共振系（単振動）</p>
@@ -676,7 +676,7 @@ Output data shape: (122880,)
 </div>
 </section>
 <section id="transfer-function-estimation">
-<h2>2. 伝達関数の推定<a class="headerlink" href="#transfer-function-estimation" title="Link to this heading">#</a></h2>
+<span id="2-transfer-function-estimation"></span><h2>2. 伝達関数の推定<a class="headerlink" href="#transfer-function-estimation" title="Link to this heading">#</a></h2>
 <p>入出力の時系列データ <code class="docutils literal notranslate"><span class="pre">ts_input</span></code> と <code class="docutils literal notranslate"><span class="pre">ts_output</span></code> から、周波数応答関数（伝達関数）を推定します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code> メソッドを使用します。</p>
 <p>また、測定の信頼性を確認するために<strong>二乗コヒーレンス</strong>（<span class="math notranslate nohighlight">\(\gamma^2\)</span>、<a class="reference internal" href="../../explanation/physics_models.html"><span class="std std-doc">物理モデル: コヒーレンス</span></a> 参照）も計算します。<span class="math notranslate nohighlight">\(\gamma^2\)</span> が 1 に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。</p>
 <div class="cell docutils container">
@@ -729,7 +729,7 @@ Output data shape: (122880,)
 </div>
 </section>
 <section id="model-fitting">
-<h2>3. モデルフィッティング<a class="headerlink" href="#model-fitting" title="Link to this heading">#</a></h2>
+<span id="3-model-fitting"></span><h2>3. モデルフィッティング<a class="headerlink" href="#model-fitting" title="Link to this heading">#</a></h2>
 <p>得られた伝達関数（特に共振付近）に対して、理論モデルをフィッティングします。 ここでは、単振動の伝達関数モデルを定義し、最小二乗法でパラメータ（<span class="math notranslate nohighlight">\(A, f_0, Q\)</span>）を求めます。</p>
 <p>モデル式（ゲイン <span class="math notranslate nohighlight">\(A\)</span> を含む）： $<span class="math notranslate nohighlight">\( H(f) = A \cdot \frac{f_0^2}{f_0^2 - f^2 + i (f f_0 / Q)} \)</span>$</p>
 <div class="cell docutils container">
@@ -795,7 +795,7 @@ Output data shape: (122880,)
 </div>
 </section>
 <section id="verification-of-results">
-<h2>4. 結果の確認<a class="headerlink" href="#verification-of-results" title="Link to this heading">#</a></h2>
+<span id="4-verification-of-results"></span><h2>4. 結果の確認<a class="headerlink" href="#verification-of-results" title="Link to this heading">#</a></h2>
 <p>フィッティング結果を数値で確認し、測定データに重ねてプロットします。 <code class="docutils literal notranslate"><span class="pre">FitResult.plot()</span></code> メソッドは、複素数データの場合、自動的にボード線図（振幅・位相）を描画します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

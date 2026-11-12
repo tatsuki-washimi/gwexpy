@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_noise_budget';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 8.0 s · GWexpy 0.2.9
+      成功 · 6.8 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -615,7 +615,7 @@
 </div>
 </div>
 <section id="multi-channel-data-simulation-creating-a-u-shaped-spectrum">
-<h2>1. 多チャンネルデータのシミュレーション (U字型スペクトルの作成)<a class="headerlink" href="#multi-channel-data-simulation-creating-a-u-shaped-spectrum" title="Link to this heading">#</a></h2>
+<span id="1-multi-channel-data-simulation-creating-a-u-shaped-spectrum"></span><h2>1. 多チャンネルデータのシミュレーション (U字型スペクトルの作成)<a class="headerlink" href="#multi-channel-data-simulation-creating-a-u-shaped-spectrum" title="Link to this heading">#</a></h2>
 <p>重力波検出器を模した感度曲線を作成します。</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">MAIN</span></code>: 観測対象。低域で地面振動、高域でアクチュエータ/回路系のノイズが支配的な「下に凸」のスペクトルを持ちます。</p></li>
@@ -695,7 +695,7 @@
 </div>
 </section>
 <section id="coherence-mapping">
-<h2>2. 相関解析 (Coherence Mapping)<a class="headerlink" href="#coherence-mapping" title="Link to this heading">#</a></h2>
+<span id="2-coherence-mapping"></span><h2>2. 相関解析 (Coherence Mapping)<a class="headerlink" href="#coherence-mapping" title="Link to this heading">#</a></h2>
 <p>メインチャンネルの「U字」の左側、底、右側で、それぞれどのセンサーと高い二乗コヒーレンス（<span class="math notranslate nohighlight">\(\gamma^2\)</span>、<a class="reference internal" href="../../explanation/physics_models.html"><span class="std std-doc">物理モデル: コヒーレンス</span></a> 参照）を持っているかを確認します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -725,7 +725,7 @@
 </div>
 </section>
 <section id="transfer-function-estimation">
-<h2>3. 結合関数の推定<a class="headerlink" href="#transfer-function-estimation" title="Link to this heading">#</a></h2>
+<span id="3-transfer-function-estimation"></span><h2>3. 結合関数の推定<a class="headerlink" href="#transfer-function-estimation" title="Link to this heading">#</a></h2>
 <p>各帯域における漏れ込み係数（伝達関数）を推定します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">witness.transfer_function(MAIN)</span></code> estimates the response of the main channel to the witness channel using native channel values. If the returned transfer function is bare dimensionless (<code class="docutils literal notranslate"><span class="pre">u.dimensionless_unscaled</span></code>), we attach <code class="docutils literal notranslate"><span class="pre">MAIN.unit</span> <span class="pre">/</span> <span class="pre">witness.unit</span></code> so every projected contribution has MAIN amplitude per square root hertz. The estimation and ASD use the same segment length, overlap, and Hann window.</p>
 <p>二乗和平方根による合成は、ノイズ源の独立性を仮定します。補助チャンネル間で共通するノイズは重複して数えられる場合があります。また、有限長のデータからの推定値が、すべての周波数ビンで観測 ASD を下回るとは限りません。相関のある補助チャンネルを扱う場合は、<a class="reference internal" href="case_wiener_filter.html"><span class="std std-doc">Wiener フィルタのケーススタディ</span></a>を参照してください。</p>
@@ -776,7 +776,7 @@
 </div>
 </section>
 <section id="noise-projection">
-<h2>4. ノイズ投影 (Noise Projection)<a class="headerlink" href="#noise-projection" title="Link to this heading">#</a></h2>
+<span id="4-noise-projection"></span><h2>4. ノイズ投影 (Noise Projection)<a class="headerlink" href="#noise-projection" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">main_ch</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span>
@@ -820,7 +820,7 @@
 </div>
 </section>
 <section id="noise-budget-visualization-noise-budget-plot">
-<h2>5. ノイズ予算の可視化 (Noise Budget Plot)<a class="headerlink" href="#noise-budget-visualization-noise-budget-plot" title="Link to this heading">#</a></h2>
+<span id="5-noise-budget-visualization-noise-budget-plot"></span><h2>5. ノイズ予算の可視化 (Noise Budget Plot)<a class="headerlink" href="#noise-budget-visualization-noise-budget-plot" title="Link to this heading">#</a></h2>
 <p>「下に凸」のメインチャンネルのノイズが、どのように解説・分解されるかを表示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

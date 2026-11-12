@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=ccdb6887"></script>
     <script src="_static/translations.js?v=4755f45a"></script>
-    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/index.html" />
@@ -394,7 +394,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="about/documentation_version.html">版情報</a>
   · <a href="about/known_limitations.html">既知の制限</a>
@@ -414,7 +414,7 @@
 </div>
 <p class="rubric">単位・時刻・チャンネル名とともに、実験データを解析する。</p>
 <p>複数チャンネルを比較し、図とともに再実行に必要なコードや解析条件を保存できます。GWexpy は <a class="reference external" href="https://gwpy.github.io/">GWpy</a> を拡張し、行列と場のコンテナ、ノイズ生成、フィッティング、科学技術計算ライブラリとの連携を提供します。</p>
-<p><a class="sd-btn sd-btn-primary sd-shadow-sm sd-px-4 sd-fs-5 reference internal" href="tutorials/getting_started.html"><span class="doc std std-doc">はじめに →</span></a></p>
+<p><a class="sd-btn sd-btn-primary sd-shadow-sm sd-px-4 sd-fs-5 reference internal" href="tutorials/getting_started.html"><span class="xref myst">はじめに →</span></a></p>
 </div>
 <section id="start-from-your-background">
 <h2>経験に合った入口を選ぶ<a class="headerlink" href="#start-from-your-background" title="Link to this heading">#</a></h2>
@@ -483,8 +483,8 @@ GWexpy ユーザー</div>
 </div>
 </div>
 </section>
-<section id="try-a-multi-channel-asd">
-<span id="install-and-try-it"></span><h2>複数チャンネルの ASD を試す<a class="headerlink" href="#try-a-multi-channel-asd" title="Link to this heading">#</a></h2>
+<section id="install-and-try-it">
+<span id="try-a-multi-channel-asd"></span><h2>複数チャンネルの ASD を試す<a class="headerlink" href="#install-and-try-it" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="tutorials/installation.html"><span class="std std-doc">インストール</span></a>後、この例を実行すると 2 つの合成チャンネルから <code class="docutils literal notranslate"><span class="pre">asd.png</span></code> を保存できます。
 データのダウンロードや追加パッケージは必要ありません。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
@@ -506,8 +506,8 @@ GWexpy ユーザー</div>
 </div>
 <p><a class="reference internal" href="tutorials/quickstart.html"><span class="std std-doc">例を実行し、期待される図を確認する</span></a>。</p>
 </section>
-<section id="browse-the-documentation">
-<span id="find-your-path"></span><h2>ドキュメントを探す<a class="headerlink" href="#browse-the-documentation" title="Link to this heading">#</a></h2>
+<section id="find-your-path">
+<span id="browse-the-documentation"></span><h2>ドキュメントを探す<a class="headerlink" href="#find-your-path" title="Link to this heading">#</a></h2>
 <p>ドキュメントは <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> に沿って、学習用レッスン、作業別手順、仕様を調べるリファレンス、背景を理解する解説に分かれています。</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
@@ -596,8 +596,8 @@ GWexpy ユーザー</div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-from-your-background">経験に合った入口を選ぶ</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#try-a-multi-channel-asd">複数チャンネルの ASD を試す</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#browse-the-documentation">ドキュメントを探す</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-and-try-it">複数チャンネルの ASD を試す</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-your-path">ドキュメントを探す</a></li>
 </ul>
   </nav></div>
 

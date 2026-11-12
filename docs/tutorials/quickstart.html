@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/quickstart';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/quickstart.html" />
@@ -456,7 +456,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation 路 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   路 Intro examples tested with 0.2.4
   路 <a href="../about/documentation_version.html">Version details</a>
   路 <a href="../about/known_limitations.html">Known limitations</a>
@@ -473,16 +473,16 @@
 <p>Create two synthetic channels, calculate their amplitude spectral densities (ASDs), and save <code class="docutils literal notranslate"><span class="pre">asd.png</span></code>.
 Prerequisites: Python 3.11 or later and GWexpy installed; no detector files or optional packages are needed.
 Study goal: about 5 minutes after installation. Script runtime goal: seconds on a laptop; this is not a benchmark.</p>
-<section id="install-gwexpy">
-<span id="quick-install"></span><span id="en-quickstart-install-command"></span><h2>Install GWexpy<a class="headerlink" href="#install-gwexpy" title="Link to this heading">#</a></h2>
+<section id="quick-install">
+<span id="install-gwexpy"></span><span id="en-quickstart-install-command"></span><h2>Install GWexpy<a class="headerlink" href="#quick-install" title="Link to this heading">#</a></h2>
 <p>In a terminal with your chosen Python environment active, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
 </pre></div>
 </div>
 <p>For environment creation and Conda instructions, use <a class="reference internal" href="installation.html"><span class="std std-doc">Installation</span></a>.</p>
 </section>
-<section id="run-the-complete-example">
-<span id="multi-channel-analysis-example"></span><span id="line-quickstart"></span><span id="en-quick-demo"></span><h2>Run the complete example<a class="headerlink" href="#run-the-complete-example" title="Link to this heading">#</a></h2>
+<section id="multi-channel-analysis-example">
+<span id="run-the-complete-example"></span><span id="line-quickstart"></span><span id="en-quick-demo"></span><h2>Run the complete example<a class="headerlink" href="#multi-channel-analysis-example" title="Link to this heading">#</a></h2>
 <p>Download <a class="reference download internal" download="" href="../_downloads/93e7667a09b28723319a6212fab6aff8/quickstart.py"><code class="xref download docutils literal notranslate"><span class="pre">quickstart.py</span></code></a> into a working folder and run the command below from that folder.
 A terminal command starts Python; the downloaded file contains the Python statements it will execute in order.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>quickstart.py
@@ -531,13 +531,13 @@ The peak height also depends on the spectral settings; it is not the sine wave鈥
 <code class="docutils literal notranslate"><span class="pre">overlap=1</span></code> overlaps adjacent segments by 1 second.
 The example explicitly selects a Hann window and Welch averaging so the analysis choices are visible.</p>
 </section>
-<section id="change-one-parameter">
-<span id="gwexpy-basic-hands-on"></span><span id="min-hands-on-interactive-tutorial"></span><h2>Change one parameter<a class="headerlink" href="#change-one-parameter" title="Link to this heading">#</a></h2>
+<section id="gwexpy-basic-hands-on">
+<span id="change-one-parameter"></span><span id="min-hands-on-interactive-tutorial"></span><h2>Change one parameter<a class="headerlink" href="#gwexpy-basic-hands-on" title="Link to this heading">#</a></h2>
 <p>Change <code class="docutils literal notranslate"><span class="pre">frequency=40</span></code> to <code class="docutils literal notranslate"><span class="pre">frequency=70</span></code> and run the script again.
 The two peaks should move to 70 Hz. Then restore 40 Hz and try changing one noise standard deviation (<code class="docutils literal notranslate"><span class="pre">std</span></code>) to see how the broadband floor responds.</p>
 </section>
-<section id="if-the-script-does-not-run">
-<span id="need-help"></span><h2>If the script does not run<a class="headerlink" href="#if-the-script-does-not-run" title="Link to this heading">#</a></h2>
+<section id="need-help">
+<span id="if-the-script-does-not-run"></span><h2>If the script does not run<a class="headerlink" href="#need-help" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'gwexpy'</span></code> means the Python running the script cannot find GWexpy.
 Activate the environment used for installation, then rerun <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">quickstart.py</span></code>.
 For other symptoms, use <a class="reference internal" href="../how-to/troubleshooting.html"><span class="std std-doc">Troubleshooting</span></a>.</p>
@@ -602,11 +602,11 @@ For other symptoms, use <a class="reference internal" href="../how-to/troublesho
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-gwexpy">Install GWexpy</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-complete-example">Run the complete example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-install">Install GWexpy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-channel-analysis-example">Run the complete example</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-result">Read the result</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-one-parameter">Change one parameter</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-the-script-does-not-run">If the script does not run</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy-basic-hands-on">Change one parameter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#need-help">If the script does not run</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
   </nav></div>

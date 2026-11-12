@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_lockin_detection';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_lockin_detection.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 5.1 s · GWexpy 0.2.9
+      成功 · 4.2 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -582,7 +582,7 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="lock-in-detection-recovering-weak-am-fm-structure">
-<h1>ロックイン検出: 弱い AM/FM 構造の復元<a class="headerlink" href="#lock-in-detection-recovering-weak-am-fm-structure" title="Link to this heading">#</a></h1>
+<span id="lock-in-detection-recovering-weak-amfm-structure"></span><h1>ロックイン検出: 弱い AM/FM 構造の復元<a class="headerlink" href="#lock-in-detection-recovering-weak-am-fm-structure" title="Link to this heading">#</a></h1>
 <p>ロックイン検出は、<strong>速い搬送波の上に乗ったゆっくりした変調</strong> を取り出したいときに使います。見たいのはキャリアそのものではなく、baseband へ落とした後に残る振幅・位相のトレンドです。</p>
 <p>この公開版 notebook は legacy のヘテロダイン例を整理し、AM/FM 復元の本質に絞っています。</p>
 <div class="cell docutils container">
@@ -613,7 +613,7 @@
 </div>
 </div>
 <section id="recover-amplitude-and-phase-with-lock-in">
-<h2>1. <code class="docutils literal notranslate"><span class="pre">lock_in</span></code> で振幅と位相を取り出す<a class="headerlink" href="#recover-amplitude-and-phase-with-lock-in" title="Link to this heading">#</a></h2>
+<span id="1-recover-amplitude-and-phase-with-lock_in"></span><h2>1. <code class="docutils literal notranslate"><span class="pre">lock_in</span></code> で振幅と位相を取り出す<a class="headerlink" href="#recover-amplitude-and-phase-with-lock-in" title="Link to this heading">#</a></h2>
 <p>参照周波数を与えることで、キャリアと同相な成分だけを残し、広帯域雑音を平均で落とします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -641,7 +641,7 @@
 </div>
 </section>
 <section id="manual-demodulation-shows-the-same-physics">
-<h2>2. 手動復調でも同じ物理が見える<a class="headerlink" href="#manual-demodulation-shows-the-same-physics" title="Link to this heading">#</a></h2>
+<span id="2-manual-demodulation-shows-the-same-physics"></span><h2>2. 手動復調でも同じ物理が見える<a class="headerlink" href="#manual-demodulation-shows-the-same-physics" title="Link to this heading">#</a></h2>
 <p>参照波との積を取ると DC 成分と <code class="docutils literal notranslate"><span class="pre">2*f_c</span></code> 成分ができます。低域フィルタは後者を落とし、ゆっくりした包絡と位相ドリフトだけを残します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -674,7 +674,7 @@
 </div>
 </section>
 <section id="demodulation-moves-the-information-into-baseband">
-<h2>3. 復調すると情報は低周波へ移る<a class="headerlink" href="#demodulation-moves-the-information-into-baseband" title="Link to this heading">#</a></h2>
+<span id="3-demodulation-moves-the-information-into-baseband"></span><h2>3. 復調すると情報は低周波へ移る<a class="headerlink" href="#demodulation-moves-the-information-into-baseband" title="Link to this heading">#</a></h2>
 <p>復調後のスペクトルは 0 Hz 近傍に集まるので、高周波キャリア問題が低周波トレンド解析の問題へ変わります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

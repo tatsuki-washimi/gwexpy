@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/intro_plotting';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/intro_plotting.html" />
@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -495,7 +495,7 @@ We demonstrate the “nice” default settings (automatic figsize adjustment, lo
 </div>
 </div>
 <section id="timeseriesmatrix-plotting">
-<h2>1. TimeSeriesMatrix Plotting<a class="headerlink" href="#timeseriesmatrix-plotting" title="Link to this heading">#</a></h2>
+<span id="1-timeseriesmatrix-plotting"></span><h2>1. TimeSeriesMatrix Plotting<a class="headerlink" href="#timeseriesmatrix-plotting" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> manages time series data with a 3-dimensional structure (Row, Col, Time).
 When calling <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>, the following optimizations are applied:</p>
 <ul class="simple">
@@ -532,7 +532,7 @@ When calling <code class="docutils literal notranslate"><span class="pre">.plot(
 </div>
 </section>
 <section id="frequencyseriesmatrix-plotting">
-<h2>2. FrequencySeriesMatrix Plotting<a class="headerlink" href="#frequencyseriesmatrix-plotting" title="Link to this heading">#</a></h2>
+<span id="2-frequencyseriesmatrix-plotting"></span><h2>2. FrequencySeriesMatrix Plotting<a class="headerlink" href="#frequencyseriesmatrix-plotting" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> manages frequency data with a 3-dimensional structure (Row, Col, Frequency).
 It typically holds results from spectral analysis.
 Features of <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>:</p>
@@ -574,7 +574,7 @@ Features of <code class="docutils literal notranslate"><span class="pre">.plot()
 </div>
 </section>
 <section id="frequencyserieslist-plotting-reference">
-<h2>3. FrequencySeriesList Plotting (Reference)<a class="headerlink" href="#frequencyserieslist-plotting-reference" title="Link to this heading">#</a></h2>
+<span id="3-frequencyserieslist-plotting-reference"></span><h2>3. FrequencySeriesList Plotting (Reference)<a class="headerlink" href="#frequencyserieslist-plotting-reference" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> (or Dict) is a simple list without a grid structure.
 It can also be plotted in the same way.</p>
 <div class="cell docutils container">
@@ -611,7 +611,7 @@ It can also be plotted in the same way.</p>
 </div>
 </section>
 <section id="spectrogramlist-plotting">
-<h2>4. SpectrogramList Plotting<a class="headerlink" href="#spectrogramlist-plotting" title="Link to this heading">#</a></h2>
+<span id="4-spectrogramlist-plotting"></span><h2>4. SpectrogramList Plotting<a class="headerlink" href="#spectrogramlist-plotting" title="Link to this heading">#</a></h2>
 <p>Plotting of <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> applies a vertical layout with <code class="docutils literal notranslate"><span class="pre">geometry=(N,</span> <span class="pre">1)</span></code> by default, along with a logarithmic colorbar.
 Since spectrograms also have a time axis, the <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> feature works when GPS time is provided.</p>
 <div class="cell docutils container">
@@ -646,7 +646,7 @@ Since spectrograms also have a time axis, the <code class="docutils literal notr
 </div>
 </section>
 <section id="adaptive-plotting-optimization-decimation">
-<h2>5. Adaptive Plotting Optimization (Decimation)<a class="headerlink" href="#adaptive-plotting-optimization-decimation" title="Link to this heading">#</a></h2>
+<span id="5-adaptive-plotting-optimization-decimation"></span><h2>5. Adaptive Plotting Optimization (Decimation)<a class="headerlink" href="#adaptive-plotting-optimization-decimation" title="Link to this heading">#</a></h2>
 <p>When plotting a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> with a large amount of data, decimation (Min-Max Decimation) is automatically applied to maintain rendering performance.</p>
 <ul class="simple">
 <li><p><strong>Automatic Application</strong>: By default, it is triggered when the number of samples exceeds 50,000.</p></li>
@@ -673,14 +673,16 @@ Since spectrograms also have a time axis, the <code class="docutils literal notr
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original samples: 100000000
-Plotted points: 10000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Plotted points: 10000
 </pre></div>
 </div>
 <img alt="../_images/ca477efd2828634e19d3d0d235363a104509d20b719b47583335b5d4c516f801.png" src="../_images/ca477efd2828634e19d3d0d235363a104509d20b719b47583335b5d4c516f801.png" />
 </div>
 </div>
 <section id="application-to-collections-matrices-and-parameter-specification">
-<h3>Application to Collections/Matrices and Parameter Specification<a class="headerlink" href="#application-to-collections-matrices-and-parameter-specification" title="Link to this heading">#</a></h3>
+<span id="application-to-collectionsmatrices-and-parameter-specification"></span><h3>Application to Collections/Matrices and Parameter Specification<a class="headerlink" href="#application-to-collections-matrices-and-parameter-specification" title="Link to this heading">#</a></h3>
 <p>It also works transparently with <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>. You can also force it to apply by lowering the threshold.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -705,7 +707,7 @@ Plotted points: 10000
 </section>
 </section>
 <section id="spectrogram-summary-plotting">
-<h2>6. Spectrogram Summary Plotting<a class="headerlink" href="#spectrogram-summary-plotting" title="Link to this heading">#</a></h2>
+<span id="6-spectrogram-summary-plotting"></span><h2>6. Spectrogram Summary Plotting<a class="headerlink" href="#spectrogram-summary-plotting" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code> is a feature that vertically arranges multiple <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> objects and plots <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> statistics (10%, 50%, 90% percentiles) on the right side of each.
 This is very useful when checking the time evolution of spectrograms alongside their overall frequency characteristics.</p>
 <ul class="simple">
@@ -738,7 +740,7 @@ This is very useful when checking the time evolution of spectrograms alongside t
 </div>
 </section>
 <section id="pairplot-example">
-<h2>7. PairPlot Example<a class="headerlink" href="#pairplot-example" title="Link to this heading">#</a></h2>
+<span id="7-pairplot-example"></span><h2>7. PairPlot Example<a class="headerlink" href="#pairplot-example" title="Link to this heading">#</a></h2>
 <p>Below is a basic usage example of <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code>.</p>
 <ul class="simple">
 <li><p>Create two <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> with different sampling rates</p></li>
@@ -767,7 +769,7 @@ This is very useful when checking the time evolution of spectrograms alongside t
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/4ad8c9ffa11364c9ca8f015f6a88dc869b7683bba0bfbd646c82bf20df534daa.png" src="../_images/4ad8c9ffa11364c9ca8f015f6a88dc869b7683bba0bfbd646c82bf20df534daa.png" />
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x72fe45ffd350&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x7c4523cbb050&gt;
 </pre></div>
 </div>
 </div>

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/intro_timeseries';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/intro_timeseries.html" />
@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -473,7 +473,7 @@
 Prerequisites: the <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a>. No optional analysis packages or external data are needed.
 Allow about 15 minutes to read and run the lesson.</p>
 <section id="create-a-signal">
-<h2>1. Create a signal<a class="headerlink" href="#create-a-signal" title="Link to this heading">#</a></h2>
+<span id="1-create-a-signal"></span><h2>1. Create a signal<a class="headerlink" href="#create-a-signal" title="Link to this heading">#</a></h2>
 <p>This is the same 40 Hz tone and seeded sensor noise used in the Quickstart.
 A <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> keeps sample values together with their unit, start time, and cadence.</p>
 <div class="cell docutils container">
@@ -489,7 +489,7 @@ A <code class="docutils literal notranslate"><span class="pre">TimeSeries</span>
 </div>
 </section>
 <section id="inspect-values-and-metadata">
-<h2>2. Inspect values and metadata<a class="headerlink" href="#inspect-values-and-metadata" title="Link to this heading">#</a></h2>
+<span id="2-inspect-values-and-metadata"></span><h2>2. Inspect values and metadata<a class="headerlink" href="#inspect-values-and-metadata" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">value</span></code> contains an array of sample values; <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, and <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> explain
 what those numbers mean. <code class="docutils literal notranslate"><span class="pre">dt</span></code> is the time between samples. Keep these attributes
 when exporting values to another tool.</p>
@@ -522,7 +522,7 @@ Cadence: 0.001953125 s
 </div>
 </section>
 <section id="select-an-interval">
-<h2>3. Select an interval<a class="headerlink" href="#select-an-interval" title="Link to this heading">#</a></h2>
+<span id="3-select-an-interval"></span><h2>3. Select an interval<a class="headerlink" href="#select-an-interval" title="Link to this heading">#</a></h2>
 <p>The interval starts at 2 seconds and ends just before 4 seconds. Assign the
 returned series to a new name so the full input remains available. For a
 <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, use <code class="docutils literal notranslate"><span class="pre">channels.copy().crop(...)</span></code> to preserve the collection.</p>
@@ -537,7 +537,7 @@ returned series to a new name so the full input remains available. For a
 </div>
 </section>
 <section id="plot-and-save">
-<h2>4. Plot and save<a class="headerlink" href="#plot-and-save" title="Link to this heading">#</a></h2>
+<span id="4-plot-and-save"></span><h2>4. Plot and save<a class="headerlink" href="#plot-and-save" title="Link to this heading">#</a></h2>
 <p>A short interval makes individual oscillations visible. The plot labels the
 sample unit, and <code class="docutils literal notranslate"><span class="pre">savefig</span></code> writes a figure that can be used in a log or slide.</p>
 <div class="cell docutils container">
@@ -553,7 +553,7 @@ sample unit, and <code class="docutils literal notranslate"><span class="pre">sa
 </div>
 </section>
 <section id="estimate-an-asd">
-<h2>5. Estimate an ASD<a class="headerlink" href="#estimate-an-asd" title="Link to this heading">#</a></h2>
+<span id="5-estimate-an-asd"></span><h2>5. Estimate an ASD<a class="headerlink" href="#estimate-an-asd" title="Link to this heading">#</a></h2>
 <p>Use the full 16-second record for averaging. Two-second Hann-windowed segments
 with one-second overlap give 0.5 Hz frequency bins. ASD is expressed in
 V per square root Hz; it is not the amplitude of an individual sine wave.</p>
@@ -571,8 +571,8 @@ V per square root Hz; it is not the amplitude of an individual sine wave.</p>
 </div>
 </div>
 </section>
-<section id="next-lessons">
-<span id="summary"></span><span id="id8"></span><span id="id7"></span><span id="id6"></span><span id="rolling-statistics"></span><span id="arima-model-and-hurst-exponent"></span><span id="peak-detection-find-peaks"></span><span id="id5"></span><span id="id4"></span><span id="stlt-short-time-laplace-transform"></span><span id="transfer-function-and-cross-correlation-xcorr"></span><span id="extended-fft"></span><span id="id3"></span><span id="mixing-and-demodulation-mix-down-baseband-lock-in"></span><span id="instantaneous-phase-and-instantaneous-frequency"></span><span id="hilbert-transform-and-envelope"></span><span id="id2"></span><span id="id1"></span><span id="table-of-contents"></span><span id="next-steps"></span><span id="interoperability"></span><span id="function-fitting"></span><span id="resampling-and-reindexing"></span><span id="statistics-and-preprocessing"></span><span id="hilbert-huang-transform-hht"></span><span id="spectral-analysis-and-correlation"></span><span id="signal-processing-and-demodulation"></span><span id="environment-setup"></span><h2>Next lessons<a class="headerlink" href="#next-lessons" title="Link to this heading">#</a></h2>
+<section id="summary">
+<span id="next-lessons"></span><span id="id8"></span><span id="id7"></span><span id="id6"></span><span id="rolling-statistics"></span><span id="arima-model-and-hurst-exponent"></span><span id="peak-detection-find-peaks"></span><span id="id5"></span><span id="id4"></span><span id="stlt-short-time-laplace-transform"></span><span id="transfer-function-and-cross-correlation-xcorr"></span><span id="extended-fft"></span><span id="id3"></span><span id="mixing-and-demodulation-mix-down-baseband-lock-in"></span><span id="instantaneous-phase-and-instantaneous-frequency"></span><span id="hilbert-transform-and-envelope"></span><span id="id2"></span><span id="id1"></span><span id="table-of-contents"></span><span id="next-steps"></span><span id="interoperability"></span><span id="function-fitting"></span><span id="resampling-and-reindexing"></span><span id="statistics-and-preprocessing"></span><span id="hilbert-huang-transform-hht"></span><span id="spectral-analysis-and-correlation"></span><span id="signal-processing-and-demodulation"></span><span id="environment-setup"></span><h2>Next lessons<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="commissioner.html"><span class="std std-doc">Commissioner</span></a>: read channels, compare ASD and coherence, and save conditions.</p></li>
 <li><p><a class="reference internal" href="intro_noise.html"><span class="std std-doc">Noise generation</span></a>: create a spectral model and compare it with measured noise.</p></li>
@@ -637,7 +637,7 @@ V per square root Hz; it is not the amplitude of an individual sine wave.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-an-interval">3. Select an interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-and-save">4. Plot and save</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estimate-an-asd">5. Estimate an ASD</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-lessons">Next lessons</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Next lessons</a></li>
 </ul>
   </nav></div>
 

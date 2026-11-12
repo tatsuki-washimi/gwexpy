@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/advanced_peak_tracking';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/advanced_peak_tracking.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -591,7 +591,7 @@
 </div>
 </div>
 <section id="synthetic-data">
-<h2>1. 合成データの準備<a class="headerlink" href="#synthetic-data" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-data"></span><h2>1. 合成データの準備<a class="headerlink" href="#synthetic-data" title="Link to this heading">#</a></h2>
 <p>白色ガウスノイズに埋め込まれた 2 本のスペクトル線：</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -652,7 +652,7 @@ Line 2   : 120 Hz ± 0.5 Hz (slow wobble)
 </div>
 </section>
 <section id="spectrogram-overview">
-<h2>2. スペクトログラム概観<a class="headerlink" href="#spectrogram-overview" title="Link to this heading">#</a></h2>
+<span id="2-spectrogram-overview"></span><h2>2. スペクトログラム概観<a class="headerlink" href="#spectrogram-overview" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ts.spectrogram2(fftlength,</span> <span class="pre">overlap)</span></code> で時間-周波数パワーマップを取得します。 斜めのストリーク（ライン 1 のドリフト）とわずかに波打つ水平ストライプ （ライン 2 のウォブル）がすでに見えています。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -692,7 +692,7 @@ Freq resolution: 0.2500 Hz
 </div>
 </section>
 <section id="frame-by-frame-peak-detection">
-<h2>3. フレーム毎のピーク検出<a class="headerlink" href="#frame-by-frame-peak-detection" title="Link to this heading">#</a></h2>
+<span id="3-frame-by-frame-peak-detection"></span><h2>3. フレーム毎のピーク検出<a class="headerlink" href="#frame-by-frame-peak-detection" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">spec.value[t,</span> <span class="pre">:]</span></code> は時刻インデックス <code class="docutils literal notranslate"><span class="pre">t</span></code> の 1 次元 PSD 配列です。 高さ閾値と最小周波数間隔制約を指定して <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> に渡します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -739,7 +739,7 @@ Detected peaks at: [ 59.   119.75] Hz
 </div>
 </section>
 <section id="single-line-tracking-nearest-neighbour">
-<h2>4. 単一ライン追跡（最近傍法）<a class="headerlink" href="#single-line-tracking-nearest-neighbour" title="Link to this heading">#</a></h2>
+<span id="4-single-line-tracking--nearest-neighbour"></span><h2>4. 単一ライン追跡（最近傍法）<a class="headerlink" href="#single-line-tracking-nearest-neighbour" title="Link to this heading">#</a></h2>
 <p><strong>アルゴリズム</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>seed = initial frequency estimate
 for each time frame t:
@@ -834,7 +834,7 @@ Freq range: 58.00 – 62.00 Hz
 </div>
 </section>
 <section id="multi-line-tracking">
-<h2>5. 複数ライン同時追跡<a class="headerlink" href="#multi-line-tracking" title="Link to this heading">#</a></h2>
+<span id="5-multi-line-tracking"></span><h2>5. 複数ライン同時追跡<a class="headerlink" href="#multi-line-tracking" title="Link to this heading">#</a></h2>
 <p>seed 周波数ごとにトラッカーを走らせ、結果をスペクトログラムに オーバーレイして視覚的に確認します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -883,7 +883,7 @@ Freq range: 58.00 – 62.00 Hz
 </div>
 </section>
 <section id="frequency-drift-visualisation">
-<h2>6. 周波数ドリフトの可視化<a class="headerlink" href="#frequency-drift-visualisation" title="Link to this heading">#</a></h2>
+<span id="6-frequency-drift-visualisation"></span><h2>6. 周波数ドリフトの可視化<a class="headerlink" href="#frequency-drift-visualisation" title="Link to this heading">#</a></h2>
 <p>各トラック結果を <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> でラップして周波数変化をプロットし、 ドリフト統計を計算します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

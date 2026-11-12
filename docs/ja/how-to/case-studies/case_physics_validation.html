@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_physics_validation';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_physics_validation.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 5.0 s · GWexpy 0.2.9
+      成功 · 4.5 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -648,7 +648,7 @@ Machine epsilon (float32): 1.19e-07
 </div>
 </section>
 <section id="why-gw-strain-needs-special-care">
-<h2>1. GW 歪みに特別な数値的注意が必要な理由<a class="headerlink" href="#why-gw-strain-needs-special-care" title="Link to this heading">#</a></h2>
+<span id="1-why-gw-strain-needs-special-care"></span><h2>1. GW 歪みに特別な数値的注意が必要な理由<a class="headerlink" href="#why-gw-strain-needs-special-care" title="Link to this heading">#</a></h2>
 <p>倍精度浮動小数点のマシンイプシロンは ~2.2×10⁻¹⁶ です。 GW 歪みは ~10⁻²³ — マシンイプシロンの 7 桁上。 これはつまり、<strong>歪みを二乗して PSD を計算し、ログ変換する操作が 適切なフロアなしに大きなビット損失を引き起こす可能性がある</strong>ことを意味します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -693,7 +693,7 @@ safe_log10(0.0)         = -50.00  (not -inf!)
 </div>
 </section>
 <section id="numerical-floors-in-asd-computation">
-<h2>2. ASD 計算における数値床<a class="headerlink" href="#numerical-floors-in-asd-computation" title="Link to this heading">#</a></h2>
+<span id="2-numerical-floors-in-asd-computation"></span><h2>2. ASD 計算における数値床<a class="headerlink" href="#numerical-floors-in-asd-computation" title="Link to this heading">#</a></h2>
 <p>gwexpy の Welch 推定器は内部で <code class="docutils literal notranslate"><span class="pre">EPS_PSD</span></code> を使用して PSD 値がゼロになるのを防ぎます。ここでは、フロアリングなしの場合とありの場合に何が起こるかを明示的に示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -749,7 +749,7 @@ Any NaN in ASD?   False
 </div>
 </section>
 <section id="unit-consistent-operations-with-astropy-units">
-<h2>3. astropy.units による単位一貫性の確認<a class="headerlink" href="#unit-consistent-operations-with-astropy-units" title="Link to this heading">#</a></h2>
+<span id="3-unit-consistent-operations-with-astropyunits"></span><h2>3. astropy.units による単位一貫性の確認<a class="headerlink" href="#unit-consistent-operations-with-astropy-units" title="Link to this heading">#</a></h2>
 <p>gwexpy は全体を通して <code class="docutils literal notranslate"><span class="pre">astropy.units</span></code> を使用します。物理的検証とは、単位の算術が自己整合的であること（ASD² = PSD など）を確認することを意味します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -798,7 +798,7 @@ This is expected for bandlimited PSD vs. broadband direct computation.
 </div>
 </section>
 <section id="safe-log-scale-plotting">
-<h2>4. safe_log_scale による安全な対数スケールプロット<a class="headerlink" href="#safe-log-scale-plotting" title="Link to this heading">#</a></h2>
+<span id="4-safe-log-scale-plotting"></span><h2>4. safe_log_scale による安全な対数スケールプロット<a class="headerlink" href="#safe-log-scale-plotting" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> は配列を設定可能なダイナミックレンジでデシベルに変換し、プロットに -inf が現れるのを防ぎます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -846,7 +846,7 @@ This is expected for bandlimited PSD vs. broadband direct computation.
 </div>
 </section>
 <section id="physics-sanity-checklist">
-<h2>5. 物理健全性チェックリスト<a class="headerlink" href="#physics-sanity-checklist" title="Link to this heading">#</a></h2>
+<span id="5-physics-sanity-checklist"></span><h2>5. 物理健全性チェックリスト<a class="headerlink" href="#physics-sanity-checklist" title="Link to this heading">#</a></h2>
 <p>結果が信頼され共有される前に、すべての ASD パイプラインが通過すべき体系的なテスト群です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

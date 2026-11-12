@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_schumann_resonance';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 25.7 s · GWexpy 0.2.9
+      成功 · 20.3 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -624,7 +624,7 @@
 </div>
 </section>
 <section id="mock-data-magnetometer-with-schumann-resonances">
-<h2>1. モックデータ: シューマン共鳴を含む磁力計データ<a class="headerlink" href="#mock-data-magnetometer-with-schumann-resonances" title="Link to this heading">#</a></h2>
+<span id="1-mock-data-magnetometer-with-schumann-resonances"></span><h2>1. モックデータ: シューマン共鳴を含む磁力計データ<a class="headerlink" href="#mock-data-magnetometer-with-schumann-resonances" title="Link to this heading">#</a></h2>
 <p>地球の背景電磁場を測定する 1 軸磁力計 (ELF 帯) をシミュレートします。 4 つのシューマン共鳴を <strong>ローレンツ型スペクトル形状の狭帯域ノイズ</strong> として生成し、 広帯域ノイズフロアに重ね合わせます。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -731,7 +731,7 @@
 </div>
 </section>
 <section id="bootstrap-psd-estimation">
-<h2>2. ブートストラップ PSD 推定<a class="headerlink" href="#bootstrap-psd-estimation" title="Link to this heading">#</a></h2>
+<span id="2-bootstrap-psd-estimation"></span><h2>2. ブートストラップ PSD 推定<a class="headerlink" href="#bootstrap-psd-estimation" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> はスペクトログラムの時間カラムをリサンプリングし、 <strong>ロバストな PSD 推定値</strong> (中央値または平均値) と非対称信頼区間を提供します。 <code class="docutils literal notranslate"><span class="pre">return_map=True</span></code> にすると、周波数ビン間の相関を定量化する <strong>共分散 <code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code></strong> <code class="docutils literal notranslate"><span class="pre">cov_map(f1,</span> <span class="pre">f2)</span></code> も返します。これは次のステップの GLS フィットに使用されます。</p>
 <blockquote>
 <div><p><strong>失敗しやすいパターン</strong>: ブートストラップを誤差棒のためだけに使い、対角成分のみの不確かさでフィットすること。狭帯域の磁場データでは、ビン間共分散は信号モデルの一部であり、省略可能な飾りではありません。</p>
@@ -800,12 +800,12 @@ Covariance map shape: (4097, 4097)  ← BifrequencyMap(f1, f2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7aef6659b5cfdc242c6fe1ecd7b540efc2df7f3dd35c43b46acefe8b9dfcd5bd.png" src="../../_images/7aef6659b5cfdc242c6fe1ecd7b540efc2df7f3dd35c43b46acefe8b9dfcd5bd.png" />
+<img alt="../../_images/f6df003d1fd8327cdb6f69ffa1ec64f745aef89bd5379b1a39283a96b5f5546e.png" src="../../_images/f6df003d1fd8327cdb6f69ffa1ec64f745aef89bd5379b1a39283a96b5f5546e.png" />
 </div>
 </div>
 </section>
 <section id="lorentzian-q-factor-fitting">
-<h2>3. ローレンツ Q ファクターフィット<a class="headerlink" href="#lorentzian-q-factor-fitting" title="Link to this heading">#</a></h2>
+<span id="3-lorentzian-q-factor-fitting"></span><h2>3. ローレンツ Q ファクターフィット<a class="headerlink" href="#lorentzian-q-factor-fitting" title="Link to this heading">#</a></h2>
 <p>各シューマンモードを <strong>Q ファクター型ローレンツ分布</strong> でモデル化します:</p>
 <div class="math notranslate nohighlight">
 \[S(f) = \frac{A\,\gamma^2}{(f - f_0)^2 + \gamma^2}, \quad \gamma = \frac{f_0}{2Q}\]</div>
@@ -840,9 +840,9 @@ Covariance map shape: (4097, 4097)  ← BifrequencyMap(f1, f2)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SR1: f0 = 7.905 ± 0.012 Hz  |  Q = 3.54 ± 0.07  |  A = 24.5448 ± 0.2853 nT²/Hz
-SR2: f0 = 14.278 ± 0.053 Hz  |  Q = 2.06 ± 0.08  |  A = 12.8592 ± 0.1814 nT²/Hz
+SR2: f0 = 14.285 ± 0.052 Hz  |  Q = 2.07 ± 0.08  |  A = 12.8675 ± 0.1816 nT²/Hz
 SR3: f0 = 20.157 ± 0.125 Hz  |  Q = 2.03 ± 0.14  |  A = 8.8965 ± 0.1565 nT²/Hz
-SR4: f0 = 23.000 ± 0.335 Hz  |  Q = 1.70 ± 0.11  |  A = 5.6849 ± 0.1716 nT²/Hz
+SR4: f0 = 23.000 ± 0.338 Hz  |  Q = 1.70 ± 0.11  |  A = 5.6854 ± 0.1716 nT²/Hz
 </pre></div>
 </div>
 </div>
@@ -879,12 +879,12 @@ SR4: f0 = 23.000 ± 0.335 Hz  |  Q = 1.70 ± 0.11  |  A = 5.6849 ± 0.1716 nT²/
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ec388302d6fec875ccd2b404bdf99d7b759c082e58fb30a9b3f2b2ef3ac283c5.png" src="../../_images/ec388302d6fec875ccd2b404bdf99d7b759c082e58fb30a9b3f2b2ef3ac283c5.png" />
+<img alt="../../_images/8f130dcb97df4d9467486b93149adedacd6850c34378f7f266b4e20989e55671.png" src="../../_images/8f130dcb97df4d9467486b93149adedacd6850c34378f7f266b4e20989e55671.png" />
 </div>
 </div>
 </section>
 <section id="covariance-structure-via-bifrequencymap">
-<h2>4. BifrequencyMap による共分散構造の解析<a class="headerlink" href="#covariance-structure-via-bifrequencymap" title="Link to this heading">#</a></h2>
+<span id="4-covariance-structure-via-bifrequencymap"></span><h2>4. BifrequencyMap による共分散構造の解析<a class="headerlink" href="#covariance-structure-via-bifrequencymap" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> が返すブートストラップ共分散マップ <code class="docutils literal notranslate"><span class="pre">cov_map(f1,</span> <span class="pre">f2)</span></code> は、<strong>異なる周波数のスペクトル推定値がどれだけ強く相関しているか</strong> を表します。狭帯域共振を持つ磁力計データでは、次が期待されます：</p>
 <ul class="simple">
 <li><p>各共振周波数での <strong>対角に沿った高い共分散</strong>（<code class="docutils literal notranslate"><span class="pre">f1</span> <span class="pre">≈</span> <span class="pre">f2</span></code>）→ 隣接ビンは重なり合う FFT 窓に由来する相関ノイズを共有します。</p></li>
@@ -942,7 +942,7 @@ SR4: f0 = 23.000 ± 0.335 Hz  |  Q = 1.70 ± 0.11  |  A = 5.6849 ± 0.1716 nT²/
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4d89f8c969cb854685f4410a32cade28430593381b7728fd7961debd45f5a4d3.png" src="../../_images/4d89f8c969cb854685f4410a32cade28430593381b7728fd7961debd45f5a4d3.png" />
+<img alt="../../_images/2e9b4d9af919b28f630b02f73131c040ff4d8d57ac6103e54237b540377715fa.png" src="../../_images/2e9b4d9af919b28f630b02f73131c040ff4d8d57ac6103e54237b540377715fa.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -969,12 +969,12 @@ SR4: f0 = 23.000 ± 0.335 Hz  |  Q = 1.70 ± 0.11  |  A = 5.6849 ± 0.1716 nT²/
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9dc1c6de07f10b5404adcc631f08603d9097a0aff55649a0b5bac07e531ff3c2.png" src="../../_images/9dc1c6de07f10b5404adcc631f08603d9097a0aff55649a0b5bac07e531ff3c2.png" />
+<img alt="../../_images/88b9283efa3349d3e819fb264d4282cd4ca8940f6cc541a5a0108de5e21a8cef.png" src="../../_images/88b9283efa3349d3e819fb264d4282cd4ca8940f6cc541a5a0108de5e21a8cef.png" />
 </div>
 </div>
 </section>
 <section id="temporal-amplitude-tracking">
-<h2>5. 振幅の時間追跡<a class="headerlink" href="#temporal-amplitude-tracking" title="Link to this heading">#</a></h2>
+<span id="5-temporal-amplitude-tracking"></span><h2>5. 振幅の時間追跡<a class="headerlink" href="#temporal-amplitude-tracking" title="Link to this heading">#</a></h2>
 <p>シューマン共鳴の振幅は世界的な落雷活動に応じて変動します (日変化・季節変化)。 スペクトログラムから各モード周辺の帯域内平均パワーを抽出し、 <strong>ASD 時系列</strong>に変換して時間変化を監視します。</p>
 <blockquote>
 <div><p><strong>注意すべき失敗モード</strong>: 帯域平均が広すぎると隣接モードや局所擾乱が混ざり、狭すぎるとビン間のジッタに敏感になります。観測区間全体で 1 つの共振系列を追える窓を選んでください。</p>

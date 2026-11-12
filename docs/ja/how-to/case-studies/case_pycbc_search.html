@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_pycbc_search';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 4.8 s · GWexpy 0.2.9
+      成功 · 4.2 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -641,7 +641,7 @@
 </div>
 </section>
 <section id="synthetic-darm-data-with-an-injected-cbc-signal">
-<h2>1. CBC 信号を注入した合成 DARM データ<a class="headerlink" href="#synthetic-darm-data-with-an-injected-cbc-signal" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-darm-data-with-an-injected-cbc-signal"></span><h2>1. CBC 信号を注入した合成 DARM データ<a class="headerlink" href="#synthetic-darm-data-with-an-injected-cbc-signal" title="Link to this heading">#</a></h2>
 <p>64 s のカラードノイズに合成 BNS (連星中性子星) インスパイラルを注入します。 チャープ信号は合体直前の数秒で ~30 Hz から ~1000 Hz に掃引します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -708,7 +708,7 @@ Chirp ends   at t = 63.5 s  (merger)
 </div>
 </section>
 <section id="gwexpy-pycbc-conversion">
-<h2>2. gwexpy → PyCBC 変換<a class="headerlink" href="#gwexpy-pycbc-conversion" title="Link to this heading">#</a></h2>
+<span id="2-gwexpy--pycbc-conversion"></span><h2>2. gwexpy → PyCBC 変換<a class="headerlink" href="#gwexpy-pycbc-conversion" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">to_pycbc_timeseries()</span></code> は gwexpy の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を <code class="docutils literal notranslate"><span class="pre">pycbc.types.TimeSeries</span></code> に変換します。メタデータ（t0、dt、単位）は保持されます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -740,7 +740,7 @@ The to/from functions accept pycbc.types.TimeSeries objects.
 </div>
 </section>
 <section id="psd-asd-conversion">
-<h2>3. PSD / ASD 変換<a class="headerlink" href="#psd-asd-conversion" title="Link to this heading">#</a></h2>
+<span id="3-psd--asd-conversion"></span><h2>3. PSD / ASD 変換<a class="headerlink" href="#psd-asd-conversion" title="Link to this heading">#</a></h2>
 <p>マッチドフィルタはデータをホワイトニングするために<strong>ノイズ PSD</strong> を必要とします。gwexpy の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> から ASD を推定し、それを PyCBC の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> に変換してマッチドフィルタの PSD として使用します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -773,7 +773,7 @@ PyCBC not available — PSD conversion demo skipped.
 </div>
 </section>
 <section id="matched-filter-search-bns-template">
-<h2>4. マッチトフィルター探索（BNS テンプレート）<a class="headerlink" href="#matched-filter-search-bns-template" title="Link to this heading">#</a></h2>
+<span id="4-matched-filter-search-bns-template"></span><h2>4. マッチトフィルター探索（BNS テンプレート）<a class="headerlink" href="#matched-filter-search-bns-template" title="Link to this heading">#</a></h2>
 <p>マッチトフィルターはデータとテンプレート波形の相互相関を ノイズ PSD で正規化して計算します。 正規化 SNR 時系列 <span class="math notranslate nohighlight">\(\rho(t)\)</span> のピークが合体時刻を示します。</p>
 <div class="math notranslate nohighlight">
 \[\rho(t) = \frac{4}{\sigma} \, \text{Re} \int_0^\infty \frac{\tilde{d}(f)\,\tilde{h}^*(f)}{S_n(f)} e^{2\pi i f t} \, df\]</div>
@@ -834,7 +834,7 @@ Peak SNR: 2.0  at t = 23.22 s  (true merger: 63.50 s)
 </div>
 </section>
 <section id="visualise-the-snr-time-series">
-<h2>5. SNR 時系列の可視化<a class="headerlink" href="#visualise-the-snr-time-series" title="Link to this heading">#</a></h2>
+<span id="5-visualise-the-snr-time-series"></span><h2>5. SNR 時系列の可視化<a class="headerlink" href="#visualise-the-snr-time-series" title="Link to this heading">#</a></h2>
 <p>注入された合体時刻を示した上で、マッチドフィルタ SNR を時間の関数としてプロットします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -871,7 +871,7 @@ Peak SNR: 2.0  at t = 23.22 s  (true merger: 63.50 s)
 </div>
 </section>
 <section id="conversion-reference">
-<h2>6. 変換リファレンス<a class="headerlink" href="#conversion-reference" title="Link to this heading">#</a></h2>
+<span id="6-conversion-reference"></span><h2>6. 変換リファレンス<a class="headerlink" href="#conversion-reference" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>gwexpy オブジェクト</p></th>

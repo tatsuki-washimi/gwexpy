@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_seismic_obspy';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_seismic_obspy.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 5.8 s · GWexpy 0.2.9
+      成功 · 4.8 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -620,7 +620,7 @@
 </div>
 </section>
 <section id="route-1-timeseries-read-format-miniseed">
-<h2>1. ルート 1: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format='miniseed')</span></code><a class="headerlink" href="#route-1-timeseries-read-format-miniseed" title="Link to this heading">#</a></h2>
+<span id="1-route-1-timeseriesreadformatminiseed"></span><h2>1. ルート 1: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format='miniseed')</span></code><a class="headerlink" href="#route-1-timeseries-read-format-miniseed" title="Link to this heading">#</a></h2>
 <p>gwexpy の I/O レイヤーは MiniSEED ファイルを直接読み込み、正しい単位と時間軸を持つ <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を返します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -657,7 +657,7 @@ This returns a TimeSeries with GPS time axis, units, and channel name.
 </div>
 </section>
 <section id="route-2-from-obspy-trace-convert-from-obspy-objects">
-<h2>2. ルート 2: <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code> – obspy オブジェクトから変換<a class="headerlink" href="#route-2-from-obspy-trace-convert-from-obspy-objects" title="Link to this heading">#</a></h2>
+<span id="2-route-2-from_obspy_trace--convert-from-obspy-objects"></span><h2>2. ルート 2: <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code> – obspy オブジェクトから変換<a class="headerlink" href="#route-2-from-obspy-trace-convert-from-obspy-objects" title="Link to this heading">#</a></h2>
 <p>すでに <code class="docutils literal notranslate"><span class="pre">obspy.Trace</span></code> / <code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> がある場合は <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code> で gwexpy に変換します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -734,7 +734,7 @@ Converted to TimeSeries:
 </div>
 </section>
 <section id="signal-processing-on-seismic-data">
-<h2>3. 地震データの信号処理<a class="headerlink" href="#signal-processing-on-seismic-data" title="Link to this heading">#</a></h2>
+<span id="3-signal-processing-on-seismic-data"></span><h2>3. 地震データの信号処理<a class="headerlink" href="#signal-processing-on-seismic-data" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> に変換すると、gwexpy のすべての信号処理メソッドが利用可能になります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -825,7 +825,7 @@ Converted to TimeSeries:
 </div>
 </section>
 <section id="convert-back-to-obspy">
-<h2>4. obspy に戻す変換<a class="headerlink" href="#convert-back-to-obspy" title="Link to this heading">#</a></h2>
+<span id="4-convert-back-to-obspy"></span><h2>4. obspy に戻す変換<a class="headerlink" href="#convert-back-to-obspy" title="Link to this heading">#</a></h2>
 <p>gwexpy での処理後、さらなる地震学的解析（例：装置応答の除去、FDSN へのアップロード）のために、結果を obspy に戻すことができます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -855,7 +855,7 @@ via to_obspy(): .K1.KAGRA.00.BHZ.. | 2023-01-01T00:00:00.000000Z - 2023-01-01T00
 </div>
 </section>
 <section id="multi-channel-seismic-analysis">
-<h2>5. マルチチャンネル地震解析<a class="headerlink" href="#multi-channel-seismic-analysis" title="Link to this heading">#</a></h2>
+<span id="5-multi-channel-seismic-analysis"></span><h2>5. マルチチャンネル地震解析<a class="headerlink" href="#multi-channel-seismic-analysis" title="Link to this heading">#</a></h2>
 <p>3 成分地震計（X, Y, Z）のように複数チャネルを同時に扱う場合は、<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> を使うと一括処理できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -900,7 +900,7 @@ via to_obspy(): .K1.KAGRA.00.BHZ.. | 2023-01-01T00:00:00.000000Z - 2023-01-01T00
 </div>
 </section>
 <section id="migration-guide-obspy-gwexpy">
-<h2>6. 移行ガイド: obspy + numpy → gwexpy<a class="headerlink" href="#migration-guide-obspy-gwexpy" title="Link to this heading">#</a></h2>
+<span id="6-migration-guide-obspy--gwexpy"></span><h2>6. 移行ガイド: obspy + numpy → gwexpy<a class="headerlink" href="#migration-guide-obspy-gwexpy" title="Link to this heading">#</a></h2>
 <p><strong>移行前（obspy + scipy）:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>

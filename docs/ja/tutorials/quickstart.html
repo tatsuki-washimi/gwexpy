@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -48,7 +48,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/translations.js?v=4755f45a"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/quickstart';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/quickstart.html" />
@@ -457,7 +457,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -476,16 +476,16 @@
 検出器のファイルや追加パッケージは必要ありません。
 学習時間の目安はインストール後約 5 分です。
 スクリプトはノート PC で数秒程度の実行を目標としていますが、実測値ではありません。</p>
-<section id="install-gwexpy">
-<span id="quick-install"></span><span id="en-quickstart-install-command"></span><h2>GWexpy をインストールする<a class="headerlink" href="#install-gwexpy" title="Link to this heading">#</a></h2>
+<section id="quick-install">
+<span id="install-gwexpy"></span><span id="en-quickstart-install-command"></span><h2>GWexpy をインストールする<a class="headerlink" href="#quick-install" title="Link to this heading">#</a></h2>
 <p>使用する Python 環境を有効にしたターミナルで、次を実行します。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
 </pre></div>
 </div>
 <p>環境の作成と Conda の手順は<a class="reference internal" href="installation.html"><span class="std std-doc">インストール</span></a>を参照してください。</p>
 </section>
-<section id="run-the-complete-example">
-<span id="multi-channel-analysis-example"></span><span id="line-quickstart"></span><span id="en-quick-demo"></span><h2>例を通して実行する<a class="headerlink" href="#run-the-complete-example" title="Link to this heading">#</a></h2>
+<section id="multi-channel-analysis-example">
+<span id="run-the-complete-example"></span><span id="line-quickstart"></span><span id="en-quick-demo"></span><h2>例を通して実行する<a class="headerlink" href="#multi-channel-analysis-example" title="Link to this heading">#</a></h2>
 <p><a class="reference download internal" download="" href="../_downloads/93e7667a09b28723319a6212fab6aff8/quickstart.py"><code class="xref download docutils literal notranslate"><span class="pre">quickstart.py</span></code></a> を作業フォルダにダウンロードし、そのフォルダで次のコマンドを実行します。
 ターミナルのコマンドが Python を起動し、ダウンロードしたファイル内の Python 文を順に実行します。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>quickstart.py
@@ -536,14 +536,14 @@ ASD は変動の振幅が周波数にどのように分布するかを示しま�
 <code class="docutils literal notranslate"><span class="pre">overlap=1</span></code> は隣り合う区間を 1 秒ずつ重ねます。
 この例では、解析条件が分かるように Hann 窓と Welch 平均を明示しています。</p>
 </section>
-<section id="change-one-parameter">
-<span id="gwexpy-basic-hands-on"></span><span id="min-hands-on-interactive-tutorial"></span><h2>パラメータを 1 つ変える<a class="headerlink" href="#change-one-parameter" title="Link to this heading">#</a></h2>
+<section id="gwexpy-basic-hands-on">
+<span id="change-one-parameter"></span><span id="min-hands-on-interactive-tutorial"></span><h2>パラメータを 1 つ変える<a class="headerlink" href="#gwexpy-basic-hands-on" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">frequency=40</span></code> を <code class="docutils literal notranslate"><span class="pre">frequency=70</span></code> に変えてスクリプトを再実行します。
 2 つのピークが 70 Hz に移るはずです。
 40 Hz に戻してから、片方のノイズの標準偏差（<code class="docutils literal notranslate"><span class="pre">std</span></code>）を変え、広帯域のフロアがどう変わるか確認します。</p>
 </section>
-<section id="if-the-script-does-not-run">
-<span id="need-help"></span><h2>スクリプトが動かない場合<a class="headerlink" href="#if-the-script-does-not-run" title="Link to this heading">#</a></h2>
+<section id="need-help">
+<span id="if-the-script-does-not-run"></span><h2>スクリプトが動かない場合<a class="headerlink" href="#need-help" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'gwexpy'</span></code> は、スクリプトを実行している Python が GWexpy を見つけられないことを示します。
 インストールした環境を有効にし、<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">quickstart.py</span></code> を再実行してください。
 その他の症状は<a class="reference internal" href="../how-to/troubleshooting.html"><span class="std std-doc">トラブルシューティング</span></a>を参照してください。</p>
@@ -608,11 +608,11 @@ ASD は変動の振幅が周波数にどのように分布するかを示しま�
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-gwexpy">GWexpy をインストールする</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-complete-example">例を通して実行する</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-install">GWexpy をインストールする</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-channel-analysis-example">例を通して実行する</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-result">結果を読み取る</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-one-parameter">パラメータを 1 つ変える</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-the-script-does-not-run">スクリプトが動かない場合</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy-basic-hands-on">パラメータを 1 つ変える</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#need-help">スクリプトが動かない場合</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">さらに読む</a></li>
 </ul>
   </nav></div>

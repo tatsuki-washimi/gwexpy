@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/containers/field_scalar_intro';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/containers/field_scalar_intro.html" />
@@ -551,7 +551,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -659,7 +659,7 @@
 </div>
 </section>
 <section id="scalarfield-initialization-and-metadata">
-<h2>1. ScalarField Initialization and Metadata<a class="headerlink" href="#scalarfield-initialization-and-metadata" title="Link to this heading">#</a></h2>
+<span id="1-scalarfield-initialization-and-metadata"></span><h2>1. ScalarField Initialization and Metadata<a class="headerlink" href="#scalarfield-initialization-and-metadata" title="Link to this heading">#</a></h2>
 <p>Create a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> object and check its metadata.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -715,7 +715,7 @@ Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z
 </section>
 </section>
 <section id="slicing-with-4d-structure-preservation">
-<h2>2. Slicing with 4D Structure Preservation<a class="headerlink" href="#slicing-with-4d-structure-preservation" title="Link to this heading">#</a></h2>
+<span id="2-slicing-with-4d-structure-preservation"></span><h2>2. Slicing with 4D Structure Preservation<a class="headerlink" href="#slicing-with-4d-structure-preservation" title="Link to this heading">#</a></h2>
 <p>An important feature of <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> is that it <strong>always maintains 4 dimensions even when sliced</strong>.
 Even when using integer indices, they are automatically converted to length-1 slices.</p>
 <p><strong>Caution:</strong> avoid calling <code class="docutils literal notranslate"><span class="pre">np.squeeze()</span></code> (or any equivalent shape-dropping step) unless you explicitly want to leave the Field API. Keeping singleton axes preserves axis metadata and makes later FFT or plotting steps less error-prone.</p>
@@ -760,7 +760,7 @@ Value: [[[[-0.51827022]]]]
 <p>This behavior maintains the consistency of ScalarField objects, and metadata (axis names and domain information) are never lost.</p>
 </section>
 <section id="time-frequency-transformation-fft-on-axis-0">
-<h2>3. Time-Frequency Transformation (FFT on Axis 0)<a class="headerlink" href="#time-frequency-transformation-fft-on-axis-0" title="Link to this heading">#</a></h2>
+<span id="3-time-frequency-transformation-fft-on-axis-0"></span><h2>3. Time-Frequency Transformation (FFT on Axis 0)<a class="headerlink" href="#time-frequency-transformation-fft-on-axis-0" title="Link to this heading">#</a></h2>
 <p>You can transform the time axis to the frequency axis using the <code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> methods.
 The same normalization as GWpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> is adopted.</p>
 <div class="cell docutils container">
@@ -839,7 +839,7 @@ Axis0 domain changed: time → frequency
 </div>
 </div>
 <section id="inverse-fft-frequency-time">
-<h3>Inverse FFT (Frequency → Time)<a class="headerlink" href="#inverse-fft-frequency-time" title="Link to this heading">#</a></h3>
+<span id="inverse-fft-frequency--time"></span><h3>Inverse FFT (Frequency → Time)<a class="headerlink" href="#inverse-fft-frequency-time" title="Link to this heading">#</a></h3>
 <p>You can return to the original time domain with <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -878,7 +878,7 @@ Axis0 domain changed: time → frequency
 </section>
 </section>
 <section id="real-space-k-space-transformation-fft-on-spatial-axes">
-<h2>4. Real Space-K Space Transformation (FFT on Spatial Axes)<a class="headerlink" href="#real-space-k-space-transformation-fft-on-spatial-axes" title="Link to this heading">#</a></h2>
+<span id="4-real-space-k-space-transformation-fft-on-spatial-axes"></span><h2>4. Real Space-K Space Transformation (FFT on Spatial Axes)<a class="headerlink" href="#real-space-k-space-transformation-fft-on-spatial-axes" title="Link to this heading">#</a></h2>
 <p>You can transform spatial axes to wavenumber space (K-space) using <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code>.
 Signed FFT with angular wavenumber k = 2π / λ is used.</p>
 <div class="cell docutils container">
@@ -1011,7 +1011,7 @@ Max reconstruction error: 2.29e-16
 </section>
 </section>
 <section id="batch-operations-with-fieldlist-and-fielddict">
-<h2>5. Batch Operations with FieldList and FieldDict<a class="headerlink" href="#batch-operations-with-fieldlist-and-fielddict" title="Link to this heading">#</a></h2>
+<span id="5-batch-operations-with-fieldlist-and-fielddict"></span><h2>5. Batch Operations with FieldList and FieldDict<a class="headerlink" href="#batch-operations-with-fieldlist-and-fielddict" title="Link to this heading">#</a></h2>
 <p>To process multiple <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> objects together, use <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> or <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code>.</p>
 <section id="fieldlist">
 <h3>FieldList<a class="headerlink" href="#fieldlist" title="Link to this heading">#</a></h3>
@@ -1112,7 +1112,7 @@ channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;
 </section>
 </section>
 <section id="signal-processing-and-analysis">
-<h2>6. Signal Processing and Analysis<a class="headerlink" href="#signal-processing-and-analysis" title="Link to this heading">#</a></h2>
+<span id="6-signal-processing-and-analysis"></span><h2>6. Signal Processing and Analysis<a class="headerlink" href="#signal-processing-and-analysis" title="Link to this heading">#</a></h2>
 <p>As important signal processing techniques for physical field analysis, we demonstrate the following:</p>
 <ol class="arabic simple">
 <li><p><strong>PSD calculation</strong>: Power spectral density in time and spatial directions</p></li>
@@ -1541,7 +1541,7 @@ channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;
 </section>
 </section>
 <section id="verification-of-numerical-invariants">
-<h2>6. Verification of Numerical Invariants<a class="headerlink" href="#verification-of-numerical-invariants" title="Link to this heading">#</a></h2>
+<span id="6-verification-of-numerical-invariants"></span><h2>6. Verification of Numerical Invariants<a class="headerlink" href="#verification-of-numerical-invariants" title="Link to this heading">#</a></h2>
 <p>To verify the accuracy of FFT transformations, we confirm that round-trip transformations can reconstruct the original data.</p>
 </section>
 <section id="next-links">

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/coupling/advanced_bruco';</script>
@@ -553,7 +553,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -719,7 +719,7 @@ Physically, the goal is not just to rank channels, but to test whether a witness
 Target data std: 5.08e-19
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x71e3565b7450&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x71f380e971d0&gt;
 </pre></div>
 </div>
 <img alt="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" src="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" />
@@ -950,7 +950,7 @@ Target data std: 5.08e-19
 </div>
 </section>
 <section id="section-2-advanced-preprocessing-and-hypothesis-testing-deep-dive-nonlinear-bilinear">
-<h2>Section 2: Advanced Preprocessing and Hypothesis Testing (Deep Dive: Nonlinear &amp; Bilinear)<a class="headerlink" href="#section-2-advanced-preprocessing-and-hypothesis-testing-deep-dive-nonlinear-bilinear" title="Link to this heading">#</a></h2>
+<span id="section-2-advanced-preprocessing-and-hypothesis-testing-deep-dive-nonlinear--bilinear"></span><h2>Section 2: Advanced Preprocessing and Hypothesis Testing (Deep Dive: Nonlinear &amp; Bilinear)<a class="headerlink" href="#section-2-advanced-preprocessing-and-hypothesis-testing-deep-dive-nonlinear-bilinear" title="Link to this heading">#</a></h2>
 <p><strong>What we do</strong>: Assume noise that cannot be explained by existing linear correlations and test hypotheses of nonlinear coupling (squared) and modulation (product).
 <strong>Why it’s important</strong>: Using <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code>, you can rapidly test virtual channels without recalculating the target FFT.</p>
 <p><strong>Physical intent</strong>: these virtual channels encode a coupling model such as <code class="docutils literal notranslate"><span class="pre">fast</span> <span class="pre">×</span> <span class="pre">slow</span></code>, where a fast carrier is modulated by a slow alignment, control, or environmental drift.</p>

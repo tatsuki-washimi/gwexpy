@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/coupling/advanced_coupling';</script>
@@ -553,7 +553,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -572,9 +572,7 @@
 <h2>What is a Coupling Function?<a class="headerlink" href="#what-is-a-coupling-function" title="Link to this heading">#</a></h2>
 <p>A coupling function quantifies how much a <em>witness</em> (environmental) sensor’s noise couples into a <em>target</em> (sensitive) channel. It is defined as:</p>
 <div class="math notranslate nohighlight">
-\[
-\mathrm{CF}(f) = \sqrt{\frac{P_{\rm target,inj}(f) - P_{\rm target,bkg}(f)}{P_{\rm witness,inj}(f) - P_{\rm witness,bkg}(f)}}
-\]</div>
+\[\mathrm{CF}(f) = \sqrt{\frac{P_{\rm target,inj}(f) - P_{\rm target,bkg}(f)}{P_{\rm witness,inj}(f) - P_{\rm witness,bkg}(f)}}\]</div>
 <p>where <span class="math notranslate nohighlight">\(P_{\rm inj}\)</span> and <span class="math notranslate nohighlight">\(P_{\rm bkg}\)</span> are the power spectral densities during injection and background periods.</p>
 <p><strong>Typical application:</strong> PEM (Physical Environment Monitor) injection analysis in gravitational-wave detectors.</p>
 <p><strong>Legacy migration note:</strong><br />
@@ -604,7 +602,7 @@ See the <a class="reference internal" href="../../explanation/gwexpy_for_gwpy_us
 </div>
 </section>
 <section id="prepare-synthetic-injection-background-data">
-<h2>1. Prepare Synthetic Injection / Background Data<a class="headerlink" href="#prepare-synthetic-injection-background-data" title="Link to this heading">#</a></h2>
+<span id="1-prepare-synthetic-injection--background-data"></span><h2>1. Prepare Synthetic Injection / Background Data<a class="headerlink" href="#prepare-synthetic-injection-background-data" title="Link to this heading">#</a></h2>
 <p>We simulate:</p>
 <ul class="simple">
 <li><p>A <strong>witness</strong> channel (environmental sensor): seismic or acoustic</p></li>
@@ -678,7 +676,7 @@ Injection channels:  [&#39;ACC:FLOOR_X&#39;, &#39;GW:DARM&#39;, &#39;GW:AUX&#39;
 </div>
 </section>
 <section id="run-coupling-function-analysis">
-<h2>2. Run Coupling Function Analysis<a class="headerlink" href="#run-coupling-function-analysis" title="Link to this heading">#</a></h2>
+<span id="2-run-coupling-function-analysis"></span><h2>2. Run Coupling Function Analysis<a class="headerlink" href="#run-coupling-function-analysis" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">CouplingFunctionAnalysis.compute()</span></code> takes the injection and background <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, and the name of the witness channel.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -706,7 +704,7 @@ Injection channels:  [&#39;ACC:FLOOR_X&#39;, &#39;GW:DARM&#39;, &#39;GW:AUX&#39;
 </div>
 </section>
 <section id="inspect-results">
-<h2>3. Inspect Results<a class="headerlink" href="#inspect-results" title="Link to this heading">#</a></h2>
+<span id="3-inspect-results"></span><h2>3. Inspect Results<a class="headerlink" href="#inspect-results" title="Link to this heading">#</a></h2>
 <p>Each result is a <code class="docutils literal notranslate"><span class="pre">CouplingResult</span></code> containing the coupling function, upper limit, and diagnostic PSDs.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -766,7 +764,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 <p>import warnings</p>
 </section>
 <section id="threshold-strategies">
-<h2>4. Threshold Strategies<a class="headerlink" href="#threshold-strategies" title="Link to this heading">#</a></h2>
+<span id="4-threshold-strategies"></span><h2>4. Threshold Strategies<a class="headerlink" href="#threshold-strategies" title="Link to this heading">#</a></h2>
 <p>gwexpy provides three built-in threshold strategies:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -834,7 +832,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5015/3140365492.py:16: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_4814/3140365492.py:16: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
   res = cfa.compute(
 /home/runner/work/gwexpy/gwexpy/gwexpy/analysis/coupling.py:833: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
   res = _process_single_target(
@@ -845,7 +843,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </section>
 <section id="frequency-range-restriction">
-<h2>5. Frequency Range Restriction<a class="headerlink" href="#frequency-range-restriction" title="Link to this heading">#</a></h2>
+<span id="5-frequency-range-restriction"></span><h2>5. Frequency Range Restriction<a class="headerlink" href="#frequency-range-restriction" title="Link to this heading">#</a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">frange</span></code> to restrict the coupling function evaluation to a specific frequency band.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -874,7 +872,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </section>
 <section id="upper-limits">
-<h2>6. Upper Limits<a class="headerlink" href="#upper-limits" title="Link to this heading">#</a></h2>
+<span id="6-upper-limits"></span><h2>6. Upper Limits<a class="headerlink" href="#upper-limits" title="Link to this heading">#</a></h2>
 <p>At frequencies where the witness is excited but the target shows no measurable excess, gwexpy computes an <strong>upper limit</strong> on the coupling function.</p>
 <p>This is useful for setting constraints even when the coupling is below the noise floor.</p>
 <div class="cell docutils container">

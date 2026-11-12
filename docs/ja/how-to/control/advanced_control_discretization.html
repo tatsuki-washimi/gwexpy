@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/control/advanced_control_discretization';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/control/advanced_control_discretization.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -595,7 +595,7 @@ Outputs (1): [&#39;y[0]&#39;]
 </div>
 </div>
 <section id="discretize-the-plant">
-<h2>1. プラントを離散化する<a class="headerlink" href="#discretize-the-plant" title="Link to this heading">#</a></h2>
+<span id="1-discretize-the-plant"></span><h2>1. プラントを離散化する<a class="headerlink" href="#discretize-the-plant" title="Link to this heading">#</a></h2>
 <p>サンプリングは「指令を保持する」という近似と、「周波数軸を写像する」という近似を同時に導入します。制御系ではこの 2 つを混同しないことが重要です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -639,7 +639,7 @@ dt = 0.2
 </div>
 </section>
 <section id="compare-frequency-response">
-<h2>2. 周波数応答を比べる<a class="headerlink" href="#compare-frequency-response" title="Link to this heading">#</a></h2>
+<span id="2-compare-frequency-response"></span><h2>2. 周波数応答を比べる<a class="headerlink" href="#compare-frequency-response" title="Link to this heading">#</a></h2>
 <p>制御的に重要なのは、位相とゲインが連続系からどこでずれ始めるかです。とくに位相誤差は安定余裕を直接変えます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -687,7 +687,7 @@ dt = 0.2
 </div>
 </section>
 <section id="compare-time-response">
-<h2>3. 時間応答を比べる<a class="headerlink" href="#compare-time-response" title="Link to this heading">#</a></h2>
+<span id="3-compare-time-response"></span><h2>3. 時間応答を比べる<a class="headerlink" href="#compare-time-response" title="Link to this heading">#</a></h2>
 <p>時間領域では ZOH が「保持された指令」を自然に再現し、Tustin は loop shape には有利でも保持入力の忠実度は別問題であることが見えてきます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/fitting/advanced_decomposition';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/fitting/advanced_decomposition.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -589,7 +589,7 @@
 </div>
 </div>
 <section id="prepare-synthetic-multi-channel-data">
-<h2>1. マルチチャンネル合成データの準備<a class="headerlink" href="#prepare-synthetic-multi-channel-data" title="Link to this heading">#</a></h2>
+<span id="1-prepare-synthetic-multi-channel-data"></span><h2>1. マルチチャンネル合成データの準備<a class="headerlink" href="#prepare-synthetic-multi-channel-data" title="Link to this heading">#</a></h2>
 <p>現実的なシナリオを再現します:</p>
 <ul class="simple">
 <li><p><strong>隠れた信号源</strong> 2本: 10 Hz サイン波とブロードバンドノイズ</p></li>
@@ -652,7 +652,7 @@
 </div>
 </section>
 <section id="pca-dimensionality-reduction">
-<h2>2. PCA – 次元削減<a class="headerlink" href="#pca-dimensionality-reduction" title="Link to this heading">#</a></h2>
+<span id="2-pca--dimensionality-reduction"></span><h2>2. PCA – 次元削減<a class="headerlink" href="#pca-dimensionality-reduction" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.pca()</span></code> はスコア行列と、オプションで <code class="docutils literal notranslate"><span class="pre">PCAResult</span></code> オブジェクトを返します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -732,7 +732,7 @@ Explained variance ratio: [0.68552389 0.18734173]
 </div>
 </section>
 <section id="ica-blind-source-separation">
-<h2>3. ICA – 盲目信号分離<a class="headerlink" href="#ica-blind-source-separation" title="Link to this heading">#</a></h2>
+<span id="3-ica--blind-source-separation"></span><h2>3. ICA – 盲目信号分離<a class="headerlink" href="#ica-blind-source-separation" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.ica()</span></code> は FastICA を実行し、独立成分行列を返します。</p>
 <p>PCA が分散最大方向を探すのに対し、ICA は統計的に独立な成分を探すため、 物理的に異なるノイズ源の分離に適しています。</p>
 <div class="cell docutils container">
@@ -797,7 +797,7 @@ Explained variance ratio: [0.68552389 0.18734173]
 </div>
 </section>
 <section id="preprocessing-standardization-and-whitening">
-<h2>4. 前処理：標準化とホワイトニング<a class="headerlink" href="#preprocessing-standardization-and-whitening" title="Link to this heading">#</a></h2>
+<span id="4-preprocessing-standardization-and-whitening"></span><h2>4. 前処理：標準化とホワイトニング<a class="headerlink" href="#preprocessing-standardization-and-whitening" title="Link to this heading">#</a></h2>
 <p>ICA・PCA にはスケーリングが重要です。<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> には組み込み前処理が備わっています:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -848,7 +848,7 @@ PCA (robust) EVR: [0.44248267 0.37626797]
 </div>
 </section>
 <section id="handling-missing-values-nan">
-<h2>5. 欠損値 (NaN) の取り扱い<a class="headerlink" href="#handling-missing-values-nan" title="Link to this heading">#</a></h2>
+<span id="5-handling-missing-values-nan"></span><h2>5. 欠損値 (NaN) の取り扱い<a class="headerlink" href="#handling-missing-values-nan" title="Link to this heading">#</a></h2>
 <p>実際のデータには観測ギャップがある場合があります。<code class="docutils literal notranslate"><span class="pre">nan_policy='impute'</span></code> で分解前に補完できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -879,7 +879,7 @@ PCA (nan impute) shape: (2, 1, 8192)
 </div>
 </section>
 <section id="migration-from-scikit-learn">
-<h2>6. scikit-learn からの移行ガイド<a class="headerlink" href="#migration-from-scikit-learn" title="Link to this heading">#</a></h2>
+<span id="6-migration-from-scikit-learn"></span><h2>6. scikit-learn からの移行ガイド<a class="headerlink" href="#migration-from-scikit-learn" title="Link to this heading">#</a></h2>
 <p><strong>移行前（scikit-learn 直接使用）:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span><span class="p">,</span> <span class="n">FastICA</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>

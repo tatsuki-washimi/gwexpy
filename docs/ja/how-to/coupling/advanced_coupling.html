@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/coupling/advanced_coupling';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -573,9 +573,7 @@
 <h2>カップリング関数とは<a class="headerlink" href="#what-is-a-coupling-function" title="Link to this heading">#</a></h2>
 <p>カップリング関数は、<em>ウィットネス</em>（環境センサー）のノイズが<em>ターゲット</em>（感度チャンネル）にどれだけ結合するかを定量化します:</p>
 <div class="math notranslate nohighlight">
-\[
-\mathrm{CF}(f) = \sqrt{\frac{P_{\rm target,inj}(f) - P_{\rm target,bkg}(f)}{P_{\rm witness,inj}(f) - P_{\rm witness,bkg}(f)}}
-\]</div>
+\[\mathrm{CF}(f) = \sqrt{\frac{P_{\rm target,inj}(f) - P_{\rm target,bkg}(f)}{P_{\rm witness,inj}(f) - P_{\rm witness,bkg}(f)}}\]</div>
 <p>ここで <span class="math notranslate nohighlight">\(P_{\rm inj}\)</span> と <span class="math notranslate nohighlight">\(P_{\rm bkg}\)</span> はそれぞれ注入時・バックグラウンド時のパワースペクトル密度です。</p>
 <p><strong>典型的な用途:</strong> KAGRA/LIGO/Virgo の PEM（Physical Environment Monitor）インジェクション解析</p>
 <p><strong>レガシー移行メモ:</strong> PSD を手動で計算し、それらを割り、scipy で独自のしきい値を適用していたレガシーコードは、このワークフローがすべて置き換えます。移行の案内は <a class="reference internal" href="../../explanation/gwexpy_for_gwpy_users.html"><span class="std std-doc">GWpy ユーザーのための GWexpy</span></a> と <a class="reference internal" href="../../reference/gwpy_added_api.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。</p>
@@ -603,7 +601,7 @@
 </div>
 </section>
 <section id="prepare-synthetic-injection-background-data">
-<h2>1. 合成インジェクション／バックグラウンドデータの準備<a class="headerlink" href="#prepare-synthetic-injection-background-data" title="Link to this heading">#</a></h2>
+<span id="1-prepare-synthetic-injection--background-data"></span><h2>1. 合成インジェクション／バックグラウンドデータの準備<a class="headerlink" href="#prepare-synthetic-injection-background-data" title="Link to this heading">#</a></h2>
 <p>シミュレーション設定:</p>
 <ul class="simple">
 <li><p><strong>ウィットネスチャンネル</strong>（環境センサー）: 地震計・音響センサー</p></li>
@@ -677,7 +675,7 @@ Injection channels:  [&#39;ACC:FLOOR_X&#39;, &#39;GW:DARM&#39;, &#39;GW:AUX&#39;
 </div>
 </section>
 <section id="run-coupling-function-analysis">
-<h2>2. カップリング関数解析の実行<a class="headerlink" href="#run-coupling-function-analysis" title="Link to this heading">#</a></h2>
+<span id="2-run-coupling-function-analysis"></span><h2>2. カップリング関数解析の実行<a class="headerlink" href="#run-coupling-function-analysis" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">CouplingFunctionAnalysis.compute()</span></code> にインジェクション・バックグラウンドの <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> とウィットネスチャンネル名を渡します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -705,7 +703,7 @@ Injection channels:  [&#39;ACC:FLOOR_X&#39;, &#39;GW:DARM&#39;, &#39;GW:AUX&#39;
 </div>
 </section>
 <section id="inspect-results">
-<h2>3. 結果の確認<a class="headerlink" href="#inspect-results" title="Link to this heading">#</a></h2>
+<span id="3-inspect-results"></span><h2>3. 結果の確認<a class="headerlink" href="#inspect-results" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">CouplingResult</span></code> オブジェクトにカップリング関数・上限・診断 PSD が格納されています。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -765,7 +763,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 <p>import warnings</p>
 </section>
 <section id="threshold-strategies">
-<h2>4. 閾値戦略の比較<a class="headerlink" href="#threshold-strategies" title="Link to this heading">#</a></h2>
+<span id="4-threshold-strategies"></span><h2>4. 閾値戦略の比較<a class="headerlink" href="#threshold-strategies" title="Link to this heading">#</a></h2>
 <p>gwexpy には 3 種類の組み込み閾値戦略があります:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -833,7 +831,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5015/3140365492.py:16: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_4814/3140365492.py:16: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
   res = cfa.compute(
 /home/runner/work/gwexpy/gwexpy/gwexpy/analysis/coupling.py:833: UserWarning: SigmaThreshold: n_avg=9.0 &lt; 10. Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. Consider using PercentileThreshold for more robust results.
   res = _process_single_target(
@@ -844,7 +842,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </section>
 <section id="frequency-range-restriction">
-<h2>5. 周波数帯域制限<a class="headerlink" href="#frequency-range-restriction" title="Link to this heading">#</a></h2>
+<span id="5-frequency-range-restriction"></span><h2>5. 周波数帯域制限<a class="headerlink" href="#frequency-range-restriction" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">frange</span></code> を使うと、カップリング関数の評価を特定の周波数帯に限定できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -873,7 +871,7 @@ CF at f_inj2 bin: 0.401 (expected ~0.4)
 </div>
 </section>
 <section id="upper-limits">
-<h2>6. 上限値（Upper Limit）<a class="headerlink" href="#upper-limits" title="Link to this heading">#</a></h2>
+<span id="6-upper-limits"></span><h2>6. 上限値（Upper Limit）<a class="headerlink" href="#upper-limits" title="Link to this heading">#</a></h2>
 <p>ウィットネスは励起されているがターゲットに測定可能な過剰が見られない周波数では、gwexpy はカップリング関数の <strong>上限値</strong> を計算します。</p>
 <p>これは、カップリングがノイズフロア以下の場合でも制約を与えるのに有用です。</p>
 <div class="cell docutils container">

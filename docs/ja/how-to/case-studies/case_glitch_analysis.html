@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_glitch_analysis';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_glitch_analysis.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -568,7 +568,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 8.7 s · GWexpy 0.2.9
+      成功 · 7.3 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -627,7 +627,7 @@
 </div>
 </section>
 <section id="synthetic-data-with-injected-glitches">
-<h2>1. グリッチを含む合成データの生成<a class="headerlink" href="#synthetic-data-with-injected-glitches" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-data-with-injected-glitches"></span><h2>1. グリッチを含む合成データの生成<a class="headerlink" href="#synthetic-data-with-injected-glitches" title="Link to this heading">#</a></h2>
 <p>KAGRA 類似の DARM ノイズの 4 秒間セグメントに、実際に観測される典型的な形態を代表する 3 種類のグリッチを注入して合成します：</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -718,7 +718,7 @@
 </div>
 </section>
 <section id="q-transform-omega-scan">
-<h2>2. Q-変換（Omega スキャン）<a class="headerlink" href="#q-transform-omega-scan" title="Link to this heading">#</a></h2>
+<span id="2-q-transform-omega-scan"></span><h2>2. Q-変換（Omega スキャン）<a class="headerlink" href="#q-transform-omega-scan" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">q_scan()</span></code> は Q 値の範囲を探索し、最高正規化エネルギーを持つタイルと プロット用の完全な <code class="docutils literal notranslate"><span class="pre">QGram</span></code> オブジェクトを返します。</p>
 <p>主要パラメータ：</p>
 <ul class="simple">
@@ -761,7 +761,7 @@
 </div>
 </section>
 <section id="time-frequency-map-omega-scan-plot">
-<h2>3. 時間周波数マップ（Omega スキャンプロット）<a class="headerlink" href="#time-frequency-map-omega-scan-plot" title="Link to this heading">#</a></h2>
+<span id="3-time-frequency-map-omega-scan-plot"></span><h2>3. 時間周波数マップ（Omega スキャンプロット）<a class="headerlink" href="#time-frequency-map-omega-scan-plot" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">QGram.interpolate()</span></code> は、不規則な Q タイルを imshow に適した規則的な時間周波数グリッドへ再サンプリングします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -803,7 +803,7 @@
 </div>
 </section>
 <section id="glitch-characterisation-with-qtiling">
-<h2>4. QTiling によるグリッチ特性評価<a class="headerlink" href="#glitch-characterisation-with-qtiling" title="Link to this heading">#</a></h2>
+<span id="4-glitch-characterisation-with-qtiling"></span><h2>4. QTiling によるグリッチ特性評価<a class="headerlink" href="#glitch-characterisation-with-qtiling" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">QTiling</span></code> を使うと、特定の Q 平面を探索し、各候補イベントについてグリッチパラメータ（ピーク時刻、周波数、継続時間、帯域幅）を抽出できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -845,7 +845,7 @@
 </div>
 </section>
 <section id="statistical-significance-rayleigh-test">
-<h2>5. 統計的有意性 — Rayleigh 検定<a class="headerlink" href="#statistical-significance-rayleigh-test" title="Link to this heading">#</a></h2>
+<span id="5-statistical-significance--rayleigh-test"></span><h2>5. 統計的有意性 — Rayleigh 検定<a class="headerlink" href="#statistical-significance-rayleigh-test" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> は、時間周波数エネルギー分布がどれだけ非ガウス的かを測定します。静穏な背景で p 値が 0.01 を下回る場合、そのデータセグメントに有意な非ガウス的トランジェントが含まれていることを示唆します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_calibration_pipeline';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 6.2 s · GWexpy 0.2.9
+      成功 · 5.4 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -584,7 +584,7 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="calibration-pipeline-counts-strain">
-<h1>キャリブレーション・パイプライン：Counts → Strain 変換<a class="headerlink" href="#calibration-pipeline-counts-strain" title="Link to this heading">#</a></h1>
+<span id="calibration-pipeline-counts--strain"></span><h1>キャリブレーション・パイプライン：Counts → Strain 変換<a class="headerlink" href="#calibration-pipeline-counts-strain" title="Link to this heading">#</a></h1>
 <p>重力波検出器はデータを <em>デジタルカウント</em>（生の ADC 出力）として記録します。天体物理学的な解析を行う前に、<strong>較正伝達関数</strong>を適用して、データを物理的なひずみ <span class="math notranslate nohighlight">\(h(f)\)</span> または変位 <span class="math notranslate nohighlight">\(x(f)\)</span> に変換する必要があります。</p>
 <p>KAGRA の較正パイプラインは 2 つのステップから成ります：</p>
 <ol class="arabic simple">
@@ -623,7 +623,7 @@
 </div>
 </section>
 <section id="synthetic-uncalibrated-data">
-<h2>1. 合成未キャリブレーションデータの生成<a class="headerlink" href="#synthetic-uncalibrated-data" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-uncalibrated-data"></span><h2>1. 合成未キャリブレーションデータの生成<a class="headerlink" href="#synthetic-uncalibrated-data" title="Link to this heading">#</a></h2>
 <p>DARM（差動アーム長）信号をカウント単位でシミュレートします。 システムは以下のノイズ成分を持ちます：</p>
 <ul class="simple">
 <li><p><strong>光学キャビティポール</strong> 50 Hz（単極低域通過特性）</p></li>
@@ -687,7 +687,7 @@ RMS (counts): 1411.87
 </div>
 </section>
 <section id="stepped-sine-injection-campaign">
-<h2>2. ステップサイン注入キャンペーン<a class="headerlink" href="#stepped-sine-injection-campaign" title="Link to this heading">#</a></h2>
+<span id="2-stepped-sine-injection-campaign"></span><h2>2. ステップサイン注入キャンペーン<a class="headerlink" href="#stepped-sine-injection-campaign" title="Link to this heading">#</a></h2>
 <p>実際の較正運転では、検出器がロックされた状態で、一連の離散的な周波数で PCal 信号を注入します。各周波数ステップは通常 30〜120 秒続きます。</p>
 <p>ここでは 10〜1000 Hz にわたる 6 周波数の注入キャンペーンを合成します。</p>
 <div class="cell docutils container">
@@ -733,7 +733,7 @@ RMS (counts): 1411.87
 </div>
 </section>
 <section id="extract-coupling-factors">
-<h2>3. カップリング係数の抽出<a class="headerlink" href="#extract-coupling-factors" title="Link to this heading">#</a></h2>
+<span id="3-extract-coupling-factors"></span><h2>3. カップリング係数の抽出<a class="headerlink" href="#extract-coupling-factors" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ResponseFunctionAnalysis.compute()</span></code> は witness チャンネル内の注入ステップを自動的に検出し、各注入周波数における結合係数を推定します。</p>
 <p>結合係数 <span class="math notranslate nohighlight">\(C(f_i)\)</span> は次のように定義されます：</p>
 <div class="math notranslate nohighlight">
@@ -783,7 +783,7 @@ Measured vs. theoretical coupling factors:
 </div>
 </section>
 <section id="fit-the-calibration-transfer-function">
-<h2>4. キャリブレーション伝達関数のフィッティング<a class="headerlink" href="#fit-the-calibration-transfer-function" title="Link to this heading">#</a></h2>
+<span id="4-fit-the-calibration-transfer-function"></span><h2>4. キャリブレーション伝達関数のフィッティング<a class="headerlink" href="#fit-the-calibration-transfer-function" title="Link to this heading">#</a></h2>
 <p>測定された結合係数に単極モデルをフィットします：</p>
 <div class="math notranslate nohighlight">
 \[C(f) = \frac{C_0}{1 + i\,f / f_\text{pole}}\]</div>
@@ -814,7 +814,7 @@ Measured vs. theoretical coupling factors:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted gain : 7.488e+09 ct/m  (true: 4.500e+10)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted gain : 7.140e+09 ct/m  (true: 4.500e+10)
 Fitted pole : -0.06 Hz  (true: 50.00 Hz)
 </pre></div>
 </div>
@@ -844,12 +844,12 @@ Fitted pole : -0.06 Hz  (true: 50.00 Hz)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/680390d5a47351694aee1583e642bbb53b6bb262f959f1f24583f28455505b42.png" src="../../_images/680390d5a47351694aee1583e642bbb53b6bb262f959f1f24583f28455505b42.png" />
+<img alt="../../_images/ab675d0d24a6abec79ce96759e0008a68ea86c140aac25d783f54b24491c6da9.png" src="../../_images/ab675d0d24a6abec79ce96759e0008a68ea86c140aac25d783f54b24491c6da9.png" />
 </div>
 </div>
 </section>
 <section id="apply-calibration-counts-metres-asd">
-<h2>5. キャリブレーション適用 — Counts → メートル ASD<a class="headerlink" href="#apply-calibration-counts-metres-asd" title="Link to this heading">#</a></h2>
+<span id="5-apply-calibration--counts--metres-asd"></span><h2>5. キャリブレーション適用 — Counts → メートル ASD<a class="headerlink" href="#apply-calibration-counts-metres-asd" title="Link to this heading">#</a></h2>
 <p>較正関数が得られたら、それを生の DARM ASD に適用し、metres per root-Hz 単位の較正済み変位 ASD を生成します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -893,7 +893,7 @@ Fitted pole : -0.06 Hz  (true: 50.00 Hz)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/97d595645ec55fa8fb833534e07cbfd3659673c147a5cbb040ab13860535264a.png" src="../../_images/97d595645ec55fa8fb833534e07cbfd3659673c147a5cbb040ab13860535264a.png" />
+<img alt="../../_images/aae8ef7d8f95936acc88638ea0b0d8b1ea45cb2e3ed7164120d519cc809be886.png" src="../../_images/aae8ef7d8f95936acc88638ea0b0d8b1ea45cb2e3ed7164120d519cc809be886.png" />
 </div>
 </div>
 </section>

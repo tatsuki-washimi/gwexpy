@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/advanced_spectrogram_processing';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/advanced_spectrogram_processing.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -600,7 +600,7 @@
 </div>
 </div>
 <section id="synthetic-data">
-<h2>1. 合成データの準備<a class="headerlink" href="#synthetic-data" title="Link to this heading">#</a></h2>
+<span id="1-synthetic-data"></span><h2>1. 合成データの準備<a class="headerlink" href="#synthetic-data" title="Link to this heading">#</a></h2>
 <p>以下を含む 2 分間の strain 時系列を生成します：</p>
 <ul class="simple">
 <li><p><strong>定常ガウスノイズ</strong>（ゆっくり変化する振幅 → 非定常）</p></li>
@@ -654,7 +654,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="baseline-spectrogram">
-<h2>2. ベースライン スペクトログラム<a class="headerlink" href="#baseline-spectrogram" title="Link to this heading">#</a></h2>
+<span id="2-baseline-spectrogram"></span><h2>2. ベースライン スペクトログラム<a class="headerlink" href="#baseline-spectrogram" title="Link to this heading">#</a></h2>
 <p>生スペクトログラムには、グリッチ（明るい縦縞）、60 Hz ライン（明るい横縞）、 時間変動するノイズフロアがすでに見えています。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -679,9 +679,9 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="normalization">
-<h2>3. 正規化<a class="headerlink" href="#normalization" title="Link to this heading">#</a></h2>
+<span id="3-normalization"></span><h2>3. 正規化<a class="headerlink" href="#normalization" title="Link to this heading">#</a></h2>
 <section id="a-snr-spectrogram-method-snr">
-<h3>3a. SNR スペクトログラム (<code class="docutils literal notranslate"><span class="pre">method='snr'</span></code>)<a class="headerlink" href="#a-snr-spectrogram-method-snr" title="Link to this heading">#</a></h3>
+<span id="3a-snr-spectrogram-methodsnr"></span><h3>3a. SNR スペクトログラム (<code class="docutils literal notranslate"><span class="pre">method='snr'</span></code>)<a class="headerlink" href="#a-snr-spectrogram-method-snr" title="Link to this heading">#</a></h3>
 <p>トランジェント探索で最も一般的な正規化です。各時間スライスを、時間軸に沿った <strong>中央値 PSD</strong> で割ります。結果は無次元の <strong>SNR²</strong> マップとなり、定常背景は ≈ 1 になります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -716,7 +716,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="b-other-normalization-methods">
-<h3>3b. その他の正規化メソッド<a class="headerlink" href="#b-other-normalization-methods" title="Link to this heading">#</a></h3>
+<span id="3b-other-normalization-methods"></span><h3>3b. その他の正規化メソッド<a class="headerlink" href="#b-other-normalization-methods" title="Link to this heading">#</a></h3>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">method=</span></code></p></th>
@@ -769,7 +769,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="c-reference-normalization-method-reference">
-<h3>3c. 参照スペクトル正規化 (<code class="docutils literal notranslate"><span class="pre">method='reference'</span></code>)<a class="headerlink" href="#c-reference-normalization-method-reference" title="Link to this heading">#</a></h3>
+<span id="3c-reference-normalization-methodreference"></span><h3>3c. 参照スペクトル正規化 (<code class="docutils literal notranslate"><span class="pre">method='reference'</span></code>)<a class="headerlink" href="#c-reference-normalization-method-reference" title="Link to this heading">#</a></h3>
 <p>独自の参照スペクトルを渡して正規化します。 特定の静粛期間や独立計測したノイズフロアとの比較に有用です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -804,9 +804,9 @@ Time bins: 60  | Freq bins: 1025
 </section>
 </section>
 <section id="cleaning">
-<h2>4. クリーニング<a class="headerlink" href="#cleaning" title="Link to this heading">#</a></h2>
+<span id="4-cleaning"></span><h2>4. クリーニング<a class="headerlink" href="#cleaning" title="Link to this heading">#</a></h2>
 <section id="a-threshold-cleaning-method-threshold">
-<h3>4a. 閾値クリーニング (<code class="docutils literal notranslate"><span class="pre">method='threshold'</span></code>)<a class="headerlink" href="#a-threshold-cleaning-method-threshold" title="Link to this heading">#</a></h3>
+<span id="4a-threshold-cleaning-methodthreshold"></span><h3>4a. 閾値クリーニング (<code class="docutils literal notranslate"><span class="pre">method='threshold'</span></code>)<a class="headerlink" href="#a-threshold-cleaning-method-threshold" title="Link to this heading">#</a></h3>
 <p>（周波数ビンごとに）<code class="docutils literal notranslate"><span class="pre">median</span> <span class="pre">+</span> <span class="pre">threshold</span> <span class="pre">×</span> <span class="pre">MAD</span></code> を超えるピクセルを外れ値として検出し、置換します。置換方法は <code class="docutils literal notranslate"><span class="pre">fill=</span></code>（<code class="docutils literal notranslate"><span class="pre">'median'</span></code>、<code class="docutils literal notranslate"><span class="pre">'nan'</span></code>、<code class="docutils literal notranslate"><span class="pre">'zero'</span></code>、<code class="docutils literal notranslate"><span class="pre">'interpolate'</span></code>）で制御します。</p>
 <p>これにより、明るい縦縞として現れる短時間の <strong>グリッチ</strong> を除去します。</p>
 <div class="cell docutils container">
@@ -849,7 +849,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="b-rolling-median-detrending-method-rolling-median">
-<h3>4b. ローリング中央値デトレンド (<code class="docutils literal notranslate"><span class="pre">method='rolling_median'</span></code>)<a class="headerlink" href="#b-rolling-median-detrending-method-rolling-median" title="Link to this heading">#</a></h3>
+<span id="4b-rolling-median-detrending-methodrolling_median"></span><h3>4b. ローリング中央値デトレンド (<code class="docutils literal notranslate"><span class="pre">method='rolling_median'</span></code>)<a class="headerlink" href="#b-rolling-median-detrending-method-rolling-median" title="Link to this heading">#</a></h3>
 <p>各列を時間軸方向の移動中央値で割ります。これにより、短時間の特徴を歪めることなく <strong>ゆっくりとした非定常トレンド</strong> を除去します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -885,7 +885,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="c-persistent-line-removal-method-line-removal">
-<h3>4c. 持続ライン除去 (<code class="docutils literal notranslate"><span class="pre">method='line_removal'</span></code>)<a class="headerlink" href="#c-persistent-line-removal-method-line-removal" title="Link to this heading">#</a></h3>
+<span id="4c-persistent-line-removal-methodline_removal"></span><h3>4c. 持続ライン除去 (<code class="docutils literal notranslate"><span class="pre">method='line_removal'</span></code>)<a class="headerlink" href="#c-persistent-line-removal-method-line-removal" title="Link to this heading">#</a></h3>
 <p>ある周波数ビンが、時間ビンの <code class="docutils literal notranslate"><span class="pre">persistence_threshold</span></code> を超える割合で <code class="docutils literal notranslate"><span class="pre">amplitude_threshold</span> <span class="pre">×</span> <span class="pre">global_median</span></code> を上回る場合、定常的なラインとして検出されます。検出されたビンは時間中央値で置換されます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -948,7 +948,7 @@ Time bins: 60  | Freq bins: 1025
 </div>
 </section>
 <section id="d-full-cleaning-pipeline-method-combined">
-<h3>4d. 完全クリーニングパイプライン (<code class="docutils literal notranslate"><span class="pre">method='combined'</span></code>)<a class="headerlink" href="#d-full-cleaning-pipeline-method-combined" title="Link to this heading">#</a></h3>
+<span id="4d-full-cleaning-pipeline-methodcombined"></span><h3>4d. 完全クリーニングパイプライン (<code class="docutils literal notranslate"><span class="pre">method='combined'</span></code>)<a class="headerlink" href="#d-full-cleaning-pipeline-method-combined" title="Link to this heading">#</a></h3>
 <p>しきい値処理 → 移動中央値 → ライン除去 を順に実行します。コミッショニング的なデータ品質チェックのワンストップ手段として推奨します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -991,7 +991,7 @@ Time bins: 60  | Freq bins: 1025
 </section>
 </section>
 <section id="summary">
-<h2>5. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<span id="5-summary"></span><h2>5. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p>全メソッドと目的の一覧：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

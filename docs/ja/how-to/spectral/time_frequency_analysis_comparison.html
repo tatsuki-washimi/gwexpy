@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/time_frequency_analysis_comparison';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/time_frequency_analysis_comparison.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -567,7 +567,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="time-frequency-analysis-interactive-comparison">
 <h1>時間周波数解析：インタラクティブ比較<a class="headerlink" href="#time-frequency-analysis-interactive-comparison" title="Link to this heading">#</a></h1>
 <section id="introduction">
-<h2>1. はじめに<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<span id="1-introduction"></span><h2>1. はじめに<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
 <section id="purpose">
 <h3>目的<a class="headerlink" href="#purpose" title="Link to this heading">#</a></h3>
 <p>このノートブックでは、重力波データに対して特定の時間周波数解析手法を「いつ」「なぜ」選ぶべきかを示します。<strong>gwpy の STFT と Q 変換をベースライン</strong>とし、gwexpy の高度な手法（ウェーブレット、HHT、STLT、ケプストラム、DCT）が明確に優れる場面を示します。</p>
@@ -586,7 +586,7 @@
 </ul>
 </section>
 <section id="what-you-ll-learn">
-<h3>学べること<a class="headerlink" href="#what-you-ll-learn" title="Link to this heading">#</a></h3>
+<span id="what-youll-learn"></span><h3>学べること<a class="headerlink" href="#what-you-ll-learn" title="Link to this heading">#</a></h3>
 <p>各手法について、以下を示します：</p>
 <ol class="arabic simple">
 <li><p><strong>信号設計</strong>：なぜこの信号が STFT/Q にとって難しいか</p></li>
@@ -601,7 +601,7 @@
 </section>
 </section>
 <section id="common-setup">
-<h2>2. 共通セットアップ<a class="headerlink" href="#common-setup" title="Link to this heading">#</a></h2>
+<span id="2-common-setup"></span><h2>2. 共通セットアップ<a class="headerlink" href="#common-setup" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -673,7 +673,7 @@ import lal
 </div>
 </section>
 <section id="benchmark-signal-multi-component-test">
-<h2>3. ベンチマーク信号：多成分テスト<a class="headerlink" href="#benchmark-signal-multi-component-test" title="Link to this heading">#</a></h2>
+<span id="3-benchmark-signal-multi-component-test"></span><h2>3. ベンチマーク信号：多成分テスト<a class="headerlink" href="#benchmark-signal-multi-component-test" title="Link to this heading">#</a></h2>
 <p>以下を含む合成信号を作成します：</p>
 <ol class="arabic simple">
 <li><p><strong>準定常トーン</strong>（50 Hz、100 Hz）</p></li>
@@ -774,9 +774,9 @@ import lal
 </div>
 </section>
 <section id="baseline-analyses">
-<h2>4. ベースライン解析<a class="headerlink" href="#baseline-analyses" title="Link to this heading">#</a></h2>
+<span id="4-baseline-analyses"></span><h2>4. ベースライン解析<a class="headerlink" href="#baseline-analyses" title="Link to this heading">#</a></h2>
 <section id="stft-spectrogram-gwpy">
-<h3>4.1 STFT（スペクトログラム） - gwpy<a class="headerlink" href="#stft-spectrogram-gwpy" title="Link to this heading">#</a></h3>
+<span id="41-stft-spectrogram---gwpy"></span><h3>4.1 STFT（スペクトログラム） - gwpy<a class="headerlink" href="#stft-spectrogram-gwpy" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute STFT spectrogram</span>
@@ -820,7 +820,7 @@ import lal
 </div>
 </section>
 <section id="q-transform-gwpy">
-<h3>4.2 Q 変換 - gwpy<a class="headerlink" href="#q-transform-gwpy" title="Link to this heading">#</a></h3>
+<span id="42-q-transform---gwpy"></span><h3>4.2 Q 変換 - gwpy<a class="headerlink" href="#q-transform-gwpy" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute Q-transform</span>
@@ -866,16 +866,16 @@ import lal
 </section>
 </section>
 <section id="winning-story-scenarios">
-<h2>5. 「勝ちパターン」シナリオ<a class="headerlink" href="#winning-story-scenarios" title="Link to this heading">#</a></h2>
+<span id="5-winning-story-scenarios"></span><h2>5. 「勝ちパターン」シナリオ<a class="headerlink" href="#winning-story-scenarios" title="Link to this heading">#</a></h2>
 </section>
 <section id="wavelet-cwt-scale-varying-chirps">
-<h2>5.1 ウェーブレット（CWT）：スケールが変化するチャープ<a class="headerlink" href="#wavelet-cwt-scale-varying-chirps" title="Link to this heading">#</a></h2>
+<span id="51-wavelet-cwt-scale-varying-chirps"></span><h2>5.1 ウェーブレット（CWT）：スケールが変化するチャープ<a class="headerlink" href="#wavelet-cwt-scale-varying-chirps" title="Link to this heading">#</a></h2>
 <section id="signal-design">
 <h3>信号設計<a class="headerlink" href="#signal-design" title="Link to this heading">#</a></h3>
 <p>チャープはウェーブレットのスケールと自然に一致します。ベンチマークのチャープ成分（3 秒で 20→150 Hz）を使用します。</p>
 </section>
 <section id="what-stft-q-cannot-show-clearly">
-<h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#what-stft-q-cannot-show-clearly" title="Link to this heading">#</a></h3>
+<span id="what-stftq-cannot-show-clearly"></span><h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#what-stft-q-cannot-show-clearly" title="Link to this heading">#</a></h3>
 <p>STFT は時間周波数分解能が固定です（不確定性原理）。Q 変換はこれを改善しますが、正確な周波数軌跡ではなく依然として「帯」を示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -997,13 +997,13 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 </section>
 </section>
 <section id="hht-instantaneous-frequency-for-non-stationary-signals">
-<h2>5.2 HHT：非定常信号の瞬時周波数<a class="headerlink" href="#hht-instantaneous-frequency-for-non-stationary-signals" title="Link to this heading">#</a></h2>
+<span id="52-hht-instantaneous-frequency-for-non-stationary-signals"></span><h2>5.2 HHT：非定常信号の瞬時周波数<a class="headerlink" href="#hht-instantaneous-frequency-for-non-stationary-signals" title="Link to this heading">#</a></h2>
 <section id="id1">
-<h3>信号設計<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<span id="signal-design-1"></span><h3>信号設計<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p>真の瞬時周波数が滑らかに変化する AM/FM 変調信号です。振幅変調を伴う周波数変調トーンを使用します。</p>
 </section>
 <section id="id2">
-<h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<span id="what-stftq-cannot-show-clearly-1"></span><h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>STFT/Q は幅を持つ時間周波数の「帯」を示します。HHT は瞬時周波数を<strong>時間の一価関数</strong>として抽出します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1135,13 +1135,13 @@ Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signal
 </section>
 </section>
 <section id="stlt-damped-oscillations-with-decay-rate-information">
-<h2>5.3 STLT：減衰率情報を伴う減衰振動<a class="headerlink" href="#stlt-damped-oscillations-with-decay-rate-information" title="Link to this heading">#</a></h2>
+<span id="53-stlt-damped-oscillations-with-decay-rate-information"></span><h2>5.3 STLT：減衰率情報を伴う減衰振動<a class="headerlink" href="#stlt-damped-oscillations-with-decay-rate-information" title="Link to this heading">#</a></h2>
 <section id="id4">
-<h3>信号設計<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<span id="signal-design-2"></span><h3>信号設計<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <p>減衰率の異なる複数の指数減衰正弦波です。さまざまな Q 値を持つリングダウンモードを模擬します。</p>
 </section>
 <section id="id5">
-<h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<span id="what-stftq-cannot-show-clearly-2"></span><h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <p>STFT と Q 変換は<strong>周波数</strong>成分のみを示します。<strong>減衰率 σ</strong>（減衰係数）は見えません。STLT は信号を周波数 ω と減衰率 σ の両方に分解します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1308,13 +1308,13 @@ Takeaway: Use STLT for ringdown analysis when decay rates (quality factors) matt
 </section>
 </section>
 <section id="cepstrum-echo-detection-and-spectral-periodicity">
-<h2>5.4 ケプストラム：エコー検出とスペクトル周期性<a class="headerlink" href="#cepstrum-echo-detection-and-spectral-periodicity" title="Link to this heading">#</a></h2>
+<span id="54-cepstrum-echo-detection-and-spectral-periodicity"></span><h2>5.4 ケプストラム：エコー検出とスペクトル周期性<a class="headerlink" href="#cepstrum-echo-detection-and-spectral-periodicity" title="Link to this heading">#</a></h2>
 <section id="id7">
-<h3>信号設計<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<span id="signal-design-3"></span><h3>信号設計<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <p>遅延した複製（エコー）を含む信号です。波が構造物で反射する地震ノイズでよく見られます。</p>
 </section>
 <section id="id8">
-<h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<span id="what-stftq-cannot-show-clearly-3"></span><h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <p>エコーは<strong>スペクトルに周期構造</strong>を作ります（くし形フィルタリング）。STFT はこれを細かいリップルとして示しますが、遅延時間は読み取りにくいです。ケプストラムはスペクトルの周期性を遅延位置の時間領域ピーク（「ケフレンシ」）に変換します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1424,13 +1424,13 @@ Takeaway: Use Cepstrum for echo detection, pitch analysis, and periodic spectrum
 </section>
 </section>
 <section id="dct-compression-and-smooth-feature-extraction">
-<h2>5.5 DCT：圧縮と滑らかな特徴抽出<a class="headerlink" href="#dct-compression-and-smooth-feature-extraction" title="Link to this heading">#</a></h2>
+<span id="55-dct-compression-and-smooth-feature-extraction"></span><h2>5.5 DCT：圧縮と滑らかな特徴抽出<a class="headerlink" href="#dct-compression-and-smooth-feature-extraction" title="Link to this heading">#</a></h2>
 <section id="id9">
-<h3>信号設計<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<span id="signal-design-4"></span><h3>信号設計<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>小さな摂動を伴う滑らかな信号です。微細構造を持つゆっくり変化する背景トレンドを模擬します。</p>
 </section>
 <section id="id10">
-<h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<span id="what-stftq-cannot-show-clearly-4"></span><h3>STFT/Q が明確に示せないもの<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>STFT/Q は完全な時間周波数情報を与えますが、圧縮はしません。DCT（離散コサイン変換）は、<strong>信号エネルギーの大半が少数の低周波係数に集中する</strong>ことを明らかにします。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1678,155 +1678,155 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><h3>Qualitative Method Comparison</h3></div><div class="output text_html"><style type="text/css">
-#T_e72a0 th {
+#T_253f5 th {
   background-color: #f0f0f0;
   font-weight: bold;
 }
-#T_e72a0 td {
+#T_253f5 td {
   padding: 5px;
 }
-#T_e72a0_row0_col0, #T_e72a0_row0_col1, #T_e72a0_row0_col2, #T_e72a0_row0_col3, #T_e72a0_row0_col4, #T_e72a0_row0_col5, #T_e72a0_row1_col0, #T_e72a0_row1_col1, #T_e72a0_row1_col2, #T_e72a0_row1_col3, #T_e72a0_row1_col4, #T_e72a0_row1_col5, #T_e72a0_row2_col0, #T_e72a0_row2_col1, #T_e72a0_row2_col2, #T_e72a0_row2_col3, #T_e72a0_row2_col4, #T_e72a0_row2_col5, #T_e72a0_row3_col0, #T_e72a0_row3_col1, #T_e72a0_row3_col2, #T_e72a0_row3_col3, #T_e72a0_row3_col4, #T_e72a0_row3_col5, #T_e72a0_row4_col0, #T_e72a0_row4_col1, #T_e72a0_row4_col2, #T_e72a0_row4_col3, #T_e72a0_row4_col4, #T_e72a0_row4_col5, #T_e72a0_row5_col0, #T_e72a0_row5_col1, #T_e72a0_row5_col2, #T_e72a0_row5_col3, #T_e72a0_row5_col4, #T_e72a0_row5_col5, #T_e72a0_row6_col0, #T_e72a0_row6_col1, #T_e72a0_row6_col2, #T_e72a0_row6_col3, #T_e72a0_row6_col4, #T_e72a0_row6_col5 {
+#T_253f5_row0_col0, #T_253f5_row0_col1, #T_253f5_row0_col2, #T_253f5_row0_col3, #T_253f5_row0_col4, #T_253f5_row0_col5, #T_253f5_row1_col0, #T_253f5_row1_col1, #T_253f5_row1_col2, #T_253f5_row1_col3, #T_253f5_row1_col4, #T_253f5_row1_col5, #T_253f5_row2_col0, #T_253f5_row2_col1, #T_253f5_row2_col2, #T_253f5_row2_col3, #T_253f5_row2_col4, #T_253f5_row2_col5, #T_253f5_row3_col0, #T_253f5_row3_col1, #T_253f5_row3_col2, #T_253f5_row3_col3, #T_253f5_row3_col4, #T_253f5_row3_col5, #T_253f5_row4_col0, #T_253f5_row4_col1, #T_253f5_row4_col2, #T_253f5_row4_col3, #T_253f5_row4_col4, #T_253f5_row4_col5, #T_253f5_row5_col0, #T_253f5_row5_col1, #T_253f5_row5_col2, #T_253f5_row5_col3, #T_253f5_row5_col4, #T_253f5_row5_col5, #T_253f5_row6_col0, #T_253f5_row6_col1, #T_253f5_row6_col2, #T_253f5_row6_col3, #T_253f5_row6_col4, #T_253f5_row6_col5 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_e72a0">
+<table id="T_253f5">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_e72a0_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_e72a0_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
-      <th id="T_e72a0_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
-      <th id="T_e72a0_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
-      <th id="T_e72a0_level0_col4" class="col_heading level0 col4" >Best For</th>
-      <th id="T_e72a0_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
+      <th id="T_253f5_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_253f5_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
+      <th id="T_253f5_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
+      <th id="T_253f5_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
+      <th id="T_253f5_level0_col4" class="col_heading level0 col4" >Best For</th>
+      <th id="T_253f5_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_e72a0_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_e72a0_row0_col0" class="data row0 col0" >STFT</td>
-      <td id="T_e72a0_row0_col1" class="data row0 col1" >Medium</td>
-      <td id="T_e72a0_row0_col2" class="data row0 col2" >Medium</td>
-      <td id="T_e72a0_row0_col3" class="data row0 col3" >Low</td>
-      <td id="T_e72a0_row0_col4" class="data row0 col4" >General purpose</td>
-      <td id="T_e72a0_row0_col5" class="data row0 col5" >Fast & well-understood</td>
+      <th id="T_253f5_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_253f5_row0_col0" class="data row0 col0" >STFT</td>
+      <td id="T_253f5_row0_col1" class="data row0 col1" >Medium</td>
+      <td id="T_253f5_row0_col2" class="data row0 col2" >Medium</td>
+      <td id="T_253f5_row0_col3" class="data row0 col3" >Low</td>
+      <td id="T_253f5_row0_col4" class="data row0 col4" >General purpose</td>
+      <td id="T_253f5_row0_col5" class="data row0 col5" >Fast & well-understood</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_e72a0_row1_col0" class="data row1 col0" >Q-transform</td>
-      <td id="T_e72a0_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
-      <td id="T_e72a0_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
-      <td id="T_e72a0_row1_col3" class="data row1 col3" >Medium</td>
-      <td id="T_e72a0_row1_col4" class="data row1 col4" >Transients/bursts</td>
-      <td id="T_e72a0_row1_col5" class="data row1 col5" >Adaptive resolution</td>
+      <th id="T_253f5_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_253f5_row1_col0" class="data row1 col0" >Q-transform</td>
+      <td id="T_253f5_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
+      <td id="T_253f5_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
+      <td id="T_253f5_row1_col3" class="data row1 col3" >Medium</td>
+      <td id="T_253f5_row1_col4" class="data row1 col4" >Transients/bursts</td>
+      <td id="T_253f5_row1_col5" class="data row1 col5" >Adaptive resolution</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_e72a0_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
-      <td id="T_e72a0_row2_col1" class="data row2 col1" >Scale-adaptive</td>
-      <td id="T_e72a0_row2_col2" class="data row2 col2" >Scale-adaptive</td>
-      <td id="T_e72a0_row2_col3" class="data row2 col3" >Medium-High</td>
-      <td id="T_e72a0_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
-      <td id="T_e72a0_row2_col5" class="data row2 col5" >Natural scale matching</td>
+      <th id="T_253f5_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_253f5_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
+      <td id="T_253f5_row2_col1" class="data row2 col1" >Scale-adaptive</td>
+      <td id="T_253f5_row2_col2" class="data row2 col2" >Scale-adaptive</td>
+      <td id="T_253f5_row2_col3" class="data row2 col3" >Medium-High</td>
+      <td id="T_253f5_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
+      <td id="T_253f5_row2_col5" class="data row2 col5" >Natural scale matching</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_e72a0_row3_col0" class="data row3 col0" >HHT</td>
-      <td id="T_e72a0_row3_col1" class="data row3 col1" >Excellent</td>
-      <td id="T_e72a0_row3_col2" class="data row3 col2" >Excellent</td>
-      <td id="T_e72a0_row3_col3" class="data row3 col3" >Very High</td>
-      <td id="T_e72a0_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
-      <td id="T_e72a0_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
+      <th id="T_253f5_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_253f5_row3_col0" class="data row3 col0" >HHT</td>
+      <td id="T_253f5_row3_col1" class="data row3 col1" >Excellent</td>
+      <td id="T_253f5_row3_col2" class="data row3 col2" >Excellent</td>
+      <td id="T_253f5_row3_col3" class="data row3 col3" >Very High</td>
+      <td id="T_253f5_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
+      <td id="T_253f5_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_e72a0_row4_col0" class="data row4 col0" >STLT</td>
-      <td id="T_e72a0_row4_col1" class="data row4 col1" >Medium</td>
-      <td id="T_e72a0_row4_col2" class="data row4 col2" >Medium</td>
-      <td id="T_e72a0_row4_col3" class="data row4 col3" >High</td>
-      <td id="T_e72a0_row4_col4" class="data row4 col4" >Damped oscillations</td>
-      <td id="T_e72a0_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
+      <th id="T_253f5_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_253f5_row4_col0" class="data row4 col0" >STLT</td>
+      <td id="T_253f5_row4_col1" class="data row4 col1" >Medium</td>
+      <td id="T_253f5_row4_col2" class="data row4 col2" >Medium</td>
+      <td id="T_253f5_row4_col3" class="data row4 col3" >High</td>
+      <td id="T_253f5_row4_col4" class="data row4 col4" >Damped oscillations</td>
+      <td id="T_253f5_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row5" class="row_heading level0 row5" >5</th>
-      <td id="T_e72a0_row5_col0" class="data row5 col0" >Cepstrum</td>
-      <td id="T_e72a0_row5_col1" class="data row5 col1" >N/A</td>
-      <td id="T_e72a0_row5_col2" class="data row5 col2" >Excellent</td>
-      <td id="T_e72a0_row5_col3" class="data row5 col3" >Medium</td>
-      <td id="T_e72a0_row5_col4" class="data row5 col4" >Echo detection</td>
-      <td id="T_e72a0_row5_col5" class="data row5 col5" >Quefrency peaks</td>
+      <th id="T_253f5_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_253f5_row5_col0" class="data row5 col0" >Cepstrum</td>
+      <td id="T_253f5_row5_col1" class="data row5 col1" >N/A</td>
+      <td id="T_253f5_row5_col2" class="data row5 col2" >Excellent</td>
+      <td id="T_253f5_row5_col3" class="data row5 col3" >Medium</td>
+      <td id="T_253f5_row5_col4" class="data row5 col4" >Echo detection</td>
+      <td id="T_253f5_row5_col5" class="data row5 col5" >Quefrency peaks</td>
     </tr>
     <tr>
-      <th id="T_e72a0_level0_row6" class="row_heading level0 row6" >6</th>
-      <td id="T_e72a0_row6_col0" class="data row6 col0" >DCT</td>
-      <td id="T_e72a0_row6_col1" class="data row6 col1" >N/A</td>
-      <td id="T_e72a0_row6_col2" class="data row6 col2" >N/A</td>
-      <td id="T_e72a0_row6_col3" class="data row6 col3" >Low</td>
-      <td id="T_e72a0_row6_col4" class="data row6 col4" >Compression</td>
-      <td id="T_e72a0_row6_col5" class="data row6 col5" >Sparse representation</td>
+      <th id="T_253f5_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_253f5_row6_col0" class="data row6 col0" >DCT</td>
+      <td id="T_253f5_row6_col1" class="data row6 col1" >N/A</td>
+      <td id="T_253f5_row6_col2" class="data row6 col2" >N/A</td>
+      <td id="T_253f5_row6_col3" class="data row6 col3" >Low</td>
+      <td id="T_253f5_row6_col4" class="data row6 col4" >Compression</td>
+      <td id="T_253f5_row6_col5" class="data row6 col5" >Sparse representation</td>
     </tr>
   </tbody>
 </table>
 </div><p class="rubric" id="quantitative-performance-metrics-from-above-demonstrations">Quantitative Performance Metrics (from above demonstrations)</p>
 <div class="output text_html"><style type="text/css">
-#T_bdd83 th {
+#T_3037f th {
   background-color: #e8f4f8;
   font-weight: bold;
 }
-#T_bdd83 td {
+#T_3037f td {
   padding: 5px;
 }
-#T_bdd83_row0_col0, #T_bdd83_row0_col1, #T_bdd83_row0_col2, #T_bdd83_row0_col3, #T_bdd83_row0_col4, #T_bdd83_row1_col0, #T_bdd83_row1_col1, #T_bdd83_row1_col2, #T_bdd83_row1_col3, #T_bdd83_row1_col4, #T_bdd83_row2_col0, #T_bdd83_row2_col1, #T_bdd83_row2_col2, #T_bdd83_row2_col3, #T_bdd83_row2_col4, #T_bdd83_row3_col0, #T_bdd83_row3_col1, #T_bdd83_row3_col2, #T_bdd83_row3_col3, #T_bdd83_row3_col4, #T_bdd83_row4_col0, #T_bdd83_row4_col1, #T_bdd83_row4_col2, #T_bdd83_row4_col3, #T_bdd83_row4_col4 {
+#T_3037f_row0_col0, #T_3037f_row0_col1, #T_3037f_row0_col2, #T_3037f_row0_col3, #T_3037f_row0_col4, #T_3037f_row1_col0, #T_3037f_row1_col1, #T_3037f_row1_col2, #T_3037f_row1_col3, #T_3037f_row1_col4, #T_3037f_row2_col0, #T_3037f_row2_col1, #T_3037f_row2_col2, #T_3037f_row2_col3, #T_3037f_row2_col4, #T_3037f_row3_col0, #T_3037f_row3_col1, #T_3037f_row3_col2, #T_3037f_row3_col3, #T_3037f_row3_col4, #T_3037f_row4_col0, #T_3037f_row4_col1, #T_3037f_row4_col2, #T_3037f_row4_col3, #T_3037f_row4_col4 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_bdd83">
+<table id="T_3037f">
   <thead>
     <tr>
-      <th id="T_bdd83_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_bdd83_level0_col1" class="col_heading level0 col1" >Test Signal</th>
-      <th id="T_bdd83_level0_col2" class="col_heading level0 col2" >Metric</th>
-      <th id="T_bdd83_level0_col3" class="col_heading level0 col3" >Value</th>
-      <th id="T_bdd83_level0_col4" class="col_heading level0 col4" >Comparison</th>
+      <th id="T_3037f_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_3037f_level0_col1" class="col_heading level0 col1" >Test Signal</th>
+      <th id="T_3037f_level0_col2" class="col_heading level0 col2" >Metric</th>
+      <th id="T_3037f_level0_col3" class="col_heading level0 col3" >Value</th>
+      <th id="T_3037f_level0_col4" class="col_heading level0 col4" >Comparison</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_bdd83_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
-      <td id="T_bdd83_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
-      <td id="T_bdd83_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
-      <td id="T_bdd83_row0_col3" class="data row0 col3" >35.91 Hz</td>
-      <td id="T_bdd83_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
+      <td id="T_3037f_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
+      <td id="T_3037f_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
+      <td id="T_3037f_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
+      <td id="T_3037f_row0_col3" class="data row0 col3" >35.91 Hz</td>
+      <td id="T_3037f_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
     </tr>
     <tr>
-      <td id="T_bdd83_row1_col0" class="data row1 col0" >HHT</td>
-      <td id="T_bdd83_row1_col1" class="data row1 col1" >AM-FM (80±20 Hz)</td>
-      <td id="T_bdd83_row1_col2" class="data row1 col2" >Instantaneous Freq. RMSE</td>
-      <td id="T_bdd83_row1_col3" class="data row1 col3" >20.12 Hz</td>
-      <td id="T_bdd83_row1_col4" class="data row1 col4" >vs STFT 40 Hz wide band</td>
+      <td id="T_3037f_row1_col0" class="data row1 col0" >HHT</td>
+      <td id="T_3037f_row1_col1" class="data row1 col1" >AM-FM (80±20 Hz)</td>
+      <td id="T_3037f_row1_col2" class="data row1 col2" >Instantaneous Freq. RMSE</td>
+      <td id="T_3037f_row1_col3" class="data row1 col3" >20.12 Hz</td>
+      <td id="T_3037f_row1_col4" class="data row1 col4" >vs STFT 40 Hz wide band</td>
     </tr>
     <tr>
-      <td id="T_bdd83_row2_col0" class="data row2 col0" >STLT</td>
-      <td id="T_bdd83_row2_col1" class="data row2 col1" >3-mode ringdown</td>
-      <td id="T_bdd83_row2_col2" class="data row2 col2" >Decay Rate MAE</td>
-      <td id="T_bdd83_row2_col3" class="data row2 col3" >7.25 s⁻¹</td>
-      <td id="T_bdd83_row2_col4" class="data row2 col4" >STFT cannot estimate σ</td>
+      <td id="T_3037f_row2_col0" class="data row2 col0" >STLT</td>
+      <td id="T_3037f_row2_col1" class="data row2 col1" >3-mode ringdown</td>
+      <td id="T_3037f_row2_col2" class="data row2 col2" >Decay Rate MAE</td>
+      <td id="T_3037f_row2_col3" class="data row2 col3" >7.25 s⁻¹</td>
+      <td id="T_3037f_row2_col4" class="data row2 col4" >STFT cannot estimate σ</td>
     </tr>
     <tr>
-      <td id="T_bdd83_row3_col0" class="data row3 col0" >Cepstrum</td>
-      <td id="T_bdd83_row3_col1" class="data row3 col1" >Echo (80ms delay)</td>
-      <td id="T_bdd83_row3_col2" class="data row3 col2" >Delay Detection Error</td>
-      <td id="T_bdd83_row3_col3" class="data row3 col3" >0.41 ms</td>
-      <td id="T_bdd83_row3_col4" class="data row3 col4" >Delay invisible in STFT</td>
+      <td id="T_3037f_row3_col0" class="data row3 col0" >Cepstrum</td>
+      <td id="T_3037f_row3_col1" class="data row3 col1" >Echo (80ms delay)</td>
+      <td id="T_3037f_row3_col2" class="data row3 col2" >Delay Detection Error</td>
+      <td id="T_3037f_row3_col3" class="data row3 col3" >0.41 ms</td>
+      <td id="T_3037f_row3_col4" class="data row3 col4" >Delay invisible in STFT</td>
     </tr>
     <tr>
-      <td id="T_bdd83_row4_col0" class="data row4 col0" >DCT</td>
-      <td id="T_bdd83_row4_col1" class="data row4 col1" >Smooth + bumps</td>
-      <td id="T_bdd83_row4_col2" class="data row4 col2" >Compression (50 coeffs)</td>
-      <td id="T_bdd83_row4_col3" class="data row4 col3" >>99% energy</td>
-      <td id="T_bdd83_row4_col4" class="data row4 col4" >~30× compression ratio</td>
+      <td id="T_3037f_row4_col0" class="data row4 col0" >DCT</td>
+      <td id="T_3037f_row4_col1" class="data row4 col1" >Smooth + bumps</td>
+      <td id="T_3037f_row4_col2" class="data row4 col2" >Compression (50 coeffs)</td>
+      <td id="T_3037f_row4_col3" class="data row4 col3" >>99% energy</td>
+      <td id="T_3037f_row4_col4" class="data row4 col4" >~30× compression ratio</td>
     </tr>
   </tbody>
 </table>
@@ -1845,7 +1845,7 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </section>
 </section>
 <section id="summary-how-to-choose-your-method">
-<h2>6. まとめ：手法の選び方<a class="headerlink" href="#summary-how-to-choose-your-method" title="Link to this heading">#</a></h2>
+<span id="6-summary-how-to-choose-your-method"></span><h2>6. まとめ：手法の選び方<a class="headerlink" href="#summary-how-to-choose-your-method" title="Link to this heading">#</a></h2>
 <section id="decision-matrix">
 <h3>決定マトリクス<a class="headerlink" href="#decision-matrix" title="Link to this heading">#</a></h3>
 <div class="pst-scrollable-table-container"><table class="table">

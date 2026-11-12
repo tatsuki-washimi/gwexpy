@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/fitting/rayleigh_gauch_tutorial';</script>
@@ -553,7 +553,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -594,7 +594,7 @@
 </div>
 </section>
 <section id="noise-simulation">
-<h2>1. Noise Simulation<a class="headerlink" href="#noise-simulation" title="Link to this heading">#</a></h2>
+<span id="1-noise-simulation"></span><h2>1. Noise Simulation<a class="headerlink" href="#noise-simulation" title="Link to this heading">#</a></h2>
 <p>We simulate two types of non-Gaussian noise models used in KAGRA characterization.</p>
 <ul class="simple">
 <li><p><strong>Model I</strong>: Transient Gaussian noise (glitches).</p></li>
@@ -616,13 +616,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b1c4ba048ce3baf3b41425a00b3580d1e27e1f67ce244b49ad1dcc7720b7e0f1.png" src="../../_images/b1c4ba048ce3baf3b41425a00b3580d1e27e1f67ce244b49ad1dcc7720b7e0f1.png" />
-<img alt="../../_images/b1c4ba048ce3baf3b41425a00b3580d1e27e1f67ce244b49ad1dcc7720b7e0f1.png" src="../../_images/b1c4ba048ce3baf3b41425a00b3580d1e27e1f67ce244b49ad1dcc7720b7e0f1.png" />
+<img alt="../../_images/f8518f16568276f1a4b501eda041413d7fc16c36934d89ba93ab5517cc7ff65b.png" src="../../_images/f8518f16568276f1a4b501eda041413d7fc16c36934d89ba93ab5517cc7ff65b.png" />
+<img alt="../../_images/f8518f16568276f1a4b501eda041413d7fc16c36934d89ba93ab5517cc7ff65b.png" src="../../_images/f8518f16568276f1a4b501eda041413d7fc16c36934d89ba93ab5517cc7ff65b.png" />
 </div>
 </div>
 </section>
 <section id="rayleigh-spectrogram">
-<h2>2. Rayleigh Spectrogram<a class="headerlink" href="#rayleigh-spectrogram" title="Link to this heading">#</a></h2>
+<span id="2-rayleigh-spectrogram"></span><h2>2. Rayleigh Spectrogram<a class="headerlink" href="#rayleigh-spectrogram" title="Link to this heading">#</a></h2>
 <p>The Rayleigh statistic <span class="math notranslate nohighlight">\(R\)</span> measures the consistency of the ASD distribution with a Rayleigh distribution. We use the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> method to get a p-value map.</p>
 <blockquote>
 <div><p><strong>Changed in v0.1.12 (#506).</strong> <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> now simulates its null
@@ -664,12 +664,12 @@ earlier versions are not comparable with these.</p>
   return rayleigh_pvalue(rs, n_samples=n_samples, nfft=nfft, **kwargs)
 </pre></div>
 </div>
-<img alt="../../_images/4fc9e1821018d68ae08d905d1818c30c1ea3a24151099ba179ab6744665af70e.png" src="../../_images/4fc9e1821018d68ae08d905d1818c30c1ea3a24151099ba179ab6744665af70e.png" />
+<img alt="../../_images/3e5726b6c8b7d61ce580be79b8cc59b9c8032b5e01971648f8bbc738b233f8f7.png" src="../../_images/3e5726b6c8b7d61ce580be79b8cc59b9c8032b5e01971648f8bbc738b233f8f7.png" />
 </div>
 </div>
 </section>
 <section id="gauch-modified-ks-test">
-<h2>3. GauCh (Modified KS Test)<a class="headerlink" href="#gauch-modified-ks-test" title="Link to this heading">#</a></h2>
+<span id="3-gauch-modified-ks-test"></span><h2>3. GauCh (Modified KS Test)<a class="headerlink" href="#gauch-modified-ks-test" title="Link to this heading">#</a></h2>
 <p>GauCh is a more sensitive test for non-Gaussianity using a modified Kolmogorov-Smirnov test.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -686,12 +686,12 @@ earlier versions are not comparable with these.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ab6e17533f93c3d12f2a6e1b679fb8a3110bdac3afef70ca9ddecba40595b5e6.png" src="../../_images/ab6e17533f93c3d12f2a6e1b679fb8a3110bdac3afef70ca9ddecba40595b5e6.png" />
+<img alt="../../_images/8e54a995dc09e8d1e6710ba71d3d77d1f0d7310613e5a0987d7d64e24f32051d.png" src="../../_images/8e54a995dc09e8d1e6710ba71d3d77d1f0d7310613e5a0987d7d64e24f32051d.png" />
 </div>
 </div>
 </section>
 <section id="student-t-indicator">
-<h2>4. Student-t Indicator<a class="headerlink" href="#student-t-indicator" title="Link to this heading">#</a></h2>
+<span id="4-student-t-indicator"></span><h2>4. Student-t Indicator<a class="headerlink" href="#student-t-indicator" title="Link to this heading">#</a></h2>
 <p>The Student-t indicator fits a Student-t distribution to FFT components and outputs the degree of freedom <span class="math notranslate nohighlight">\(\nu\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -708,12 +708,12 @@ earlier versions are not comparable with these.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ae0705fa437583471368cdd4dd34cc7608d6756e050303fa196081941fe000ec.png" src="../../_images/ae0705fa437583471368cdd4dd34cc7608d6756e050303fa196081941fe000ec.png" />
+<img alt="../../_images/21eadb7c3f85efd458ddea03eac8bc93fb182f805b507de3b920f1780957a891.png" src="../../_images/21eadb7c3f85efd458ddea03eac8bc93fb182f805b507de3b920f1780957a891.png" />
 </div>
 </div>
 </section>
 <section id="data-quality-flags">
-<h2>5. Data Quality Flags<a class="headerlink" href="#data-quality-flags" title="Link to this heading">#</a></h2>
+<span id="5-data-quality-flags"></span><h2>5. Data Quality Flags<a class="headerlink" href="#data-quality-flags" title="Link to this heading">#</a></h2>
 <p>We can automatically generate veto segments where the p-value is below a threshold.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -736,7 +736,7 @@ earlier versions are not comparable with these.</p>
 </div>
 </section>
 <section id="composite-dashboard">
-<h2>6. Composite Dashboard<a class="headerlink" href="#composite-dashboard" title="Link to this heading">#</a></h2>
+<span id="6-composite-dashboard"></span><h2>6. Composite Dashboard<a class="headerlink" href="#composite-dashboard" title="Link to this heading">#</a></h2>
 <p>Finally, we can visualize everything in a single dashboard.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -746,7 +746,7 @@ earlier versions are not comparable with these.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/025848e52d2051c64de718159d99394e7942a8d11684927bacb7f07687ba28c4.png" src="../../_images/025848e52d2051c64de718159d99394e7942a8d11684927bacb7f07687ba28c4.png" />
+<img alt="../../_images/76bd0a502be08b158e4bd0410aef32f55523f7e47580e5f8444fb415ed61fc6a.png" src="../../_images/76bd0a502be08b158e4bd0410aef32f55523f7e47580e5f8444fb415ed61fc6a.png" />
 </div>
 </div>
 </section>

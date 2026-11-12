@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/segments/intro_table';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/segments/intro_table.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -569,7 +569,7 @@
 <p><strong>目的</strong>: <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> を使用して時刻キー付きデータ解析を管理する方法を学びます。</p>
 <p><code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> は、特定の時間セグメントに関連付けられたメタデータとペイロードデータ（TimeSeries や PSD など）のコンテナです。大規模なデータセットを効率的に扱うため、遅延読み込みをサポートしています。</p>
 <section id="creating-a-segmenttable">
-<h2>1. SegmentTable の作成<a class="headerlink" href="#creating-a-segmenttable" title="Link to this heading">#</a></h2>
+<span id="1-creating-a-segmenttable"></span><h2>1. SegmentTable の作成<a class="headerlink" href="#creating-a-segmenttable" title="Link to this heading">#</a></h2>
 <p>GPS 開始・終了時刻を持つセグメントを定義した CSV ファイルからサンプルデータを読み込みます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -675,7 +675,7 @@
 </div>
 </section>
 <section id="visualizing-segments">
-<h2>2. セグメントの可視化<a class="headerlink" href="#visualizing-segments" title="Link to this heading">#</a></h2>
+<span id="2-visualizing-segments"></span><h2>2. セグメントの可視化<a class="headerlink" href="#visualizing-segments" title="Link to this heading">#</a></h2>
 <p>セグメントのタイムラインを素早く可視化できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -694,7 +694,7 @@
 </div>
 </section>
 <section id="lazy-loading-payloads">
-<h2>3. ペイロードの遅延読み込み<a class="headerlink" href="#lazy-loading-payloads" title="Link to this heading">#</a></h2>
+<span id="3-lazy-loading-payloads"></span><h2>3. ペイロードの遅延読み込み<a class="headerlink" href="#lazy-loading-payloads" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> ではカラムに「ローダー」を紐付けることができます。データは実際にアクセスされたときのみ読み込まれます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -723,7 +723,7 @@
 </div>
 </section>
 <section id="processing-rows">
-<h2>4. 行ごとの処理<a class="headerlink" href="#processing-rows" title="Link to this heading">#</a></h2>
+<span id="4-processing-rows"></span><h2>4. 行ごとの処理<a class="headerlink" href="#processing-rows" title="Link to this heading">#</a></h2>
 <p>行をイテレートしたり、<code class="docutils literal notranslate"><span class="pre">apply</span></code> を使ってデータを処理したりできます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -768,7 +768,7 @@
       <td>4</td>
       <td>A</td>
       <td>(0.0, 4.0)</td>
-      <td>[1.0284798181906993, 1.0261607349347446, 1.010...</td>
+      <td>[0.9984718482915225, 1.0016191737807092, 1.011...</td>
       <td>&lt;timeseries: 4096 samples&gt;</td>
     </tr>
     <tr>
@@ -777,7 +777,7 @@
       <td>8</td>
       <td>B</td>
       <td>(4.0, 8.0)</td>
-      <td>[0.9919818665199127, 1.0234571765718454, 1.000...</td>
+      <td>[1.0436689268869244, 1.0382778122114646, 1.010...</td>
       <td>&lt;timeseries: 4096 samples&gt;</td>
     </tr>
     <tr>
@@ -786,7 +786,7 @@
       <td>13</td>
       <td>C</td>
       <td>(10.0, 13.0)</td>
-      <td>[0.9968729160558485, 0.9914765774268958, 1.006...</td>
+      <td>[0.9827603357795209, 1.007198131578972, 0.9807...</td>
       <td>&lt;timeseries: 3072 samples&gt;</td>
     </tr>
     <tr>
@@ -795,7 +795,7 @@
       <td>20</td>
       <td>D</td>
       <td>(15.0, 20.0)</td>
-      <td>[0.9928604708436913, 0.9895720460856428, 0.994...</td>
+      <td>[0.9977235304849709, 0.9730213294404031, 0.976...</td>
       <td>&lt;timeseries: 5120 samples&gt;</td>
     </tr>
     <tr>
@@ -804,7 +804,7 @@
       <td>25</td>
       <td>E</td>
       <td>(22.0, 25.0)</td>
-      <td>[0.9766453885558697, 0.9826779755369749, 1.008...</td>
+      <td>[1.0301102947525045, 1.0078430791776212, 1.009...</td>
       <td>&lt;timeseries: 3072 samples&gt;</td>
     </tr>
   </tbody>
@@ -813,7 +813,7 @@
 </div>
 </section>
 <section id="quick-check-nbmake">
-<h2>5. 検証セル（NBMAKE）<a class="headerlink" href="#quick-check-nbmake" title="Link to this heading">#</a></h2>
+<span id="5-quick-check-nbmake"></span><h2>5. 検証セル（NBMAKE）<a class="headerlink" href="#quick-check-nbmake" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="s2">&quot;noise&quot;</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span>

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/translations.js?v=4755f45a"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/first_analysis';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/first_analysis.html" />
@@ -456,7 +456,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -574,8 +574,8 @@ Sensor B はノイズの標準偏差が大きいため、フロアが高くな�
 窓関数は区間境界によるスペクトル漏れを減らし、オーバーラップは隣り合う区間でサンプルを再利用します。
 ASD のピークの高さはこれらの設定に依存するため、元の正弦波の V 単位の振幅として読まないでください。</p>
 </section>
-<section id="familiar-concepts-in-python">
-<span id="for-gw-experimentalists"></span><h2>Python と実験概念の対応<a class="headerlink" href="#familiar-concepts-in-python" title="Link to this heading">#</a></h2>
+<section id="for-gw-experimentalists">
+<span id="familiar-concepts-in-python"></span><h2>Python と実験概念の対応<a class="headerlink" href="#for-gw-experimentalists" title="Link to this heading">#</a></h2>
 <p>検出器の解析で使う用語と、上の実行可能なスクリプトを対応付けます。
 Python が初めての方は、<a class="reference internal" href="#run-python-in-a-file">ファイルの実行</a>と<a class="reference internal" href="#names-functions-and-channels">名前と関数</a>で必要な構文を確認できます。</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -687,7 +687,7 @@ GPS 時刻 <code class="docutils literal notranslate"><span class="pre">t0</span
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#names-functions-and-channels">名前、関数、チャンネル</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-the-signal-against-time">時間に対する信号を描く</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-asd-axes">ASD の軸を読む</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#familiar-concepts-in-python">Python と実験概念の対応</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#for-gw-experimentalists">Python と実験概念の対応</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#try-a-controlled-change">条件を 1 つずつ変える</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">さらに読む</a></li>
 </ul>

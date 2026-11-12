@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/containers/intro_histogram';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/containers/intro_histogram.html" />
@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -606,7 +606,7 @@ astropy unknown
 </div>
 </div>
 <section id="creating-histograms">
-<h2>1. ヒストグラムの作成<a class="headerlink" href="#creating-histograms" title="Link to this heading">#</a></h2>
+<span id="1-creating-histograms"></span><h2>1. ヒストグラムの作成<a class="headerlink" href="#creating-histograms" title="Link to this heading">#</a></h2>
 <p>一般的な作成方法：</p>
 <ol class="arabic simple">
 <li><p>ビンの合計値（totals）とビンエッジから直接作る</p></li>
@@ -651,7 +651,7 @@ astropy unknown
 </div>
 </section>
 <section id="visualization">
-<h2>2. 可視化<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
+<span id="2-visualization"></span><h2>2. 可視化<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
 <p>ビンごとの合計（エラーバーあり）と密度（値/ビン幅）を表示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -694,7 +694,7 @@ astropy unknown
 </div>
 </section>
 <section id="basic-statistics">
-<h2>3. 基本統計<a class="headerlink" href="#basic-statistics" title="Link to this heading">#</a></h2>
+<span id="3-basic-statistics"></span><h2>3. 基本統計<a class="headerlink" href="#basic-statistics" title="Link to this heading">#</a></h2>
 <p>平均、中央値、分散、分位を計算します。<code class="docutils literal notranslate"><span class="pre">quantile()</span></code> は平坦ビンに対して安定です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -718,7 +718,7 @@ quantile(0.25): 1.1348114645471883
 </div>
 </section>
 <section id="rebinning">
-<h2>4. リビン<a class="headerlink" href="#rebinning" title="Link to this heading">#</a></h2>
+<span id="4-rebinning"></span><h2>4. リビン<a class="headerlink" href="#rebinning" title="Link to this heading">#</a></h2>
 <p>非等間隔ビンへの再ビンと合計保存・共分散伝播を示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -742,7 +742,7 @@ cov shape rebinned: None
 </div>
 </section>
 <section id="integration-with-error-propagation">
-<h2>5. 積分（誤差伝播）<a class="headerlink" href="#integration-with-error-propagation" title="Link to this heading">#</a></h2>
+<span id="5-integration-with-error-propagation"></span><h2>5. 積分（誤差伝播）<a class="headerlink" href="#integration-with-error-propagation" title="Link to this heading">#</a></h2>
 <p>部分区間の積分とその誤差（共分散/<code class="docutils literal notranslate"><span class="pre">sumw2</span></code> に基づく）を示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -762,7 +762,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="serialization-hdf5-and-json">
-<h2>6. シリアライズ（HDF5 と JSON）<a class="headerlink" href="#serialization-hdf5-and-json" title="Link to this heading">#</a></h2>
+<span id="6-serialization-hdf5-and-json"></span><h2>6. シリアライズ（HDF5 と JSON）<a class="headerlink" href="#serialization-hdf5-and-json" title="Link to this heading">#</a></h2>
 <p>HDF5 の読み書きと、JSON 形式の軽量な辞書に変換する例を示します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -828,7 +828,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="root-interoperability-optional">
-<h2>7. ROOT との連携（任意）<a class="headerlink" href="#root-interoperability-optional" title="Link to this heading">#</a></h2>
+<span id="7-root-interoperability-optional"></span><h2>7. ROOT との連携（任意）<a class="headerlink" href="#root-interoperability-optional" title="Link to this heading">#</a></h2>
 <p>PyROOT は利用環境によっては存在しないため <code class="docutils literal notranslate"><span class="pre">try/except</span></code> で安全に扱います。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -852,7 +852,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="exercises">
-<h2>8. 演習<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<span id="8-exercises"></span><h2>8. 演習<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Gaussian の混合を生成してヒストグラムを作り、リビン後の合計が保存されることを確認してください。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Quantity</span></code> 重みのイベントをシミュレートし、<code class="docutils literal notranslate"><span class="pre">sumw2</span></code> が <code class="docutils literal notranslate"><span class="pre">sum(w**2)</span></code> と一致することを確認してください。</p></li>

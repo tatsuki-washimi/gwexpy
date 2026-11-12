@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/translations.js?v=4755f45a"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/intro_frequencyseries';</script>
@@ -458,7 +458,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -491,7 +491,7 @@
 </div>
 </div>
 <section id="data-preparation">
-<h2>1. データの準備<a class="headerlink" href="#data-preparation" title="Link to this heading">#</a></h2>
+<span id="1-data-preparation"></span><h2>1. データの準備<a class="headerlink" href="#data-preparation" title="Link to this heading">#</a></h2>
 <p>まずは <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> から FFT を用いて <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> を作成します。 ここでは、特定の周波数成分を持つテスト信号を生成します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -525,8 +525,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TimeSeries([-0.00686515, -0.35178509,  0.05998124, ...,
-             1.17654575,  0.8297074 ,  1.38500809],
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TimeSeries([-0.35618191, -0.16601286,  0.57761684, ...,
+             0.72196771,  0.90494352,  0.87645395],
            unit: um,
            t0: 0.0 s,
            dt: 0.0009765625 s,
@@ -534,7 +534,7 @@
            channel: None)
 </pre></div>
 </div>
-<img alt="../_images/57b0170cd02075967e544045dbc11472868ab6242d7ca2df2779f38cd547f07a.png" src="../_images/57b0170cd02075967e544045dbc11472868ab6242d7ca2df2779f38cd547f07a.png" />
+<img alt="../_images/ce2b5d1cb6452e0d69aaf97a2dccfca7b6dc13a4999c73e7cc9c7e12831da86c.png" src="../_images/ce2b5d1cb6452e0d69aaf97a2dccfca7b6dc13a4999c73e7cc9c7e12831da86c.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type: &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt;
 Length: 3073
 df: 0.16666666666666666 Hz
@@ -544,7 +544,7 @@ df: 0.16666666666666666 Hz
 </div>
 </section>
 <section id="visualization-and-conversion-of-complex-spectra">
-<h2>2. 複素スペクトルの可視化と変換<a class="headerlink" href="#visualization-and-conversion-of-complex-spectra" title="Link to this heading">#</a></h2>
+<span id="2-visualization-and-conversion-of-complex-spectra"></span><h2>2. 複素スペクトルの可視化と変換<a class="headerlink" href="#visualization-and-conversion-of-complex-spectra" title="Link to this heading">#</a></h2>
 <section id="phase-and-amplitude">
 <h3>位相と振幅<a class="headerlink" href="#phase-and-amplitude" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">phase()</span></code>, <code class="docutils literal notranslate"><span class="pre">degree()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_db()</span></code> メソッドを使用すると、複素スペクトルを直感的な単位に変換できます。</p>
@@ -570,13 +570,13 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4a5c31d171b0af904f46959c1efb54d82ba50c3fd1f4c25a2ee48b239ecdaf49.png" src="../_images/4a5c31d171b0af904f46959c1efb54d82ba50c3fd1f4c25a2ee48b239ecdaf49.png" />
+<img alt="../_images/0db46090b5323fdd8936988d6126ad5ac73346c15e67322cc6664163a5431127.png" src="../_images/0db46090b5323fdd8936988d6126ad5ac73346c15e67322cc6664163a5431127.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="calculus-in-frequency-domain">
-<h2>3. 周波数ドメインでの微積分<a class="headerlink" href="#calculus-in-frequency-domain" title="Link to this heading">#</a></h2>
+<span id="3-calculus-in-frequency-domain"></span><h2>3. 周波数ドメインでの微積分<a class="headerlink" href="#calculus-in-frequency-domain" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">differentiate()</span></code> および <code class="docutils literal notranslate"><span class="pre">integrate()</span></code> メソッドにより、周波数ドメインで微分・積分を行うことができます。 引数 <code class="docutils literal notranslate"><span class="pre">order</span></code> で階数を指定できます（デフォルトは1）。 これは「変位・速度・加速度」の変換（<span class="math notranslate nohighlight">\((2 \pi i f)^n\)</span> の乗算・除算）を簡単に行うための機能です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -605,12 +605,12 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5f022db53f0bc922a39b6867b291b14d39f6594e614846012c4da1ca95747604.png" src="../_images/5f022db53f0bc922a39b6867b291b14d39f6594e614846012c4da1ca95747604.png" />
+<img alt="../_images/6f2d9f45a22579f2ff3bf38899f21ecd0f047acbf501f280eb0aca6ae20ac39b.png" src="../_images/6f2d9f45a22579f2ff3bf38899f21ecd0f047acbf501f280eb0aca6ae20ac39b.png" />
 </div>
 </div>
 </section>
 <section id="spectrum-smoothing-and-peak-detection">
-<h2>4. スペクトルのスムージングとピーク検出<a class="headerlink" href="#spectrum-smoothing-and-peak-detection" title="Link to this heading">#</a></h2>
+<span id="4-spectrum-smoothing-and-peak-detection"></span><h2>4. スペクトルのスムージングとピーク検出<a class="headerlink" href="#spectrum-smoothing-and-peak-detection" title="Link to this heading">#</a></h2>
 <section id="smoothing">
 <h3>スムージング<a class="headerlink" href="#smoothing" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">smooth()</span></code> メソッドを使用すると、移動平均などによるスペクトルの平滑化が可能です。</p>
@@ -633,7 +633,7 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fde05e769389d06d866ab4ef6524327159e0f2ade0af0fada76b28ffc0f41e7b.png" src="../_images/fde05e769389d06d866ab4ef6524327159e0f2ade0af0fada76b28ffc0f41e7b.png" />
+<img alt="../_images/8c2d6d570887357ea50f7b55ebddab73468e2c97e949eaea3b9d9353fad52fe5.png" src="../_images/8c2d6d570887357ea50f7b55ebddab73468e2c97e949eaea3b9d9353fad52fe5.png" />
 </div>
 </div>
 </section>
@@ -660,13 +660,13 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b251fab1959d364e5b7c9c92fa006eb5119560d789ebc876fe293d74cca4f15f.png" src="../_images/b251fab1959d364e5b7c9c92fa006eb5119560d789ebc876fe293d74cca4f15f.png" />
+<img alt="../_images/a77a8159d4135fc6ec0df87c29a783c33a3c6747926e8a224ff718ea7fbf8915.png" src="../_images/a77a8159d4135fc6ec0df87c29a783c33a3c6747926e8a224ff718ea7fbf8915.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="advanced-analysis-features">
-<h2>5. 高度な解析機能<a class="headerlink" href="#advanced-analysis-features" title="Link to this heading">#</a></h2>
+<span id="5-advanced-analysis-features"></span><h2>5. 高度な解析機能<a class="headerlink" href="#advanced-analysis-features" title="Link to this heading">#</a></h2>
 <section id="group-delay">
 <h3>群遅延 (Group Delay)<a class="headerlink" href="#group-delay" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">group_delay()</span></code> メソッドは、位相の周波数微分から群遅延（信号のエンベロープの遅延）を計算します。</p>
@@ -685,7 +685,7 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/48d87d038a16a6f1a32fd8b3fe391edcd423c2e4989765714ddfb47c3054a0fe.png" src="../_images/48d87d038a16a6f1a32fd8b3fe391edcd423c2e4989765714ddfb47c3054a0fe.png" />
+<img alt="../_images/3c3684ed534f861b4ba180a626c84e58f3e0b3759cea755a5188724e89e1700c.png" src="../_images/3c3684ed534f861b4ba180a626c84e58f3e0b3759cea755a5188724e89e1700c.png" />
 </div>
 </div>
 </section>
@@ -718,13 +718,13 @@ df: 0.16666666666666666 Hz
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7370e7dae33c85c0d39fff4e45b92536cc4b3833c4319340327e4707a2c3ceed.png" src="../_images/7370e7dae33c85c0d39fff4e45b92536cc4b3833c4319340327e4707a2c3ceed.png" />
+<img alt="../_images/82fac20b153f09482cfe0ad9c5f13334750200d23e9bd4b69aebef6809910197.png" src="../_images/82fac20b153f09482cfe0ad9c5f13334750200d23e9bd4b69aebef6809910197.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="integration-with-other-libraries">
-<h2>6. 他ライブラリとの連携<a class="headerlink" href="#integration-with-other-libraries" title="Link to this heading">#</a></h2>
+<span id="6-integration-with-other-libraries"></span><h2>6. 他ライブラリとの連携<a class="headerlink" href="#integration-with-other-libraries" title="Link to this heading">#</a></h2>
 <p>Pandas, xarray, control ライブラリとの相互変換が追加されています。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -759,17 +759,17 @@ df: 0.16666666666666666 Hz
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frequency
-0.000000     -0.000943+0.000000j
-0.166667      0.013439+0.000221j
-0.333333     -0.013954-0.003791j
-0.500000      0.002991-0.002263j
-0.666667     -0.008099+0.005676j
+0.000000      0.004934+0.000000j
+0.166667      0.000977-0.004027j
+0.333333     -0.003662+0.006231j
+0.500000      0.001958-0.003342j
+0.666667     -0.015210-0.001614j
                      ...        
-511.333333   -0.002523+0.000649j
-511.500000    0.001738-0.000224j
-511.666667   -0.002292+0.002932j
-511.833333    0.001068-0.002504j
-512.000000   -0.000079+0.000000j
+511.333333   -0.000994-0.001216j
+511.500000    0.003812+0.004144j
+511.666667   -0.000422-0.005952j
+511.833333   -0.004816+0.001620j
+512.000000    0.003823+0.000000j
 Name: Test Signal, Length: 3073, dtype: complex128
 </pre></div>
 </div>
@@ -1319,28 +1319,26 @@ dl.xr-attrs {
   stroke-width: 0.8px;
 }
 </style><pre class='xr-text-repr-fallback'>&lt;xarray.DataArray &#x27;Test Signal&#x27; (frequency: 3073)&gt; Size: 49kB
-array([-9.43207004e-04+0.j        ,  1.34390665e-02+0.00022085j,
-       -1.39539514e-02-0.00379102j, ...,
-       -2.29173961e-03+0.002932j  ,  1.06792576e-03-0.00250411j,
-       -7.90121989e-05+0.j        ], shape=(3073,))
+array([ 0.00493385+0.j        ,  0.00097748-0.00402725j,
+       -0.00366236+0.00623097j, ..., -0.0004223 -0.0059518j ,
+       -0.00481646+0.0016204j ,  0.00382253+0.j        ],
+      shape=(3073,))
 Coordinates:
   * frequency  (frequency) float64 25kB 0.0 0.1667 0.3333 ... 511.7 511.8 512.0
 Attributes:
     unit:     um
-    epoch:    0.0</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Test Signal&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>frequency</span>: 3073</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-358749eb-8c25-474d-a063-18397da5c340' class='xr-array-in' type='checkbox' checked><label for='section-358749eb-8c25-474d-a063-18397da5c340' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>(-0.0009432070044047948+0j) ... (-7.901219890419994e-05+0j)</span></div><div class='xr-array-data'><pre>array([-9.43207004e-04+0.j        ,  1.34390665e-02+0.00022085j,
-       -1.39539514e-02-0.00379102j, ...,
-       -2.29173961e-03+0.002932j  ,  1.06792576e-03-0.00250411j,
-       -7.90121989e-05+0.j        ], shape=(3073,))</pre></div></div></li><li class='xr-section-item'><input id='section-7756eb63-2606-45d1-ae63-2891da80b02f' class='xr-section-summary-in' type='checkbox' checked /><label for='section-7756eb63-2606-45d1-ae63-2891da80b02f' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>frequency</span></div><div class='xr-var-dims'>(frequency)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.1667 0.3333 ... 511.8 512.0</div><input id='attrs-c620c751-e2c8-4342-a3a1-761f92239ffb' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c620c751-e2c8-4342-a3a1-761f92239ffb' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e47eb736-501c-475c-a1f6-64684827690b' class='xr-var-data-in' type='checkbox'><label for='data-e47eb736-501c-475c-a1f6-64684827690b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0.000000e+00, 1.666667e-01, 3.333333e-01, ..., 5.116667e+02,
-       5.118333e+02, 5.120000e+02], shape=(3073,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-3b781cab-7ae5-41f4-a346-6665d43c7a6c' class='xr-section-summary-in' type='checkbox' checked /><label for='section-3b781cab-7ae5-41f4-a346-6665d43c7a6c' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>um</dd><dt><span>epoch :</span></dt><dd>0.0</dd></dl></div></li></ul></div></div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully converted to control.FRD
+    epoch:    0.0</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Test Signal&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>frequency</span>: 3073</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-df29f36b-781b-44d3-899b-851e39a36f36' class='xr-array-in' type='checkbox' checked><label for='section-df29f36b-781b-44d3-899b-851e39a36f36' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>(0.004933846241911095+0j) ... (0.0038225327282768737+0j)</span></div><div class='xr-array-data'><pre>array([ 0.00493385+0.j        ,  0.00097748-0.00402725j,
+       -0.00366236+0.00623097j, ..., -0.0004223 -0.0059518j ,
+       -0.00481646+0.0016204j ,  0.00382253+0.j        ],
+      shape=(3073,))</pre></div></div></li><li class='xr-section-item'><input id='section-c096b4b8-cc94-4e7f-bd1a-83fcad9a549d' class='xr-section-summary-in' type='checkbox' checked /><label for='section-c096b4b8-cc94-4e7f-bd1a-83fcad9a549d' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>frequency</span></div><div class='xr-var-dims'>(frequency)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.1667 0.3333 ... 511.8 512.0</div><input id='attrs-9ea002ee-3a30-426b-a564-517fdbd1646f' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9ea002ee-3a30-426b-a564-517fdbd1646f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3fead13d-b19c-4d7b-818e-2fa75f54ae0b' class='xr-var-data-in' type='checkbox'><label for='data-3fead13d-b19c-4d7b-818e-2fa75f54ae0b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0.000000e+00, 1.666667e-01, 3.333333e-01, ..., 5.116667e+02,
+       5.118333e+02, 5.120000e+02], shape=(3073,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-1a54f823-0abd-45d6-a2f5-55e98af6576d' class='xr-section-summary-in' type='checkbox' checked /><label for='section-1a54f823-0abd-45d6-a2f5-55e98af6576d' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>um</dd><dt><span>epoch :</span></dt><dd>0.0</dd></dl></div></li></ul></div></div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully converted to control.FRD
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FrequencyResponseData(
-array([[[-9.43207004e-04+0.j        ,
-          1.34390665e-02+0.00022085j,
-         -1.39539514e-02-0.00379102j, ...,
-         -2.29173961e-03+0.002932j  ,
-          1.06792576e-03-0.00250411j,
-         -7.90121989e-05+0.j        ]]], shape=(1, 1, 3073)),
+array([[[ 0.00493385+0.j        ,  0.00097748-0.00402725j,
+         -0.00366236+0.00623097j, ...,
+         -0.0004223 -0.0059518j , -0.00481646+0.0016204j ,
+          0.00382253+0.j        ]]], shape=(1, 1, 3073)),
 array([0.00000000e+00, 1.66666667e-01, 3.33333333e-01, ...,
        5.11666667e+02, 5.11833333e+02, 5.12000000e+02],
       shape=(3073,)),
@@ -1351,7 +1349,7 @@ outputs=1, inputs=1)
 </div>
 </section>
 <section id="integration-with-python-control-library">
-<h2>7. Python Control Library との連携<a class="headerlink" href="#integration-with-python-control-library" title="Link to this heading">#</a></h2>
+<span id="7-integration-with-python-control-library"></span><h2>7. Python Control Library との連携<a class="headerlink" href="#integration-with-python-control-library" title="Link to this heading">#</a></h2>
 <p>制御工学の分野で標準的な <code class="docutils literal notranslate"><span class="pre">control</span></code> ライブラリの <strong>Frequency Response Data (FRD)</strong> オブジェクトと相互変換が可能です。 これにより、GWexpyで計測した伝達関数を、制御系の設計や解析に直接利用できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1387,41 +1385,41 @@ Outputs (1): [&#39;y[0]&#39;]
 
 Freq [rad/s]  Response
 ------------  ---------------------
-       0.000  -0.0009432        +0j
-       0.167     0.01344+0.0002209j
-       0.333    -0.01395 -0.003791j
-       0.500    0.002991 -0.002263j
-       0.667   -0.008099 +0.005676j
-       0.833   -0.006618 +0.004117j
-       1.000     0.02413 -0.004939j
-       1.167   -0.004336 -0.002532j
-       1.333   -0.003397-0.0002759j
-       1.500   -0.004985 +0.002748j
-       1.667   -0.005136 -0.002083j
-       1.833   -0.001745 +0.009952j
-       2.000     0.01179  -0.01144j
-       2.167    0.007582+8.049e-05j
-       2.333   -0.003996 +0.004645j
-       2.500    -0.01084 -0.002737j
-       2.667   -0.006015  +0.00229j
-       2.833    0.002827-0.0001202j
-       3.000     0.01235+0.0003463j
-       3.167    0.005397+0.0003838j
-       3.333   -0.003834 -0.006498j
-       3.500    -0.01354 +0.001156j
-       3.667    0.001421 +0.008732j
-       3.833   -0.003339 +0.001888j
+       0.000    0.004934        +0j
+       0.167   0.0009775 -0.004027j
+       0.333   -0.003662 +0.006231j
+       0.500    0.001958 -0.003342j
+       0.667    -0.01521 -0.001614j
+       0.833   0.0005588+0.0007022j
+       1.000     0.01643 +0.003002j
+       1.167    0.004574-0.0007496j
+       1.333   -0.006007 -0.002248j
+       1.500   -0.004853+0.0007455j
+       1.667    -0.01012 -0.001652j
+       1.833   -0.003445  +0.00136j
+       2.000     0.02316 +0.005647j
+       2.167     0.00309 -0.005136j
+       2.333   -0.004616 -0.002384j
+       2.500    -0.01597 -0.001597j
+       2.667   -0.005145 +0.005172j
+       2.833     0.01057 +0.004339j
+       3.000    0.007696 -0.003592j
+       3.167    0.006506 -0.006947j
+       3.333   -0.005932 +0.001436j
+       3.500   -0.009871 +0.006556j
+       3.667   -0.007007 -0.001826j
+       3.833   0.0005466 +0.002482j
  
 ... (truncated) ...
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Restored FrequencySeries ---
-FrequencySeries([-9.43207004e-04+0.j        ,
-                  1.34390665e-02+0.00022085j,
-                 -1.39539514e-02-0.00379102j, ...,
-                 -2.29173961e-03+0.002932j  ,
-                  1.06792576e-03-0.00250411j,
-                 -7.90121989e-05+0.j        ],
+FrequencySeries([ 0.00493385+0.j        ,
+                  0.00097748-0.00402725j,
+                 -0.00366236+0.00623097j, ...,
+                 -0.0004223 -0.0059518j ,
+                 -0.00481646+0.0016204j ,
+                  0.00382253+0.j        ],
                 unit: dimensionless,
                 f0: 0.0 Hz,
                 df: 0.02652582384864922 Hz,
@@ -1430,12 +1428,12 @@ FrequencySeries([-9.43207004e-04+0.j        ,
                 channel: None)
 </pre></div>
 </div>
-<img alt="../_images/20f7a8dff720218b5b2d90b1b7a435a2ea9068b736177cc501f2bfdc7ea1012f.png" src="../_images/20f7a8dff720218b5b2d90b1b7a435a2ea9068b736177cc501f2bfdc7ea1012f.png" />
+<img alt="../_images/19d505210b298ec32e575756a50686f68ad1e466ed37f6fc35e6e0716134cbd6.png" src="../_images/19d505210b298ec32e575756a50686f68ad1e466ed37f6fc35e6e0716134cbd6.png" />
 </div>
 </div>
 </section>
 <section id="quadrature-sum">
-<h2>8. 求積和 (Quadrature Sum)<a class="headerlink" href="#quadrature-sum" title="Link to this heading">#</a></h2>
+<span id="8-quadrature-sum"></span><h2>8. 求積和 (Quadrature Sum)<a class="headerlink" href="#quadrature-sum" title="Link to this heading">#</a></h2>
 <p>直交位相の和を計算する機能です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

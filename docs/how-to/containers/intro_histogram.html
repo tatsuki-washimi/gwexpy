@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/containers/intro_histogram';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/containers/intro_histogram.html" />
@@ -551,7 +551,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -605,7 +605,7 @@ astropy unknown
 </div>
 </div>
 <section id="creating-histograms">
-<h2>1. Creating Histograms<a class="headerlink" href="#creating-histograms" title="Link to this heading">#</a></h2>
+<span id="1-creating-histograms"></span><h2>1. Creating Histograms<a class="headerlink" href="#creating-histograms" title="Link to this heading">#</a></h2>
 <p>Two common ways to create a Histogram:</p>
 <ol class="arabic simple">
 <li><p>Directly from <strong>bin totals</strong> and <strong>edges</strong></p></li>
@@ -650,7 +650,7 @@ astropy unknown
 </div>
 </section>
 <section id="visualization">
-<h2>2. Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
+<span id="2-visualization"></span><h2>2. Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
 <p>Plot bin totals (with errorbars if available) and density (value / bin width).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -693,7 +693,7 @@ astropy unknown
 </div>
 </section>
 <section id="basic-statistics">
-<h2>3. Basic statistics<a class="headerlink" href="#basic-statistics" title="Link to this heading">#</a></h2>
+<span id="3-basic-statistics"></span><h2>3. Basic statistics<a class="headerlink" href="#basic-statistics" title="Link to this heading">#</a></h2>
 <p>Compute mean, median, variance and quantiles. <code class="docutils literal notranslate"><span class="pre">quantile()</span></code> is robust to flat bins.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -717,7 +717,7 @@ quantile(0.25): 1.1348114645471883
 </div>
 </section>
 <section id="rebinning">
-<h2>4. Rebinning<a class="headerlink" href="#rebinning" title="Link to this heading">#</a></h2>
+<span id="4-rebinning"></span><h2>4. Rebinning<a class="headerlink" href="#rebinning" title="Link to this heading">#</a></h2>
 <p>Demonstrate rebinning to non-uniform bins and verify totals are conserved and covariance is propagated.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -741,7 +741,7 @@ cov shape rebinned: None
 </div>
 </section>
 <section id="integration-with-error-propagation">
-<h2>5. Integration with error propagation<a class="headerlink" href="#integration-with-error-propagation" title="Link to this heading">#</a></h2>
+<span id="5-integration-with-error-propagation"></span><h2>5. Integration with error propagation<a class="headerlink" href="#integration-with-error-propagation" title="Link to this heading">#</a></h2>
 <p>Integrate over a partial interval (handles partial bin overlap) and show the propagated error.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -761,7 +761,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="serialization-hdf5-and-json">
-<h2>6. Serialization (HDF5 and JSON)<a class="headerlink" href="#serialization-hdf5-and-json" title="Link to this heading">#</a></h2>
+<span id="6-serialization-hdf5-and-json"></span><h2>6. Serialization (HDF5 and JSON)<a class="headerlink" href="#serialization-hdf5-and-json" title="Link to this heading">#</a></h2>
 <p>Show HDF5 write/read and a JSON-friendly dict for light-weight exchange.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -827,7 +827,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="root-interoperability-optional">
-<h2>7. ROOT interoperability (optional)<a class="headerlink" href="#root-interoperability-optional" title="Link to this heading">#</a></h2>
+<span id="7-root-interoperability-optional"></span><h2>7. ROOT interoperability (optional)<a class="headerlink" href="#root-interoperability-optional" title="Link to this heading">#</a></h2>
 <p>PyROOT may not be present in all environments. Use <code class="docutils literal notranslate"><span class="pre">try/except</span></code> to handle absence gracefully.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -851,7 +851,7 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 </div>
 </section>
 <section id="exercises">
-<h2>8. Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<span id="8-exercises"></span><h2>8. Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Generate a 1D mixture of Gaussians and verify rebin totals are preserved.</p></li>
 <li><p>Create weighted events where weights are <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> and verify <code class="docutils literal notranslate"><span class="pre">sumw2</span></code> updates as <code class="docutils literal notranslate"><span class="pre">sum(w^2)</span></code>.</p></li>

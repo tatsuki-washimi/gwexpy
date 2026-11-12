@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/migration';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/migration.html" />
@@ -548,7 +548,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -567,7 +567,7 @@
 governs default behavior of APIs corresponding to GWpy. Release-specific notes
 below describe changes within that contract.</p>
 <section id="v0-2-0">
-<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
+<span id="v020"></span><h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
 <section id="lazy-registration">
 <h3>Lazy registration<a class="headerlink" href="#lazy-registration" title="Link to this heading">#</a></h3>
 <p>A plain <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> no longer eagerly registers constructors or I/O
@@ -597,10 +597,10 @@ supported representation first.</p>
 </section>
 </section>
 <section id="v0-1-1">
-<h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
+<span id="v011"></span><h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
 </section>
 <section id="lorentzian-peak-parameters">
-<h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
+<span id="1-lorentzian-peak-parameters"></span><h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">fwhm</span></code> (Full Width at Half Maximum) parameter in <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.peaks.lorentzian_line()</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">gamma</span></code> (Half Width at Half Maximum) to better align with the underlying mathematical implementation and typical spectral modeling conventions.</p>
 <section id="how-to-migrate">
 <h3>How to Migrate<a class="headerlink" href="#how-to-migrate" title="Link to this heading">#</a></h3>
@@ -619,10 +619,10 @@ supported representation first.</p>
 </section>
 </section>
 <section id="spectral-fitting-generalized-least-squares">
-<h2>2. Spectral Fitting (Generalized Least Squares)<a class="headerlink" href="#spectral-fitting-generalized-least-squares" title="Link to this heading">#</a></h2>
+<span id="2-spectral-fitting-generalized-least-squares"></span><h2>2. Spectral Fitting (Generalized Least Squares)<a class="headerlink" href="#spectral-fitting-generalized-least-squares" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">stride</span></code> parameter has been removed from <code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum()</span></code> as it was an unsupported keyword argument that caused errors in the underlying <code class="docutils literal notranslate"><span class="pre">scipy.signal.periodogram</span></code> calls.</p>
 <section id="id1">
-<h3>How to Migrate<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<span id="how-to-migrate-1"></span><h3>How to Migrate<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p>Simply remove the <code class="docutils literal notranslate"><span class="pre">stride</span></code> keyword argument from your <code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code> calls. The function now correctly manages data segmentation through <code class="docutils literal notranslate"><span class="pre">fftlength</span></code> and <code class="docutils literal notranslate"><span class="pre">overlap</span></code>.</p>
 <p><strong>Old (v0.1.0):</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
@@ -638,10 +638,10 @@ supported representation first.</p>
 </section>
 </section>
 <section id="segmenttable-lazy-loading">
-<h2>3. SegmentTable Lazy Loading<a class="headerlink" href="#segmenttable-lazy-loading" title="Link to this heading">#</a></h2>
+<span id="3-segmenttable-lazy-loading"></span><h2>3. SegmentTable Lazy Loading<a class="headerlink" href="#segmenttable-lazy-loading" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">loader</span></code> argument in <code class="docutils literal notranslate"><span class="pre">SegmentTable.add_series_column()</span></code> now expects a callable that takes a single <code class="docutils literal notranslate"><span class="pre">segment</span></code> argument (<code class="docutils literal notranslate"><span class="pre">loader(segment)</span></code>), rather than a factory that takes an index (<code class="docutils literal notranslate"><span class="pre">loader(i)</span></code>).</p>
 <section id="id2">
-<h3>How to Migrate<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<span id="how-to-migrate-2"></span><h3>How to Migrate<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>Update your loader functions to accept the <code class="docutils literal notranslate"><span class="pre">segment</span></code> (span) of the row directly.</p>
 <p><strong>Old (v0.1.0):</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_factory</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>

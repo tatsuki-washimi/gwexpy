@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/installation';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/installation.html" />
@@ -456,7 +456,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -491,8 +491,8 @@ for its available versions.</p>
 <p class="admonition-title">Tip</p>
 <p><strong>Not sure which one to pick?</strong> If your goal is gravitational-wave analysis (NDS2, frame files, GW-specific tools), skip straight to <a class="reference internal" href="#conda-environment-recommended-gw-analysis">Conda Environment (Recommended / GW Analysis)</a> — this creates a dedicated environment with GW-related binary dependencies and the <code class="docutils literal notranslate"><span class="pre">gw</span></code>, <code class="docutils literal notranslate"><span class="pre">analysis</span></code>, and <code class="docutils literal notranslate"><span class="pre">fitting</span></code> extras. Only use <a class="reference internal" href="#minimal">Minimal</a> if you specifically want to keep dependencies to a bare minimum, and only use <a class="reference internal" href="#developer-mode">Developer Mode</a> if you are editing GWexpy itself.</p>
 </div>
-<section id="install-commands">
-<span id="en-install-command"></span><h2>Install Commands<a class="headerlink" href="#install-commands" title="Link to this heading">#</a></h2>
+<section id="en-install-command">
+<span id="install-commands"></span><h2>Install Commands<a class="headerlink" href="#en-install-command" title="Link to this heading">#</a></h2>
 <p>This table summarizes the commands; the sections below (<a class="reference internal" href="#minimal">Minimal</a>, <a class="reference internal" href="#conda-environment-recommended-gw-analysis">Conda Environment (Recommended / GW Analysis)</a>, <a class="reference internal" href="#developer-mode">Developer Mode</a>) give the full steps for each.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -523,7 +523,7 @@ for its available versions.</p>
 </div>
 </section>
 <section id="installation-steps">
-<h2>1. Installation Steps<a class="headerlink" href="#installation-steps" title="Link to this heading">#</a></h2>
+<span id="1-installation-steps"></span><h2>1. Installation Steps<a class="headerlink" href="#installation-steps" title="Link to this heading">#</a></h2>
 <section id="minimal">
 <h3>Minimal<a class="headerlink" href="#minimal" title="Link to this heading">#</a></h3>
 <p>For users who want to keep dependencies minimal and only use core containers like <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.</p>
@@ -538,7 +538,7 @@ for its available versions.</p>
 </div>
 </section>
 <section id="conda-environment-recommended-gw-analysis">
-<span id="id1"></span><h3>Conda Environment (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading">#</a></h3>
+<span id="id1"></span><span id="conda-environment-recommended--gw-analysis"></span><h3>Conda Environment (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading">#</a></h3>
 <p>For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.</p>
 <p>This workflow uses Conda for the environment and binary dependencies. Install
 GWexpy from conda-forge with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">gwexpy</span></code>, or use PyPI
@@ -582,13 +582,13 @@ above.</p>
 </section>
 </section>
 <section id="dependency-troubleshooting">
-<h2>2. Dependency Troubleshooting<a class="headerlink" href="#dependency-troubleshooting" title="Link to this heading">#</a></h2>
+<span id="2-dependency-troubleshooting"></span><h2>2. Dependency Troubleshooting<a class="headerlink" href="#dependency-troubleshooting" title="Link to this heading">#</a></h2>
 <p>For <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">nds2</span></code>, FrameLIB / <code class="docutils literal notranslate"><span class="pre">framecpp</span></code> import errors, and mixed-environment repairs, see the <a class="reference internal" href="../how-to/troubleshooting.html#installation-issues"><span class="std std-ref">Troubleshooting guide</span></a> — it covers these cases in more depth.</p>
 <p>If you installed from <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> and later discover you need GW binary dependencies, return to <a class="reference internal" href="#conda-environment-recommended-gw-analysis">Conda Environment (Recommended / GW Analysis)</a> before adding more packages.</p>
 <hr class="docutils" />
 </section>
-<section id="optional-dependencies-extras-details">
-<span id="optional-dependencies-extras"></span><h2>3. Optional Dependencies (Extras) Details<a class="headerlink" href="#optional-dependencies-extras-details" title="Link to this heading">#</a></h2>
+<section id="optional-dependencies-extras">
+<span id="optional-dependencies-extras-details"></span><span id="3-optional-dependencies-extras-details"></span><h2>3. Optional Dependencies (Extras) Details<a class="headerlink" href="#optional-dependencies-extras" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Extra Name</p></th>
@@ -643,7 +643,7 @@ above.</p>
 </section>
 <hr class="docutils" />
 <section id="os-specific-notes">
-<h2>4. OS-Specific Notes<a class="headerlink" href="#os-specific-notes" title="Link to this heading">#</a></h2>
+<span id="4-os-specific-notes"></span><h2>4. OS-Specific Notes<a class="headerlink" href="#os-specific-notes" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>Linux</strong>: Ensure standard build tools (<code class="docutils literal notranslate"><span class="pre">build-essential</span></code>) are installed.</p></li>
 <li><p><strong>macOS (Apple Silicon)</strong>: Using the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel ensures most binaries run natively on M1/M2/M3.</p></li>
@@ -651,7 +651,7 @@ above.</p>
 </ul>
 </section>
 <section id="security-note-pickle">
-<h2>5. Security Note (Pickle)<a class="headerlink" href="#security-note-pickle" title="Link to this heading">#</a></h2>
+<span id="5-security-note-pickle"></span><h2>5. Security Note (Pickle)<a class="headerlink" href="#security-note-pickle" title="Link to this heading">#</a></h2>
 <p>To facilitate sharing analysis results, GWexpy supports saving and restoring objects via <code class="docutils literal notranslate"><span class="pre">Pickle</span></code>. This uses <strong>Transparent Pickle</strong> technology, allowing objects to be restored as base GWpy objects even if the recipient does not have GWexpy installed.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -662,7 +662,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
 <a id="next-steps"></a></p>
 </section>
 <section id="next-to-read">
-<h2>6. Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading">#</a></h2>
+<span id="6-next-to-read"></span><h2>6. Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading">#</a></h2>
 <p><strong>Installed successfully? Continue to <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a></strong> to confirm import and plotting with the smallest possible example — that is the single next step for most readers.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> - confirm import and plotting with the smallest possible example</p></li>
@@ -721,7 +721,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-commands">Install Commands</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#en-install-command">Install Commands</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-steps">1. Installation Steps</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal">Minimal</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conda-environment-recommended-gw-analysis">Conda Environment (Recommended / GW Analysis)</a></li>
@@ -729,7 +729,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-troubleshooting">2. Dependency Troubleshooting</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies-extras-details">3. Optional Dependencies (Extras) Details</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies-extras">3. Optional Dependencies (Extras) Details</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specific-notes">4. OS-Specific Notes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#security-note-pickle">5. Security Note (Pickle)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-to-read">6. Next to Read</a></li>

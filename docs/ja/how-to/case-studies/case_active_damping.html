@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_active_damping';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 8.6 s · GWexpy 0.2.9
+      成功 · 7.2 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -623,7 +623,7 @@
 </div>
 </div>
 <section id="simulation-of-6-dof-active-vibration-isolation-system-plant-model">
-<h2>1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)<a class="headerlink" href="#simulation-of-6-dof-active-vibration-isolation-system-plant-model" title="Link to this heading">#</a></h2>
+<span id="1-simulation-of-6-dof-active-vibration-isolation-system-plant-model"></span><h2>1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)<a class="headerlink" href="#simulation-of-6-dof-active-vibration-isolation-system-plant-model" title="Link to this heading">#</a></h2>
 <p>剛体の運動方程式 <span class="math notranslate nohighlight">\(M \ddot{q} + C \dot{q} + K q = F\)</span> を定義します。 ここでは垂直3自由度（<span class="math notranslate nohighlight">\(z, \theta_x, \theta_y\)</span>）に焦点を当てます。</p>
 <p><strong>座標変換:</strong> モード座標 <span class="math notranslate nohighlight">\(q = [z, \theta_x, \theta_y]^T\)</span> に対し、</p>
 <ul class="simple">
@@ -764,7 +764,7 @@ D = [[0. 0. 0.]
 </div>
 </section>
 <section id="mimo-transfer-function-measurement">
-<h2>2. MIMO伝達関数の測定<a class="headerlink" href="#mimo-transfer-function-measurement" title="Link to this heading">#</a></h2>
+<span id="2-mimo-transfer-function-measurement"></span><h2>2. MIMO伝達関数の測定<a class="headerlink" href="#mimo-transfer-function-measurement" title="Link to this heading">#</a></h2>
 <p>センサーとアクチュエータの位置が異なるため、対角成分（ACT1-&gt;SEN1）だけでなく、非対角成分にも強い応答が現れるはずです。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -827,7 +827,7 @@ D = [[0. 0. 0.]
 </div>
 </section>
 <section id="modal-control-design">
-<h2>3 &amp; 4. モード制御系の設計 (Modal Control Design)<a class="headerlink" href="#modal-control-design" title="Link to this heading">#</a></h2>
+<span id="3--4-modal-control-design"></span><h2>3 &amp; 4. モード制御系の設計 (Modal Control Design)<a class="headerlink" href="#modal-control-design" title="Link to this heading">#</a></h2>
 <p>アクチュエータとセンサーの位置が一致していないため、単純な分散制御（<span class="math notranslate nohighlight">\(F_i \propto \dot{y}_i\)</span>）では不安定になる恐れがあります。 そこで、<strong>座標変換行列を用いてセンサー信号からモード変位を推定し、モード空間でダンピングをかけた後、アクチュエータ推力に分配する</strong> 手法を採ります。</p>
 <p><strong>制御フロー:</strong></p>
 <ol class="arabic simple">
@@ -901,7 +901,7 @@ MIMO Controller States: 6
 </div>
 </section>
 <section id="closed-loop-verification-impulse-response-asd">
-<h2>5 &amp; 6. 閉ループ検証 (インパルス応答 &amp; ASD)<a class="headerlink" href="#closed-loop-verification-impulse-response-asd" title="Link to this heading">#</a></h2>
+<span id="5--6-closed-loop-verification-impulse-response--asd"></span><h2>5 &amp; 6. 閉ループ検証 (インパルス応答 &amp; ASD)<a class="headerlink" href="#closed-loop-verification-impulse-response-asd" title="Link to this heading">#</a></h2>
 <p>構築したモード制御系を用いて、閉ループシミュレーションを行います。 アクチュエータ1へのインパルス外乱、および全軸への定常地面振動に対する応答を確認します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

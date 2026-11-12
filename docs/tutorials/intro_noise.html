@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -46,7 +46,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/intro_noise';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/intro_noise.html" />
@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -505,7 +505,7 @@ scatter; individual bins need not equal the model.</p>
 </div>
 </section>
 <section id="generating-asd-amplitude-spectral-density">
-<h2>1. Generating ASD (Amplitude Spectral Density)<a class="headerlink" href="#generating-asd-amplitude-spectral-density" title="Link to this heading">#</a></h2>
+<span id="1-generating-asd-amplitude-spectral-density"></span><h2>1. Generating ASD (Amplitude Spectral Density)<a class="headerlink" href="#generating-asd-amplitude-spectral-density" title="Link to this heading">#</a></h2>
 <p>GWexpy provides several ways to generate ASDs, from theoretical power-laws to detector-specific models.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -539,7 +539,7 @@ scatter; individual bins need not equal the model.</p>
 </div>
 </section>
 <section id="generating-time-domain-noise">
-<h2>2. Generating Time-domain Noise<a class="headerlink" href="#generating-time-domain-noise" title="Link to this heading">#</a></h2>
+<span id="2-generating-time-domain-noise"></span><h2>2. Generating Time-domain Noise<a class="headerlink" href="#generating-time-domain-noise" title="Link to this heading">#</a></h2>
 <p>You can generate colored noise directly in the time domain using <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.wave</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -558,12 +558,12 @@ scatter; individual bins need not equal the model.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/416d861547f195a5ceda20ef8a31e28a096852569b0001276f81df87a3a6c9a4.png" src="../_images/416d861547f195a5ceda20ef8a31e28a096852569b0001276f81df87a3a6c9a4.png" />
+<img alt="../_images/e349d81d32a5d552517f99d8fe1a111d72a5d68cf662af1afabb2a3bff8e1c5e.png" src="../_images/e349d81d32a5d552517f99d8fe1a111d72a5d68cf662af1afabb2a3bff8e1c5e.png" />
 </div>
 </div>
 </section>
 <section id="spectral-lines-and-masking">
-<h2>3. Spectral Lines and Masking<a class="headerlink" href="#spectral-lines-and-masking" title="Link to this heading">#</a></h2>
+<span id="3-spectral-lines-and-masking"></span><h2>3. Spectral Lines and Masking<a class="headerlink" href="#spectral-lines-and-masking" title="Link to this heading">#</a></h2>
 <p>Real noise contains narrow resonance peaks (lines). You can add them using Lorentzian or Gaussian shapes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -586,7 +586,7 @@ scatter; individual bins need not equal the model.</p>
 </div>
 </section>
 <section id="non-gaussian-noise-glitches">
-<h2>4. Non-Gaussian Noise (Glitches)<a class="headerlink" href="#non-gaussian-noise-glitches" title="Link to this heading">#</a></h2>
+<span id="4-non-gaussian-noise-glitches"></span><h2>4. Non-Gaussian Noise (Glitches)<a class="headerlink" href="#non-gaussian-noise-glitches" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.non_gaussian</span></code> provides models for non-stationary noise like scattered light or transient bursts.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -607,12 +607,12 @@ scatter; individual bins need not equal the model.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/86cb4cc11d1fb4dd19943133ff90388979fef286c759ae10a99952f73b653426.png" src="../_images/86cb4cc11d1fb4dd19943133ff90388979fef286c759ae10a99952f73b653426.png" />
+<img alt="../_images/b32f2966755164570945fc9b1d90952f1acb0e91083c4eb50bb5a480f02711f3.png" src="../_images/b32f2966755164570945fc9b1d90952f1acb0e91083c4eb50bb5a480f02711f3.png" />
 </div>
 </div>
 </section>
 <section id="case-study-simple-noise-budget">
-<h2>5. Case Study: Simple Noise Budget<a class="headerlink" href="#case-study-simple-noise-budget" title="Link to this heading">#</a></h2>
+<span id="5-case-study-simple-noise-budget"></span><h2>5. Case Study: Simple Noise Budget<a class="headerlink" href="#case-study-simple-noise-budget" title="Link to this heading">#</a></h2>
 <p>Combine multiple noise sources (seismic, thermal, shot noise) to create a total noise budget.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -648,14 +648,14 @@ scatter; individual bins need not equal the model.</p>
 </ul>
 </section>
 <section id="exercises">
-<h2>6. Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<span id="6-exercises"></span><h2>6. Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Spectrum-to-Time</strong>: Use <code class="docutils literal notranslate"><span class="pre">wave.colored</span></code> to generate a 10-second signal with an exponent of 1.5, then plot its ASD to verify the slope.</p></li>
 <li><p><strong>Line Removal</strong>: (Challenge) Remove the 60Hz line generated in Section 3.</p></li>
 </ol>
 </section>
 <section id="quick-check-cell-nbmake">
-<h2>7. Quick Check Cell (NBMAKE)<a class="headerlink" href="#quick-check-cell-nbmake" title="Link to this heading">#</a></h2>
+<span id="7-quick-check-cell-nbmake"></span><h2>7. Quick Check Cell (NBMAKE)<a class="headerlink" href="#quick-check-cell-nbmake" title="Link to this heading">#</a></h2>
 <p>Used for automated CI validation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

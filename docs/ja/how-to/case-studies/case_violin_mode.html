@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
@@ -47,7 +47,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_violin_mode';</script>
@@ -554,7 +554,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/64ca17399b07e2026cede7b9cbda1ac93c272eee">64ca1739</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7af0db8d93b1c638b66794e958f7c1e23b0e272f">7af0db8d</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -570,7 +570,7 @@
     <dd>本文のコードで生成する合成データ</dd>
     <dt>実行確認</dt>
     <dd>
-      成功 · 6.8 s · GWexpy 0.2.9
+      成功 · 5.3 s · GWexpy 0.2.9
       (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
     </dd>
     <dt>検証の種類</dt>
@@ -613,7 +613,7 @@
 </div>
 </div>
 <section id="physics-background">
-<h2>1. 物理的背景<a class="headerlink" href="#physics-background" title="Link to this heading">#</a></h2>
+<span id="1-physics-background"></span><h2>1. 物理的背景<a class="headerlink" href="#physics-background" title="Link to this heading">#</a></h2>
 <p>長さ <span class="math notranslate nohighlight">\(L\)</span>、張力 <span class="math notranslate nohighlight">\(T\)</span>、密度 <span class="math notranslate nohighlight">\(\rho\)</span>、断面積 <span class="math notranslate nohighlight">\(A\)</span> のファイバーの <span class="math notranslate nohighlight">\(n\)</span> 次共振周波数：</p>
 <div class="math notranslate nohighlight">
 \[f_n = \frac{n}{2L}\sqrt{\frac{T}{\rho A}}\]</div>
@@ -627,7 +627,7 @@
 </div></blockquote>
 </section>
 <section id="synthetic-asd-data">
-<h2>2. 合成 ASD データの準備<a class="headerlink" href="#synthetic-asd-data" title="Link to this heading">#</a></h2>
+<span id="2-synthetic-asd-data"></span><h2>2. 合成 ASD データの準備<a class="headerlink" href="#synthetic-asd-data" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.models.lorentzian_q</span></code> を使って、フラット背景に 2 本のバイオリンモードを 含む合成 ASD を生成します。フィットにも同じ関数を使うためモデルが自己整合します。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -688,7 +688,7 @@ Modes inserted:
 </div>
 </section>
 <section id="single-mode-fit">
-<h2>3. 単一モードフィット<a class="headerlink" href="#single-mode-fit" title="Link to this heading">#</a></h2>
+<span id="3-single-mode-fit"></span><h2>3. 単一モードフィット<a class="headerlink" href="#single-mode-fit" title="Link to this heading">#</a></h2>
 <p>1st バイオリンモード付近の狭帯域に ASD をクロップし、 局所的なフラット背景を差し引いてから余剰 ASD を <code class="docutils literal notranslate"><span class="pre">'lorentzian_q'</span></code> でフィットします。初期値 (<code class="docutils literal notranslate"><span class="pre">p0</span></code>) は真値の ~2 倍以内を目安とし、 最適化は <code class="docutils literal notranslate"><span class="pre">x0</span></code> と <code class="docutils literal notranslate"><span class="pre">Q</span></code> の物理的に意味のある範囲へ制限します。</p>
 <blockquote>
 <div><p><strong>失敗しやすいパターン</strong>: 切り出し窓を広く取りすぎて、隣接する倍音や局所的なベースラインの湾曲が最適化を支配してしまうこと。そうなると、フィットされた <code class="docutils literal notranslate"><span class="pre">Q</span></code> はモードではなく窓についての値になりがちです。</p>
@@ -754,7 +754,7 @@ Modes inserted:
 </div>
 </section>
 <section id="extracting-physical-parameters">
-<h2>4. 物理パラメータの抽出<a class="headerlink" href="#extracting-physical-parameters" title="Link to this heading">#</a></h2>
+<span id="4-extracting-physical-parameters"></span><h2>4. 物理パラメータの抽出<a class="headerlink" href="#extracting-physical-parameters" title="Link to this heading">#</a></h2>
 <p>フィットパラメータ <span class="math notranslate nohighlight">\((f_0, Q)\)</span> からすべての関連量を導出します：</p>
 <p>導出量は報告値であるだけでなく物理クロスチェックにも使えます。極端に短いリングダウン時間や倍音間で飛び跳ねる周波数は、興味深い懸架状態ではなくフィット不良を示していることが多いです。</p>
 <div class="cell docutils container">
@@ -805,7 +805,7 @@ Ring-down time    tau  = 18.89 s  (0.31 min)
 </div>
 </section>
 <section id="multi-mode-batch-processing">
-<h2>5. 複数モードのバッチ処理<a class="headerlink" href="#multi-mode-batch-processing" title="Link to this heading">#</a></h2>
+<span id="5-multi-mode-batch-processing"></span><h2>5. 複数モードのバッチ処理<a class="headerlink" href="#multi-mode-batch-processing" title="Link to this heading">#</a></h2>
 <p>設定辞書をループして各倍音をフィットし、サマリーテーブルにまとめます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -880,7 +880,7 @@ Ring-down time    tau  = 18.89 s  (0.31 min)
 </div>
 </section>
 <section id="time-variation-tracking">
-<h2>6. 時間変動の追跡<a class="headerlink" href="#time-variation-tracking" title="Link to this heading">#</a></h2>
+<span id="6-time-variation-tracking"></span><h2>6. 時間変動の追跡<a class="headerlink" href="#time-variation-tracking" title="Link to this heading">#</a></h2>
 <p>バイオリンモード周波数は温度とともにゆっくりドリフトします。 スペクトログラムを計算し、狭帯域内でピーク位置を追跡します。</p>
 <blockquote>
 <div><p><strong>分解能のガードレール</strong>: スペクトログラムのビン幅は、主張するドリフトに対して十分小さくなければなりません。4 秒 FFT ではビンが 0.25 Hz しかなく、20 mHz のドリフトは生の <code class="docutils literal notranslate"><span class="pre">argmax</span></code> では見えません。この例では 16 秒 FFT（<code class="docutils literal notranslate"><span class="pre">df</span> <span class="pre">=</span> <span class="pre">62.5</span> <span class="pre">mHz</span></code>）に加え、二次関数によるサブビン補間を行い、回復したドリフトが注入したドリフトの約 20% 以内に収まることを確認します。</p>
@@ -986,7 +986,7 @@ Tracking acceptance: PASS (within ±20% of injected drift)
 </div>
 </section>
 <section id="summary">
-<h2>7. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<span id="7-summary"></span><h2>7. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>フィット窓は 1 つの共振ファミリーを分離できる範囲に選ぶ。</p></li>
 <li><p>導出した Q、FWHM、リングダウン時間は sanity check としても使う。</p></li>
