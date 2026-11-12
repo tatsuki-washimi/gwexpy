@@ -16,6 +16,10 @@
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
 - **Overlap standard-error correction with a window array**: Stop silently disabling the Welch overlap correction for explicit window arrays. A length or shape mismatch in `calculate_correlation_factor()` raises `ValueError`, and `bootstrap_spectrogram()` applies the correction to window arrays of any length (#772).
 
+### Fixed
+
+- **`ScalarField` plot labels**: `plot_map2d()`, `plot_timeseries_points()`, `plot_profile()` and `plot_time_space_map()` built axis and colorbar labels with ad-hoc f-strings, which drew an empty `[]` for dimensionless axes or data (for example `x []`). They now use the shared `format_axis_label()` helper: a displayable unit still gives `x [m]`, and a dimensionless one gives `x`. Plotted values and axes are unchanged (#569).
+
 ## [0.2.9] - 2026-11-07
 
 ### Changed
