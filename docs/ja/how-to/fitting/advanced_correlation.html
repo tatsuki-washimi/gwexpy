@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.9</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/6251e74e13f48d02c87c51067437f6ca9dfe9245">6251e74e</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/39e5e3595aaee5595669d34d2bf359c4513471f2">39e5e359</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -609,7 +609,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d471d68cfda8df3a55d1ebb64f011a34d5766b78839250f73ab2e2ac0fb1dbb9.png" src="../../_images/d471d68cfda8df3a55d1ebb64f011a34d5766b78839250f73ab2e2ac0fb1dbb9.png" />
+<img alt="../../_images/89ace8a7a09cae878b1b3e48d213965b239074c727bcc58db9b19ff8aadfa8b0.png" src="../../_images/89ace8a7a09cae878b1b3e48d213965b239074c727bcc58db9b19ff8aadfa8b0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -621,8 +621,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6cf0f0e37908731257468d35cfae2ee1290ea4b8c542fa90c8052b45382cedb8.png" src="../../_images/6cf0f0e37908731257468d35cfae2ee1290ea4b8c542fa90c8052b45382cedb8.png" />
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x7dae5095c890&gt;
+<img alt="../../_images/78f215b361f50a2e503453aa2c33b717b63b5932abbf98efeb2604de6e624080.png" src="../../_images/78f215b361f50a2e503453aa2c33b717b63b5932abbf98efeb2604de6e624080.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x758537e44d90&gt;
 </pre></div>
 </div>
 </div>
@@ -648,8 +648,8 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlation A vs B (linear):
-  Pearson: 0.986
-  Kendall: 0.894
+  Pearson: 0.985
+  Kendall: 0.893
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**Note**:   MIC:     (minepy not available)
@@ -749,11 +749,11 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing Pearson vector (Top 5)...
    row  col channel     score
-0    5    0  AUX-05  0.951915
-1   16    0  AUX-16 -0.064899
-2   15    0  AUX-15 -0.045898
-3   14    0  AUX-14 -0.045330
-4    0    0  AUX-00 -0.029090
+0    5    0  AUX-05  0.952644
+1    6    0  AUX-06 -0.040541
+2   13    0  AUX-13  0.039461
+3   11    0  AUX-11 -0.036814
+4    7    0  AUX-07  0.033699
 </pre></div>
 </div>
 </div>
@@ -773,7 +773,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f5005e84c4815bbe6b3a2105b42afa237e58813a9e4868de4c5d8bdd4373e5de.png" src="../../_images/f5005e84c4815bbe6b3a2105b42afa237e58813a9e4868de4c5d8bdd4373e5de.png" />
+<img alt="../../_images/4d233b5055a4933bea3f5363f3689094e0e9db00c90a354cc4471cc7e39937dd.png" src="../../_images/4d233b5055a4933bea3f5363f3689094e0e9db00c90a354cc4471cc7e39937dd.png" />
 </div>
 </div>
 </section>
@@ -803,7 +803,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>corr(x,y): 0.9809075921667307
-partial corr(x,y|z): 0.004410452860247921
+partial corr(x,y|z): 0.004410452860247914
 </pre></div>
 </div>
 </div>
@@ -837,7 +837,9 @@ partial corr(x,y|z): 0.004410452860247921
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Association edges:
-    row  col channel     score source target
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    row  col channel     score source target
 0    0    0       x  1.000000      x      x
 1    2    0       z  0.989968      x      z
 2    1    0       y  0.980908      x      y
@@ -906,7 +908,7 @@ Graph built successfully.
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fastMI(x,y): 0.08925170168547956
-fastMI(x,z): 0.11320579203180094
+fastMI(x,z): 0.11320579203180092
 </pre></div>
 </div>
 </div>
