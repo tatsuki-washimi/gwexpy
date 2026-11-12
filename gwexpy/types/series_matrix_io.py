@@ -94,8 +94,31 @@ def _encode_attrs_json(attrs: Any) -> str | None:
         raise TypeError(msg) from exc
 
 
+def _write_axis_group(h5file: Any, name: str, axis: Any) -> None:
+    """Store coordinate ``axis`` as ``<name>/value`` with an optional unit."""
+    group = h5file.create_group(name)
+    if isinstance(axis, u.Quantity):
+        group.create_dataset("value", data=np.asarray(axis.value))
+        group.attrs["unit"] = str(axis.unit)
+    else:
+        group.create_dataset("value", data=np.asarray(axis))
+
+
+def _read_axis_group(h5file: Any, name: str) -> Any:
+    """Return the coordinate axis stored by `_write_axis_group`."""
+    group = h5file[name]
+    values = group["value"][:]
+    unit = group.attrs.get("unit", None)
+    return u.Quantity(values, unit) if unit else values
+
+
 class SeriesMatrixIOMixin:
     """Mixin for SeriesMatrix I/O and display operations."""
+
+    # Names of coordinate axes, beyond ``xindex``, that a subclass stores
+    # independently and that HDF5 must therefore carry.  Each name is both the
+    # attribute read on write and the constructor keyword passed on read.
+    _hdf5_extra_axes: tuple[str, ...] = ()
 
     if TYPE_CHECKING:
         _value: np.ndarray
@@ -272,12 +295,11 @@ class SeriesMatrixIOMixin:
             if attrs_json is not None:
                 f.attrs["attrs_json"] = attrs_json
             f.create_dataset("data", data=self.value)
-            grp_x = f.create_group("xindex")
-            if isinstance(self.xindex, u.Quantity):
-                grp_x.create_dataset("value", data=np.asarray(self.xindex.value))
-                grp_x.attrs["unit"] = str(self.xindex.unit)
-            else:
-                grp_x.create_dataset("value", data=np.asarray(self.xindex))
+            _write_axis_group(f, "xindex", self.xindex)
+            for axis_name in self._hdf5_extra_axes:
+                axis = getattr(self, axis_name, None)
+                if axis is not None:
+                    _write_axis_group(f, axis_name, axis)
             meta_grp = f.create_group("meta")
             units = np.vectorize(lambda u_: "" if u_ is None else str(u_))(
                 self.meta.units
@@ -442,13 +464,14 @@ class SeriesMatrixIOMixin:
         with h5py.File(source, "r") as f:
             data = f["data"][:]
 
-            grp_x = f["xindex"]
-            xindex_vals = grp_x["value"][:]
-            xunit_str = grp_x.attrs.get("unit", None)
-            if xunit_str:
-                xindex = u.Quantity(xindex_vals, xunit_str)
-            else:
-                xindex = xindex_vals
+            xindex = _read_axis_group(f, "xindex")
+            # A file without the group predates the axis being stored; the
+            # axis is then left unset rather than invented.
+            extra_axes = {
+                axis_name: _read_axis_group(f, axis_name)
+                for axis_name in cls._hdf5_extra_axes
+                if axis_name in f
+            }
 
             name = f.attrs.get("name", "")
             try:
@@ -551,4 +574,5 @@ class SeriesMatrixIOMixin:
             name=name,
             epoch=epoch,
             attrs=attrs,
+            **extra_axes,
         )
