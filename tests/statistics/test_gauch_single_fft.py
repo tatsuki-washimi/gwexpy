@@ -258,6 +258,29 @@ def test_half_overlap_gives_the_reference_segment_count():
     assert longer.pvalue_map.dt.value == pytest.approx(0.5)
 
 
+@pytest.mark.parametrize("hop", [1, 3])
+def test_short_even_fft_rejects_non_half_overlap(hop):
+    """With 4 FFT samples, only hop=2 represents 50% overlap."""
+    with pytest.raises(ValueError, match="overlap"):
+        gauch_module._resolve_hop(4.0, float(hop), None, 1.0)
+
+
+@pytest.mark.parametrize("hop", [2, 4, 5])
+def test_short_even_fft_accepts_half_or_disjoint_hops(hop):
+    stride, nfft, resolved_hop = gauch_module._resolve_hop(
+        4.0, float(hop), None, 1.0
+    )
+    assert (stride, nfft, resolved_hop) == (float(hop), 4, hop)
+
+
+@pytest.mark.parametrize("hop", [2, 3])
+def test_odd_fft_allows_nearest_half_sample_hops(hop):
+    stride, nfft, resolved_hop = gauch_module._resolve_hop(
+        5.0, float(hop), None, 1.0
+    )
+    assert (stride, nfft, resolved_hop) == (float(hop), 5, hop)
+
+
 def test_gapped_segments_are_accepted():
     res = compute_gauch(
         _noise(), fftlength=1.0, stride=2.0, window=10, n_monte_carlo=20, seed=1

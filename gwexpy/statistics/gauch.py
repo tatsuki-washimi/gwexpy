@@ -141,8 +141,9 @@ def _resolve_hop(
     # The null distribution treats the ASD samples of one bin as independent.
     # That holds for disjoint segments, and was measured to hold for Hann
     # segments at 50% overlap (#879). Other overlaps are not calibrated.
-    half = nfft / 2.0
-    if hop < nfft and abs(hop - half) > 1:
+    # For odd nfft, either nearest integer hop represents half a segment.
+    # Even nfft requires exactly nfft // 2; a +/-1 hop is not 50%.
+    if hop < nfft and abs(2 * hop - nfft) > 1:
         raise ValueError(
             "compute_gauch: segment overlap must be 0 or 50% of fftlength "
             f"(stride {fftlength / 2:g} s or >= {fftlength:g} s), got an overlap "
