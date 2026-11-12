@@ -1304,8 +1304,10 @@ class ScalarField(FieldBase):
             )
 
         # Labels with units
-        ax.set_xlabel(f"{ax2_name} [{ax2_index.unit}]")
-        ax.set_ylabel(f"{ax1_name} [{ax1_index.unit}]")
+        from gwexpy.plot._label_utils import format_axis_label
+
+        ax.set_xlabel(format_axis_label(ax2_name, ax2_index.unit))
+        ax.set_ylabel(format_axis_label(ax1_name, ax1_index.unit))
 
         if title:
             ax.set_title(title)
@@ -1314,7 +1316,7 @@ class ScalarField(FieldBase):
         if add_colorbar:
             cbar = fig.colorbar(im, ax=ax)
             if self.unit is not None:
-                cbar.set_label(f"{mode} [{self.unit}]")
+                cbar.set_label(format_axis_label(mode, self.unit))
 
         return fig, ax
 
@@ -1372,9 +1374,12 @@ class ScalarField(FieldBase):
 
         # Labels
         x_unit = getattr(self._axis0_index, "unit", u.dimensionless_unscaled)
-        ax.set_xlabel(f"{self._axis0_name} [{x_unit}]")
-        if self.unit is not None:
-            ax.set_ylabel(f"[{self.unit}]")
+        from gwexpy.plot._label_utils import format_axis_label, format_label_with_unit
+
+        ax.set_xlabel(format_axis_label(self._axis0_name, x_unit))
+        y_label = format_label_with_unit(None, self.unit)
+        if y_label is not None:
+            ax.set_ylabel(y_label)
 
         if legend:
             ax.legend()
@@ -1444,9 +1449,11 @@ class ScalarField(FieldBase):
 
         # Labels with units
         x_unit = getattr(axis_index, "unit", u.dimensionless_unscaled)
-        ax.set_xlabel(f"{axis} [{x_unit}]")
+        from gwexpy.plot._label_utils import format_axis_label
+
+        ax.set_xlabel(format_axis_label(axis, x_unit))
         if y_unit is not None:
-            ax.set_ylabel(f"{mode} [{y_unit}]")
+            ax.set_ylabel(format_axis_label(mode, y_unit))
 
         if label:
             ax.legend()
@@ -1959,8 +1966,10 @@ class ScalarField(FieldBase):
             raise ValueError(f"Unknown method '{method}'.")
 
         # Labels
-        ax.set_xlabel(f"{axis} [{space_axis.unit}]")
-        ax.set_ylabel(f"{self._axis0_name} [{t_axis.unit}]")
+        from gwexpy.plot._label_utils import format_axis_label
+
+        ax.set_xlabel(format_axis_label(axis, space_axis.unit))
+        ax.set_ylabel(format_axis_label(self._axis0_name, t_axis.unit))
 
         if title:
             ax.set_title(title)
@@ -1968,7 +1977,7 @@ class ScalarField(FieldBase):
         if add_colorbar:
             cbar = fig.colorbar(im, ax=ax)
             if self.unit is not None:
-                cbar.set_label(f"{mode} [{self.unit}]")
+                cbar.set_label(format_axis_label(mode, self.unit))
 
         return fig, ax
 
