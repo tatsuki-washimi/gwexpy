@@ -205,3 +205,11 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         return result
 
     # find_peaks is inherited from SignalAnalysisMixin in the final TimeSeries class
+
+    # Keep the inherited read adapter after existing methods so source
+    # line references in the override inventory remain stable (#882).
+    from gwpy.io.registry import UnifiedReadWriteMethod as _UnifiedReadWriteMethod
+
+    from ._read import IrregularAwareTimeSeriesRead as _IrregularAwareTimeSeriesRead
+
+    read = _UnifiedReadWriteMethod(_IrregularAwareTimeSeriesRead)
