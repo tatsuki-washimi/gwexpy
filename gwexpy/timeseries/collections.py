@@ -547,13 +547,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             if fmt == "hdf5" and not (
                 augmentation_attrs & _GWEXPY_COLLECTION_HDF5_ATTRS
             ):
-                # Plain HDF5 is a GWpy API.  Delegate the complete public
-                # binding (including names/group, open handles, start/end,
-                # and failure behavior) to the parent class.  Exact sidecars
-                # are overlaid only after GWpy has resolved that public result.
+                # Ordinary HDF5 retains GWpy's reader; an irregular axis
+                # needs specialized dispatch before any GWexpy exact
+                # metadata sidecars are restored.
+                from ._read import native_hdf5_dict_read as _reader
                 result = _coerce_native_hdf5_result(
                     cls,
-                    BaseTimeSeriesDict.read(source, *args, **kwargs),
+                    _reader(source, BaseTimeSeriesDict)(source, *args, **kwargs),
                 )
                 if augmentation_attrs & _GWEXPY_EXACT_HDF5_ATTRS:
                     result = _restore_native_hdf5_exact_state(
