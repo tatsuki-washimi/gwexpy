@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import threading
-import warnings
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
@@ -11,6 +10,7 @@ import numpy as np
 
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
+from ._common import UniformRandomSource, warn_at_user_call
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
@@ -43,7 +43,7 @@ def compute_gauch(
     overlap: float | None = None,
     n_monte_carlo: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> GauChResult:
     """Compute GauCh (Modified KS test) for the given TimeSeries using a sliding window.
@@ -76,11 +76,10 @@ def compute_gauch(
 
     """
     if rng is not None and seed is not None:
-        warnings.warn(
+        warn_at_user_call(
             "compute_gauch: both rng and seed were given; seed is "
             "ignored because rng takes priority",
             UserWarning,
-            stacklevel=2,
         )
 
     stride_was_provided = stride is not None
@@ -231,7 +230,7 @@ def _get_lilliefors_null_distribution(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> np.ndarray:
     """Generate the Lilliefors null distribution of Dn for window size `n`.
@@ -284,7 +283,7 @@ def _get_rayleigh_lilliefors_pvalue(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> float:
     """Get the p-value using the (possibly cached) Lilliefors null distribution."""
