@@ -17,6 +17,9 @@ from pathlib import Path
 from typing import Any
 
 import h5py
+import numpy as np
+from astropy import units as u
+from gwpy.segments import Segment
 from gwpy.types.io.hdf5 import write_hdf5_array, write_hdf5_series
 
 # Lowest HDF5 file-format bound that provides dense attribute storage.  The
@@ -39,14 +42,87 @@ def has_irregular_axis(series: Any) -> bool:
     return xindex is not None and not xindex.regular
 
 
+def needs_explicit_axis(series: Any) -> bool:
+    """Return whether ``x0``/``dx`` would change the stored coordinates.
+
+    GWpy's ``Index.regular`` uses an absolute tolerance, so it can classify a
+    non-uniform index as regular.  HDF5's compact ``x0``/``dx`` layout is safe
+    only when GWpy's reader reconstructs every coordinate exactly.  Otherwise
+    the exact index must be stored in the existing ``xindex`` attribute.
+    """
+    xindex = getattr(series, "_xindex", None)
+    if xindex is None:
+        return False
+    if not xindex.regular:
+        return True
+    try:
+        start = xindex[0]
+        step = xindex[1] - start
+        reconstructed = type(xindex).define(start, step, xindex.size)
+    except (AttributeError, IndexError, TypeError, ValueError):
+        # If affine metadata cannot be obtained, retain the only complete
+        # representation already available: the explicit coordinates.
+        return True
+    return not np.array_equal(reconstructed.value, xindex.value)
+
+
+def _explicit_axis_span(series: Any) -> Any:
+    """Return the covered interval from explicit coordinates, not ``dx``."""
+    xindex = series.xindex
+    if xindex.size == 1:
+        coordinate = float(xindex.value[0])
+        return Segment(coordinate, coordinate)
+    if xindex.size == 0:
+        raise ValueError("cannot determine an interval from an empty xindex")
+    span = series.span
+    last_step = xindex.value[-1] - xindex.value[-2]
+    return type(span)(float(xindex.value[0]), float(xindex.value[-1] + last_step))
+
+
 def irregular_axis_attrs(series: Any) -> dict[str, Any]:
     """Return the index attributes to store for an irregular-axis series.
 
-    Only the axis unit is listed: the axis samples themselves are written by
-    GWpy's metadata writer as the ``xindex`` attribute, and ``dx`` is
-    undefined.
+    Set the axis unit and samples explicitly. GWpy's metadata writer omits an
+    ``xindex`` attribute when its tolerance classifies the index as regular.
     """
-    return {"xunit": str(series.xunit)}
+    return {
+        "xunit": str(series.xunit),
+        "xindex": np.asarray(series.xindex.value),
+    }
+
+
+def _explicit_axis_attrs(series: Any, attrs: dict[str, Any] | None) -> dict[str, Any]:
+    """Combine caller attributes with the authoritative explicit axis data."""
+    axis_attrs = irregular_axis_attrs(series)
+    combined = dict(attrs or {})
+
+    if "dx" in combined:
+        raise ValueError("attrs['dx'] cannot describe an explicit HDF5 xindex")
+    if "xindex" in combined and not np.array_equal(
+        np.asarray(combined["xindex"]), axis_attrs["xindex"]
+    ):
+        raise ValueError("attrs['xindex'] conflicts with the series coordinates")
+    if "xunit" in combined:
+        try:
+            supplied_xunit = u.Unit(combined["xunit"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("attrs['xunit'] must match the series axis unit") from exc
+        if supplied_xunit != series.xunit:
+            raise ValueError("attrs['xunit'] conflicts with the series axis unit")
+    if "x0" in combined:
+        supplied_x0 = combined["x0"]
+        try:
+            if hasattr(supplied_x0, "to_value"):
+                supplied_x0 = supplied_x0.to_value(series.xunit)
+            if float(supplied_x0) != float(series.xindex.value[0]):
+                raise ValueError("attrs['x0'] conflicts with the series coordinates")
+        except (TypeError, u.UnitConversionError) as exc:
+            raise ValueError(
+                "attrs['x0'] conflicts with the series coordinates"
+            ) from exc
+
+    combined.update(axis_attrs)
+    return combined
 
 
 def raise_for_attribute_limit(
@@ -90,13 +166,19 @@ def _write_irregular(
     **kwargs: Any,
 ) -> h5py.Dataset:
     """Write ``series`` with its irregular axis into an open HDF5 group."""
+    attrs = kwargs.pop("attrs", None)
+    if attrs is None:
+        attrs = irregular_axis_attrs(series)
     try:
-        return write_hdf5_array(
-            series, h5g, path=path, attrs=irregular_axis_attrs(series), **kwargs
-        )
+        dataset = write_hdf5_array(series, h5g, path=path, attrs=attrs, **kwargs)
     except OSError as exc:
         raise_for_attribute_limit(series, h5g, path, exc)
         raise
+    # The explicit xindex is authoritative. Avoid retaining an affine stride
+    # that would invite readers to reconstruct a different axis.
+    if "dx" in dataset.attrs:
+        del dataset.attrs["dx"]
+    return dataset
 
 
 def write_hdf5_series_any_axis(
@@ -108,14 +190,16 @@ def write_hdf5_series_any_axis(
 ) -> h5py.Dataset:
     """Write a series with a regular or irregular x-axis to HDF5.
 
-    A series with a regular axis, or any call with explicit ``attrs``, is
+    A series whose coordinates are reproduced exactly by ``x0``/``dx`` is
     delegated to GWpy's writer and keeps its on-disk layout (``x0``, ``dx``
-    and ``xunit`` dataset attributes).
+    and ``xunit`` dataset attributes). Caller-supplied attributes are passed
+    through in that case.
 
-    A series with an irregular axis is written with the exact axis samples in
-    the ``xindex`` dataset attribute and the axis unit in ``xunit``; ``dx`` is
-    not written because it is undefined.  Values, axis samples, ``unit`` and
-    ``name`` are stored without conversion.
+    A series that cannot be represented exactly by ``x0``/``dx`` is written
+    with its exact axis samples in the ``xindex`` dataset attribute and the
+    axis unit in ``xunit``. ``dx`` is omitted. Non-conflicting caller
+    attributes are retained. Values, axis samples, ``unit`` and ``name`` are
+    stored without conversion.
 
     Parameters
     ----------
@@ -145,11 +229,14 @@ def write_hdf5_series_any_axis(
         file that uses the 'earliest' HDF5 format bound.
 
     """
-    if attrs is not None or not has_irregular_axis(series):
+    if not needs_explicit_axis(series):
         return write_hdf5_series(series, output, path=path, attrs=attrs, **kwargs)
 
+    explicit_attrs = _explicit_axis_attrs(series, attrs)
+    explicit_kwargs = {**kwargs, "attrs": explicit_attrs}
+
     if isinstance(output, h5py.HLObject):
-        return _write_irregular(series, output, path, **kwargs)
+        return _write_irregular(series, output, path, **explicit_kwargs)
 
     # Same file-opening contract as ``gwpy.io.hdf5.with_write_hdf5``, with a
     # format bound that can hold an axis longer than 64 KiB as an attribute.
@@ -163,4 +250,4 @@ def write_hdf5_series_any_axis(
         msg = f"File exists: {output}"
         raise OSError(msg)
     with h5py.File(output, "a" if append else "w", libver=IRREGULAR_AXIS_LIBVER) as h5f:
-        return _write_irregular(series, h5f, path, **kwargs)
+        return _write_irregular(series, h5f, path, **explicit_kwargs)

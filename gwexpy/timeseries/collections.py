@@ -551,6 +551,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 # needs specialized dispatch before any GWexpy exact
                 # metadata sidecars are restored.
                 from ._read import native_hdf5_dict_read as _reader
+
                 result = _coerce_native_hdf5_result(
                     cls,
                     _reader(source, BaseTimeSeriesDict)(source, *args, **kwargs),
@@ -2423,6 +2424,14 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+            from gwexpy.io.hdf5_series import needs_explicit_axis
+
+            from ._read import _crop_explicit_axis
+
+            def select_hdf5_window(ts: Any) -> Any:
+                if needs_explicit_axis(ts):
+                    return _crop_explicit_axis(ts, start, end)
+                return apply_time_selection(ts, start, end)
 
             with h5py.File(source, "r") as h5f:
                 manifest_backed = has_hdf5_collection_manifest(h5f)
@@ -2439,7 +2448,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                                 raise
                             skipped.record(ds_name, e)
                             continue
-                        out_items.append(apply_time_selection(ts, start, end))
+                        out_items.append(select_hdf5_window(ts))
                     skipped.report()
                     return cls(*out_items)
                 if layout == LAYOUT_GROUP:
@@ -2457,7 +2466,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                                     raise e from e2
                                 skipped.record(grp_name, e2, e)
                                 continue
-                        out_items.append(apply_time_selection(ts, start, end))
+                        out_items.append(select_hdf5_window(ts))
                     skipped.report()
                     return cls(*out_items)
         raise TypeError(

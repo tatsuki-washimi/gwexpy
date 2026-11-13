@@ -1,0 +1,75 @@
+issue: 887
+base: origin/main@071cbfcba
+branch: fix/issue-887-hdf5-coordinate-preservation
+status: in-progress
+skills:
+  - setup_plan
+  - gwexpy_conda_jobs
+  - lint_check
+  - verify_physics
+  - code-reviewer
+  - pr-writer
+  - github-mcp-secret-filter
+baseline_reproduction:
+  environment:
+    gwpy: 4.0.2
+    h5py: 3.16.0
+  time_axis:
+    expression: "arange(100) * 1e-6 + alternating 1e-9 s"
+    gwpy_regular: true
+    before:
+      layout: "x0/dx; no xindex"
+      max_abs_error_s: 9.80000000000116e-08
+    after:
+      layout: "xindex; no dx"
+      coordinate_equal: true
+      max_abs_error_s: 0
+  frequency_axis:
+    expression: "geomspace(1, 10, 2000000) Hz"
+    gwpy_regular: true
+    before:
+      layout: "x0/dx; no xindex"
+      max_abs_error_hz: 6.697413581347061
+    after:
+      layout: "xindex; no dx"
+      coordinate_equal: true
+      max_abs_error_hz: 0
+    after_metadata:
+      values_equal: true
+      dtype: float64
+      name: p
+      axis_unit: Hz
+verification:
+  commands:
+    - command: "conda run -n gwexpy python -m pytest tests/timeseries/test_hdf5_irregular_axis.py tests/frequencyseries/test_hdf5_irregular_axis.py -q"
+      result: "53 passed; includes coordinates, values, dtype, data/axis units, names, real/complex, attrs, bounded TimeSeries/Dict/List reads, singleton reads, and mixed regular/explicit Dict coverage"
+    - command: "conda run -n gwexpy python -m pytest tests/timeseries/test_hdf5_irregular_axis.py tests/timeseries/test_hdf5_layouts.py tests/timeseries/test_hdf5_exact_t0.py tests/timeseries/test_hdf5_exact_epoch_codec.py tests/io/test_hdf5_timeseries_family.py tests/frequencyseries/test_hdf5_irregular_axis.py tests/frequencyseries/test_hdf5_layouts.py tests/frequencyseries/test_hdf5_gwpy_interop.py tests/io/test_gwpy_hdf5_compat.py -q"
+      result: "850 passed, 41 warnings in 70.40 s"
+    - command: "conda run -n gwexpy ruff check gwexpy/io/hdf5_series.py gwexpy/timeseries/_read.py gwexpy/timeseries/io/hdf5.py gwexpy/timeseries/collections.py tests/timeseries/test_hdf5_irregular_axis.py tests/frequencyseries/test_hdf5_irregular_axis.py"
+      result: "passed"
+    - command: "conda run -n gwexpy ruff format --check gwexpy/io/hdf5_series.py gwexpy/timeseries/_read.py gwexpy/timeseries/io/hdf5.py gwexpy/timeseries/collections.py tests/timeseries/test_hdf5_irregular_axis.py tests/frequencyseries/test_hdf5_irregular_axis.py"
+      result: "passed"
+    - command: "git diff --check origin/main"
+      result: "passed"
+    - command: "conda run -n gwexpy mypy gwexpy/io/hdf5_series.py gwexpy/timeseries/_read.py gwexpy/timeseries/io/hdf5.py gwexpy/timeseries/collections.py"
+      result: "Success: no issues found in 4 source files"
+    - command: "GitHub Actions for the created PR"
+      result: pending
+  code_review:
+    model: gpt-6-sol
+    effort: medium
+    result: "Independent review found and corrected read-window/attrs issues, a singleton regression, Dict/List selection errors, and mixed-Dict padding behavior. Final review: no remaining actionable findings."
+  physics_review:
+    result: "No physical formula or values are changed. Exact axis coordinates, data values, dtype, units, and names are checked by HDF5 round trips. Human scientific/data-integrity review requested on the PR."
+  omitted:
+    - "Full pytest suite"
+    - "Non-HDF5 I/O suites"
+files_changed:
+  - CHANGELOG.md
+  - docs/developers/plans/2026-11-13-issue-887-hdf5-axis-preservation.md
+  - gwexpy/io/hdf5_series.py
+  - gwexpy/timeseries/_read.py
+  - gwexpy/timeseries/io/hdf5.py
+  - gwexpy/timeseries/collections.py
+  - tests/timeseries/test_hdf5_irregular_axis.py
+  - tests/frequencyseries/test_hdf5_irregular_axis.py

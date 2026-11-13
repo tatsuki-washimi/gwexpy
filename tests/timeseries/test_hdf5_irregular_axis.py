@@ -68,6 +68,126 @@ def test_irregular_timeseries_hdf5_roundtrip(tmp_path, dtype):
     _assert_ts_equal(TimeSeries.read(target, format="hdf5"), ts)
 
 
+@pytest.mark.parametrize("dtype", [np.float32, np.float64, np.complex128])
+def test_nearly_regular_timeseries_hdf5_preserves_explicit_axis(tmp_path, dtype):
+    ticks = np.arange(100)
+    times = ticks * 1e-6 + np.where(ticks % 2, 1e-9, 0.0)
+    values = np.linspace(-1.0, 1.0, ticks.size).astype(dtype)
+    if np.issubdtype(dtype, np.complexfloating):
+        values = values + 1j * np.linspace(1.0, -1.0, ticks.size)
+    ts = TimeSeries(values, times=times, unit="m", name="K1:NEARLY_REGULAR")
+    assert ts.xindex.regular  # GWpy's absolute tolerance misclassifies this axis.
+    target = tmp_path / "nearly_regular_ts.h5"
+
+    ts.write(target, format="hdf5")
+    with h5py.File(target, "r") as h5f:
+        attrs = dict(h5f[ts.name].attrs)
+    assert "xindex" in attrs
+    assert "dx" not in attrs
+    assert attrs["xunit"] == "s"
+
+    back = TimeSeries.read(target, format="hdf5")
+    assert back.dtype == ts.dtype
+    assert back.unit == ts.unit
+    assert back.name == ts.name
+    np.testing.assert_array_equal(back.times.value, times)
+    np.testing.assert_array_equal(back.value, values)
+
+
+def test_nearly_regular_timeseries_hdf5_preserves_caller_attrs(tmp_path):
+    ticks = np.arange(100)
+    times = ticks * 1e-6 + np.where(ticks % 2, 1e-9, 0.0)
+    ts = TimeSeries(np.ones(ticks.size), times=times, unit="m", name="near")
+    target = tmp_path / "nearly_regular_attrs.h5"
+
+    ts.write(target, format="hdf5", attrs={"note": "caller"})
+    with h5py.File(target, "r") as h5f:
+        attrs = dict(h5f["near"].attrs)
+    assert attrs["note"] == "caller"
+    assert "xindex" in attrs
+    assert "dx" not in attrs
+    np.testing.assert_array_equal(attrs["xindex"], times)
+
+
+@pytest.mark.parametrize("start", [0.0, 2e-6])
+def test_nearly_regular_timeseries_read_bounds_use_explicit_coordinates(
+    tmp_path, start
+):
+    ticks = np.arange(100)
+    times = ticks * 1e-6 + ticks**2 * 1e-9
+    ts = TimeSeries(np.arange(ticks.size), times=times, name="near")
+    assert ts.xindex.regular
+    target = tmp_path / "bounded_nearly_regular.h5"
+    ts.write(target, format="hdf5")
+
+    end = 105e-6
+    back = TimeSeries.read(target, format="hdf5", start=start, end=end, gap="raise")
+    expected = (times >= start) & (times < end)
+
+    np.testing.assert_array_equal(back.times.value, times[expected])
+    np.testing.assert_array_equal(back.value, ts.value[expected])
+
+
+@pytest.mark.parametrize("start", [0.0, 2e-6])
+def test_nearly_regular_timeseriesdict_read_bounds_use_explicit_coordinates(
+    tmp_path, start
+):
+    ticks = np.arange(100)
+    times = ticks * 1e-6 + ticks**2 * 1e-9
+    ts = TimeSeries(np.arange(ticks.size), times=times, name="near")
+    target = tmp_path / "bounded_nearly_regular_dict.h5"
+    TimeSeriesDict({"near": ts}).write(target, format="hdf5")
+
+    back = TimeSeriesDict.read(
+        target, format="hdf5", start=start, end=105e-6, gap="raise"
+    )["near"]
+    expected = (times >= start) & (times < 105e-6)
+
+    np.testing.assert_array_equal(back.times.value, times[expected])
+    np.testing.assert_array_equal(back.value, ts.value[expected])
+
+
+def test_mixed_timeseriesdict_keeps_gwpy_coverage_for_regular_members(tmp_path):
+    ticks = np.arange(100)
+    irregular_times = ticks * 1e-6 + ticks**2 * 1e-9
+    explicit = TimeSeries(np.arange(ticks.size), times=irregular_times, name="explicit")
+    regular = TimeSeries(np.ones(ticks.size), t0=0.0, dt=1e-6, name="regular")
+    target = tmp_path / "mixed_bounded.h5"
+    TimeSeriesDict({"explicit": explicit, "regular": regular}).write(
+        target, format="hdf5"
+    )
+
+    with pytest.raises(ValueError):
+        TimeSeriesDict.read(target, format="hdf5", start=0.0, end=105e-6, gap="raise")
+
+
+def test_nearly_regular_timeserieslist_read_bounds_use_explicit_coordinates(
+    tmp_path,
+):
+    ticks = np.arange(100)
+    times = ticks * 1e-6 + ticks**2 * 1e-9
+    ts = TimeSeries(np.arange(ticks.size), times=times, name="near")
+    target = tmp_path / "bounded_nearly_regular_list.h5"
+    TimeSeriesList(ts).write(target, format="hdf5")
+
+    back = TimeSeriesList.read(target, format="hdf5", start=2e-6, end=105e-6)[0]
+    expected = (times >= 2e-6) & (times < 105e-6)
+
+    np.testing.assert_array_equal(back.times.value, times[expected])
+    np.testing.assert_array_equal(back.value, ts.value[expected])
+
+
+def test_single_sample_explicit_timeseries_hdf5_roundtrip(tmp_path):
+    ts = TimeSeries([2.0], times=[7.0], name="single")
+    target = tmp_path / "single.h5"
+
+    ts.write(target, format="hdf5")
+    back = TimeSeries.read(target, format="hdf5", gap="ignore")
+
+    np.testing.assert_array_equal(back.times.value, [7.0])
+    np.testing.assert_array_equal(back.value, [2.0])
+
+
 def test_irregular_timeseries_hdf5_layout_has_no_dx(tmp_path):
     ts = _ts()
     target = tmp_path / "irregular_ts.h5"
