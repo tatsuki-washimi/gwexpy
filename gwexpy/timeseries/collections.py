@@ -2423,14 +2423,6 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
-            from gwexpy.io.hdf5_series import needs_explicit_axis
-
-            from ._read import _crop_explicit_axis
-
-            def select_hdf5_window(ts: Any) -> Any:
-                if needs_explicit_axis(ts):
-                    return _crop_explicit_axis(ts, start, end)
-                return apply_time_selection(ts, start, end)
 
             with h5py.File(source, "r") as h5f:
                 manifest_backed = has_hdf5_collection_manifest(h5f)
@@ -2447,7 +2439,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                                 raise
                             skipped.record(ds_name, e)
                             continue
-                        out_items.append(select_hdf5_window(ts))
+                        out_items.append(_select_hdf5_window(ts, start, end))
                     skipped.report()
                     return cls(*out_items)
                 if layout == LAYOUT_GROUP:
@@ -2465,7 +2457,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                                     raise e from e2
                                 skipped.record(grp_name, e2, e)
                                 continue
-                        out_items.append(select_hdf5_window(ts))
+                        out_items.append(_select_hdf5_window(ts, start, end))
                     skipped.report()
                     return cls(*out_items)
         raise TypeError(
@@ -2577,3 +2569,14 @@ _patch_gwpy_collections()
 _timeseriesdict_read = cast(Any, TimeSeriesDict.read).__func__
 _timeseriesdict_read.__signature__ = _gwf_parallel_read_signature(_timeseriesdict_read)
 _timeseriesdict_read.__doc__ = f"{_timeseriesdict_read.__doc__}{_GWF_PARALLEL_HELP}"
+
+
+def _select_hdf5_window(series: Any, start: Any, end: Any) -> Any:
+    """Select HDF5 samples using explicit coordinates when required."""
+    from gwexpy.io.hdf5_series import needs_explicit_axis
+
+    from ._read import _crop_explicit_axis
+
+    if needs_explicit_axis(series):
+        return _crop_explicit_axis(series, start, end)
+    return apply_time_selection(series, start, end)
