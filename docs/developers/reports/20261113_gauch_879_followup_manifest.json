@@ -1,6 +1,15 @@
 {
   "task": "GWexpy #879 residual scientific repair after PR #900",
   "date": "2026-11-13",
+  "pull_request": {
+    "number": 905,
+    "url": "https://github.com/tatsuki-washimi/gwexpy/pull/905",
+    "state": "open",
+    "draft": true,
+    "labels": [
+      "needs-physics-review"
+    ]
+  },
   "skills": [
     "setup_plan",
     "verify_physics",
@@ -55,6 +64,10 @@
     {
       "command": "git diff --check",
       "result": "Passed."
+    },
+    {
+      "command": "git push -u origin work/v0.2.10-879-followup; gh pr create --draft --base main --head work/v0.2.10-879-followup --label needs-physics-review",
+      "result": "Pushed the follow-up branch and opened Draft PR #905 for Release Owner physics review."
     }
   ],
   "physics_review": {

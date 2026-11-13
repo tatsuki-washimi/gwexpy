@@ -1,6 +1,6 @@
 # GauCh #879 residual scientific repair
 
-Status: Implementation and focused evidence complete; draft PR is pending Release Owner review.
+Status: Implementation and focused evidence complete; Draft PR #905 is pending Release Owner review.
 
 ## Objectives & Goals
 
