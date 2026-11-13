@@ -519,7 +519,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 _reject_timezone_reinterpretation(
                     "txt", kwargs.pop("timezone", None), None
                 )
-
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
