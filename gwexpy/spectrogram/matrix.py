@@ -140,6 +140,8 @@ class SpectrogramMatrix(  # type: ignore[misc]
     series_class = Spectrogram
     dict_class = SpectrogramDict
     list_class = SpectrogramList
+    # The frequency axis is stored independently of ``xindex`` (time).
+    _hdf5_extra_axes = ("frequencies",)
 
     def __new__(
         cls,

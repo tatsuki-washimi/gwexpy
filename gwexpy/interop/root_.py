@@ -47,8 +47,39 @@ def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     return str(name)
 
 
+def _error_values_in_data_unit(values, error_unit, series):
+    """Return error ``values`` given in ``error_unit`` in the unit of ``series``.
+
+    Raises
+    ------
+    astropy.units.UnitConversionError
+        If ``error_unit`` cannot be converted to the data unit.  An error bar
+        in an incompatible unit has no magnitude on the data axis, so its raw
+        number is never used.
+
+    """
+    from astropy import units as u
+
+    data_unit = getattr(series, "unit", None)
+    if data_unit is None or error_unit is None:
+        return values
+    try:
+        return u.Quantity(values, error_unit).to(data_unit).value
+    except u.UnitConversionError as exc:
+        raise u.UnitConversionError(
+            f"error unit '{error_unit}' is not convertible to the data unit "
+            f"'{data_unit}'"
+        ) from exc
+
+
 def _extract_error_array(series, error):
-    """Extract a matching error array from supported input types."""
+    """Extract an error array, in the data unit, from supported input types.
+
+    A plain array or list is taken to be in the data unit already.  An
+    `~astropy.units.Quantity` is converted to the data unit.  A series-like
+    error is converted as well, unless it is dimensionless: that is the
+    default of a series built without a unit and makes no unit claim.
+    """
     from astropy import units as u
 
     # If it's a gwpy/gwexpy Series
@@ -57,9 +88,12 @@ def _extract_error_array(series, error):
             raise ValueError(
                 f"Error series length ({len(error)}) does not match data length ({len(series)})"
             )
-        # Check xindex matching (optional check, maybe too strict if slightly shifted?)
-        # For now, just extract value
-        return to_plain_array(error.value)
+        error_unit = getattr(error, "unit", None)
+        if error_unit == u.dimensionless_unscaled:
+            error_unit = None
+        return _error_values_in_data_unit(
+            to_plain_array(error.value), error_unit, series
+        )
 
     # If it's an astropy Quantity
     if isinstance(error, u.Quantity):
@@ -67,16 +101,7 @@ def _extract_error_array(series, error):
             raise ValueError(
                 f"Error shape {error.shape} does not match data shape {series.shape}"
             )
-        # Try to match units if series has unit
-        if hasattr(series, "unit") and series.unit:
-            try:
-                return error.to(series.unit).value
-            except u.UnitConversionError:
-                # If not convertible, just use raw value but warn?
-                # User might be passing relative error or something.
-                # But requirement says "same unit".
-                pass
-        return error.value
+        return _error_values_in_data_unit(error.value, error.unit, series)
 
     # If it's a plain numpy array or list
     err_arr = np.asarray(error)

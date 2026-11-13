@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import OrderedDict
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -46,8 +48,77 @@ def _decode_matrix_key(raw):
         return str(raw)
 
 
+def _path_suffix(target: Any) -> str:
+    """Return the lower-case suffix of a single path-like, else ``""``.
+
+    File-like objects and lists/tuples of paths have no suffix to infer a
+    format from.
+    """
+    if isinstance(target, (str, os.PathLike)):
+        return Path(target).suffix.lower()
+    return ""
+
+
+def _encode_attrs_json(attrs: Any) -> str | None:
+    """Encode matrix ``attrs`` for the HDF5 ``attrs_json`` attribute.
+
+    Returns `None` when there are no attrs to store.
+
+    Raises
+    ------
+    TypeError
+        If ``attrs`` cannot be represented in the JSON-based ``attrs_json``
+        format (for example an `astropy.units.Quantity` or array value, or a
+        circular reference).  The message names the offending top-level keys.
+
+    """
+    if attrs is None:
+        return None
+    try:
+        return json.dumps(attrs)
+    except (TypeError, ValueError) as exc:
+        bad: list[str] = []
+        if isinstance(attrs, dict):
+            for key, value in attrs.items():
+                try:
+                    json.dumps({key: value})
+                except (TypeError, ValueError):
+                    bad.append(f"{key!r} ({type(value).__name__})")
+        detail = f" Unsupported entries: {', '.join(bad)}." if bad else ""
+        msg = (
+            "SeriesMatrix attrs cannot be stored in HDF5: the 'attrs_json' "
+            "format only holds JSON-serializable values (str, int, float, "
+            f"bool, None, list, dict).{detail} Convert them to JSON-native "
+            f"values before writing. ({exc})"
+        )
+        raise TypeError(msg) from exc
+
+
+def _write_axis_group(h5file: Any, name: str, axis: Any) -> None:
+    """Store coordinate ``axis`` as ``<name>/value`` with an optional unit."""
+    group = h5file.create_group(name)
+    if isinstance(axis, u.Quantity):
+        group.create_dataset("value", data=np.asarray(axis.value))
+        group.attrs["unit"] = str(axis.unit)
+    else:
+        group.create_dataset("value", data=np.asarray(axis))
+
+
+def _read_axis_group(h5file: Any, name: str) -> Any:
+    """Return the coordinate axis stored by `_write_axis_group`."""
+    group = h5file[name]
+    values = group["value"][:]
+    unit = group.attrs.get("unit", None)
+    return u.Quantity(values, unit) if unit else values
+
+
 class SeriesMatrixIOMixin:
     """Mixin for SeriesMatrix I/O and display operations."""
+
+    # Names of coordinate axes, beyond ``xindex``, that a subclass stores
+    # independently and that HDF5 must therefore carry.  Each name is both the
+    # attribute read on write and the constructor keyword passed on read.
+    _hdf5_extra_axes: tuple[str, ...] = ()
 
     if TYPE_CHECKING:
         _value: np.ndarray
@@ -136,9 +207,28 @@ class SeriesMatrixIOMixin:
             raise ValueError(f"Unknown format: {format}")
 
     def write(self, target, format=None, **kwargs):
-        """Write the matrix to a file."""
-        from pathlib import Path
+        """Write the matrix to a file.
 
+        Parameters
+        ----------
+        target : str, path-like or file-like
+            Destination.
+        format : str, optional
+            File format.  If `None`, inferred from the extension of a
+            path-like ``target``.
+        **kwargs
+            Additional arguments passed to the writer.
+
+        Raises
+        ------
+        ValueError
+            If ``format`` is `None` and no format can be identified.  An
+            error raised by an identified or explicitly selected writer (for
+            example `OSError` or a missing optional backend `ImportError`)
+            propagates unchanged.
+
+        """
+        from astropy.io.registry import IORegistryError
         from gwpy.io.registry import default_registry as io_registry
 
         from gwexpy._bootstrap import register_all
@@ -146,7 +236,7 @@ class SeriesMatrixIOMixin:
         register_all()
 
         if format is None:
-            ext = Path(target).suffix.lower()
+            ext = _path_suffix(target)
             if ext in [".h5", ".hdf5", ".hdf"]:
                 format = "hdf5"
             elif ext == ".csv":
@@ -163,30 +253,38 @@ class SeriesMatrixIOMixin:
             df = self.to_pandas(format="wide")
             return df.to_parquet(target, **kwargs)
 
-        # Fall back to unified registry.  Any failure is re-raised unchanged
-        # when a format was given; only an *unidentified* format gets the
-        # friendlier message.  Preserve missing optional backend errors for
-        # auto-selected NetCDF and Zarr routes so their install hints remain
-        # actionable.
+        # Fall back to unified registry.  Only a genuine identification failure
+        # (the registry found no format for this target) gets the friendlier
+        # message; an error raised by an identified or explicitly selected
+        # writer (OSError, missing optional backend, ...) propagates unchanged.
         try:
             return io_registry.write(self, target, format=format, **kwargs)
-        except Exception as exc:
-            if (
-                format is None
-                and ext in {".nc", ".zarr"}
-                and isinstance(exc, ImportError)
-            ):
+        except IORegistryError as exc:
+            if format is not None:
                 raise
-            if format is None:
-                raise ValueError(
-                    f"Could not identify format for {target}. "
-                    "Please specify 'format' argument."
-                )
-            raise
+            raise ValueError(
+                f"Could not identify format for {target}. "
+                "Please specify 'format' argument."
+            ) from exc
 
     def to_hdf5(self, filepath, **kwargs):
-        """Write matrix to HDF5 file."""
+        """Write matrix to HDF5 file.
+
+        ``attrs`` are stored as JSON in the ``attrs_json`` file attribute.
+
+        Raises
+        ------
+        TypeError
+            If ``attrs`` contains a value that is not JSON-serializable.  The
+            check runs before the target is opened, so an existing file is
+            left untouched.
+
+        """
         import h5py  # noqa: F401 - availability check
+
+        # Validate before opening in truncate mode: a failed attrs encoding
+        # must neither drop the entry silently nor destroy an existing file.
+        attrs_json = _encode_attrs_json(getattr(self, "attrs", None))
 
         with h5py.File(filepath, "w", **kwargs) as f:
             f.attrs["name"] = str(getattr(self, "name", ""))
@@ -194,19 +292,14 @@ class SeriesMatrixIOMixin:
                 f.attrs["epoch"] = float(getattr(self, "epoch", 0.0))
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 pass
-            attrs_dict = getattr(self, "attrs", None)
-            if attrs_dict is not None:
-                try:
-                    f.attrs["attrs_json"] = json.dumps(attrs_dict)
-                except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                    pass
+            if attrs_json is not None:
+                f.attrs["attrs_json"] = attrs_json
             f.create_dataset("data", data=self.value)
-            grp_x = f.create_group("xindex")
-            if isinstance(self.xindex, u.Quantity):
-                grp_x.create_dataset("value", data=np.asarray(self.xindex.value))
-                grp_x.attrs["unit"] = str(self.xindex.unit)
-            else:
-                grp_x.create_dataset("value", data=np.asarray(self.xindex))
+            _write_axis_group(f, "xindex", self.xindex)
+            for axis_name in self._hdf5_extra_axes:
+                axis = getattr(self, axis_name, None)
+                if axis is not None:
+                    _write_axis_group(f, axis_name, axis)
             meta_grp = f.create_group("meta")
             units = np.vectorize(lambda u_: "" if u_ is None else str(u_))(
                 self.meta.units
@@ -312,35 +405,35 @@ class SeriesMatrixIOMixin:
         SeriesMatrix
             The loaded matrix.
 
+        Raises
+        ------
+        ValueError
+            If ``format`` is `None` and no format can be identified.  An
+            error raised by an identified or explicitly selected reader (for
+            example `FileNotFoundError` or a missing optional backend
+            `ImportError`) propagates unchanged.
+
         """
         import warnings
-        from pathlib import Path
 
         import h5py  # noqa: F401 - availability check
+        from astropy.io.registry import IORegistryError
         from gwpy.io.registry import default_registry as io_registry
 
         from gwexpy._bootstrap import register_all
 
         register_all()
 
-        if format is None:
-            ext = Path(source).suffix.lower()
-            if ext in [".h5", ".hdf5", ".hdf"]:
-                format = "hdf5"
+        # ``source`` may be a single path, a file-like object, or a list/tuple
+        # of paths (multi-store reads); only single path-likes have a suffix.
+        _ext = _path_suffix(source)
+        if format is None and _ext in [".h5", ".hdf5", ".hdf"]:
+            format = "hdf5"
 
         # CSV/Parquet are *wide value exports* (see ``to_pandas``/``write``);
         # they do not store row/col keys, per-element metadata, units or attrs.
         # Reading one back rebuilds a matrix with synthetic keys and no
         # metadata -- warn so this lossy import is not mistaken for a roundtrip.
-        # ``source`` may be a single path, a file-like object, or a list/tuple
-        # of paths (multi-store reads); only single path-likes have a suffix.
-        import os as _os
-
-        _ext = (
-            Path(source).suffix.lower()
-            if isinstance(source, (str, _os.PathLike))
-            else ""
-        )
         if (format in {"csv", "parquet"}) or (
             format is None and _ext in {".csv", ".parquet", ".pq"}
         ):
@@ -354,36 +447,31 @@ class SeriesMatrixIOMixin:
             )
 
         if format != "hdf5":
-            # Fall back to unified registry.  Re-raise unchanged when a format
-            # was given; only an unidentified format gets the friendlier
-            # message. Preserve missing optional NetCDF and Zarr backends on
-            # auto routes.
+            # Fall back to unified registry.  Only a genuine identification
+            # failure gets the friendlier message; an error raised by an
+            # identified or explicitly selected reader (missing file, backend
+            # failure, missing optional backend, ...) propagates unchanged.
             try:
                 return io_registry.read(cls, source, format=format, **kwargs)
-            except Exception as exc:
-                if (
-                    format is None
-                    and _ext in {".nc", ".zarr"}
-                    and isinstance(exc, ImportError)
-                ):
+            except IORegistryError as exc:
+                if format is not None:
                     raise
-                if format is None:
-                    raise ValueError(
-                        f"Could not identify format for {source}. "
-                        "Please specify 'format' argument."
-                    )
-                raise
+                raise ValueError(
+                    f"Could not identify format for {source}. "
+                    "Please specify 'format' argument."
+                ) from exc
 
         with h5py.File(source, "r") as f:
             data = f["data"][:]
 
-            grp_x = f["xindex"]
-            xindex_vals = grp_x["value"][:]
-            xunit_str = grp_x.attrs.get("unit", None)
-            if xunit_str:
-                xindex = u.Quantity(xindex_vals, xunit_str)
-            else:
-                xindex = xindex_vals
+            xindex = _read_axis_group(f, "xindex")
+            # A file without the group predates the axis being stored; the
+            # axis is then left unset rather than invented.
+            extra_axes = {
+                axis_name: _read_axis_group(f, axis_name)
+                for axis_name in cls._hdf5_extra_axes
+                if axis_name in f
+            }
 
             name = f.attrs.get("name", "")
             try:
@@ -486,4 +574,5 @@ class SeriesMatrixIOMixin:
             name=name,
             epoch=epoch,
             attrs=attrs,
+            **extra_axes,
         )

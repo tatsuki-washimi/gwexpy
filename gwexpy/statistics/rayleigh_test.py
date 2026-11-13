@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import threading
-import warnings
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
@@ -18,6 +17,7 @@ except ImportError as _exc:
 
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
+from ._common import UniformRandomSource, warn_at_user_call
 
 if TYPE_CHECKING:
     pass
@@ -29,7 +29,7 @@ def rayleigh_pvalue(
     n_monte_carlo: int = 1000,
     *,
     nfft: int | None = None,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> Spectrogram:
     """Convert Rayleigh statistic spectrogram to p-value spectrogram.
@@ -98,11 +98,10 @@ def rayleigh_pvalue(
     _validate_n_samples(n_samples)
 
     if rng is not None and seed is not None:
-        warnings.warn(
+        warn_at_user_call(
             "rayleigh_pvalue: both rng and seed were given; seed is "
             "ignored because rng takes priority",
             UserWarning,
-            stacklevel=2,
         )
 
     # 1. Get background distribution of Rayleigh statistic for n_samples
@@ -148,12 +147,11 @@ def rayleigh_pvalue(
         which = " and ".join(
             [n for n, f in (("DC", has_dc), ("Nyquist", has_nyquist)) if f]
         )
-        warnings.warn(
+        warn_at_user_call(
             f"rayleigh_pvalue: {which} bin(s) set to NaN p-value (excluded "
             "from veto) because their power follows chi2_1, not the Exp(1) "
             "used for the null distribution",
             RuntimeWarning,
-            stacklevel=2,
         )
         p_vals[:, real_only] = np.nan
 
@@ -164,11 +162,10 @@ def rayleigh_pvalue(
     nonfinite = ~np.isfinite(r_vals)
     if np.any(nonfinite):
         n_bad = int(np.count_nonzero(nonfinite))
-        warnings.warn(
+        warn_at_user_call(
             f"rayleigh_pvalue: {n_bad} non-finite Rayleigh statistic value(s) "
             "set to NaN p-value (excluded from veto) instead of a false p=0",
             RuntimeWarning,
-            stacklevel=2,
         )
         p_vals[nonfinite] = np.nan
 
@@ -261,7 +258,7 @@ def _get_rayleigh_stat_null_distribution(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> np.ndarray:
     """Generate the null distribution of the Rayleigh statistic for `n` segments.

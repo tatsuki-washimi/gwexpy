@@ -9,6 +9,7 @@ from gwpy.io.registry import identify_factory
 from ..frequencyseries import FrequencySeries
 from . import (
     dttxml,  # noqa: F401
+    hdf5,  # noqa: F401
     stubs,  # noqa: F401
 )
 
