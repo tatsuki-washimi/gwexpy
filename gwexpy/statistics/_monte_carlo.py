@@ -22,7 +22,32 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike
 
-__all__ = ["two_sided_rank_pvalue"]
+__all__ = ["two_sided_rank_pvalue", "upper_tail_rank_pvalue"]
+
+
+def upper_tail_rank_pvalue(sorted_null: np.ndarray, observed: ArrayLike) -> np.ndarray:
+    """One-sided (upper-tail) Monte Carlo p-value ``(r + 1) / (N + 1)``.
+
+    Parameters
+    ----------
+    sorted_null : numpy.ndarray
+        The ``N`` simulated null statistics, sorted ascending.
+    observed : array-like
+        Observed statistic(s), dimensionless and on the same scale as
+        `sorted_null`.
+
+    Returns
+    -------
+    numpy.ndarray
+        Dimensionless p-values in ``[1 / (N + 1), 1]``, with the shape of
+        `observed`. ``r`` counts simulated statistics ``>=`` the observed
+        one, so a tie counts against significance. Non-finite `observed`
+        values are not handled here; callers mask them.
+
+    """
+    n_trials = len(sorted_null)
+    exceed = n_trials - np.searchsorted(sorted_null, observed, side="left")
+    return np.asarray((exceed + 1) / (n_trials + 1), dtype=float)
 
 
 def two_sided_rank_pvalue(sorted_null: np.ndarray, observed: ArrayLike) -> np.ndarray:

@@ -1,4 +1,4 @@
-"""gwexpy.statistics.gauch - GauCh (Modified Kolmogorov-Smirnov test)."""
+"""gwexpy.statistics.gauch - GauCh (Gaussianity check by a KS test on ASD samples)."""
 
 from __future__ import annotations
 
@@ -8,12 +8,23 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+try:
+    from scipy import signal, special
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.statistics. Install with: pip install scipy"
+    ) from _exc
+
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
 from ._common import UniformRandomSource, warn_at_user_call
+from ._monte_carlo import upper_tail_rank_pvalue
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
+
+_RAYLEIGH = "rayleigh"
+_HALFNORMAL = "halfnormal"
 
 
 class GauChResult:
@@ -35,6 +46,118 @@ class GauChResult:
         return f"<GauChResult n_samples={self.n_samples}>"
 
 
+def _segment_asds(
+    data: np.ndarray, sample_rate: float, nfft: int, hop: int
+) -> np.ndarray:
+    """One Hann-windowed ASD per segment, without averaging.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        Real time-domain samples.
+    sample_rate : float
+        Sampling rate in Hz.
+    nfft : int
+        Segment length in samples.
+    hop : int
+        Step between segment starts in samples.
+
+    Returns
+    -------
+    numpy.ndarray
+        Shape ``(n_segments, nfft // 2 + 1)``, in input units per ``Hz**0.5``.
+        Each row is the one-sided density ``sqrt(2 |X(f)|**2 / (fs * sum(w**2)))``
+        of one segment after removing its mean, i.e. what
+        ``TimeSeries.asd(fftlength, window="hann")`` returns for that segment
+        alone. The DC and Nyquist rows are not doubled.
+
+    """
+    n_segments = (len(data) - nfft) // hop + 1
+    if n_segments < 1:
+        return np.empty((0, nfft // 2 + 1))
+    index = np.arange(nfft)[np.newaxis, :] + hop * np.arange(n_segments)[:, np.newaxis]
+    _, psd = signal.periodogram(
+        np.asarray(data, dtype=float)[index],
+        fs=sample_rate,
+        window="hann",
+        detrend="constant",
+        scaling="density",
+        axis=-1,
+    )
+    return np.sqrt(psd)
+
+
+def _ks_statistic(samples: np.ndarray, real_only: np.ndarray) -> np.ndarray:
+    """Two-sided KS statistic per column, with the scale fitted per column.
+
+    Parameters
+    ----------
+    samples : numpy.ndarray
+        Amplitude samples, shape ``(n, n_columns)``.
+    real_only : numpy.ndarray
+        Boolean mask of length ``n_columns``. Columns flagged here are tested
+        against a half-normal amplitude (``sigma**2 = mean(x**2)``), the
+        others against a Rayleigh amplitude (``sigma**2 = mean(x**2) / 2``).
+
+    Returns
+    -------
+    numpy.ndarray
+        Dimensionless ``D = max(D+, D-)`` per column, where
+        ``D+ = max_i(i/n - F(x_(i)))`` and ``D- = max_i(F(x_(i)) - (i-1)/n)``.
+        A column whose mean square is not positive gives NaN (issue #459).
+
+    """
+    n = samples.shape[0]
+    ordered = np.sort(samples, axis=0)
+    mean_square = np.mean(samples**2, axis=0)
+    mean_square = np.where(mean_square > 0, mean_square, np.nan)
+
+    with np.errstate(invalid="ignore"):
+        cdf = 1.0 - np.exp(-(ordered**2) / mean_square)
+        if np.any(real_only):
+            cdf[:, real_only] = special.erf(
+                ordered[:, real_only] / np.sqrt(2.0 * mean_square[real_only])
+            )
+
+    rank = np.arange(1, n + 1)[:, np.newaxis]
+    d_plus = np.max(rank / n - cdf, axis=0)
+    d_minus = np.max(cdf - (rank - 1) / n, axis=0)
+    # np.max propagates the NaN of a dead column; np.maximum keeps it.
+    return np.maximum(d_plus, d_minus)
+
+
+def _resolve_hop(
+    fftlength: float, stride: float | None, overlap: float | None, sample_rate: float
+) -> tuple[float, int, int]:
+    """Return ``(stride_seconds, nfft, hop)`` and reject uncalibrated overlaps."""
+    if stride is None:
+        stride = fftlength if overlap is None else fftlength - overlap
+    nfft = int(round(fftlength * sample_rate))
+    hop = int(round(stride * sample_rate))
+    if nfft < 2:
+        raise ValueError(f"fftlength must span at least 2 samples, got {nfft}.")
+    if nfft == 3:
+        raise ValueError(
+            "compute_gauch: a three-sample Hann FFT has a non-Rayleigh interior "
+            "amplitude after detrending; its null distribution is not calibrated."
+        )
+    if hop < 1:
+        raise ValueError(f"stride must span at least 1 sample, got {hop}.")
+    # Disjoint segments are independent. For 50% overlap, independence is an
+    # approximation whose calibration must be evaluated by bin class (#879).
+    # Other overlaps have not been calibrated.
+    # For odd nfft, either nearest integer hop represents half a segment.
+    # Even nfft requires exactly nfft // 2; a +/-1 hop is not 50%.
+    if hop < nfft and abs(2 * hop - nfft) > 1:
+        raise ValueError(
+            "compute_gauch: segment overlap must be 0 or 50% of fftlength "
+            f"(stride {fftlength / 2:g} s or >= {fftlength:g} s), got an overlap "
+            f"of {(nfft - hop) / sample_rate:g} s. The null distribution is not "
+            "calibrated for other overlaps."
+        )
+    return stride, nfft, hop
+
+
 def compute_gauch(
     ts: TimeSeries,
     fftlength: float,
@@ -46,7 +169,7 @@ def compute_gauch(
     rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> GauChResult:
-    """Compute GauCh (Modified KS test) for the given TimeSeries using a sliding window.
+    """Compute GauCh, a KS test of Gaussianity on ASD samples, in a sliding window.
 
     Parameters
     ----------
@@ -55,24 +178,67 @@ def compute_gauch(
     fftlength : float
         Length of each FFT segment in seconds.
     stride : float, optional
-        Step between FFT segments in seconds.
+        Step between FFT segment starts in seconds. Defaults to
+        ``fftlength - overlap``, or to `fftlength` when `overlap` is not
+        given. Must be `fftlength` or more, or half of `fftlength`.
     window : int, default=40
-        Number of segments used for each GauCh test.
+        Number of consecutive ASD samples used for each GauCh test.
     overlap : float, optional
         Overlap between FFT segments in seconds (alternative to stride).
+        Must be 0 or half of `fftlength`. Ignored when `stride` is given.
     n_monte_carlo : int, default=1000
         Number of Monte Carlo trials for background distribution.
     rng : numpy.random.Generator, optional
-        Generator for the Lilliefors null distribution. See
+        Generator for the null distributions. See
         `_get_lilliefors_null_distribution` for the reproducibility
         contract; takes priority over `seed` when both are given.
     seed : int, optional
-        Seed for the null distribution's Generator, used only when `rng`
+        Seed for the null distributions' Generators, used only when `rng`
         is not given.
 
     Returns
     -------
     GauChResult
+        ``pvalue_map`` and ``statistic_map`` are dimensionless
+        `Spectrogram` objects. Row ``i`` covers ASD samples ``i`` to
+        ``i + window - 1`` and is stamped with the start time of sample
+        ``i + window // 2``; the time step is the stride.
+
+    Raises
+    ------
+    ValueError
+        If the segments overlap by anything other than 0 or 50%, the FFT
+        length is three samples (an uncalibrated interior amplitude), or the
+        series holds fewer than `window` segments.
+
+    Notes
+    -----
+    Each ASD sample is one Hann-windowed FFT segment with its mean removed;
+    no periodograms are averaged. For Gaussian noise the amplitude of an
+    interior frequency bin is Rayleigh distributed. The DC bin and, for an
+    even FFT length in samples, the Nyquist bin have a purely real FFT
+    coefficient, so their amplitude is half-normal. An odd FFT length has no
+    Nyquist bin and its last bin is an interior bin.
+
+    Per bin, the scale is fitted from the window (``sigma**2 = mean(x**2)/2``
+    for Rayleigh, ``mean(x**2)`` for half-normal) and the standard two-sided
+    Kolmogorov-Smirnov statistic ``D = max(D+, D-)`` is taken against the
+    fitted distribution. Fitting the scale changes the null distribution of
+    ``D``, so it is simulated: independent amplitude samples, the same
+    statistic, the scale refitted per trial. The p-value is one-sided,
+    ``p = (r + 1) / (N + 1)`` with ``N = n_monte_carlo`` and ``r`` the number
+    of simulated statistics ``>=`` the observed one (#507).
+
+    With ``overlap=fftlength / 2`` and ``window=2 * interval / fftlength - 1``
+    this is the configuration of the KAGRA GauCh analysis.
+
+    Through v0.2.9 the ASD samples came from ``TimeSeries.spectrogram()``,
+    which averages periodograms, the statistic used only the right ECDF
+    endpoints, every bin used the Rayleigh model, and the p-value was
+    ``max(r / N, 1 / N)``. On white Gaussian noise that rejected about 57%
+    of interior bins at ``alpha = 0.05`` (#879). All outputs changed.
+
+    Multiple testing over frequency bins is not corrected here.
 
     """
     if rng is not None and seed is not None:
@@ -83,83 +249,57 @@ def compute_gauch(
         )
 
     stride_was_provided = stride is not None
-    if stride is None:
-        if overlap is None:
-            stride = fftlength
-        else:
-            stride = fftlength - overlap
+    sample_rate = float(ts.sample_rate.to_value("Hz"))
+    stride, nfft, hop = _resolve_hop(fftlength, stride, overlap, sample_rate)
 
-    # 1. Compute Spectrogram
-    # The spectrogram will have many segments.
-    spec = ts.spectrogram(fftlength=fftlength, stride=stride)
-    asds = np.sqrt(spec.value)  # (n_times, n_freqs)
-
+    # 1. One ASD sample per FFT segment: (n_times, n_freqs)
+    asds = _segment_asds(np.asarray(ts.value), sample_rate, nfft, hop)
     n_times, n_freqs = asds.shape
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
 
-    # 2. Sliding Window GauCh
-    # Output will have (n_times - window + 1) time steps.
+    # DC always, Nyquist only for an even FFT length.
+    real_only = np.zeros(n_freqs, dtype=bool)
+    real_only[0] = True
+    if nfft % 2 == 0:
+        real_only[-1] = True
+
+    # 2. Sliding-window statistic: (n_times - window + 1, n_freqs)
     n_out = n_times - window + 1
-    statistic_map = np.zeros((n_out, n_freqs))
-
+    statistic_map = np.empty((n_out, n_freqs))
     for i in range(n_out):
-        window_asds = asds[i : i + window, :]  # (window, n_freqs)
+        statistic_map[i, :] = _ks_statistic(asds[i : i + window, :], real_only)
 
-        # Vectorized sigma2 estimation across frequencies
-        sigma2 = np.mean(window_asds**2, axis=0) / 2.0
+    # 3. p-values against the null of the matching amplitude model
+    pvalue_map = np.empty_like(statistic_map)
+    rayleigh_null = _get_lilliefors_null_distribution(
+        window, n_monte_carlo, rng=rng, seed=seed
+    )
+    pvalue_map[:, ~real_only] = upper_tail_rank_pvalue(
+        rayleigh_null, statistic_map[:, ~real_only]
+    )
+    halfnormal_null = _get_halfnormal_null_distribution(
+        window, n_monte_carlo, rng=rng, seed=seed
+    )
+    pvalue_map[:, real_only] = upper_tail_rank_pvalue(
+        halfnormal_null, statistic_map[:, real_only]
+    )
 
-        # A dead bin (DC, Nyquist, a notched line, or a zero test signal) has
-        # sigma2==0, which would turn the tcdf below into a silent 0/0 (NaN) or
-        # x/0 path. Mark such bins NaN explicitly so they propagate to a NaN
-        # statistic / p-value rather than a misleading number (issue #459).
-        sigma2 = np.where(sigma2 > 0, sigma2, np.nan)
-
-        # Sort along the temporal axis for each frequency bin
-        sorted_window = np.sort(window_asds, axis=0)  # (window, n_freqs)
-
-        # Vectorized ECDF and TCDF calculation
-        # ecdf is (window, 1) broadcasted to (window, n_freqs)
-        ecdf = (np.arange(1, window + 1) / window)[:, np.newaxis]
-
-        # tcdf = 1 - exp(-x^2 / 2sigma^2)
-        # sorted_window is (window, n_freqs), sigma2 is (n_freqs,)
-        with np.errstate(invalid="ignore"):
-            tcdf = 1.0 - np.exp(-(sorted_window**2) / (2.0 * sigma2))
-
-        # statistic is max|ecdf - tcdf| along temporal axis
-        dn = np.max(np.abs(ecdf - tcdf), axis=0)  # (n_freqs,)
-        statistic_map[i, :] = dn
-
-    # 3. Vectorized p-value calculation
-    # Get the (possibly cached) Lilliefors null distribution directly --
-    # calling _get_rayleigh_lilliefors_pvalue() as a cache-populating side
-    # effect and then reading _LILLIEFORS_CACHE[(window, n_monte_carlo)]
-    # would silently pick up a stale/unrelated cache entry (or KeyError) once
-    # rng/seed can bypass that cache (#464), so fetch the array directly.
-    dist = _get_lilliefors_null_distribution(window, n_monte_carlo, rng=rng, seed=seed)
-
-    # p-value is (count of dist >= dn) / len(dist)
-    # searchsorted returns index where dn would be inserted to maintain order.
-    # idx = number of elements < dn.
-    # so count(dist >= dn) = len(dist) - idx.
-    # Floor at 1/len(dist): a Monte-Carlo p-value of exactly 0 is invalid and
-    # makes -log10(p)=Inf downstream (issue #459).
-    indices = np.searchsorted(dist, statistic_map)
-    pvalue_map = np.maximum((len(dist) - indices) / len(dist), 1.0 / len(dist))
-
-    # A dead bin produced a NaN statistic above; searchsorted would map it to a
-    # spurious p-value, so restore NaN explicitly for those bins.
+    # A dead bin has a NaN statistic; searchsorted would map it to a spurious
+    # p-value, so restore NaN explicitly for those bins.
     nonfinite = ~np.isfinite(statistic_map)
     if np.any(nonfinite):
         pvalue_map[nonfinite] = np.nan
 
-    # 3. Create Resulting Spectrograms
-    # Adjust times for the output maps (center of the window)
-    out_times = spec.times[window // 2 : window // 2 + n_out]
+    # 4. Output axes: segment start times, stamped at the window centre
+    time_unit = ts.times.unit
+    start = float(ts.t0.to_value(time_unit))
+    step = (hop / sample_rate * ts.dt.unit).to_value(time_unit)
+    out_times = (start + step * (window // 2 + np.arange(n_out))) * time_unit
+    frequencies = np.fft.rfftfreq(nfft, d=1.0 / sample_rate) * ts.sample_rate.unit
 
-    res_p = Spectrogram(pvalue_map, frequencies=spec.frequencies, times=out_times)
-    res_s = Spectrogram(statistic_map, frequencies=spec.frequencies, times=out_times)
+    res_p = Spectrogram(pvalue_map, frequencies=frequencies, times=out_times)
+    res_s = Spectrogram(statistic_map, frequencies=frequencies, times=out_times)
 
     provenance_parameters: dict[str, Any] = {
         "fftlength": fftlength,
@@ -200,30 +340,65 @@ def compute_gauch(
 
 
 _LILLIEFORS_CACHE: dict[tuple[int, int], np.ndarray] = {}
+_HALFNORMAL_CACHE: dict[tuple[int, int], np.ndarray] = {}
 _LILLIEFORS_CACHE_LOCK = threading.Lock()
+
+# Stream label that keeps the seeded half-normal null independent of the
+# seeded Rayleigh null, which uses ``default_rng(seed)`` directly.
+_HALFNORMAL_STREAM = 1
 
 
 def _simulate_lilliefors_null(
-    n: int, n_trials: int, draw_uniform: Callable[[int], np.ndarray]
+    n: int,
+    n_trials: int,
+    draw_uniform: Callable[[int], np.ndarray],
+    model: str = _RAYLEIGH,
 ) -> np.ndarray:
-    """Draw `n_trials` Lilliefors Dn statistics under H0, each from `n` samples.
+    """Draw `n_trials` two-sided KS statistics under H0, each from `n` samples.
 
     `draw_uniform(size)` must return `size` uniform(0, 1) samples -- either a
     `numpy.random.Generator.random` bound method or the legacy
-    `numpy.random.random` global-state function.
+    `numpy.random.random` global-state function. The scale is refitted for
+    every trial, as it is for the observed statistic.
     """
+    real_only = np.array([model == _HALFNORMAL])
     null_dns = np.zeros(n_trials)
     for i in range(n_trials):
         # Floor the uniform draw away from 0 so log(0)=-inf cannot inject
         # an Inf that permanently corrupts the cached null distribution.
         u = np.clip(draw_uniform(n), np.finfo(float).tiny, 1.0)
-        null_sample = np.sqrt(-2.0 * np.log(u))
-        s2_est = np.mean(null_sample**2) / 2.0
-        sorted_null = np.sort(null_sample)
-        null_ecdf = np.arange(1, n + 1) / n
-        null_tcdf = 1.0 - np.exp(-(sorted_null**2) / (2.0 * s2_est))
-        null_dns[i] = np.max(np.abs(null_ecdf - null_tcdf))
+        if model == _HALFNORMAL:
+            null_sample = np.sqrt(2.0) * special.erfinv(u)
+        else:
+            null_sample = np.sqrt(-2.0 * np.log(u))
+        null_dns[i] = _ks_statistic(null_sample[:, np.newaxis], real_only)[0]
     return np.sort(null_dns)
+
+
+def _validate_null_request(n: int, n_trials: int) -> None:
+    # Entry-point guards mirroring rayleigh_test: an empty sample (n<=0) makes
+    # np.mean/np.max return NaN and an empty trial set (n_trials<=0) makes the
+    # later len(dist) division a silent 0/0 (issue #459).
+    if n <= 0:
+        raise ValueError(f"window/n must be >= 1, got {n}")
+    if n_trials <= 0:
+        raise ValueError(f"n_monte_carlo must be >= 1, got {n_trials}")
+
+
+def _cached_null(
+    cache: dict[tuple[int, int], np.ndarray], n: int, n_trials: int, model: str
+) -> np.ndarray:
+    # Key the cache by (n, n_trials): keying by n alone silently returns a
+    # low-resolution distribution when a later caller requests more trials,
+    # discarding their explicit n_trials (issue #459).
+    key = (n, n_trials)
+    with _LILLIEFORS_CACHE_LOCK:
+        if key not in cache:
+            # Legacy global state, not a fresh Generator: preserves the
+            # pre-#464 contract that `numpy.random.seed(...)` controls the
+            # no-args path.
+            cache[key] = _simulate_lilliefors_null(n, n_trials, np.random.random, model)
+        return cache[key]
 
 
 def _get_lilliefors_null_distribution(
@@ -233,7 +408,7 @@ def _get_lilliefors_null_distribution(
     rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> np.ndarray:
-    """Generate the Lilliefors null distribution of Dn for window size `n`.
+    """Generate the null distribution of the Rayleigh-model statistic for size `n`.
 
     Reproducibility contract (#464), mirroring
     `gwexpy.statistics.rayleigh_test._get_rayleigh_stat_null_distribution`:
@@ -251,31 +426,38 @@ def _get_lilliefors_null_distribution(
 
     Passing either `rng` or `seed` bypasses the shared cache.
     """
-    # Entry-point guards mirroring rayleigh_test: an empty sample (n<=0) makes
-    # np.mean/np.max return NaN and an empty trial set (n_trials<=0) makes the
-    # later len(dist) division a silent 0/0 (issue #459).
-    if n <= 0:
-        raise ValueError(f"window/n must be >= 1, got {n}")
-    if n_trials <= 0:
-        raise ValueError(f"n_monte_carlo must be >= 1, got {n_trials}")
+    _validate_null_request(n, n_trials)
 
     if rng is not None or seed is not None:
         effective_rng = rng if rng is not None else np.random.default_rng(seed)
         return _simulate_lilliefors_null(n, n_trials, effective_rng.random)
 
-    # Key the cache by (n, n_trials): keying by n alone silently returns a
-    # low-resolution distribution when a later caller requests more trials,
-    # discarding their explicit n_trials (issue #459).
-    key = (n, n_trials)
-    with _LILLIEFORS_CACHE_LOCK:
-        if key not in _LILLIEFORS_CACHE:
-            # Legacy global state, not a fresh Generator: preserves the
-            # pre-#464 contract that `numpy.random.seed(...)` controls the
-            # no-args path.
-            _LILLIEFORS_CACHE[key] = _simulate_lilliefors_null(
-                n, n_trials, np.random.random
-            )
-        return _LILLIEFORS_CACHE[key]
+    return _cached_null(_LILLIEFORS_CACHE, n, n_trials, _RAYLEIGH)
+
+
+def _get_halfnormal_null_distribution(
+    n: int,
+    n_trials: int = 1000,
+    *,
+    rng: UniformRandomSource | None = None,
+    seed: int | None = None,
+) -> np.ndarray:
+    """Generate the null distribution of the half-normal-model statistic.
+
+    Used for the DC and Nyquist bins. Follows the reproducibility contract of
+    `_get_lilliefors_null_distribution`, with its own cache. With `seed=` it
+    uses a Generator stream separate from the Rayleigh null's, so the two
+    nulls are independent; with `rng=` it continues the given Generator.
+    """
+    _validate_null_request(n, n_trials)
+
+    if rng is not None:
+        return _simulate_lilliefors_null(n, n_trials, rng.random, _HALFNORMAL)
+    if seed is not None:
+        stream = np.random.default_rng([_HALFNORMAL_STREAM, seed])
+        return _simulate_lilliefors_null(n, n_trials, stream.random, _HALFNORMAL)
+
+    return _cached_null(_HALFNORMAL_CACHE, n, n_trials, _HALFNORMAL)
 
 
 def _get_rayleigh_lilliefors_pvalue(
@@ -286,8 +468,6 @@ def _get_rayleigh_lilliefors_pvalue(
     rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> float:
-    """Get the p-value using the (possibly cached) Lilliefors null distribution."""
+    """Get the Rayleigh-model p-value ``(r + 1) / (N + 1)`` for statistic `dn`."""
     dist = _get_lilliefors_null_distribution(n, n_trials, rng=rng, seed=seed)
-    # Floor at 1/len(dist): a Monte-Carlo p-value of exactly 0 is invalid.
-    exceedance = float(np.sum(dist >= dn)) / len(dist)
-    return max(exceedance, 1.0 / len(dist))
+    return float(upper_tail_rank_pvalue(dist, dn))
