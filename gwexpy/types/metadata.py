@@ -91,6 +91,23 @@ from gwpy.timeseries import TimeSeries
 # =============================
 
 
+def _validated_unit(value):
+    """Return ``value`` as an astropy unit, rejecting what cannot be one.
+
+    ``None`` and the empty string mean "no unit given" and map to
+    dimensionless.  Anything else must be a unit or parse as one: an
+    unparseable input is an error, never a silent dimensionless unit.
+    """
+    if isinstance(value, u.UnitBase):
+        return value
+    if value is None or (isinstance(value, str) and value == ""):
+        return u.dimensionless_unscaled
+    try:
+        return u.Unit(value)
+    except (ValueError, TypeError) as exc:
+        raise ValueError(f"Invalid unit for MetaData: {value!r} ({exc})") from exc
+
+
 class MetaData(dict):
     """A dictionary-like container for metadata describing a single data object.
 
@@ -149,18 +166,7 @@ class MetaData(dict):
         except (ValueError, TypeError):
             self["channel"] = Channel("")
 
-        raw_unit = kwargs.get("unit", u.dimensionless_unscaled)
-        try:
-            if isinstance(raw_unit, u.UnitBase):
-                self["unit"] = raw_unit
-            elif isinstance(raw_unit, str):
-                self["unit"] = (
-                    u.Unit(raw_unit) if raw_unit else u.dimensionless_unscaled
-                )
-            else:
-                self["unit"] = u.Unit(raw_unit)
-        except (ValueError, TypeError):
-            self["unit"] = u.dimensionless_unscaled
+        self["unit"] = _validated_unit(kwargs.get("unit", u.dimensionless_unscaled))
 
     @property
     def name(self):
@@ -190,15 +196,7 @@ class MetaData(dict):
 
     @unit.setter
     def unit(self, value):
-        try:
-            if isinstance(value, u.UnitBase):
-                self["unit"] = value
-            elif isinstance(value, str):
-                self["unit"] = u.Unit(value) if value else u.dimensionless_unscaled
-            else:
-                self["unit"] = u.Unit(value)
-        except (ValueError, TypeError):
-            self["unit"] = u.dimensionless_unscaled
+        self["unit"] = _validated_unit(value)
 
     @classmethod
     def from_series(cls, series):
