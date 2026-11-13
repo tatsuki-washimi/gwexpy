@@ -204,10 +204,12 @@ def test_metadata_unit_setter_string():
     assert m.unit == u.m
 
 
-def test_metadata_unit_setter_invalid_falls_back():
-    m = MetaData()
-    m.unit = "NOT_A_UNIT_XYZ"
-    assert m.unit == u.dimensionless_unscaled
+def test_metadata_unit_setter_invalid_raises():
+    """An unparseable unit is rejected, not stored as dimensionless (#776)."""
+    m = MetaData(unit=u.m)
+    with pytest.raises(ValueError, match="NOT_A_UNIT_XYZ"):
+        m.unit = "NOT_A_UNIT_XYZ"
+    assert m.unit == u.m
 
 
 def test_metadata_channel_setter_invalid_falls_back():
