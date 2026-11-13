@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- **`python -m gwexpy.time`**: The module imported `argparse` and `sys` from `gwpy.time.__main__`, which no GWpy 4.x release provides, so it failed with `ImportError` before doing anything. It now imports only the names GWpy defines and runs GWpy's `main()` when executed as a module, matching `python -m gwpy.time` (#784).
 - **Statistics warning call sites**: Warnings from `rayleigh_pvalue()`, `compute_gauch()` and `compute_student_t_nu()` pointed into `gwexpy/timeseries/_statistics.py` when the function was reached through `TimeSeries.rayleigh_test()`, `TimeSeries.gauch()` or `TimeSeries.student_t_spectrogram()`. They now report the user's own call site on both the direct and the method path (#513).
 - **`rng` typing in the statistics functions**: `rng` is annotated with a structural protocol requiring only `random(size)`, matching what the functions use. A `numpy.random.Generator` and a minimal stub both type-check; runtime behavior is unchanged (#513).
 - **Boolean `window`**: `compute_student_t_nu()` rejects a boolean `window` instead of reading `True` as `1` (#513).
