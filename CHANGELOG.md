@@ -16,6 +16,7 @@
 | **Boolean `window` in `compute_student_t_nu()`** | `window=True` passed the positive-integer check, because `bool` is a subclass of `int`, and was used as a one-segment window. | `window=True` / `False` and NumPy booleans raise `ValueError("window must be a positive integer, ...")`, also through `TimeSeries.student_t_spectrogram()`. Positive Python and NumPy integers are accepted as before. | #513 |
 | **Invalid `MetaData` units** | `MetaData(unit=...)` and the `MetaData.unit` setter turned any input that astropy could not interpret as a unit (for example `"garbage-unit-xyz"`, `"m/"`, or a non-unit object) into dimensionless, without a warning. The invalid unit was lost, also when it arrived through `MetaDataDict`, `MetaDataMatrix.units`, or the `units=` argument of a matrix. | Both paths raise `ValueError` naming the rejected input, chained to astropy's error; a failed assignment leaves the previous unit in place. Valid units, an omitted unit, `None`, and the empty string (dimensionless) behave as before. | #776 |
 
+| **Spatial FFT round-trip coordinates** | `ScalarField.fft_space()` followed by `ifft_space()` rebuilt each spatial axis from the k bins alone. The axis always started at 0, so a nonzero origin was lost. A descending axis came back ascending (`-(n-1)·dx … 0`), and a two-sample axis was always treated as descending. Data values round-tripped correctly. | `fft_space()` records the start and direction of each transformed axis in private state, and `ifft_space()` restores the original coordinates, direction and unit; the state follows arithmetic on the k-space field. For a k-space field built directly, with nothing recorded, an ascending k axis still gives `0 … (n-1)·dx`, and a sign-flipped k axis now gives the descending `(n-1)·dx … 0`. The DFT coefficients, their ordering and normalization, and the k axis are unchanged; no origin-dependent phase factor is applied. | #544 |
 ### Fixed
 
 - **`python -m gwexpy.time`**: The module imported `argparse` and `sys` from `gwpy.time.__main__`, which no GWpy 4.x release provides, so it failed with `ImportError` before doing anything. It now imports only the names GWpy defines and runs GWpy's `main()` when executed as a module, matching `python -m gwpy.time` (#784).
@@ -27,9 +28,10 @@
 - **`SpectrogramMatrix` HDF5 frequency axis**: `SpectrogramMatrix.write(format="hdf5")` stored only the time axis, so `SpectrogramMatrix.read()` returned `frequencies=None` for regular and irregular frequency grids alike. The frequency samples and their unit are now stored in a `frequencies` group next to `xindex` and restored on read. A matrix without a frequency axis writes no such group, and a file written before this change still reads with `frequencies=None`. The HDF5 layout of `TimeSeriesMatrix` and `FrequencySeriesMatrix` is unchanged (#883).
 - **Irregular `TimeSeries` HDF5 round trip**: `TimeSeries.write(format="hdf5")` raised `AttributeError: ... has no 'dx' member` for a non-uniformly sampled series and wrote nothing, and reading a file that did contain such an axis failed in GWpy's sample-rate based padding step. An irregular `TimeSeries` now round-trips with exact time samples, values, dtype, `unit` and `name` for real and complex data, including as a member of `TimeSeriesDict`/`TimeSeriesList` and next to regularly sampled entries. On read, an irregular series from a single native HDF5 source is returned as stored (other formats, and HDF5 files without an irregular axis, keep GWpy's read path and failure behavior); `start`/`end` outside its span raise `ValueError` for `gap="raise"` and for `gap="pad"` (an irregular series cannot be padded), while `gap="ignore"` performs no check. The storage layout and the 64 KiB open-file limitation are the same as for `FrequencySeries`; the regular-axis layout and read path are unchanged (#882).
 - **Manifest-free HDF5 collection reads**: Stop silently omitting unreadable entries from `Dict`/`List` reads of TimeSeries, FrequencySeries, Spectrogram and Histogram collections; warn on a partial read and raise when no entry can be read (#771).
+- **Spatial FFT round-trip coordinates**: `ScalarField.fft_space()` → `ifft_space()` now returns the original spatial coordinates for ascending and descending axes with any origin, for each independently transformed axis (#544).
+
 - **Overlap standard-error correction with a window array**: Stop silently disabling the Welch overlap correction for explicit window arrays. A length or shape mismatch in `calculate_correlation_factor()` raises `ValueError`, and `bootstrap_spectrogram()` applies the correction to window arrays of any length (#772).
 
-### Fixed
 
 - **`ScalarField` plot labels**: `plot_map2d()`, `plot_timeseries_points()`, `plot_profile()` and `plot_time_space_map()` built axis and colorbar labels with ad-hoc f-strings, which drew an empty `[]` for dimensionless axes or data (for example `x []`). They now use the shared `format_axis_label()` helper: a displayable unit still gives `x [m]`, and a dimensionless one gives `x`. Plotted values and axes are unchanged (#569).
 
@@ -38,6 +40,7 @@
 - **SeriesMatrix HDF5 `attrs`**: Stop silently dropping `attrs` that cannot be stored in the JSON-based `attrs_json` record; raise `TypeError` before the target file is opened or truncated (#777).
 
 - **SeriesMatrix format inference errors**: Report "Could not identify format" only when format identification itself fails, and let errors from an identified reader or writer propagate with their original type and message (#775).
+
 
 ## [0.2.9] - 2026-11-07
 

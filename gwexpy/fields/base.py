@@ -198,6 +198,12 @@ class FieldBase(Array4D):
         if getattr(self, "_axis0_offset", None) is None:
             self._axis0_offset = getattr(obj, "_axis0_offset", None)
 
+        # Real-space start and direction of axes currently in k-space, recorded
+        # by fft_space so that ifft_space can restore the coordinates.
+        if getattr(self, "_space_origins", None) is None:
+            parent_origins = getattr(obj, "_space_origins", None)
+            self._space_origins = dict(parent_origins) if parent_origins else None
+
         self._validate_domain_units()
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
