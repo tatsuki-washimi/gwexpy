@@ -1,0 +1,132 @@
+{
+  "classification": "new product-path and product-helper numerical experiments",
+  "versions": {
+    "python": "3.11.14",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "gwpy": "4.0.2"
+  },
+  "source_sha256": {
+    "gauch.py": "e6276e569bd118c7215a73c5adb1f4fdb6bbe0b97bbc2bfa77544699fe7fce84"
+  },
+  "odd_final_reproduction": {
+    "nfft": 33,
+    "bin_index": 16,
+    "window_samples": 39,
+    "null_trials": 20000,
+    "evaluation_windows": 4000,
+    "seed": 20261113,
+    "production_output_shape": [
+      155962,
+      17
+    ],
+    "selected_independent_windows": 4000,
+    "old_rayleigh_final_bin": {
+      "rate_005": 0.1765,
+      "binomial_se_005": 0.006028012732236056,
+      "rate_001": 0.078
+    },
+    "old_rayleigh_null_block_rates_005": [
+      0.1675,
+      0.17925,
+      0.18475,
+      0.18575
+    ],
+    "old_rayleigh_null_se_estimate_005": 0.004188743596433977,
+    "matched_process_final_bin": {
+      "rate_005": 0.056,
+      "binomial_se_005": 0.003635381685600564,
+      "rate_001": 0.01225
+    },
+    "matched_process_null_block_rates_005": [
+      0.056,
+      0.05025,
+      0.0525,
+      0.06125
+    ],
+    "matched_process_null_se_estimate_005": 0.0023957427519108415,
+    "unchanged_first_interior_rayleigh": {
+      "rate_005": 0.04975,
+      "binomial_se_005": 0.0034378386196853394,
+      "rate_001": 0.01
+    }
+  },
+  "overlap_endpoint_calibration": {
+    "n": 39,
+    "nfft": 256,
+    "hop": 128,
+    "null_trials_per_model": 20000,
+    "evaluation_windows": 20000,
+    "evaluation_groups": 40,
+    "seeds": {
+      "independent_null": 20261213,
+      "fft_process_null_blocks": [
+        20261214,
+        20261215,
+        20261216,
+        20261217
+      ],
+      "evaluation": 20261223
+    },
+    "bins": {
+      "dc": {
+        "independent_null": {
+          "rate_005": 0.05195,
+          "binomial_se_005": 0.00156925456029288,
+          "rate_001": 0.0105
+        },
+        "fft_process_null": {
+          "rate_005": 0.048,
+          "binomial_se_005": 0.0015115554902152947,
+          "rate_001": 0.0097
+        },
+        "paired_rate_difference_005_independent_minus_fft": 0.00395,
+        "paired_evaluation_se_005": 0.00046678112149551996,
+        "independent_null_block_rates_005": [
+          0.0553,
+          0.05065,
+          0.0482,
+          0.05165
+        ],
+        "fft_process_null_block_rates_005": [
+          0.0466,
+          0.0482,
+          0.0466,
+          0.05205
+        ],
+        "independent_null_se_estimate_005": 0.001473798946034816,
+        "fft_process_null_se_estimate_005": 0.0012857188326639167,
+        "bin_index": 0
+      },
+      "nyquist": {
+        "independent_null": {
+          "rate_005": 0.05115,
+          "binomial_se_005": 0.0015577817160950375,
+          "rate_001": 0.01055
+        },
+        "fft_process_null": {
+          "rate_005": 0.05225,
+          "binomial_se_005": 0.0015735300680317487,
+          "rate_001": 0.0109
+        },
+        "paired_rate_difference_005_independent_minus_fft": -0.0010999999999999998,
+        "paired_evaluation_se_005": 0.0002019139192062567,
+        "independent_null_block_rates_005": [
+          0.0541,
+          0.04995,
+          0.0475,
+          0.05085
+        ],
+        "fft_process_null_block_rates_005": [
+          0.05535,
+          0.04815,
+          0.05125,
+          0.0533
+        ],
+        "independent_null_se_estimate_005": 0.0013645817430016183,
+        "fft_process_null_se_estimate_005": 0.0015356018092808662,
+        "bin_index": 128
+      }
+    }
+  }
+}

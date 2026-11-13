@@ -1,0 +1,85 @@
+{
+  "task": "GWexpy #879 residual scientific repair after PR #900",
+  "date": "2026-11-13",
+  "pull_request": {
+    "number": 905,
+    "url": "https://github.com/tatsuki-washimi/gwexpy/pull/905",
+    "state": "open",
+    "draft": true,
+    "labels": [
+      "needs-physics-review"
+    ]
+  },
+  "skills": [
+    "setup_plan",
+    "verify_physics",
+    "gwexpy_conda_jobs"
+  ],
+  "files_changed": [
+    "CHANGELOG.md",
+    "docs/developers/plans/2026-11-13-gauch-879-residual-science.md",
+    "docs/developers/reports/20261113_gauch_879.md",
+    "docs/developers/reports/20261113_gauch_879_edge_followup_results.json",
+    "docs/developers/reports/20261113_gauch_879_followup_manifest.json",
+    "gwexpy/statistics/gauch.py",
+    "scripts/validation/verify_gauch_edge_nulls.py",
+    "tests/statistics/test_gauch_single_fft.py"
+  ],
+  "numerical_evidence": {
+    "results_file": "docs/developers/reports/20261113_gauch_879_edge_followup_results.json",
+    "gauch_source_sha256": "e6276e569bd118c7215a73c5adb1f4fdb6bbe0b97bbc2bfa77544699fe7fce84",
+    "odd_final_bin": "Actual compute_gauch path, nfft=33, n=39, 4,000 evaluations, 20,000 null trials. Rayleigh null P(p<=.05)=0.17650; matched Gaussian FFT-process null P(p<=.05)=0.05600; first interior control=0.04975.",
+    "overlap_endpoints": "20,000 Gaussian evaluation windows and 20,000 trials per null at n=39, nfft=256, hop=128. Independent / FFT-process P(p<=.05): DC 0.05195 / 0.04800; Nyquist 0.05115 / 0.05225. Both individual models are consistent with nominal 0.05 after evaluation and shared-null Monte Carlo errors.",
+    "kagra": "PR #900's accepted results were retained. The new branch activates only for odd nfft; KAGRA's compared 4096 and 24576 sample FFT lengths are even, and its operational band excludes Nyquist. Original supplied KAGRA files were unavailable locally, so the direct external-source comparison was not rerun."
+  },
+  "commands_executed": [
+    {
+      "command": "gh api -X GET repos/tatsuki-washimi/gwexpy/issues/879; gh api -X GET repos/tatsuki-washimi/gwexpy/issues/879/comments; gh api -X GET repos/tatsuki-washimi/gwexpy/pulls/900",
+      "result": "Read current scientific review, Release Owner scope comment, merged PR details, and accepted behavior."
+    },
+    {
+      "command": "PYTHONPATH=. memcap -m 3G -- conda run -n gwexpy python scripts/validation/verify_gauch_edge_nulls.py --output docs/developers/reports/20261113_gauch_879_edge_followup_results.json",
+      "result": "Passed; produced seeded product-path odd-bin and 50% overlap endpoint calibration results."
+    },
+    {
+      "command": "PYTHONPATH=. memcap -- conda run -n gwexpy python -m pytest tests/statistics/test_gauch_single_fft.py -q",
+      "result": "46 passed, including long Gaussian calibration, covariance construction, saved KAGRA n39 quantile, overlap endpoints and nfft=3 guard tests."
+    },
+    {
+      "command": "PYTHONPATH=. memcap -- conda run -n gwexpy python -m pytest tests/statistics/test_gauch_single_fft.py tests/statistics/test_monte_carlo_rng.py tests/statistics/test_finite_sample_pvalue.py tests/statistics/test_warning_attribution_and_guards.py tests/statistics/test_degenerate_input_contract.py -q -m 'not long'",
+      "result": "144 passed, 3 deselected on the final focused run after adding the random-only RNG regression."
+    },
+    {
+      "command": "conda run -n gwexpy ruff check gwexpy/statistics/gauch.py tests/statistics/test_gauch_single_fft.py scripts/validation/verify_gauch_edge_nulls.py",
+      "result": "Passed."
+    },
+    {
+      "command": "conda run -n gwexpy ruff format --check gwexpy/statistics/gauch.py tests/statistics/test_gauch_single_fft.py scripts/validation/verify_gauch_edge_nulls.py",
+      "result": "Passed; all changed Python files formatted."
+    },
+    {
+      "command": "conda run -n gwexpy mypy gwexpy/statistics/gauch.py",
+      "result": "Success: no issues found in 1 source file."
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed."
+    },
+    {
+      "command": "git push -u origin work/v0.2.10-879-followup; gh pr create --draft --base main --head work/v0.2.10-879-followup --label needs-physics-review",
+      "result": "Pushed the follow-up branch and opened Draft PR #905 for Release Owner physics review."
+    }
+  ],
+  "physics_review": {
+    "summary": "The observed fitted-Rayleigh KS statistic is retained. The odd final-bin null is generated from the exact Gaussian linear coefficient process after mean removal and periodic Hann weighting; shifted coefficient-kernel dot products provide overlap covariance. The empirical odd final-bin mismatch is removed without changing neighboring bins. The independent DC/Nyquist nulls remain because fresh rates and saved common-null uncertainty do not show material miscalibration. For nfft=3 the demeaned periodic-Hann coefficient has Var(Im)/Var(Re)=9, violating the equal-variance condition for Rayleigh magnitudes; the existing ValueError guard remains.",
+    "scientific_acceptance": "Pending Release Owner review; do not merge automatically."
+  },
+  "omitted_checks": [
+    "The direct verify_gauch_kagra.py comparison against all_func_gwpy3.py, GauCh_gwpy3.py, and n39.npy was not rerun because those user-supplied source/reference files were absent from this checkout and searched local work/SSD paths. The accepted hash-identified PR #900 JSON results were reviewed; the source branch does not activate for KAGRA's even FFT lengths or its [10, 1500) Hz comparison band.",
+    "No full-repository test, lint, or type-check suite was run; this patch is limited to GauCh and its focused validation."
+  ],
+  "exploratory_runs_not_used_as_evidence": [
+    "An initial product probe without PYTHONPATH imported an installed older release worktree; its result was discarded. All reported product-path experiments explicitly set PYTHONPATH to this PR worktree.",
+    "An intermediate cache test expected odd nfft=63's final bin at index 32; the correct rfft final index is 31. The assertion was corrected and the suite passed."
+  ]
+}

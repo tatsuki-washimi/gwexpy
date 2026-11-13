@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 _RAYLEIGH = "rayleigh"
 _HALFNORMAL = "halfnormal"
+_FFT_PROCESS_STREAM = 2
 
 
 class GauChResult:
@@ -214,18 +215,23 @@ def compute_gauch(
     Notes
     -----
     Each ASD sample is one Hann-windowed FFT segment with its mean removed;
-    no periodograms are averaged. For Gaussian noise the amplitude of an
-    interior frequency bin is Rayleigh distributed. The DC bin and, for an
-    even FFT length in samples, the Nyquist bin have a purely real FFT
-    coefficient, so their amplitude is half-normal. An odd FFT length has no
-    Nyquist bin and its last bin is an interior bin.
+    no periodograms are averaged. Interior frequency bins have Rayleigh
+    amplitudes except for the highest-frequency bin of odd-length FFTs, whose
+    real and imaginary coefficients have unequal variance. The DC bin and,
+    for an even FFT length in samples, the Nyquist bin have a purely real FFT
+    coefficient, so their marginal amplitude is half-normal. A Gaussian FFT
+    process null is used for the odd-length final bin; it preserves the fitted
+    KS statistic while accounting for its unequal real and imaginary
+    coefficient variances.
 
     Per bin, the scale is fitted from the window (``sigma**2 = mean(x**2)/2``
     for Rayleigh, ``mean(x**2)`` for half-normal) and the standard two-sided
     Kolmogorov-Smirnov statistic ``D = max(D+, D-)`` is taken against the
     fitted distribution. Fitting the scale changes the null distribution of
-    ``D``, so it is simulated: independent amplitude samples, the same
-    statistic, the scale refitted per trial. The p-value is one-sided,
+    ``D``, so it is simulated with the same statistic and scale refitting. The
+    ordinary bins use independent amplitude draws; the exception noted above
+    uses the matching Gaussian FFT coefficient process. The p-value is
+    one-sided,
     ``p = (r + 1) / (N + 1)`` with ``N = n_monte_carlo`` and ``r`` the number
     of simulated statistics ``>=`` the observed one (#507).
 
@@ -264,6 +270,14 @@ def compute_gauch(
     if nfft % 2 == 0:
         real_only[-1] = True
 
+    # A mean-removed periodic Hann FFT's last bin is not circular for odd
+    # lengths (its real and imaginary variances differ). Calibrate that bin
+    # from the matching Gaussian FFT process; all other bins retain their
+    # established independent-amplitude nulls.
+    fft_process_only = np.zeros(n_freqs, dtype=bool)
+    if nfft % 2:
+        fft_process_only[-1] = True
+
     # 2. Sliding-window statistic: (n_times - window + 1, n_freqs)
     n_out = n_times - window + 1
     statistic_map = np.empty((n_out, n_freqs))
@@ -275,15 +289,32 @@ def compute_gauch(
     rayleigh_null = _get_lilliefors_null_distribution(
         window, n_monte_carlo, rng=rng, seed=seed
     )
-    pvalue_map[:, ~real_only] = upper_tail_rank_pvalue(
-        rayleigh_null, statistic_map[:, ~real_only]
+    rayleigh_bins = ~real_only & ~fft_process_only
+    pvalue_map[:, rayleigh_bins] = upper_tail_rank_pvalue(
+        rayleigh_null, statistic_map[:, rayleigh_bins]
     )
     halfnormal_null = _get_halfnormal_null_distribution(
         window, n_monte_carlo, rng=rng, seed=seed
     )
-    pvalue_map[:, real_only] = upper_tail_rank_pvalue(
-        halfnormal_null, statistic_map[:, real_only]
+    halfnormal_bins = real_only & ~fft_process_only
+    pvalue_map[:, halfnormal_bins] = upper_tail_rank_pvalue(
+        halfnormal_null, statistic_map[:, halfnormal_bins]
     )
+    if np.any(fft_process_only):
+        bin_index = int(np.flatnonzero(fft_process_only)[0])
+        fft_process_null = _get_fft_process_null_distribution(
+            window,
+            nfft,
+            hop,
+            bin_index,
+            bool(real_only[bin_index]),
+            n_monte_carlo,
+            rng=rng,
+            seed=seed,
+        )
+        pvalue_map[:, fft_process_only] = upper_tail_rank_pvalue(
+            fft_process_null, statistic_map[:, fft_process_only]
+        )
 
     # A dead bin has a NaN statistic; searchsorted would map it to a spurious
     # p-value, so restore NaN explicitly for those bins.
@@ -341,11 +372,159 @@ def compute_gauch(
 
 _LILLIEFORS_CACHE: dict[tuple[int, int], np.ndarray] = {}
 _HALFNORMAL_CACHE: dict[tuple[int, int], np.ndarray] = {}
+_FFT_PROCESS_CACHE: dict[tuple[int, ...], np.ndarray] = {}
+_FFT_PROCESS_FACTOR_CACHE: dict[tuple[int, ...], np.ndarray] = {}
 _LILLIEFORS_CACHE_LOCK = threading.Lock()
 
 # Stream label that keeps the seeded half-normal null independent of the
 # seeded Rayleigh null, which uses ``default_rng(seed)`` directly.
 _HALFNORMAL_STREAM = 1
+
+
+def _fft_process_factor(
+    n: int, nfft: int, hop: int, bin_index: int, real_only: bool
+) -> np.ndarray:
+    """Return a factor of the Gaussian FFT-coefficient covariance matrix.
+
+    The coefficient vectors include the per-segment mean removal and periodic
+    Hann window used by :func:`_segment_asds`. Their covariance is computed
+    from shared input samples, so 50% overlap dependence is represented without
+    simulating and transforming full time series for every Monte Carlo trial.
+    A common amplitude normalization is omitted because the KS statistic is
+    scale invariant.
+    """
+    key = (n, nfft, hop, bin_index, int(real_only))
+    with _LILLIEFORS_CACHE_LOCK:
+        factor = _FFT_PROCESS_FACTOR_CACHE.get(key)
+        if factor is not None:
+            return factor
+
+        sample = np.arange(nfft)
+        window = signal.get_window("hann", nfft, fftbins=True)
+        kernel = window * np.exp(-2j * np.pi * bin_index * sample / nfft)
+        kernel -= kernel.mean()
+        components = (kernel.real,) if real_only else (kernel.real, kernel.imag)
+        n_components = len(components)
+        dimension = n * n_components
+        covariance = np.zeros((dimension, dimension), dtype=float)
+
+        # Two frames have zero covariance once their input samples no longer
+        # overlap. Only compute the diagonal and the small number of adjacent
+        # frame blocks that can share samples.
+        for left in range(n):
+            for right in range(left, n):
+                shift = (right - left) * hop
+                if shift >= nfft:
+                    break
+                for left_component, left_kernel in enumerate(components):
+                    for right_component, right_kernel in enumerate(components):
+                        value = np.dot(
+                            left_kernel[shift:], right_kernel[: nfft - shift]
+                        )
+                        row = left * n_components + left_component
+                        column = right * n_components + right_component
+                        covariance[row, column] = value
+                        covariance[column, row] = value
+
+        covariance /= np.max(np.diag(covariance))
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        factor = eigenvectors * np.sqrt(np.maximum(eigenvalues, 0.0))
+        factor.setflags(write=False)
+        _FFT_PROCESS_FACTOR_CACHE[key] = factor
+        return factor
+
+
+def _simulate_fft_process_null(
+    n: int,
+    nfft: int,
+    hop: int,
+    bin_index: int,
+    real_only: bool,
+    n_trials: int,
+    draw_uniform: Callable[[int], np.ndarray],
+) -> np.ndarray:
+    """Simulate the product KS statistic under the matching Gaussian FFT process."""
+    factor = _fft_process_factor(n, nfft, hop, bin_index, real_only)
+    dimension = factor.shape[0]
+    n_components = 1 if real_only else 2
+    null_dns = np.empty(n_trials, dtype=float)
+    real_mask = np.full(8192, real_only, dtype=bool)
+    for start in range(0, n_trials, 8192):
+        stop = min(start + 8192, n_trials)
+        uniforms = np.clip(
+            np.stack([draw_uniform(dimension) for _ in range(stop - start)]),
+            np.finfo(float).tiny,
+            np.nextafter(1.0, 0.0),
+        )
+        coefficients = special.ndtri(uniforms) @ factor.T
+        if real_only:
+            amplitudes = np.abs(coefficients)
+        else:
+            amplitudes = np.hypot(
+                coefficients[:, 0::n_components],
+                coefficients[:, 1::n_components],
+            )
+        null_dns[start:stop] = _ks_statistic(amplitudes.T, real_mask[: stop - start])
+    return np.sort(null_dns)
+
+
+def _get_fft_process_null_distribution(
+    n: int,
+    nfft: int,
+    hop: int,
+    bin_index: int,
+    real_only: bool,
+    n_trials: int = 1000,
+    *,
+    rng: UniformRandomSource | None = None,
+    seed: int | None = None,
+) -> np.ndarray:
+    """Return a fitted-model KS null for one bin of the Gaussian FFT process.
+
+    A seeded call uses a dedicated stream, independent of the established
+    Rayleigh and half-normal streams. The legacy global NumPy state and a
+    separate cache are retained for calls without ``rng`` or ``seed``.
+    """
+    _validate_null_request(n, n_trials)
+    cache_key = (n, nfft, hop, bin_index, int(real_only), n_trials)
+    if rng is not None:
+        return _simulate_fft_process_null(
+            n,
+            nfft,
+            hop,
+            bin_index,
+            real_only,
+            n_trials,
+            rng.random,
+        )
+    if seed is not None:
+        stream = np.random.default_rng([_FFT_PROCESS_STREAM, seed])
+        return _simulate_fft_process_null(
+            n,
+            nfft,
+            hop,
+            bin_index,
+            real_only,
+            n_trials,
+            stream.random,
+        )
+
+    with _LILLIEFORS_CACHE_LOCK:
+        cached = _FFT_PROCESS_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    generated = _simulate_fft_process_null(
+        n,
+        nfft,
+        hop,
+        bin_index,
+        real_only,
+        n_trials,
+        np.random.random,
+    )
+    with _LILLIEFORS_CACHE_LOCK:
+        return _FFT_PROCESS_CACHE.setdefault(cache_key, generated)
 
 
 def _simulate_lilliefors_null(
