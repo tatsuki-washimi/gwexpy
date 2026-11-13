@@ -12,6 +12,7 @@ import numpy as np
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
+    SkippedHDF5Entries,
     detect_hdf5_layout,
     ensure_hdf5_file,
     has_hdf5_collection_manifest,
@@ -230,6 +231,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
                 keys = order or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(keys))
                 out = cls()
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in keys:
@@ -238,10 +240,11 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = fs
+                    skipped.report()
                     return out
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
@@ -256,10 +259,11 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = fs
+                    skipped.report()
                     return out
         from .io.dttxml import _looks_like_dttxml, read_frequencyseriesdict_dttxml
 
@@ -844,6 +848,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                 manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(order))
                 out_items: list[FrequencySeries] = []
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
@@ -852,9 +857,10 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         out_items.append(fs)
+                    skipped.report()
                     return cls(out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
@@ -869,9 +875,10 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
                                 continue
                         out_items.append(fs)
+                    skipped.report()
                     return cls(out_items)
         from astropy.io import registry
 

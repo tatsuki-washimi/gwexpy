@@ -1,0 +1,88 @@
+{
+  "baseline_sha": "cfe419de35209429fb4a0accf284bf967133482a",
+  "before_after": [
+    {
+      "seed": 8790,
+      "before": {
+        "rate005": 0.5806451612903226,
+        "rate001": 0.29806451612903223,
+        "median_p": 0.035,
+        "median_statistic": 0.16829518787521547
+      },
+      "after": {
+        "rate005": 0.04,
+        "rate001": 0.00903225806451613,
+        "median_p": 0.4897020595880824,
+        "median_statistic": 0.10665013667836004
+      }
+    },
+    {
+      "seed": 8791,
+      "before": {
+        "rate005": 0.5535483870967742,
+        "rate001": 0.28903225806451616,
+        "median_p": 0.036,
+        "median_statistic": 0.16487783280072316
+      },
+      "after": {
+        "rate005": 0.05161290322580645,
+        "rate001": 0.015483870967741935,
+        "median_p": 0.5022995400919816,
+        "median_statistic": 0.10718269779537071
+      }
+    },
+    {
+      "seed": 8792,
+      "before": {
+        "rate005": 0.6038709677419355,
+        "rate001": 0.3367741935483871,
+        "median_p": 0.0306,
+        "median_statistic": 0.16668807918279765
+      },
+      "after": {
+        "rate005": 0.03483870967741935,
+        "rate001": 0.005161290322580645,
+        "median_p": 0.525494901019796,
+        "median_statistic": 0.10568440131798584
+      }
+    },
+    {
+      "seed": 8793,
+      "before": {
+        "rate005": 0.5870967741935483,
+        "rate001": 0.2838709677419355,
+        "median_p": 0.0336,
+        "median_statistic": 0.1660768218065329
+      },
+      "after": {
+        "rate005": 0.04774193548387097,
+        "rate001": 0.00903225806451613,
+        "median_p": 0.4923015396920616,
+        "median_statistic": 0.10829778371902044
+      }
+    }
+  ],
+  "nfft3_diagnostic": [
+    {
+      "nfft": 3,
+      "hop": 1,
+      "independent_windows": 5000,
+      "rate005_without_guard": 0.3016
+    },
+    {
+      "nfft": 3,
+      "hop": 2,
+      "independent_windows": 5000,
+      "rate005_without_guard": 0.3252
+    },
+    {
+      "nfft": 3,
+      "hop": 3,
+      "independent_windows": 5000,
+      "rate005_without_guard": 0.3314
+    }
+  ],
+  "classification": "Observed. Four-realization product comparison is descriptive, not the 40-realization historical experiment.",
+  "product_sha256": "92c223846e7cb2ae4b84fd5a73e897dfbd9524b2d1bf6631bdda95486f097135",
+  "verification_script_sha256": "d20fb8034a2978996520440bcd832096bf2788fcb12aee9dde81aa0a24ffa9cd"
+}

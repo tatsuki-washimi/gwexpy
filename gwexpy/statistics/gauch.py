@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import threading
-import warnings
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
@@ -18,6 +17,7 @@ except ImportError as _exc:
 
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
+from ._common import UniformRandomSource, warn_at_user_call
 from ._monte_carlo import upper_tail_rank_pvalue
 
 if TYPE_CHECKING:
@@ -136,11 +136,16 @@ def _resolve_hop(
     hop = int(round(stride * sample_rate))
     if nfft < 2:
         raise ValueError(f"fftlength must span at least 2 samples, got {nfft}.")
+    if nfft == 3:
+        raise ValueError(
+            "compute_gauch: a three-sample Hann FFT has a non-Rayleigh interior "
+            "amplitude after detrending; its null distribution is not calibrated."
+        )
     if hop < 1:
         raise ValueError(f"stride must span at least 1 sample, got {hop}.")
-    # The null distribution treats the ASD samples of one bin as independent.
-    # That holds for disjoint segments, and was measured to hold for Hann
-    # segments at 50% overlap (#879). Other overlaps are not calibrated.
+    # Disjoint segments are independent. For 50% overlap, independence is an
+    # approximation whose calibration must be evaluated by bin class (#879).
+    # Other overlaps have not been calibrated.
     # For odd nfft, either nearest integer hop represents half a segment.
     # Even nfft requires exactly nfft // 2; a +/-1 hop is not 50%.
     if hop < nfft and abs(2 * hop - nfft) > 1:
@@ -161,7 +166,7 @@ def compute_gauch(
     overlap: float | None = None,
     n_monte_carlo: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> GauChResult:
     """Compute GauCh, a KS test of Gaussianity on ASD samples, in a sliding window.
@@ -202,7 +207,8 @@ def compute_gauch(
     Raises
     ------
     ValueError
-        If the segments overlap by anything other than 0 or 50%, or if the
+        If the segments overlap by anything other than 0 or 50%, the FFT
+        length is three samples (an uncalibrated interior amplitude), or the
         series holds fewer than `window` segments.
 
     Notes
@@ -236,11 +242,10 @@ def compute_gauch(
 
     """
     if rng is not None and seed is not None:
-        warnings.warn(
+        warn_at_user_call(
             "compute_gauch: both rng and seed were given; seed is "
             "ignored because rng takes priority",
             UserWarning,
-            stacklevel=2,
         )
 
     stride_was_provided = stride is not None
@@ -400,7 +405,7 @@ def _get_lilliefors_null_distribution(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> np.ndarray:
     """Generate the null distribution of the Rayleigh-model statistic for size `n`.
@@ -434,7 +439,7 @@ def _get_halfnormal_null_distribution(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> np.ndarray:
     """Generate the null distribution of the half-normal-model statistic.
@@ -460,7 +465,7 @@ def _get_rayleigh_lilliefors_pvalue(
     n: int,
     n_trials: int = 1000,
     *,
-    rng: np.random.Generator | None = None,
+    rng: UniformRandomSource | None = None,
     seed: int | None = None,
 ) -> float:
     """Get the Rayleigh-model p-value ``(r + 1) / (N + 1)`` for statistic `dn`."""

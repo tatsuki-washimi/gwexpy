@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -16,6 +15,7 @@ except ImportError as _exc:
 
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
+from ._common import warn_at_user_call
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
@@ -126,7 +126,13 @@ def compute_student_t_nu(
             "between segments (a gapped analysis), not raise an error"
         )
 
-    if not isinstance(window, (int, np.integer)) or window <= 0:
+    # ``bool`` is a subclass of ``int``: ``window=True`` would otherwise be
+    # taken as a one-segment window.
+    if (
+        isinstance(window, (bool, np.bool_))
+        or not isinstance(window, (int, np.integer))
+        or window <= 0
+    ):
         raise ValueError(f"window must be a positive integer, got {window!r}")
 
     if frange is not None:
@@ -243,11 +249,10 @@ def compute_student_t_nu(
                 n_fit_failures += 1
 
     if n_fit_failures:
-        warnings.warn(
+        warn_at_user_call(
             f"compute_student_t_nu: stats.t.fit failed for "
             f"{n_fit_failures}/{n_out * n_freqs} bins; those nu values are NaN",
             RuntimeWarning,
-            stacklevel=2,
         )
 
     # Center times, shifted onto the GPS axis (relies on boundary="zeros"

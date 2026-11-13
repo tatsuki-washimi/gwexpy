@@ -265,19 +265,22 @@ def test_short_even_fft_rejects_non_half_overlap(hop):
         gauch_module._resolve_hop(4.0, float(hop), None, 1.0)
 
 
+@pytest.mark.parametrize("hop", [1, 2, 3])
+def test_three_sample_fft_rejects_uncalibrated_interior(hop):
+    """The short Hann/detrend marginal fails even with disjoint segments."""
+    with pytest.raises(ValueError, match="three-sample.*non-Rayleigh"):
+        compute_gauch(_noise(duration=8, rate=3), fftlength=1, stride=hop / 3, window=3)
+
+
 @pytest.mark.parametrize("hop", [2, 4, 5])
 def test_short_even_fft_accepts_half_or_disjoint_hops(hop):
-    stride, nfft, resolved_hop = gauch_module._resolve_hop(
-        4.0, float(hop), None, 1.0
-    )
+    stride, nfft, resolved_hop = gauch_module._resolve_hop(4.0, float(hop), None, 1.0)
     assert (stride, nfft, resolved_hop) == (float(hop), 4, hop)
 
 
 @pytest.mark.parametrize("hop", [2, 3])
 def test_odd_fft_allows_nearest_half_sample_hops(hop):
-    stride, nfft, resolved_hop = gauch_module._resolve_hop(
-        5.0, float(hop), None, 1.0
-    )
+    stride, nfft, resolved_hop = gauch_module._resolve_hop(5.0, float(hop), None, 1.0)
     assert (stride, nfft, resolved_hop) == (float(hop), 5, hop)
 
 

@@ -27,6 +27,7 @@ from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
+    SkippedHDF5Entries,
     detect_hdf5_layout,
     ensure_hdf5_file,
     has_hdf5_collection_manifest,
@@ -546,13 +547,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             if fmt == "hdf5" and not (
                 augmentation_attrs & _GWEXPY_COLLECTION_HDF5_ATTRS
             ):
-                # Plain HDF5 is a GWpy API.  Delegate the complete public
-                # binding (including names/group, open handles, start/end,
-                # and failure behavior) to the parent class.  Exact sidecars
-                # are overlaid only after GWpy has resolved that public result.
+                # Ordinary HDF5 retains GWpy's reader; an irregular axis
+                # needs specialized dispatch before any GWexpy exact
+                # metadata sidecars are restored.
+                from ._read import native_hdf5_dict_read as _reader
                 result = _coerce_native_hdf5_result(
                     cls,
-                    BaseTimeSeriesDict.read(source, *args, **kwargs),
+                    _reader(source, BaseTimeSeriesDict)(source, *args, **kwargs),
                 )
                 if augmentation_attrs & _GWEXPY_EXACT_HDF5_ATTRS:
                     result = _restore_native_hdf5_exact_state(
@@ -580,6 +581,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
                 keys = order or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(keys))
                 out = cls()
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in keys:
@@ -588,10 +590,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = ts
+                    skipped.report()
                     return apply_time_selection(out, start, end)
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
@@ -606,10 +609,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = ts
+                    skipped.report()
                     return apply_time_selection(out, start, end)
         if fmt in {"wav", "flac"} and kwargs.get("extract_metadata"):
             from gwexpy.io.utils import extract_audio_metadata, set_provenance
@@ -2424,6 +2428,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                 manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
+                skipped = SkippedHDF5Entries(cls.__name__, source, len(order))
                 out_items: list[Any] = []
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
@@ -2432,9 +2437,10 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             if manifest_backed:
                                 raise
-                            logger.debug("Skipping dataset %s: %s", ds_name, e)
+                            skipped.record(ds_name, e)
                             continue
                         out_items.append(apply_time_selection(ts, start, end))
+                    skipped.report()
                     return cls(*out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
@@ -2449,9 +2455,10 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 if manifest_backed:
                                     raise e from e2
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
+                                skipped.record(grp_name, e2, e)
                                 continue
                         out_items.append(apply_time_selection(ts, start, end))
+                    skipped.report()
                     return cls(*out_items)
         raise TypeError(
             "TimeSeriesList.read currently supports only directory sources for csv/txt"
