@@ -1,9 +1,10 @@
 """GauCh on single-FFT ASD samples with the standard two-sided KS statistic (#879).
 
-Each ASD sample is one Hann-windowed FFT segment. Interior bins are tested
-against a fitted Rayleigh amplitude, DC and (even FFT length) Nyquist against a
-fitted half-normal amplitude. The same statistic is used for the Monte Carlo
-null. p-values use the rank formula ``(r + 1) / (N + 1)``.
+Each ASD sample is one Hann-windowed FFT segment. Ordinary interior bins are
+tested against a fitted Rayleigh amplitude, DC and (even FFT length) Nyquist
+against a fitted half-normal amplitude. Odd-length final bins use a null for the
+corresponding Gaussian FFT process. p-values use the rank formula
+``(r + 1) / (N + 1)``.
 """
 
 from __future__ import annotations
@@ -199,6 +200,62 @@ def test_odd_fft_length_keeps_the_last_bin_interior():
     ).statistic
     assert stat[0, last] == pytest.approx(expected_last, rel=1e-10)
     assert stat[0, 0] == pytest.approx(expected_dc, rel=1e-10)
+    process_null = gauch_module._get_fft_process_null_distribution(
+        20, rate, rate, last, False, 50, seed=1
+    )
+    rayleigh_null = _get_lilliefors_null_distribution(20, 50, seed=1)
+    assert not np.array_equal(process_null, rayleigh_null)
+
+
+def test_half_overlap_keeps_independent_null_for_dc_and_nyquist():
+    hop, window, n_trials = 32, 20, 80
+    ts = _noise(duration=64.0)
+    result = compute_gauch(
+        ts,
+        fftlength=1.0,
+        stride=hop / FS,
+        window=window,
+        n_monte_carlo=n_trials,
+        seed=17,
+    )
+    halfnormal_null = gauch_module._get_halfnormal_null_distribution(
+        window, n_trials, seed=17
+    )
+    expected_nyquist = gauch_module.upper_tail_rank_pvalue(
+        halfnormal_null, result.statistic_map.value[:, -1]
+    )
+    expected_dc = gauch_module.upper_tail_rank_pvalue(
+        halfnormal_null, result.statistic_map.value[:, 0]
+    )
+
+    np.testing.assert_array_equal(result.pvalue_map.value[:, -1], expected_nyquist)
+    np.testing.assert_array_equal(result.pvalue_map.value[:, 0], expected_dc)
+
+
+def test_fft_process_factor_matches_detrended_windowed_coefficient_covariance():
+    n, nfft, hop, bin_index = 4, 7, 3, 3
+    sample = np.arange(nfft)
+    window = 0.5 - 0.5 * np.cos(2 * np.pi * sample / nfft)
+    kernel = window * np.exp(-2j * np.pi * bin_index * sample / nfft)
+    kernel -= kernel.mean()
+    span = nfft + (n - 1) * hop
+    vectors = np.zeros((2 * n, span))
+    for i in range(n):
+        start = i * hop
+        vectors[2 * i, start : start + nfft] = kernel.real
+        vectors[2 * i + 1, start : start + nfft] = kernel.imag
+    expected = vectors @ vectors.T
+    expected /= np.max(np.diag(expected))
+    factor = gauch_module._fft_process_factor(n, nfft, hop, bin_index, False)
+
+    np.testing.assert_allclose(factor @ factor.T, expected, rtol=1e-12, atol=1e-12)
+    independent_factor = gauch_module._fft_process_factor(
+        1, nfft, nfft, bin_index, False
+    )
+    independent_covariance = independent_factor @ independent_factor.T
+    assert independent_covariance[1, 1] / independent_covariance[0, 0] == pytest.approx(
+        5.0
+    )
 
 
 def test_time_and_frequency_axes():
@@ -403,6 +460,31 @@ def test_rng_path_is_reproducible_and_bypasses_caches():
     assert not gauch_module._HALFNORMAL_CACHE
 
 
+def test_odd_fft_null_accepts_the_random_only_rng_protocol():
+    class RandomOnly:
+        def __init__(self):
+            self._generator = np.random.default_rng(8)
+
+        def random(self, size):
+            return self._generator.random(size)
+
+    gauch_module._LILLIEFORS_CACHE.clear()
+    gauch_module._HALFNORMAL_CACHE.clear()
+    gauch_module._FFT_PROCESS_CACHE.clear()
+    result = compute_gauch(
+        _noise(rate=63),
+        fftlength=1.0,
+        window=10,
+        n_monte_carlo=60,
+        rng=RandomOnly(),
+    )
+
+    assert np.isfinite(result.pvalue_map.value).all()
+    assert not gauch_module._LILLIEFORS_CACHE
+    assert not gauch_module._HALFNORMAL_CACHE
+    assert not gauch_module._FFT_PROCESS_CACHE
+
+
 def test_default_path_caches_both_null_models():
     gauch_module._LILLIEFORS_CACHE.clear()
     gauch_module._HALFNORMAL_CACHE.clear()
@@ -411,6 +493,13 @@ def test_default_path_caches_both_null_models():
 
     assert (10, 33) in gauch_module._LILLIEFORS_CACHE
     assert (10, 33) in gauch_module._HALFNORMAL_CACHE
+
+
+def test_default_path_caches_odd_final_bin_process_null():
+    gauch_module._FFT_PROCESS_CACHE.clear()
+    compute_gauch(_noise(rate=63), fftlength=1.0, window=10, n_monte_carlo=33)
+
+    assert (10, 63, 63, 31, 0, 33) in gauch_module._FFT_PROCESS_CACHE
 
 
 # --- calibration on Gaussian noise ---------------------------------------------------------
@@ -452,3 +541,28 @@ def test_white_noise_rejection_rate_matches_nominal(overlap, window):
     assert np.mean(interior <= 0.01) == pytest.approx(0.01, abs=0.006)
     for real_only in (dc, nyquist):
         assert 0.015 < np.mean(real_only <= 0.05) < 0.09
+
+
+@pytest.mark.long
+def test_odd_final_bin_gaussian_rejection_rate_matches_nominal():
+    """Calibrate the odd final bin through the public production path."""
+    rate = 7
+    window = 39
+    n_evaluations = 1000
+    ts = _noise(
+        seed=20261113,
+        rate=rate,
+        duration=n_evaluations * window,
+    )
+    result = compute_gauch(
+        ts,
+        fftlength=1.0,
+        stride=1.0,
+        window=window,
+        n_monte_carlo=5000,
+        seed=20261113,
+    )
+    pvalues = result.pvalue_map.value[::window]
+
+    assert pvalues.shape[0] == n_evaluations
+    assert np.mean(pvalues[:, -1] <= 0.05) == pytest.approx(0.05, abs=0.025)
