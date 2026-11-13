@@ -107,11 +107,70 @@ class TestExtractErrorArray:
         result = _extract_error_array(series, error)
         np.testing.assert_array_almost_equal(result, 1.0)
 
-    def test_astropy_quantity_incompatible_unit_uses_raw_value(self):
+    def test_astropy_quantity_incompatible_unit_raises(self):
+        """An incompatible error unit is never used as a raw magnitude (#773)."""
         series = _FakeSeries(np.ones(5))
-        error = u.Quantity(np.ones(5) * 0.5, u.s)  # incompatible → raw value
+        error = u.Quantity(np.ones(5) * 0.5, u.s)
+        with pytest.raises(u.UnitConversionError, match="error.*'s'.*'m'"):
+            _extract_error_array(series, error)
+
+    def test_dimensionless_quantity_for_unitful_series_raises(self):
+        series = _FakeSeries(np.ones(5))
+        error = u.Quantity(np.ones(5) * 0.5)
+        with pytest.raises(u.UnitConversionError):
+            _extract_error_array(series, error)
+
+    def test_quantity_for_dimensionless_series(self):
+        series = _FakeSeries(np.ones(5))
+        series.unit = u.dimensionless_unscaled
+        result = _extract_error_array(series, u.Quantity(np.ones(5) * 0.5))
+        np.testing.assert_array_equal(result, 0.5)
+        with pytest.raises(u.UnitConversionError):
+            _extract_error_array(series, u.Quantity(np.ones(5), u.m))
+
+    def test_quantity_for_series_without_unit_uses_value(self):
+        series = _FakeSeries(np.ones(5))
+        series.unit = None
+        result = _extract_error_array(series, u.Quantity(np.ones(5) * 0.5, u.s))
+        np.testing.assert_array_equal(result, 0.5)
+
+    def test_error_series_convertible_unit_is_scaled(self):
+        series = _FakeSeries(np.ones(5))
+        error = _FakeSeries(np.ones(5) * 100)
+        error.unit = u.cm
         result = _extract_error_array(series, error)
-        np.testing.assert_array_almost_equal(result, 0.5)
+        np.testing.assert_allclose(result, 1.0, rtol=1e-12)
+
+    def test_error_series_incompatible_unit_raises(self):
+        series = _FakeSeries(np.ones(5))
+        error = _FakeSeries(np.ones(5) * 0.5)
+        error.unit = u.s
+        with pytest.raises(u.UnitConversionError, match="error.*'s'.*'m'"):
+            _extract_error_array(series, error)
+
+    def test_error_series_without_declared_unit_uses_value(self):
+        """A dimensionless error series carries no unit claim to contradict."""
+        series = _FakeSeries(np.ones(5))
+        for unit in (None, u.dimensionless_unscaled):
+            error = _FakeSeries(np.ones(5) * 0.5)
+            error.unit = unit
+            np.testing.assert_array_equal(_extract_error_array(series, error), 0.5)
+
+    def test_timeseries_error_units(self):
+        data = TimeSeries(np.ones(4), t0=0, dt=1, unit="m")
+        scaled = _extract_error_array(
+            data, TimeSeries(np.full(4, 5.0), t0=0, dt=1, unit="mm")
+        )
+        np.testing.assert_allclose(scaled, 0.005, rtol=1e-12)
+        with pytest.raises(u.UnitConversionError):
+            _extract_error_array(data, TimeSeries(np.ones(4), t0=0, dt=1, unit="s"))
+        with pytest.raises(u.UnitConversionError):
+            _extract_error_array(data, np.full(4, 10.0) * u.s)
+
+    def test_tiny_strain_scale_is_preserved(self):
+        data = TimeSeries(np.full(4, 1e-21), t0=0, dt=1, unit="m")
+        result = _extract_error_array(data, np.full(4, 2e-19) * u.cm)
+        np.testing.assert_allclose(result, 2e-21, rtol=1e-12)
 
     def test_astropy_quantity_shape_mismatch_raises(self):
         series = _FakeSeries(np.ones(5))
