@@ -18,6 +18,7 @@ except ImportError as _exc:
 from ..spectrogram import Spectrogram
 from ..spectrogram.provenance import analysis_provenance
 from ._common import UniformRandomSource, warn_at_user_call
+from ._monte_carlo import two_sided_rank_pvalue
 
 if TYPE_CHECKING:
     pass
@@ -94,6 +95,16 @@ def rayleigh_pvalue(
     is an ordinary interior bin and is *not* masked. Recovering detection
     power at these bins with a chi2_1 null is tracked separately.
 
+    The p-value is two-sided and doubles the smaller one-sided tail:
+    ``p = min(1, 2 * (min(r_upper, r_lower) + 1) / (N + 1))`` with
+    ``N = n_monte_carlo``, ``r_upper`` the number of simulated statistics
+    ``>=`` the observed one and ``r_lower`` the number ``<=`` it. Counting
+    the observed statistic among ``N + 1`` exchangeable values keeps the
+    test size at or below the nominal level; the smallest reportable value
+    is ``2 / (N + 1)``, so ``p < 0.001`` requires ``n_monte_carlo >= 2000``.
+    Through v0.2.9 the estimate was ``2 * min(r_upper, r_lower) / N``, which
+    could return exactly 0 (#507).
+
     """
     _validate_n_samples(n_samples)
 
@@ -115,16 +126,9 @@ def rayleigh_pvalue(
 
     r_vals = rayleigh_spec.value
 
-    # Vectorized p-value calculation (both-sided)
-    # count of dist >= r
-    upper_counts = len(dist) - np.searchsorted(dist, r_vals, side="left")
-    # count of dist <= r
-    lower_counts = np.searchsorted(dist, r_vals, side="right")
-
-    p_vals = 2.0 * np.minimum(upper_counts, lower_counts) / len(dist)
-
-    # Clip p-values to [0, 1]
-    p_vals = np.clip(p_vals, 0.0, 1.0).astype(float)
+    # Double the smaller one-sided tail, ranking the observed statistic among
+    # the N + 1 exchangeable values (#507). The minimum is 2/(N+1), never 0.
+    p_vals = two_sided_rank_pvalue(dist, r_vals)
 
     # A real-input FFT's DC and (for an even nfft) Nyquist coefficients are
     # purely real, so their power follows chi2_1, not the Exp(1) the null
