@@ -611,6 +611,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             dft,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=new_indices[0],
             axis1=new_indices[1],
             axis2=new_indices[2],
@@ -756,6 +757,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             dift,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=new_indices[0],
             axis1=new_indices[1],
             axis2=new_indices[2],
