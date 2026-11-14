@@ -11,6 +11,7 @@ from pathlib import Path
 import h5py
 import numpy as np
 import pytest
+from astropy import units as u
 
 from gwexpy.fields import ScalarField, VectorField
 from gwexpy.interop.openems_ import (
@@ -447,3 +448,52 @@ class TestOpenemsUnitOverride:
         for sf in vf.values():
             # unit is stored; exact representation depends on astropy Unit parsing
             assert sf.unit is not None
+
+
+def test_official_td_lowercase_time_attributes(tmp_path):
+    path = tmp_path / "td.h5"
+    _make_td_file(path)
+    with h5py.File(path, "a") as f:
+        for index, time in enumerate([0.0, 0.25, 0.5]):
+            f[f"FieldData/TD/{index}"].attrs["time"] = time
+    with h5py.File(path, "r") as f:
+        _, times = _read_openems_td(f, timestep=None)
+        _, single = _read_openems_td(f, timestep=1)
+    np.testing.assert_allclose(times, [0.0, 0.25, 0.5])
+    np.testing.assert_allclose(single, [0.25])
+    field = from_openems_hdf5(ScalarField, path, dump_type=0, component="x")
+    np.testing.assert_allclose(field._axis0_index.to_value(u.s), [0.0, 0.25, 0.5])
+
+
+def test_official_fd_group_frequency_attribute(tmp_path):
+    path = tmp_path / "fd.h5"
+    _make_fd_file(path, n_freq=2)
+    with h5py.File(path, "a") as f:
+        f["FieldData/FD"].attrs["frequency"] = [12.0, 37.0]
+    with h5py.File(path, "r") as f:
+        _, frequencies = _read_openems_fd(f, freq_idx=None)
+        _, single = _read_openems_fd(f, freq_idx=1)
+    np.testing.assert_allclose(frequencies, [12.0, 37.0])
+    np.testing.assert_allclose(single, [37.0])
+    field = from_openems_hdf5(ScalarField, path, dump_type=10, component="x")
+    np.testing.assert_allclose(field._axis0_index.to_value(u.Hz), [12.0, 37.0])
+
+
+def test_fd_group_frequency_must_cover_all_datasets(tmp_path):
+    path = tmp_path / "fd.h5"
+    _make_fd_file(path, n_freq=2)
+    with h5py.File(path, "a") as f:
+        f["FieldData/FD"].attrs["frequency"] = [12.0]
+    with h5py.File(path, "r") as f:
+        with pytest.raises(ValueError, match="does not cover"):
+            _read_openems_fd(f, freq_idx=None)
+
+
+def test_missing_axis_metadata_retains_dimensionless_indices(tmp_path):
+    td_path = tmp_path / "td_indices.h5"
+    fd_path = tmp_path / "fd_indices.h5"
+    _make_td_file(td_path)
+    _make_fd_file(fd_path)
+    for path, dump_type in [(td_path, 0), (fd_path, 10)]:
+        field = from_openems_hdf5(ScalarField, path, dump_type=dump_type, component="x")
+        assert field._axis0_index.unit == u.dimensionless_unscaled
