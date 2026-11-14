@@ -1,5 +1,16 @@
 # Changelog
 
+Published on 2026-11-14 UTC: [PyPI 0.2.10](https://pypi.org/project/gwexpy/0.2.10/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10). The [Zenodo DOI 10.5281/zenodo.24224264](https://zenodo.org/records/24224264) lists publication date 2026-11-14 and archive `tatsuki-washimi/gwexpy-v0.2.10.zip`; the Release Owner's date disposition remains pending. As of 2026-11-14T16:51:37Z, no v0.2.10 conda-forge feedstock PR or package was observed, and the latest package was v0.2.9.
+
+## [0.2.10] - 2026-11-14
+
+This patch release consolidates scientific-data integrity fixes across numerical statistics, physical units, metadata, time and frequency coordinates, HDF5 and collection I/O, and diagnostic visibility. It retains existing public APIs and supported persistence schemas. The full before-and-after behavior is included from the canonical `CHANGELOG.md` below.
+
+:::{include} ../../CHANGELOG.md
+:start-after: "## [0.2.10] - 2026-11-14"
+:end-before: "## [0.2.9] - 2026-11-07"
+:::
+
 Published on 2026-11-07 UTC: [PyPI 0.2.9](https://pypi.org/project/gwexpy/0.2.9/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9). The [Zenodo DOI 10.5281/zenodo.24025939](https://zenodo.org/records/24025939) lists publication date 2026-11-07 and archive `tatsuki-washimi/gwexpy-v0.2.9.zip`. The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at 2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at 2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on conda-forge.
 
 ## v0.2.9 weekly development activity

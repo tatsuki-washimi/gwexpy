@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.10",
-  "recorded_at_utc": "2026-11-14T16:29:43Z",
+  "recorded_at_utc": "2026-11-14T16:51:37Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.10",
@@ -129,9 +129,16 @@
       "status": "pending_review",
       "actor": "Release Owner",
       "objective": "Prepare and review EN/JA release/history updates",
-      "evidence": [],
-      "pending_reason": "Docs preparation and human review outstanding",
-      "resume_condition": "Record GitHub/PyPI/Zenodo observations, prepare docs, then human review"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/pull/920",
+          "sha256": null,
+          "observed_at_utc": "2026-11-14T16:51:37Z",
+          "observation": "PR #920 updates the English and Japanese release status, installation guidance, changelog, and roadmap with verified GitHub/PyPI/Zenodo records and the observed conda-forge state; Release Owner review and merge are pending."
+        }
+      ],
+      "pending_reason": "Release Owner review and merge of PR #920 outstanding",
+      "resume_condition": "After PR #920 merges, deploy docs through docs-pages-isolated.yml and verify the live English and Japanese revisions and manifest hashes; resolve the Zenodo date disposition separately."
     },
     "pages": {
       "status": "pending_external",
