@@ -41,7 +41,7 @@ def _calc_correlation_direct(ts, target, meth):
         warnings.warn(
             f"Correlation calculation failed for {getattr(ts, 'name', 'unknown')}: {exc}",
             UserWarning,
-            stacklevel=2,
+            stacklevel=4,
         )
         logger.debug(
             "Correlation calculation failed for %s",

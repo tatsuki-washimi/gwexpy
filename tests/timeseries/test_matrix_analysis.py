@@ -571,8 +571,13 @@ def test_correlation_vector_warns_when_channel_calculation_fails(monkeypatch):
         raise ValueError("channel calculation failed")
 
     monkeypatch.setattr(TimeSeries, "correlation", fail)
-    with pytest.warns(UserWarning, match="channel calculation failed"):
+    with pytest.warns(UserWarning, match="channel calculation failed") as caught:
         result = matrix.correlation_vector(target, method="kendall", parallel=1)
+    assert any(
+        w.filename == __file__
+        for w in caught
+        if "channel calculation failed" in str(w.message)
+    )
     assert result["score"].isna().all()
 
 
