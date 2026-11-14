@@ -1,0 +1,16 @@
+issue: 780
+scope: Warn when conversion of a discovered PSD fails; retain PSD-less hierarchy handling.
+skills: [gwexpy_conda_jobs]
+checks:
+  real_budget: aLIGO, 33 discovered traces, all 33 returned plus Total
+  fault_injection: failed before fix, warning absent; passes after fix
+  focused_tests: 27 passed, then PSD-less group regression passed separately
+  ruff_check_and_format: passed
+  mypy: passed (one changed source file)
+  hosted_ci: pending
+physics_review: No valid PSD conversion or unit changed.
+files:
+  - gwexpy/interop/gwinc_.py
+  - tests/interop/test_interop_gwinc.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-780-gwinc-diagnostics.yaml
