@@ -16,6 +16,7 @@ preserved unchanged. This module adds the richer trace-expansion API.
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, Literal
 
 import numpy as np
@@ -219,9 +220,20 @@ def from_gwinc_budget(
     subtrace_map = _collect_traces(trace)
     for name, subtrace in subtrace_map.items():
         try:
-            values = _to_value(subtrace)
-        except Exception:
-            continue  # Skip traces without a psd attribute
+            psd = subtrace.psd
+        except AttributeError:
+            continue  # Hierarchy nodes without a PSD are not spectral traces.
+        try:
+            values = np.asarray(psd)
+            if quantity_lower == "asd":
+                values = np.sqrt(values)
+        except Exception as exc:
+            warnings.warn(
+                f"Could not convert GWINC trace {name!r}: {exc}",
+                UserWarning,
+                stacklevel=2,
+            )
+            continue
         result[name] = _make_fs(values, name)
 
     return result

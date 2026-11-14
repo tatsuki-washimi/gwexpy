@@ -238,3 +238,13 @@ def test_fieldlist_round_trip_restores_each_member():
 
     _assert_axis(back[0]._axis1_index, first)
     _assert_axis(back[1]._axis1_index, second)
+
+
+def test_spatial_fft_preserves_epoch_and_time_axis():
+    field = _field(_axis(0.0, 0.5, 3))
+    field.epoch = 1000000000
+    transformed = field.fft_space(axes=["x"])
+    restored = transformed.ifft_space(axes=["kx"])
+    for result in (transformed, restored):
+        assert result.epoch == field.epoch
+        np.testing.assert_array_equal(result._axis0_index, field._axis0_index)

@@ -268,16 +268,13 @@ def _process_single_target(
         _warn_skip_target(tgt_key, "its threshold masks do not match PSD shapes")
         return None
 
-    try:
-        psd_tgt_threshold = threshold_target.threshold(
-            psd_tgt_inj,
-            psd_tgt_bkg,
-            raw_bkg=ts_tgt_bkg,
-            bkg_table=bkg_table,
-            **check_kwargs,
-        )
-    except AttributeError:
-        psd_tgt_threshold = psd_tgt_bkg.value
+    psd_tgt_threshold = threshold_target.threshold(
+        psd_tgt_inj,
+        psd_tgt_bkg,
+        raw_bkg=ts_tgt_bkg,
+        bkg_table=bkg_table,
+        **check_kwargs,
+    )
 
     if hasattr(psd_tgt_threshold, "value"):
         psd_tgt_threshold = psd_tgt_threshold.value

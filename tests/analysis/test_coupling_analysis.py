@@ -132,3 +132,29 @@ def test_compute_passes_bkg_table_to_target_percentile_threshold():
 
     assert threshold_target.seen_bkg_tables
     assert all(table is not None for table in threshold_target.seen_bkg_tables)
+
+
+def test_target_threshold_internal_attribute_error_is_not_suppressed():
+    class BrokenThreshold(RatioThreshold):
+        def check(self, psd_inj, psd_bkg, **kwargs):
+            return np.zeros_like(psd_inj.value, dtype=bool)
+
+        def threshold(self, psd_inj, psd_bkg, **kwargs):
+            raise AttributeError("broken threshold calculation")
+
+    rng = np.random.default_rng(42)
+
+    def series(scale, name):
+        return TimeSeries(rng.normal(size=500) * scale, sample_rate=100, name=name)
+
+    injection = TimeSeriesDict({"WIT": series(10, "WIT"), "TGT": series(1, "TGT")})
+    background = TimeSeriesDict({"WIT": series(1, "WIT"), "TGT": series(1, "TGT")})
+    with pytest.raises(AttributeError, match="broken threshold calculation"):
+        CouplingFunctionAnalysis().compute(
+            injection,
+            background,
+            fftlength=1,
+            threshold_witness=RatioThreshold(2),
+            threshold_target=BrokenThreshold(2),
+            n_jobs=1,
+        )

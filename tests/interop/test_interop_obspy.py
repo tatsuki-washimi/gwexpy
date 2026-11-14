@@ -137,3 +137,27 @@ class TestStreamToTimeSeries:
         )
         with pytest.raises(TypeError, match="TimeSeriesDict"):
             TimeSeries.from_obspy(st)
+
+
+def test_spectrogram_integer_precision_survives_obspy_roundtrip():
+    from gwexpy.spectrogram import Spectrogram
+
+    values = np.array([[2**53 + 1, 2**53 + 3], [2**53 + 5, 2**53 + 7]], dtype=np.int64)
+    source = Spectrogram(values, t0=1234567890, dt=1, frequencies=[10.0, 20.0])
+    result = from_obspy(Spectrogram, to_obspy(source))
+    assert result.dtype == values.dtype
+    assert int(result.value[0, 0]) == 2**53 + 1
+    np.testing.assert_array_equal(result.value, values)
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.complex64])
+def test_spectrogram_obspy_stream_preserves_dtype_and_is_independent(dtype):
+    from gwexpy.spectrogram import Spectrogram
+
+    values = np.arange(6).reshape(3, 2).astype(dtype)
+    source = Spectrogram(values, t0=1234567890, dt=1, frequencies=[10.0, 20.0])
+    stream = to_obspy(source)
+    assert stream[0].data.dtype == values.dtype
+    np.testing.assert_array_equal(stream[0].data, values[:, 0])
+    stream[0].data[0] = 99
+    assert source.value[0, 0] == 0

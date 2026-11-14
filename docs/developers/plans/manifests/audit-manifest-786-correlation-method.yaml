@@ -1,0 +1,15 @@
+issue: 786
+scope: Reject unknown methods and short Pearson inputs; warn for channel and worker failures.
+skills: [gwexpy_conda_jobs]
+checks:
+  regression_before_fix: failed as expected, returned NaN instead of raising
+  focused_tests: 15 passed, 1 skipped, 46 deselected; injected parallel-failure regression passed separately
+  ruff_check_and_format: passed
+  mypy: passed (one changed source file)
+  hosted_ci: pending
+physics_review: No correlation formula or valid result changed; failure warnings were added.
+files:
+  - gwexpy/timeseries/matrix_analysis.py
+  - tests/timeseries/test_matrix_analysis.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-786-correlation-method.yaml

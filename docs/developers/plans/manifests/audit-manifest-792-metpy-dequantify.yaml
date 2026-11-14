@@ -1,0 +1,16 @@
+issue: 792
+scope: Propagate dequantify failures before converting potentially unit-stripped data.
+skills: [gwexpy_conda_jobs]
+checks:
+  regression_before_fix: failed as expected, exception suppressed
+  focused_tests: 27 passed
+  real_metpy: 1.7.1 plain and quantified m/s preserved; injected failure propagated after fix
+  ruff_check_and_format: passed
+  mypy: passed (one changed source file)
+  hosted_ci: pending
+physics_review: Valid data and units unchanged in tested MetPy inputs; failures now propagate.
+files:
+  - gwexpy/interop/metpy_.py
+  - tests/interop/test_interop_metpy.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-792-metpy-dequantify.yaml
