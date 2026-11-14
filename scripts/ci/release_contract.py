@@ -24,6 +24,7 @@ V2_REVIEW_EVIDENCE_SCHEMAS = {
     "gwexpy-v027-review-evidence-v2",
     "gwexpy-v028-review-evidence-v2",
     "gwexpy-v029-review-evidence-v2",
+    "gwexpy-v0210-review-evidence-v2",
 }
 LEGACY_REVIEW_EVIDENCE_SCHEMAS = {
     "gwexpy-v0113-review-evidence-v1",
@@ -365,6 +366,7 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
             "v0.2.7",
             "v0.2.8",
             "v0.2.9",
+            "v0.2.10",
         }
         or not isinstance(review_base_sha, str)
         or SHA40.fullmatch(review_base_sha) is None
@@ -386,6 +388,7 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         "v0.2.7": "gwexpy-v027-review-evidence-v2",
         "v0.2.8": "gwexpy-v028-review-evidence-v2",
         "v0.2.9": "gwexpy-v029-review-evidence-v2",
+        "v0.2.10": "gwexpy-v0210-review-evidence-v2",
     }
     if tag in frozen_review_schemas and (
         review_profile != "v2"
@@ -415,9 +418,9 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         raise ReleaseContractError(f"S-to-R paths omit review evidence for {tag}")
     if not _protected_refs(
         contract["protected_refs"],
-        allow_main_only=tag in {"v0.2.7", "v0.2.8", "v0.2.9"},
+        allow_main_only=tag in {"v0.2.7", "v0.2.8", "v0.2.9", "v0.2.10"},
     ) or (
-        tag in {"v0.2.7", "v0.2.8", "v0.2.9"} and contract["protected_refs"] != ["main"]
+        tag in {"v0.2.7", "v0.2.8", "v0.2.9", "v0.2.10"} and contract["protected_refs"] != ["main"]
     ):
         raise ReleaseContractError(f"invalid protected refs for {tag}")
     if "promotion" in contract:
