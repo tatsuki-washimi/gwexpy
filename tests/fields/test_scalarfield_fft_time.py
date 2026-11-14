@@ -276,3 +276,14 @@ class TestScalarFieldFftTimeDomainTransition:
 
         assert result.axis0_domain == "time"
         assert result.axis_names[0] == "t"
+
+
+def test_time_fft_preserves_epoch_through_roundtrip():
+    data = np.arange(32.0).reshape(4, 2, 2, 2)
+    field = ScalarField(data, axis0=np.arange(4) * u.s, epoch=1000000000)
+    transformed = field.fft_time()
+    restored = transformed.ifft_time()
+    assert transformed.epoch == field.epoch
+    assert restored.epoch == field.epoch
+    np.testing.assert_allclose(restored.value, field.value)
+    np.testing.assert_array_equal(restored._axis0_index, field._axis0_index)

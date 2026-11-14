@@ -318,6 +318,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             dft,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=freqs,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
@@ -408,6 +409,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             dift,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=times,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
