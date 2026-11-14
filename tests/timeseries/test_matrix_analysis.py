@@ -547,3 +547,10 @@ def test_partial_correlation_matrix_too_few_samples():
     tsm = TimeSeriesMatrix(data, dt=0.01 * u.s, t0=0.0 * u.s)
     with pytest.raises(ValueError, match="at least 2 samples"):
         tsm.partial_correlation_matrix()
+
+
+def test_correlation_vector_rejects_unknown_method():
+    matrix = _make_tsm(n_time=20)
+    target = TimeSeries(np.arange(20.0), dt=0.01 * u.s)
+    with pytest.raises(ValueError, match="Unknown correlation method: typo"):
+        matrix.correlation_vector(target, method="typo", parallel=1)

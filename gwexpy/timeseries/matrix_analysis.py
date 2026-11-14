@@ -717,6 +717,9 @@ class TimeSeriesMatrixAnalysisMixin:
 
         import pandas as pd
 
+        if method not in ("pearson", "kendall", "mic", "distance", "fastmi"):
+            raise ValueError(f"Unknown correlation method: {method}")
+
         if parallel is None:
             parallel = os.cpu_count() or 1
 
