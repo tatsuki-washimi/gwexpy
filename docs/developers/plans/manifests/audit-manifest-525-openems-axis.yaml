@@ -1,0 +1,19 @@
+issue: 525
+scope: Read existing official TD and FD axis attributes and preserve physical units.
+references:
+  - https://github.com/thliebig/openEMS/blob/master/matlab/ReadHDF5FieldData.m
+  - https://github.com/thliebig/openEMS/blob/master/Common/processfields_fd.cpp
+skills: [gwexpy_conda_jobs, verify_physics]
+checks:
+  regression_before_fix: two synthetic official-layout cases failed, returning indices
+  focused_tests: 39 passed, including public field values and units
+  ruff_check_and_format: passed
+  mypy: passed
+  real_openems_dump: not tested; synthetic files follow upstream reader/writer attributes
+  hosted_ci: pending
+physics_review: Explicit physical time and frequency metadata now carries seconds and Hz; absent metadata retains dimensionless indices. No field values or transforms changed.
+files:
+  - gwexpy/interop/openems_.py
+  - tests/interop/test_interop_openems.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-525-openems-axis.yaml
