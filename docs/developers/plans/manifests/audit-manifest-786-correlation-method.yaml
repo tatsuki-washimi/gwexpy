@@ -1,13 +1,13 @@
 issue: 786
-scope: Reject unknown methods and Pearson inputs shorter than two samples.
+scope: Reject unknown methods and short Pearson inputs; warn for channel and worker failures.
 skills: [gwexpy_conda_jobs]
 checks:
   regression_before_fix: failed as expected, returned NaN instead of raising
-  focused_tests: 13 passed, 1 skipped, 47 deselected; single-sample regression passed separately
+  focused_tests: 15 passed, 1 skipped, 46 deselected; injected parallel-failure regression passed separately
   ruff_check_and_format: passed
   mypy: passed (one changed source file)
   hosted_ci: pending
-physics_review: No correlation calculation or valid-method result changed.
+physics_review: No correlation formula or valid result changed; failure warnings were added.
 files:
   - gwexpy/timeseries/matrix_analysis.py
   - tests/timeseries/test_matrix_analysis.py

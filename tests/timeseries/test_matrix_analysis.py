@@ -561,3 +561,47 @@ def test_pearson_vector_rejects_single_sample_like_series():
     target = TimeSeries([1.0], dt=0.01 * u.s)
     with pytest.raises(ValueError, match="length at least 2"):
         matrix.correlation_vector(target, method="pearson", parallel=1)
+
+
+def test_correlation_vector_warns_when_channel_calculation_fails(monkeypatch):
+    matrix = _make_tsm(n_time=20)
+    target = TimeSeries(np.arange(20.0), dt=0.01 * u.s)
+
+    def fail(self, other, method="pearson", **kwargs):
+        raise ValueError("channel calculation failed")
+
+    monkeypatch.setattr(TimeSeries, "correlation", fail)
+    with pytest.warns(UserWarning, match="channel calculation failed"):
+        result = matrix.correlation_vector(target, method="kendall", parallel=1)
+    assert result["score"].isna().all()
+
+
+def test_parallel_correlation_warns_for_failed_future(monkeypatch):
+    import concurrent.futures
+
+    class Executor:
+        def __init__(self, max_workers):
+            self.count = 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def submit(self, fn, *args):
+            future = concurrent.futures.Future()
+            if self.count == 0:
+                future.set_exception(RuntimeError("worker failed"))
+            else:
+                future.set_result(0.5)
+            self.count += 1
+            return future
+
+    monkeypatch.setattr(concurrent.futures, "ProcessPoolExecutor", Executor)
+    matrix = _make_tsm(n_rows=1, n_cols=32, n_time=20)
+    target = TimeSeries(np.arange(20.0), dt=0.01 * u.s)
+    with pytest.warns(UserWarning, match="worker failed"):
+        result = matrix.correlation_vector(target, method="kendall", parallel=2)
+    assert result["score"].isna().sum() == 1
+    assert (result["score"].dropna() == 0.5).all()
