@@ -9,17 +9,14 @@ myst:
 :::{note}
 GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/)
 and the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases).
-The [v0.2.9 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9)
-and [PyPI package](https://pypi.org/project/gwexpy/0.2.9/) were published on
-2026-11-07 UTC. The [Zenodo record](https://zenodo.org/records/24025939) lists
-version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939),
-archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and publication date 2026-11-07.
-The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at
-2026-11-07T05:45:00Z. The conda-forge feedstock
-[PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at
-2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on
-[conda-forge](https://anaconda.org/conda-forge/gwexpy). Check each install source
-for its available versions.
+The [v0.2.10 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10)
+and [PyPI package](https://pypi.org/project/gwexpy/0.2.10/) were published on
+2026-11-14 UTC. The [Zenodo record](https://zenodo.org/records/24224264) lists
+version DOI [10.5281/zenodo.24224264](https://doi.org/10.5281/zenodo.24224264),
+archive `tatsuki-washimi/gwexpy-v0.2.10.zip`, and publication date 2026-11-14.
+The Release Owner's disposition of this Zenodo date is pending. As of
+2026-11-14T16:51:37Z, no v0.2.10 conda-forge feedstock PR or package was observed;
+the latest package was v0.2.9. Check each install source for its available versions.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
