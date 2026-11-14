@@ -87,6 +87,9 @@ def read_timeseriesdict_dttxml(
             epoch,
         )
 
+    if channels is not None:
+        channels = tuple(channels)
+
     multi = expand_multi_source(source)
     if multi is not None:
         return read_multi_dict(

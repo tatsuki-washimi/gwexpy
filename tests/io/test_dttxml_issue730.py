@@ -287,3 +287,18 @@ print(json.dumps({
     assert result["dt"] == DT
     assert result["epoch"] == pytest.approx(EPOCH, rel=0, abs=1e-6)
     assert result["channel"] == CHANNEL
+
+
+def test_ts_channel_iterator_matches_list_selection(ts_xml: Path) -> None:
+    """One-shot channel selectors retain the same values as a list."""
+    expected = TimeSeriesDict.read(
+        ts_xml, format="xml.diaggui", products="TS", channels=[CHANNEL]
+    )
+    actual = TimeSeriesDict.read(
+        ts_xml, format="xml.diaggui", products="TS", channels=iter([CHANNEL])
+    )
+    assert list(actual) == list(expected) == [CHANNEL]
+    np.testing.assert_array_equal(actual[CHANNEL].value, expected[CHANNEL].value)
+    assert actual[CHANNEL].unit == expected[CHANNEL].unit
+    assert actual[CHANNEL].t0 == expected[CHANNEL].t0
+    assert actual[CHANNEL].dt == expected[CHANNEL].dt
