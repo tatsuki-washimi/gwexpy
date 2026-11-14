@@ -764,12 +764,15 @@ class TimeSeriesMatrixAnalysisMixin:
                 df = df.sort_values("score", ascending=False, key=abs).reset_index(
                     drop=True
                 )
-                return df
             except Exception:
                 logger.debug(
                     "Vectorized Pearson correlation failed; falling back to loop.",
                     exc_info=True,
                 )
+            else:
+                if min_len < 2:
+                    raise ValueError("x and y must have length at least 2.")
+                return df
 
         if parallel > 1:
             parallel = min(parallel, num_channels)

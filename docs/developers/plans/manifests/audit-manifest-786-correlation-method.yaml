@@ -1,9 +1,9 @@
 issue: 786
-scope: Reject unknown matrix correlation methods before computing scores.
+scope: Reject unknown methods and Pearson inputs shorter than two samples.
 skills: [gwexpy_conda_jobs]
 checks:
   regression_before_fix: failed as expected, returned NaN instead of raising
-  focused_tests: 13 passed, 1 skipped, 46 deselected
+  focused_tests: 13 passed, 1 skipped, 47 deselected; single-sample regression passed separately
   ruff_check_and_format: passed
   mypy: passed (one changed source file)
   hosted_ci: pending

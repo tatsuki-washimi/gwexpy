@@ -554,3 +554,10 @@ def test_correlation_vector_rejects_unknown_method():
     target = TimeSeries(np.arange(20.0), dt=0.01 * u.s)
     with pytest.raises(ValueError, match="Unknown correlation method: typo"):
         matrix.correlation_vector(target, method="typo", parallel=1)
+
+
+def test_pearson_vector_rejects_single_sample_like_series():
+    matrix = _make_tsm(n_time=1)
+    target = TimeSeries([1.0], dt=0.01 * u.s)
+    with pytest.raises(ValueError, match="length at least 2"):
+        matrix.correlation_vector(target, method="pearson", parallel=1)
