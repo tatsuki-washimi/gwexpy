@@ -1024,6 +1024,150 @@
           "gwexpy-qualification-evidence-v1"
         ]
       }
+    },
+    "v0.2.10": {
+      "plan_path": "docs/developers/plans/20261114_v0.2.10_release_plan.md",
+      "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v0.2.10-release-readiness.yaml",
+      "review_evidence_schema": "gwexpy-v0210-review-evidence-v2",
+      "payload_schema": "gwexpy-v0210-release-payload-v1",
+      "integration_evidence_schema": "gwexpy-v0210-integration-evidence-v1",
+      "review_base_sha": "4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e",
+      "review_lanes": {
+        "documentation": [
+          "CHANGELOG.md",
+          "README.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "release-security": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_v029_release_support.py",
+          "tests/test_validate_release_script.py",
+          "tools"
+        ],
+        "scientific-data-model": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ]
+      },
+      "s_to_r_allowed_paths": [
+        "docs/developers/plans/20261114_v0.2.10_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.10-release-readiness.yaml"
+      ],
+      "artifact_prefix": "v0210-integration-evidence",
+      "protected_refs": [
+        "main"
+      ],
+      "tagger_date_policy": "independent",
+      "source_metadata_date_policy": "independent",
+      "publication_tip_policy": "qualified_candidate_ancestor",
+      "promotion": {
+        "schema": "gwexpy-release-promotion-contract-v2",
+        "workflow_path": ".github/workflows/publish-release.yml",
+        "release_go": {
+          "owner_login": "tatsuki-washimi",
+          "issue_number": 872
+        },
+        "source_approval": {
+          "format": "GWEXPY-SOURCE-APPROVAL-v2",
+          "approver": "tatsuki-washimi"
+        },
+        "artifact_naming": {
+          "manifest_prefix": "release-promotion-manifest-",
+          "payload_prefix": "release-payload-",
+          "sidecar_names": [
+            "distribution-sha256.json",
+            "LICENSE.sha256"
+          ]
+        },
+        "artifact_retention": {
+          "configured_retention_days": 90,
+          "expires_at_after_run_started_at_seconds": 7776000,
+          "expires_at_after_created_at_seconds": 7772400
+        },
+        "qualification_profile": "gwexpy-standard-v1",
+        "qualification_profiles": {
+          "gwexpy-standard-v1": {
+            "required_jobs": [
+              "build",
+              "cross_format_io",
+              "cross_format_io_evidence",
+              "diaggui_qualification",
+              "diaggui_qualification_evidence",
+              "evidence",
+              "qualification_evidence",
+              "qualify",
+              "smoke",
+              "verify"
+            ],
+            "evidence_schema_ids": [
+              "gwexpy-cross-format-io-evidence-v1",
+              "gwexpy-diaggui-qualification-evidence-v1",
+              "gwexpy-integration-evidence-v1",
+              "gwexpy-qualification-evidence-v1"
+            ]
+          }
+        },
+        "evidence_schemas": {
+          "gwexpy-cross-format-io-evidence-v1": "gwexpy-cross-format-io-evidence-v1",
+          "gwexpy-diaggui-qualification-evidence-v1": "gwexpy-diaggui-qualification-evidence-v1",
+          "gwexpy-integration-evidence-v1": "gwexpy-integration-evidence-v1",
+          "gwexpy-qualification-evidence-v1": "gwexpy-qualification-evidence-v1"
+        },
+        "required_jobs": [
+          "build",
+          "cross_format_io",
+          "cross_format_io_evidence",
+          "diaggui_qualification",
+          "diaggui_qualification_evidence",
+          "evidence",
+          "qualification_evidence",
+          "qualify",
+          "smoke",
+          "verify"
+        ],
+        "evidence_schema_ids": [
+          "gwexpy-cross-format-io-evidence-v1",
+          "gwexpy-diaggui-qualification-evidence-v1",
+          "gwexpy-integration-evidence-v1",
+          "gwexpy-qualification-evidence-v1"
+        ]
+      }
     }
   }
 }

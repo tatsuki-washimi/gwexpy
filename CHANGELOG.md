@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-11-14
+
 ### Changed
 
 #### Intentional Behavior Changes (Observable Divergence Disclosure)

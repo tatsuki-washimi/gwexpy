@@ -37,6 +37,9 @@ PUBLISHED_V026_HISTORY_ENTRY = (
 PUBLISHED_V028_VERSION = "0.2.8"
 PUBLISHED_V028_DATE = "2026-11-04"
 PUBLISHED_V028_HISTORY_ENTRY = f"[{PUBLISHED_V028_VERSION}] - {PUBLISHED_V028_DATE}"
+SOURCE_V0210_VERSION = "0.2.10"
+SOURCE_V0210_METADATA_DATE = "2026-11-14"
+SOURCE_V0210_HISTORY_ENTRY = f"[{SOURCE_V0210_VERSION}] - {SOURCE_V0210_METADATA_DATE}"
 CANDIDATE_V029_VERSION = "0.2.9"
 CANDIDATE_V029_METADATA_DATE = "2026-11-07"
 CANDIDATE_V029_HISTORY_ENTRY = (
@@ -264,7 +267,7 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_history_and_v029_source_metadata_remain_distinct():
+def test_published_history_and_v0210_source_metadata_remain_distinct():
     """Keep actual publication facts distinct from frozen source metadata."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
@@ -289,7 +292,7 @@ def test_published_history_and_v029_source_metadata_remain_distinct():
     ):
         assert re.search(rf"^## {re.escape(history_entry)}$", changelog, re.MULTILINE)
     assert re.search(
-        rf"^version: {re.escape(CANDIDATE_V029_VERSION)}$",
+        rf"^version: {re.escape(SOURCE_V0210_VERSION)}$",
         citation,
         re.MULTILINE,
     )
@@ -402,12 +405,12 @@ def test_published_history_and_v029_source_metadata_remain_distinct():
         "they do not identify or authorize the current `S` or `R`" in release_plan_text
     )
     assert re.search(
-        rf"^date-released: {re.escape(CANDIDATE_V029_METADATA_DATE)}$",
+        rf"^date-released: {re.escape(SOURCE_V0210_METADATA_DATE)}$",
         citation,
         re.MULTILINE,
     )
-    assert zenodo["version"] == CANDIDATE_V029_VERSION
-    assert zenodo["publication_date"] == CANDIDATE_V029_METADATA_DATE
+    assert zenodo["version"] == SOURCE_V0210_VERSION
+    assert zenodo["publication_date"] == SOURCE_V0210_METADATA_DATE
     candidate_plan = (
         REPO_ROOT / "docs/developers/plans/20261101_v0.2.8_release_plan.md"
     ).read_text(encoding="utf-8")
@@ -924,7 +927,8 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
         rendered_history,
         re.MULTILINE,
     )
-    assert rendered_headings[:5] == [
+    assert rendered_headings[:6] == [
+        SOURCE_V0210_HISTORY_ENTRY,
         CANDIDATE_V029_HISTORY_ENTRY,
         PUBLISHED_V028_HISTORY_ENTRY,
         PUBLISHED_V027_HISTORY_ENTRY,
@@ -936,8 +940,9 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
         canonical,
         re.MULTILINE,
     )
-    assert canonical_releases[0] == CANDIDATE_V029_HISTORY_ENTRY
+    assert canonical_releases[0] == SOURCE_V0210_HISTORY_ENTRY
     assert canonical_releases[1:] == [
+        CANDIDATE_V029_HISTORY_ENTRY,
         PUBLISHED_V028_HISTORY_ENTRY,
         PUBLISHED_V027_HISTORY_ENTRY,
         PUBLISHED_V026_HISTORY_ENTRY,
@@ -989,7 +994,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     )
-    assert release_entries[0] == CANDIDATE_V029_HISTORY_ENTRY
+    assert release_entries[0] == SOURCE_V0210_HISTORY_ENTRY
     for release in release_entries[1:]:
         release_message = catalogue.get(release)
         assert release_message is not None
