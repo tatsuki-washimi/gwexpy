@@ -47,6 +47,32 @@ def test_irregular_frequencyseries_hdf5_roundtrip(tmp_path, data):
     _assert_same(FrequencySeries.read(target, format="hdf5"), fs)
 
 
+@pytest.mark.parametrize("dtype", [np.float32, np.complex128])
+def test_nearly_regular_frequencyseries_hdf5_preserves_explicit_axis(tmp_path, dtype):
+    freqs = np.geomspace(1.0, 10.0, 100_000)
+    values = np.linspace(-1.0, 1.0, freqs.size).astype(dtype)
+    if np.issubdtype(dtype, np.complexfloating):
+        values = values + 1j * np.linspace(1.0, -1.0, freqs.size)
+    fs = FrequencySeries(values, frequencies=freqs, unit="m/s2", name="near")
+    assert fs.xindex.regular  # GWpy's absolute tolerance misclassifies this axis.
+    target = tmp_path / "nearly_regular.h5"
+
+    fs.write(target, format="hdf5")
+    with h5py.File(target, "r") as h5f:
+        attrs = dict(h5f["near"].attrs)
+    assert "xindex" in attrs
+    assert "dx" not in attrs
+    assert attrs["xunit"] == "Hz"
+
+    back = FrequencySeries.read(target, format="hdf5")
+    assert back.dtype == fs.dtype
+    assert back.frequencies.unit == fs.frequencies.unit
+    assert back.unit == fs.unit
+    assert back.name == fs.name
+    np.testing.assert_array_equal(back.frequencies.value, freqs)
+    np.testing.assert_array_equal(back.value, values)
+
+
 def test_irregular_frequencyseries_hdf5_non_hz_axis_unit(tmp_path):
     fs = FrequencySeries(REAL, frequencies=FREQS * u.kHz, unit="m/s2", name="probe")
     target = tmp_path / "irregular_khz.h5"
@@ -110,7 +136,51 @@ def test_irregular_frequencyseries_hdf5_explicit_attrs_are_respected(tmp_path):
     with h5py.File(target, "r") as h5f:
         attrs = dict(h5f["probe"].attrs)
     assert attrs["note"] == "caller"
-    assert "xunit" not in attrs
+    assert attrs["xunit"] == "Hz"
+    np.testing.assert_array_equal(attrs["xindex"], FREQS)
+    assert "dx" not in attrs
+
+
+def test_nearly_regular_frequencyseries_hdf5_empty_attrs_keep_axis(tmp_path):
+    freqs = np.geomspace(1.0, 10.0, 100_000)
+    fs = FrequencySeries(np.ones(freqs.size), frequencies=freqs, name="near")
+    target = tmp_path / "nearly_regular_attrs.h5"
+
+    fs.write(target, format="hdf5", attrs={})
+    back = FrequencySeries.read(target, format="hdf5")
+
+    np.testing.assert_array_equal(back.frequencies.value, freqs)
+    with h5py.File(target, "r") as h5f:
+        attrs = dict(h5f["near"].attrs)
+    assert "xindex" in attrs
+    assert "dx" not in attrs
+
+
+def test_nearly_regular_frequencyseries_rejects_conflicting_axis_attrs(tmp_path):
+    freqs = np.geomspace(1.0, 10.0, 100_000)
+    fs = FrequencySeries(np.ones(freqs.size), frequencies=freqs, name="near")
+    target = tmp_path / "conflicting_attrs.h5"
+
+    with pytest.raises(ValueError, match=r"attrs\['dx'\]"):
+        fs.write(target, format="hdf5", attrs={"dx": 1.0})
+    assert not target.exists()
+
+
+@pytest.mark.parametrize(
+    ("attrs", "message"),
+    [
+        ({"xindex": FREQS + 1.0}, r"attrs\['xindex'\]"),
+        ({"xunit": "kHz"}, r"attrs\['xunit'\]"),
+        ({"x0": 0.0}, r"attrs\['x0'\]"),
+    ],
+)
+def test_explicit_frequencyseries_rejects_conflicting_axis_metadata(
+    tmp_path, attrs, message
+):
+    fs = _irregular(REAL)
+
+    with pytest.raises(ValueError, match=message):
+        fs.write(tmp_path / "conflicting_axis.h5", format="hdf5", attrs=attrs)
 
 
 def test_irregular_frequencyseries_hdf5_existing_file_requires_overwrite(tmp_path):

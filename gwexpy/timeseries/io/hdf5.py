@@ -42,8 +42,8 @@ from gwpy.timeseries.io.hdf5 import (
 
 from gwexpy.io.hdf5_series import (
     IRREGULAR_AXIS_LIBVER,
-    has_irregular_axis,
-    irregular_axis_attrs,
+    _explicit_axis_attrs,
+    needs_explicit_axis,
     raise_for_attribute_limit,
     write_hdf5_series_any_axis,
 )
@@ -777,13 +777,18 @@ def _write_core(
     path: Any,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
-    if kwargs.get("attrs") is None and has_irregular_axis(array):
-        # GWpy's writer requests ``dx``, which an irregular time axis does not
-        # define.  Supply the index attributes explicitly; the exact time
-        # samples are stored by GWpy as the ``xindex`` attribute (#882).
-        irregular_kwargs = {**kwargs, "attrs": irregular_axis_attrs(array)}
+    if needs_explicit_axis(array):
+        # Use the existing xindex layout whenever x0/dx would change any time
+        # coordinate, including axes misclassified as regular by GWpy.
+        explicit_kwargs = {
+            **kwargs,
+            "attrs": _explicit_axis_attrs(array, kwargs.get("attrs")),
+        }
         try:
-            return _native_writer()(array, container, path=path, **irregular_kwargs)
+            dataset = _native_writer()(array, container, path=path, **explicit_kwargs)
+            if "dx" in dataset.attrs:
+                del dataset.attrs["dx"]
+            return dataset
         except OSError as exc:
             raise_for_attribute_limit(array, container, path, exc)
             raise
@@ -816,10 +821,10 @@ def _write_disposable_stage(
     mode: str,
 ) -> h5py.Dataset:
     """Write a disposable HDF5 image without in-file recovery objects."""
-    # An irregular time axis is stored as a dataset attribute, which needs
-    # dense attribute storage once it exceeds 64 KiB.  Regular-axis files keep
+    # An explicit time axis is stored as a dataset attribute, which needs
+    # dense attribute storage once it exceeds 64 KiB. Compact affine axes keep
     # the default format bound.
-    libver = IRREGULAR_AXIS_LIBVER if has_irregular_axis(array) else None
+    libver = IRREGULAR_AXIS_LIBVER if needs_explicit_axis(array) else None
     with h5py.File(stage, mode, libver=libver) as h5file:
         _reject_private_resolution(array, h5file, path)
         _reject_external_link_traversal(array, h5file, path)
@@ -1797,11 +1802,13 @@ def _read_open_container(
     if marker is not None:
         result._gwex_t0_gps_ns = marker.epoch_ns
 
-    if start is not None:
-        start = max(start, result.span[0])
-    if end is not None:
-        end = min(end, result.span[1])
-    if start is not None or end is not None:
+    explicit_axis = needs_explicit_axis(result)
+    if (start is not None or end is not None) and not explicit_axis:
+        bounds = result.span
+        if start is not None:
+            start = max(start, bounds[0])
+        if end is not None:
+            end = min(end, bounds[1])
         result = result.crop(start, end)
     return mark_irregular_hdf5_read(result)
 
@@ -2031,8 +2038,8 @@ def register_hdf5_exact_t0_io() -> None:
     registry.register_identifier("hdf5", GwexTimeSeries, identify_hdf5, force=True)
     registry.register_identifier("hdf5", GwexTimeSeriesDict, identify_hdf5, force=True)
     # ``StateVector`` is GWpy's own class.  Its writer is GWpy's for a regular
-    # axis and for explicit ``attrs``; only the irregular-axis case, which
-    # GWpy's writer cannot store, takes the ``xindex`` layout (#882).
+    # axis and for explicit ``attrs``; axes that cannot be represented exactly
+    # by x0/dx take the ``xindex`` layout.
     registry.register_writer(
         "hdf5", StateVector, write_hdf5_series_any_axis, force=True
     )
