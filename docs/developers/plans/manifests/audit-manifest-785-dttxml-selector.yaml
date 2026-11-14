@@ -1,9 +1,9 @@
 issue: 785
-scope: Materialize one-shot DTTXML time-series channel selectors before reuse.
+scope: Materialize one-shot selectors and warn about requested channels missing across sources.
 skills: [audit_io_backends, gwexpy_conda_jobs]
 checks:
   regression_before_fix: failed as expected, empty iterator selection
-  focused_io_tests: 48 passed, 2 skipped
+  focused_io_tests: 51 passed, 2 skipped
   ruff_check_and_format: passed
   registry_smoke: passed
   mypy: passed (one changed source file)
