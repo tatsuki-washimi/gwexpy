@@ -295,3 +295,21 @@ class TestMissingGwinc:
         ):
             with pytest.raises(ImportError, match="gwinc"):
                 from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS)
+
+
+def test_gwinc_dict_warns_on_subtrace_conversion_failure():
+    bad = _make_trace(1.0)
+    bad.psd = np.array(["not-a-number"] * _N)
+    good = _make_trace(4.0)
+    budget, _ = _make_budget(sub_traces={"bad": bad, "good": good})
+    with patch("gwexpy.interop.gwinc_.require_optional", return_value=MagicMock()):
+        with pytest.warns(UserWarning, match="bad"):
+            result = from_gwinc_budget(FrequencySeriesDict, budget, frequencies=_FREQS)
+    assert set(result) == {"Total", "good"}
+
+
+def test_gwinc_dict_skips_hierarchy_node_without_psd():
+    budget, _ = _make_budget(sub_traces={"group": SimpleNamespace()})
+    with patch("gwexpy.interop.gwinc_.require_optional", return_value=MagicMock()):
+        result = from_gwinc_budget(FrequencySeriesDict, budget, frequencies=_FREQS)
+    assert set(result) == {"Total"}

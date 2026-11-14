@@ -1,0 +1,16 @@
+issue: 785
+scope: Materialize one-shot selectors and warn about requested channels missing across sources.
+skills: [audit_io_backends, gwexpy_conda_jobs]
+checks:
+  regression_before_fix: failed as expected, empty iterator selection
+  focused_io_tests: 51 passed, 2 skipped
+  ruff_check_and_format: passed
+  registry_smoke: passed
+  mypy: passed (one changed source file)
+  full_io_gates: hosted CI pending
+physics_review: no numerical algorithm or unit interpretation changed
+files:
+  - gwexpy/timeseries/io/dttxml.py
+  - tests/io/test_dttxml_issue730.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-785-dttxml-selector.yaml

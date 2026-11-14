@@ -107,3 +107,17 @@ class TestFromMetpyDataarray:
             else sf._axis1_index
         )
         np.testing.assert_allclose(ax1, np.linspace(0, 100, NX))
+
+
+def test_dequantify_failure_is_not_suppressed(monkeypatch):
+    from types import SimpleNamespace
+
+    from gwexpy.interop import metpy_ as module
+
+    def fail():
+        raise RuntimeError("dequantify failed")
+
+    data = SimpleNamespace(metpy=SimpleNamespace(dequantify=fail), attrs={})
+    monkeypatch.setattr(module, "from_xarray_field", lambda *args, **kwargs: object())
+    with pytest.raises(RuntimeError, match="dequantify failed"):
+        from_metpy_dataarray(ScalarField, data)

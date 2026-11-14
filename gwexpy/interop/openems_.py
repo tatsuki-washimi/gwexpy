@@ -28,10 +28,10 @@ Python bindings are not needed.
 
 HDF5 dataset attributes
 -----------------------
-If time-domain datasets carry a ``"Time"`` attribute (float, seconds), the
+If time-domain datasets carry a ``"time"`` or ``"Time"`` attribute (float, seconds), the
 returned axis0 uses those physical time values.  If frequency-domain datasets
-carry a ``"frequency"`` attribute (float, Hz), axis0 uses those physical
-frequency values.  Both fall back to integer indices when the attribute is
+carry a ``"frequency"`` attribute (float, Hz), or the FD group carries
+a ``"frequency"`` array, axis0 uses those physical frequency values.  Both fall back to integer indices when the attribute is
 absent.
 
 References
@@ -47,6 +47,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import numpy as np
+from astropy import units as u
 
 from gwexpy.fields import ScalarField, VectorField
 
@@ -149,7 +150,7 @@ def _read_openems_td(
         arr = np.asarray(td[key], dtype=np.float64)[
             np.newaxis, ...
         ]  # (1, Nx, Ny, Nz, 3)
-        t_attr = td[key].attrs.get("Time", None)
+        t_attr = td[key].attrs.get("Time", td[key].attrs.get("time"))
         times = np.array(
             [float(t_attr) if t_attr is not None else timestep], dtype=np.float64
         )
@@ -157,7 +158,7 @@ def _read_openems_td(
         slices = [np.asarray(td[k], dtype=np.float64) for k in keys]
         arr = np.stack(slices, axis=0)  # (n_time, Nx, Ny, Nz, 3)
         # Try to read physical time values from dataset attributes
-        time_vals = [td[k].attrs.get("Time", None) for k in keys]
+        time_vals = [td[k].attrs.get("Time", td[k].attrs.get("time")) for k in keys]
         if all(v is not None for v in time_vals):
             times = np.array([float(v) for v in time_vals], dtype=np.float64)
         else:
@@ -204,6 +205,12 @@ def _read_openems_fd(
     if not indices:
         raise ValueError("No frequency datasets found in /FieldData/FD.")
 
+    group_frequency = fd.attrs.get("frequency")
+    if group_frequency is not None:
+        group_frequency = np.atleast_1d(np.asarray(group_frequency, dtype=float))
+        if group_frequency.ndim != 1 or max(indices) >= len(group_frequency):
+            raise ValueError("FD frequency attribute does not cover the datasets")
+
     if freq_idx is not None:
         if freq_idx not in indices:
             raise ValueError(
@@ -214,7 +221,11 @@ def _read_openems_fd(
         real = np.asarray(fd[rk], dtype=np.float64)
         imag = np.asarray(fd[ik], dtype=np.float64)
         arr = (real + 1j * imag)[np.newaxis, ...]  # (1, Nx, Ny, Nz, 3)
-        f_attr = fd[rk].attrs.get("frequency", None)
+        f_attr = (
+            group_frequency[freq_idx]
+            if group_frequency is not None
+            else fd[rk].attrs.get("frequency", None)
+        )
         freqs = np.array(
             [float(f_attr) if f_attr is not None else freq_idx], dtype=np.float64
         )
@@ -226,7 +237,11 @@ def _read_openems_fd(
             real = np.asarray(fd[rk], dtype=np.float64)
             imag = np.asarray(fd[f"f{idx}_imag"], dtype=np.float64)
             slices.append(real + 1j * imag)
-            f_attr = fd[rk].attrs.get("frequency", None)
+            f_attr = (
+                group_frequency[idx]
+                if group_frequency is not None
+                else fd[rk].attrs.get("frequency", None)
+            )
             freq_vals.append(float(f_attr) if f_attr is not None else None)
         arr = np.stack(slices, axis=0)  # (n_freq, Nx, Ny, Nz, 3)
         if all(v is not None for v in freq_vals):
@@ -343,6 +358,10 @@ def from_openems_hdf5(
                     "Check that dump_type is correct (time-domain types: 0,1,2,3)."
                 )
             data, axis0_vals = _read_openems_td(f, timestep)
+            td = f["FieldData/TD"]
+            keys = [str(timestep)] if timestep is not None else list(td.keys())
+            if all("Time" in td[k].attrs or "time" in td[k].attrs for k in keys):
+                axis0_vals = axis0_vals * u.s
         else:
             if "FieldData/FD" not in f:
                 raise ValueError(
@@ -350,6 +369,14 @@ def from_openems_hdf5(
                     "Check that dump_type is correct (freq-domain types: 10,11,20-22)."
                 )
             data, axis0_vals = _read_openems_fd(f, frequency_index)
+            fd = f["FieldData/FD"]
+            keys = (
+                [f"f{frequency_index}_real"]
+                if frequency_index is not None
+                else [k for k in fd if re.fullmatch(r"f\d+_real", k)]
+            )
+            if "frequency" in fd.attrs or all("frequency" in fd[k].attrs for k in keys):
+                axis0_vals = axis0_vals * u.Hz
 
     # data shape: (n_axis0, Nx, Ny, Nz, 3) for vector, or (n_axis0, Nx, Ny, Nz) for SAR
     # SAR data has no component axis — treat as scalar
