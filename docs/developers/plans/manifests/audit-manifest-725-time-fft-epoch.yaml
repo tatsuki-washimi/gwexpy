@@ -1,0 +1,16 @@
+issue: 725
+scope: Preserve existing epoch metadata through time FFT and inverse FFT.
+skills: [gwexpy_conda_jobs, verify_physics]
+checks:
+  regression_before_fix: failed; finite epoch became None after fft_time
+  gwpy_comparison: TimeSeries FFT and inverse preserve finite epoch
+  focused_tests: 21 passed, including value and time-axis round trip
+  ruff_check_and_format: passed
+  mypy: passed
+  hosted_ci: pending
+physics_review: Epoch is preserved; FFT coefficients, normalization and axis calculations are unchanged. Human sign-off required for gwexpy/fields changes.
+files:
+  - gwexpy/fields/scalar.py
+  - tests/fields/test_scalarfield_fft_time.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-725-time-fft-epoch.yaml
