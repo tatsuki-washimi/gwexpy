@@ -1,0 +1,15 @@
+issue: 789
+scope: Propagate target threshold computation errors rather than substituting background PSD.
+skills: [gwexpy_conda_jobs]
+checks:
+  regression_before_fix: failed as expected, returned 51 NaN upper-limit bins
+  focused_tests: 46 passed
+  ruff_check_and_format: passed
+  mypy: passed (one changed source file)
+  hosted_ci: pending
+physics_review: No threshold formula or valid-input calculation changed; errors now propagate.
+files:
+  - gwexpy/analysis/coupling.py
+  - tests/analysis/test_coupling_analysis.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-789-coupling-threshold.yaml
