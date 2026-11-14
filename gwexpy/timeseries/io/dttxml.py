@@ -6,6 +6,7 @@ This module supports a minimal XML parser and will use an external
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable
 from datetime import UTC
 from typing import Any
@@ -59,6 +60,17 @@ def _looks_like_dttxml(source: Any) -> bool:
     return source.endswith(".xml") or source.endswith(".xml.gz")
 
 
+def _warn_missing_channels(channels, result):
+    if channels:
+        missing = [channel for channel in channels if channel not in result]
+        if missing:
+            warnings.warn(
+                f"Requested DTTXML channels not found: {missing}",
+                UserWarning,
+                stacklevel=3,
+            )
+
+
 def read_timeseriesdict_dttxml(
     source,
     *,
@@ -74,10 +86,12 @@ def read_timeseriesdict_dttxml(
 
     A list of paths is also accepted; channels found in several files
     are concatenated along the time axis (gaps padded with ``pad``) and
-    channels unique to one file are merged in.
+    channels unique to one file are merged in. Requested channels absent
+    from all sources produce a warning; matched channels are still returned.
 
     ``start``/``end`` are rejected rather than ignored (issue #611).
     """
+    defer_channel_warning = kwargs.pop("_defer_channel_warning", False)
     reject_time_selection("xml.diaggui", kwargs)
     timezone_checked, epoch_timezone = _consume_timezone_routing_state(kwargs)
     if not timezone_checked:
@@ -87,9 +101,12 @@ def read_timeseriesdict_dttxml(
             epoch,
         )
 
+    if channels is not None:
+        channels = tuple(channels)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
+        result = read_multi_dict(
             read_timeseriesdict_dttxml,
             multi,
             "xml.diaggui",
@@ -100,8 +117,12 @@ def read_timeseriesdict_dttxml(
             epoch=epoch,
             timezone=None,
             _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
+            _defer_channel_warning=True,
             **kwargs,
         )
+        if not defer_channel_warning:
+            _warn_missing_channels(channels, result)
+        return result
 
     if products is None:
         raise ValueError("products must be specified for xml.diaggui")
@@ -129,6 +150,8 @@ def read_timeseriesdict_dttxml(
         ts = apply_unit(ts, unit) if unit else ts
         tsd[ch] = ts
     tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
+    if not defer_channel_warning:
+        _warn_missing_channels(channels, tsd)
     set_provenance(
         tsd,
         {
