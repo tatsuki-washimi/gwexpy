@@ -192,7 +192,7 @@ def _spec_to_obspy_stream(spec, **kwargs):
         # Time series for this frequency bin
         # data[:, i] because gwexpy Spectrogram is (n_times, n_freqs)
 
-        tr_data = data[:, i].astype(np.float64)  # Obspy likes float64 or 32
+        tr_data = np.array(data[:, i], copy=True, order="C")
 
         stats = {
             "network": "",

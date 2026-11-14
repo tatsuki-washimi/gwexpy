@@ -37,7 +37,12 @@ def _calc_correlation_direct(ts, target, meth):
             x0 = getattr(ts, "x0", getattr(ts, "t0", None))
             ts = GWExTimeSeries(ts.value, x0=x0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
-    except (AttributeError, TypeError, ValueError):
+    except (AttributeError, TypeError, ValueError) as exc:
+        warnings.warn(
+            f"Correlation calculation failed for {getattr(ts, 'name', 'unknown')}: {exc}",
+            UserWarning,
+            stacklevel=4,
+        )
         logger.debug(
             "Correlation calculation failed for %s",
             getattr(ts, "name", "unknown"),
@@ -717,6 +722,9 @@ class TimeSeriesMatrixAnalysisMixin:
 
         import pandas as pd
 
+        if method not in ("pearson", "kendall", "mic", "distance", "fastmi"):
+            raise ValueError(f"Unknown correlation method: {method}")
+
         if parallel is None:
             parallel = os.cpu_count() or 1
 
@@ -761,12 +769,15 @@ class TimeSeriesMatrixAnalysisMixin:
                 df = df.sort_values("score", ascending=False, key=abs).reset_index(
                     drop=True
                 )
-                return df
             except Exception:
                 logger.debug(
                     "Vectorized Pearson correlation failed; falling back to loop.",
                     exc_info=True,
                 )
+            else:
+                if min_len < 2:
+                    raise ValueError("x and y must have length at least 2.")
+                return df
 
         if parallel > 1:
             parallel = min(parallel, num_channels)
@@ -801,7 +812,12 @@ class TimeSeriesMatrixAnalysisMixin:
                         i, j, name = futures[fut]
                         try:
                             score = fut.result()
-                        except (RuntimeError, TypeError, ValueError):
+                        except (RuntimeError, TypeError, ValueError) as exc:
+                            warnings.warn(
+                                f"Parallel correlation failed for {name}: {exc}",
+                                UserWarning,
+                                stacklevel=2,
+                            )
                             logger.debug(
                                 "Failed to retrieve parallel correlation result for %s",
                                 name,

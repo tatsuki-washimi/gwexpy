@@ -287,3 +287,70 @@ print(json.dumps({
     assert result["dt"] == DT
     assert result["epoch"] == pytest.approx(EPOCH, rel=0, abs=1e-6)
     assert result["channel"] == CHANNEL
+
+
+def test_ts_channel_iterator_matches_list_selection(ts_xml: Path) -> None:
+    """One-shot channel selectors retain the same values as a list."""
+    expected = TimeSeriesDict.read(
+        ts_xml, format="xml.diaggui", products="TS", channels=[CHANNEL]
+    )
+    actual = TimeSeriesDict.read(
+        ts_xml, format="xml.diaggui", products="TS", channels=iter([CHANNEL])
+    )
+    assert list(actual) == list(expected) == [CHANNEL]
+    np.testing.assert_array_equal(actual[CHANNEL].value, expected[CHANNEL].value)
+    assert actual[CHANNEL].unit == expected[CHANNEL].unit
+    assert actual[CHANNEL].t0 == expected[CHANNEL].t0
+    assert actual[CHANNEL].dt == expected[CHANNEL].dt
+
+
+def test_missing_requested_channel_warns_and_preserves_matches(ts_xml: Path) -> None:
+    with pytest.warns(UserWarning, match="K1:MISSING"):
+        result = TimeSeriesDict.read(
+            ts_xml,
+            format="xml.diaggui",
+            products="TS",
+            channels=[CHANNEL, "K1:MISSING"],
+        )
+    assert list(result) == [CHANNEL]
+    with pytest.warns(UserWarning, match="K1:MISSING"):
+        result = TimeSeriesDict.read(
+            ts_xml, format="xml.diaggui", products="TS", channels=["K1:MISSING"]
+        )
+    assert not result
+
+
+def test_multifile_channel_union_does_not_warn_for_other_file(
+    ts_xml: Path, tmp_path: Path
+) -> None:
+    import warnings
+    import xml.etree.ElementTree as ET
+
+    other = tmp_path / "other.xml"
+    tree = ET.parse(ts_xml)
+    tree.find(".//Param[@Name='Channel']").text = "K1:SECOND"
+    tree.write(other, encoding="utf-8", xml_declaration=True)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = TimeSeriesDict.read(
+            [ts_xml, other],
+            format="xml.diaggui",
+            products="TS",
+            channels=iter([CHANNEL, "K1:SECOND"]),
+        )
+    assert set(result) == {CHANNEL, "K1:SECOND"}
+    assert not [w for w in caught if "not found" in str(w.message)]
+
+
+def test_empty_selection_is_intentionally_empty_without_missing_warning(
+    ts_xml: Path,
+) -> None:
+    import warnings
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = TimeSeriesDict.read(
+            ts_xml, format="xml.diaggui", products="TS", channels=[]
+        )
+    assert not result
+    assert not [w for w in caught if "not found" in str(w.message)]
