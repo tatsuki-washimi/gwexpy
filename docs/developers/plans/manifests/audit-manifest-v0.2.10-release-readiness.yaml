@@ -1,24 +1,1266 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v0210-review-evidence-v2",
-    "source_sha": "",
+    "source_sha": "7213b37f631c473c02eac0db5a08a8355f0794f0",
     "review_base_sha": "4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e",
     "changed_path_map": {
-      "documentation": [],
-      "release-security": [],
-      "scientific-data-model": []
+      "documentation": [
+        "CHANGELOG.md",
+        "docs/developers/plans/2026-11-13-gauch-879-residual-science.md",
+        "docs/developers/plans/2026-11-13-issue-887-hdf5-axis-preservation.md",
+        "docs/developers/plans/20261114_v0.2.10_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-525-openems-axis.yaml",
+        "docs/developers/plans/manifests/audit-manifest-586-obspy-spectrogram.yaml",
+        "docs/developers/plans/manifests/audit-manifest-725-spatial-fft-epoch.yaml",
+        "docs/developers/plans/manifests/audit-manifest-780-gwinc-diagnostics.yaml",
+        "docs/developers/plans/manifests/audit-manifest-785-dttxml-selector.yaml",
+        "docs/developers/plans/manifests/audit-manifest-786-correlation-method.yaml",
+        "docs/developers/plans/manifests/audit-manifest-789-coupling-threshold.yaml",
+        "docs/developers/plans/manifests/audit-manifest-792-metpy-dequantify.yaml",
+        "docs/developers/plans/manifests/audit-manifest-887-hdf5-coordinate-preservation.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.10-release-readiness.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.9-post-release.yaml",
+        "docs/developers/reports/20261113_gauch_879.md",
+        "docs/developers/reports/20261113_gauch_879_edge_followup_results.json",
+        "docs/developers/reports/20261113_gauch_879_followup_manifest.json",
+        "docs/developers/reports/20261113_gauch_879_results.json",
+        "docs/developers/reports/20261113_gauch_879_supplement.json",
+        "docs_redesign/_static/downloads/development-activity-v0.2.9-weekly.csv",
+        "docs_redesign/_static/images/development-activity-v0.2.9-ja.svg",
+        "docs_redesign/_static/images/development-activity-v0.2.9.svg",
+        "docs_redesign/about/changelog.md",
+        "docs_redesign/explanation/roadmap.md",
+        "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+        "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+        "docs_redesign/release_status.json",
+        "docs_redesign/tutorials/installation.md",
+        "release_notes/v0.2.10.md",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_v024_publication_status.py"
+      ],
+      "release-security": [
+        ".zenodo.json",
+        "CITATION.cff",
+        "scripts/ci/release_contract.py",
+        "scripts/ci/release_contracts.json",
+        "scripts/ci/validate_release_review_evidence.py",
+        "scripts/validate_release.py",
+        "scripts/validation/verify_gauch_edge_nulls.py",
+        "scripts/validation/verify_gauch_kagra.py",
+        "tests/test_release_contracts.py",
+        "tests/test_v029_release_support.py"
+      ],
+      "scientific-data-model": [
+        "gwexpy/_version.py",
+        "gwexpy/analysis/coupling.py",
+        "gwexpy/fields/base.py",
+        "gwexpy/fields/scalar.py",
+        "gwexpy/frequencyseries/collections.py",
+        "gwexpy/frequencyseries/io/__init__.py",
+        "gwexpy/frequencyseries/io/hdf5.py",
+        "gwexpy/histogram/collections.py",
+        "gwexpy/interop/gwinc_.py",
+        "gwexpy/interop/metpy_.py",
+        "gwexpy/interop/obspy_.py",
+        "gwexpy/interop/openems_.py",
+        "gwexpy/interop/root_.py",
+        "gwexpy/io/hdf5_collection.py",
+        "gwexpy/io/hdf5_series.py",
+        "gwexpy/spectral/estimation.py",
+        "gwexpy/spectrogram/collections.py",
+        "gwexpy/spectrogram/matrix.py",
+        "gwexpy/statistics/_common.py",
+        "gwexpy/statistics/_monte_carlo.py",
+        "gwexpy/statistics/gauch.py",
+        "gwexpy/statistics/rayleigh_test.py",
+        "gwexpy/statistics/student_t_indicator.py",
+        "gwexpy/time/__main__.py",
+        "gwexpy/timeseries/_core.py",
+        "gwexpy/timeseries/_read.py",
+        "gwexpy/timeseries/collections.py",
+        "gwexpy/timeseries/io/dttxml.py",
+        "gwexpy/timeseries/io/hdf5.py",
+        "gwexpy/timeseries/matrix_analysis.py",
+        "gwexpy/types/metadata.py",
+        "gwexpy/types/series_matrix_io.py",
+        "tests/analysis/test_coupling_analysis.py",
+        "tests/docs/test_docs_redesign_release_facts.py",
+        "tests/docs/test_docs_redesign_release_status.py",
+        "tests/docs/test_v024_publication_status.py",
+        "tests/fields/test_scalarfield_axis_labels.py",
+        "tests/fields/test_scalarfield_fft_space_coordinates.py",
+        "tests/frequencyseries/test_hdf5_irregular_axis.py",
+        "tests/interop/test_interop_gwinc.py",
+        "tests/interop/test_interop_metpy.py",
+        "tests/interop/test_interop_obspy.py",
+        "tests/interop/test_interop_openems.py",
+        "tests/interop/test_root_error_units.py",
+        "tests/interop/test_root_helpers.py",
+        "tests/io/test_dttxml_issue730.py",
+        "tests/io/test_hdf5_manifest_collection_integrity.py",
+        "tests/plot/test_field_animation_colorbar.py",
+        "tests/spectral/test_correlation_factor_window_array.py",
+        "tests/spectrogram/test_matrix_hdf5_frequency_axis.py",
+        "tests/statistics/test_degenerate_input_contract.py",
+        "tests/statistics/test_finite_sample_pvalue.py",
+        "tests/statistics/test_gauch_single_fft.py",
+        "tests/statistics/test_rayleigh_null_model.py",
+        "tests/statistics/test_warning_attribution_and_guards.py",
+        "tests/test_check_release_metadata_script.py",
+        "tests/test_release_contracts.py",
+        "tests/test_run_gate.py",
+        "tests/test_v029_release_support.py",
+        "tests/time/test_module_entrypoint.py",
+        "tests/timeseries/test_hdf5_irregular_axis.py",
+        "tests/timeseries/test_matrix_analysis.py",
+        "tests/types/test_metadata_invalid_unit.py",
+        "tests/types/test_metadata_ufuncs.py",
+        "tests/types/test_series_matrix_format_inference.py",
+        "tests/types/test_series_matrix_hdf5_attrs.py"
+      ]
     },
-    "entries": [],
+    "entries": [
+      {
+        "lane": "documentation",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "codex-docs-source-transition",
+        "execution_context_id": "codex-v0210-docs-transition-20261114",
+        "execution_environment": "Codex read-only Git source comparison and focused Changelog inspection; prior final-source documentation test result retrieved from the preparation transcript.",
+        "started_at_utc": "2026-11-14T14:57:15Z",
+        "completed_at_utc": "2026-11-14T14:57:15Z",
+        "requested_model": null,
+        "requested_effort": null,
+        "model_observation": {
+          "status": "unavailable",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "The current Codex task has no signed effective-model or effort attestation.",
+          "evidence_record": null,
+          "evidence_sha256": null,
+          "limitations": "Runtime model and effort cannot be independently attested for this record.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "7213b37f631c473c02eac0db5a08a8355f0794f0",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "ROADMAP.md",
+          "deliverables",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "scope_digest": "eb8e1319c2d1469ef234fbb4dc5c143749274dd7383d144d303dc36e7a00a66d",
+        "path_ledger": [
+          {
+            "path": "CHANGELOG.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/2026-11-13-gauch-879-residual-science.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/2026-11-13-issue-887-hdf5-axis-preservation.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/20261114_v0.2.10_release_plan.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-525-openems-axis.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-586-obspy-spectrogram.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-725-spatial-fft-epoch.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-780-gwinc-diagnostics.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-785-dttxml-selector.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-786-correlation-method.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-789-coupling-threshold.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-792-metpy-dequantify.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-887-hdf5-coordinate-preservation.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.10-release-readiness.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/plans/manifests/audit-manifest-v0.2.9-post-release.yaml",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/reports/20261113_gauch_879.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/reports/20261113_gauch_879_edge_followup_results.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/reports/20261113_gauch_879_followup_manifest.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/reports/20261113_gauch_879_results.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs/developers/reports/20261113_gauch_879_supplement.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/_static/downloads/development-activity-v0.2.9-weekly.csv",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/_static/images/development-activity-v0.2.9-ja.svg",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/_static/images/development-activity-v0.2.9.svg",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/about/changelog.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/explanation/roadmap.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/release_status.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "docs_redesign/tutorials/installation.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "release_notes/v0.2.10.md",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          },
+          {
+            "path": "tests/docs/test_v024_publication_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Prior full documentation-lane review carries forward; the final Source S Changelog delta was explicitly inspected."
+          }
+        ],
+        "findings": [
+          {
+            "id": "DOC-001",
+            "severity": "low",
+            "required": false,
+            "status": "resolved",
+            "summary": "The v0.2.10 release-note bullet incorrectly included issue #774, which belongs to v0.2.9.",
+            "resolution": "PR #917 removed #774 from the v0.2.10 release-note reference list."
+          },
+          {
+            "id": "DOC-002",
+            "severity": "low",
+            "required": false,
+            "status": "resolved",
+            "summary": "An empty row separated entries inside the CHANGELOG intentional-behavior table.",
+            "resolution": "PR #917 removed the empty row; the table renders continuously."
+          },
+          {
+            "id": "DOC-003",
+            "severity": "info",
+            "required": false,
+            "status": "resolved",
+            "summary": "The empty CHANGELOG.md heading ## [Unreleased] broke the historical v0.2.2 activity snapshot assertion.",
+            "resolution": "PR #918 removed the empty heading. The only change from the previous reviewed source cea16b7 to final Source S is CHANGELOG.md; the final documentation test set reported 48 passed."
+          }
+        ],
+        "verdict": "APPROVED",
+        "report": "APPROVED for exact Source S 7213b37f631c473c02eac0db5a08a8355f0794f0 against Review Base 4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e. The independent documentation review covered all 35 changed paths on cea16b777457d6c3abc188a305d8d6b9181e425e and identified DOC-003 after DOC-001 and DOC-002 had been resolved. The exact transition from cea16b7 to final Source S changes only CHANGELOG.md. I inspected that final diff: it removes the empty ## [Unreleased] heading that caused DOC-003; the historical snapshot assertion remains present. The source-preparation transcript records the final documentation test group at 48 passed and verifies the final lane map at 35 paths. The documentation scope digest is rebound to final Source S (eb8e1319c2d1469ef234fbb4dc5c143749274dd7383d144d303dc36e7a00a66d). This is a one-path source-transition impact re-review with prior 35-path review coverage carried forward; no full documentation lane re-review was repeated.",
+        "raw_report_sha256": "22204c885f26c4e436fce40630c7a1df1e8adf52f021894800699950e618bf7f"
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "gemini-release-security-3435255e",
+        "execution_context_id": "antigravity-brain-3435255e-c549-4ec1-9dc2-a53c955ddbba",
+        "execution_environment": "Antigravity CLI read-only reviewer; Python and Git access; focused release-control tests were executed.",
+        "started_at_utc": "2026-11-14T13:39:02Z",
+        "completed_at_utc": "2026-11-14T13:40:33Z",
+        "requested_model": null,
+        "requested_effort": null,
+        "model_observation": {
+          "status": "unverified",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "Local Antigravity transcript metadata; model label is not authenticated runtime proof.",
+          "evidence_record": "Antigravity transcript metadata labels the execution model as gemini-4-hydrogen-medium; transcript context 3435255e-c549-4ec1-9dc2-a53c955ddbba. No signed runtime attestation was captured.",
+          "evidence_sha256": "5b93506abdb1fb191322c2736611aaa051db20184db0dcbe40743ad3f24ee853",
+          "limitations": "The transcript model label does not authenticate effective model or effort.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "7213b37f631c473c02eac0db5a08a8355f0794f0",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "tests/fixtures/release/promotion-contract-v1.json",
+          "tests/fixtures/release/promotion-contract-v2.json",
+          "tests/fixtures/release/promotion-manifest-v1.json",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_go.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_promotion.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v026_review_evidence_v2.py",
+          "tests/test_v029_release_support.py",
+          "tests/test_validate_release_script.py",
+          "tools"
+        ],
+        "scope_digest": "1168abe7e9ec54e67adefb03f44e202c1d855cf442a6a7a5e733f877362d7e82",
+        "path_ledger": [
+          {
+            "path": ".zenodo.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "CITATION.cff",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/ci/release_contract.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/ci/release_contracts.json",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/ci/validate_release_review_evidence.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/validate_release.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/validation/verify_gauch_edge_nulls.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "scripts/validation/verify_gauch_kagra.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "tests/test_release_contracts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          },
+          {
+            "path": "tests/test_v029_release_support.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent release-security review on cea16b7 carries forward; final S changes no path in this lane."
+          }
+        ],
+        "findings": [
+          {
+            "id": "RS-01",
+            "severity": "high",
+            "required": true,
+            "status": "resolved",
+            "summary": "v0.2.10 was omitted from three release-tag enforcement sets in scripts/validate_release.py.",
+            "resolution": "PR #917 added v0.2.10 to the distinct-commit, exact empty-placeholder, and mandatory review-evidence gates; the independent re-verification passed all 10 release-security paths."
+          },
+          {
+            "id": "RS-02",
+            "severity": "high",
+            "required": true,
+            "status": "resolved",
+            "summary": "v0.2.10 was omitted from the V026 human-approval key selection in scripts/ci/validate_release_review_evidence.py.",
+            "resolution": "PR #917 registered v0.2.10 in the v2 approval-key selection; the independent re-verification passed all 10 release-security paths."
+          }
+        ],
+        "verdict": "APPROVED",
+        "report": "APPROVED for exact Source S 7213b37f631c473c02eac0db5a08a8355f0794f0 against Review Base 4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e. The independent release-security re-verification on cea16b777457d6c3abc188a305d8d6b9181e425e covered all 10 configured changed paths and confirmed RS-01 and RS-02 resolved, with 174 related tests passing. Final Source S differs from that re-reviewed source only in CHANGELOG.md, outside the release-security changed-path map; its contract-root scope digest is unchanged at 1168abe7e9ec54e67adefb03f44e202c1d855cf442a6a7a5e733f877362d7e82. No additional release-security finding was reported. The transcript labels the reviewer runtime model gemini-4-hydrogen-medium, but no signed model/effort attestation was captured.",
+        "raw_report_sha256": "170e004a2a5ea8b9c357e887b29529a162e44c833db657a90b9e6341e331d118"
+      },
+      {
+        "lane": "scientific-data-model",
+        "role": "reviewer",
+        "reviewer_type": "ai-agent",
+        "reviewer_id": "gemini-science-9b5330c5",
+        "execution_context_id": "antigravity-brain-a5e4077e-569e-410b-a0bb-b15fe57021f9",
+        "execution_environment": "Antigravity CLI read-only reviewer; GWexpy worktree, Python, Git, and focused scientific regression tests.",
+        "started_at_utc": "2026-11-14T13:12:28Z",
+        "completed_at_utc": "2026-11-14T13:17:57Z",
+        "requested_model": null,
+        "requested_effort": null,
+        "model_observation": {
+          "status": "unverified",
+          "effective_model": null,
+          "effective_effort": null,
+          "evidence_source": "Local Antigravity transcript metadata; model label is not authenticated runtime proof.",
+          "evidence_record": "Antigravity transcript metadata labels the execution model as gemini-4-hydrogen-medium; transcript context a5e4077e-569e-410b-a0bb-b15fe57021f9. No signed runtime attestation was captured.",
+          "evidence_sha256": "42e61fc4fb1c6de4b0db78dfedebb2e854491f9ef36ba25a39147e517d2d5c22",
+          "limitations": "The transcript model label does not authenticate effective model or effort.",
+          "self_reported_model": null,
+          "self_reported_effort": null
+        },
+        "reviewed_commit": "7213b37f631c473c02eac0db5a08a8355f0794f0",
+        "scope_paths": [
+          "benchmarks",
+          "environment.yml",
+          "gwexpy",
+          "tests"
+        ],
+        "scope_digest": "57a80d48800aa486fef2326107c87626565110dcd5588aa3297436ba476568bc",
+        "path_ledger": [
+          {
+            "path": "gwexpy/_version.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/analysis/coupling.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/fields/base.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/fields/scalar.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/frequencyseries/collections.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/frequencyseries/io/__init__.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/frequencyseries/io/hdf5.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/histogram/collections.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/interop/gwinc_.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/interop/metpy_.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/interop/obspy_.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/interop/openems_.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/interop/root_.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/io/hdf5_collection.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/io/hdf5_series.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/spectral/estimation.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/spectrogram/collections.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/spectrogram/matrix.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/statistics/_common.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/statistics/_monte_carlo.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/statistics/gauch.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/statistics/rayleigh_test.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/statistics/student_t_indicator.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/time/__main__.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/_core.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/_read.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/collections.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/io/dttxml.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/io/hdf5.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/timeseries/matrix_analysis.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/types/metadata.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "gwexpy/types/series_matrix_io.py",
+            "methods": [
+              "full-diff-and-context"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/analysis/test_coupling_analysis.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_facts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/docs/test_docs_redesign_release_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/docs/test_v024_publication_status.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/fields/test_scalarfield_axis_labels.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/fields/test_scalarfield_fft_space_coordinates.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/frequencyseries/test_hdf5_irregular_axis.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_interop_gwinc.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_interop_metpy.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_interop_obspy.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_interop_openems.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_root_error_units.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/interop/test_root_helpers.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/io/test_dttxml_issue730.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/io/test_hdf5_manifest_collection_integrity.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/plot/test_field_animation_colorbar.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/spectral/test_correlation_factor_window_array.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/spectrogram/test_matrix_hdf5_frequency_axis.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/statistics/test_degenerate_input_contract.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/statistics/test_finite_sample_pvalue.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/statistics/test_gauch_single_fft.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/statistics/test_rayleigh_null_model.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/statistics/test_warning_attribution_and_guards.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/test_check_release_metadata_script.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/test_release_contracts.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/test_run_gate.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/test_v029_release_support.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/time/test_module_entrypoint.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/timeseries/test_hdf5_irregular_axis.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/timeseries/test_matrix_analysis.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/types/test_metadata_invalid_unit.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/types/test_metadata_ufuncs.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/types/test_series_matrix_format_inference.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          },
+          {
+            "path": "tests/types/test_series_matrix_hdf5_attrs.py",
+            "methods": [
+              "full-diff-and-context",
+              "test-execution"
+            ],
+            "status": "reviewed",
+            "note": "Independent review of all 66 scientific-data-model changed paths carries forward because both the changed-path map and scope digest match final S."
+          }
+        ],
+        "findings": [
+          {
+            "id": "SDM-OBS-01",
+            "severity": "info",
+            "required": false,
+            "status": "resolved",
+            "summary": "The initial science-lane test run surfaced a cross-lane historical Changelog assertion failure caused by the empty [Unreleased] heading.",
+            "resolution": "PR #918 removed the empty heading. The final Source S documentation checks reported 48 passed; the scientific-data-model changed-path map and scope digest are unchanged from the reviewed source."
+          }
+        ],
+        "verdict": "APPROVED",
+        "report": "APPROVED for exact Source S 7213b37f631c473c02eac0db5a08a8355f0794f0 against Review Base 4af825bed6f37f38a0c2bd1776bbb2f4ee279a0e. The independent scientific-data-model review covered all 66 changed paths on the earlier frozen review commit f3273e94c4d32ff989c02fd06768d10171317034 and found no blocking scientific, numerical, unit, coordinate, I/O, or GWpy-compatibility issue. The contract scope digest for the four scientific roots is byte-identical on the original reviewed commit and final Source S (57a80d48800aa486fef2326107c87626565110dcd5588aa3297436ba476568bc); the base-to-source map remains 66 paths. The original run reported 830 passed, 3 skipped, and one cross-lane Changelog assertion failure (SDM-OBS-01). That documentation-only observation is resolved by PR #918, and the final source documentation checks reported 48 passed. No scientific lane path or scope digest changed during PR #917/#918. No new full science review was performed.",
+        "raw_report_sha256": "2218604254afbc23956ed073f1bfa1b1d347a96edcd3d0220b3a194502a3ac43"
+      }
+    ],
     "owner_risk_decisions": [],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0,
-      "risk_decisions_sha256": ""
+      "approver_login": "tatsuki-washimi",
+      "role": "release-owner",
+      "reviewed_commit": "7213b37f631c473c02eac0db5a08a8355f0794f0",
+      "scope_paths": [
+        "benchmarks",
+        "environment.yml",
+        "gwexpy",
+        "tests"
+      ],
+      "scope_digest": "57a80d48800aa486fef2326107c87626565110dcd5588aa3297436ba476568bc",
+      "timestamp_utc": "2026-11-14T15:22:44Z",
+      "verdict": "APPROVED",
+      "comment_id": 6879636103,
+      "risk_decisions_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
   }
