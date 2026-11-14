@@ -26,7 +26,7 @@ def test_release_status_records_latest_published_and_example_releases() -> None:
     """Published-release metadata is independent from the development version."""
     status = json.loads(RELEASE_STATUS.read_text(encoding="utf-8"))
     assert status == {
-        "latest_release": "0.2.9",
+        "latest_release": "0.2.10",
         "intro_examples_release": "0.2.4",
     }
     assert _LEGACY_KEY not in status
@@ -40,12 +40,17 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
 
     install_source = INSTALLATION.read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }} is available on [PyPI]" in install_source
-    assert "v0.2.9 GitHub Release" in install_source
     normalized_install_source = " ".join(install_source.split())
-    assert "conda-forge feedstock [PR #19]" in normalized_install_source
-    assert "Version 0.2.9 is available on [conda-forge]" in normalized_install_source
-    assert "https://zenodo.org/records/24025939" in install_source
-    assert "publication date 2026-11-07" in install_source
+    assert "v0.2.10 GitHub Release" in normalized_install_source
+    assert "https://zenodo.org/records/24224264" in install_source
+    assert "publication date 2026-11-14" in normalized_install_source
+    assert "Release Owner's disposition of this Zenodo date is pending" in (
+        normalized_install_source
+    )
+    assert "no v0.2.10 conda-forge feedstock PR or package was observed" in (
+        normalized_install_source
+    )
+    assert "the latest package was v0.2.9" in normalized_install_source
 
     catalogue = (
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po"
@@ -59,17 +64,16 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
     ).read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }}" in install_catalogue
-    assert "v0.2.9 GitHub Release" in install_catalogue
-    assert (
-        "PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19)は"
-        in install_catalogue
+    assert "v0.2.10 GitHub Release" in install_catalogue
+    assert "https://zenodo.org/records/24224264" in install_catalogue
+    assert "公開日2026-11-14" in install_catalogue
+    assert "この Zenodo 日付に対する Release Owner の判断は保留中です" in (
+        install_catalogue
     )
-    assert (
-        "[conda-forge](https://anaconda.org/conda-forge/gwexpy) で利用可能です"
-        in install_catalogue
+    assert "v0.2.10 の conda-forge feedstock PR とパッケージは確認されておらず" in (
+        install_catalogue
     )
-    assert "https://zenodo.org/records/24025939" in install_catalogue
-    assert "公開日2026-11-07" in install_catalogue
+    assert "最新パッケージは v0.2.9 でした" in install_catalogue
 
 
 def test_legacy_release_name_is_absent_from_live_docs_contract() -> None:

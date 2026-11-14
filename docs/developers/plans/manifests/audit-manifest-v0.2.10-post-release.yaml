@@ -1,0 +1,202 @@
+{
+  "schema": "gwexpy-post-release-v1",
+  "version": "0.2.10",
+  "recorded_at_utc": "2026-11-14T16:51:37Z",
+  "post_release_status": "pending_review",
+  "release": {
+    "tag": "v0.2.10",
+    "version": "0.2.10",
+    "source_sha": "d92c8e4e442fe3d187d160a757e6bcbae2af5288",
+    "tag_object_sha": "e53e513b0730909f91f81a001e715e099fe76b67",
+    "promotion_manifest_sha256": "582bdcfeca8fa82238de351ec07335b4e83ae2c42acb2ad8c524e78a4d797c65",
+    "distributions": [
+      {
+        "name": "gwexpy-0.2.10-py3-none-any.whl",
+        "sha256": "0be63dc8bfdbe1a376ed176e83f6c62e377f4a74336c7f9d530785ca15030061",
+        "size_in_bytes": 951789
+      },
+      {
+        "name": "gwexpy-0.2.10.tar.gz",
+        "sha256": "983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3",
+        "size_in_bytes": 855096
+      }
+    ]
+  },
+  "publication": {
+    "repository": "tatsuki-washimi/gwexpy",
+    "run_id": 43615261787,
+    "run_attempt": 1,
+    "workflow_path": ".github/workflows/publish-release.yml",
+    "workflow_sha": "d92c8e4e442fe3d187d160a757e6bcbae2af5288",
+    "event": "push",
+    "candidate_run_id": 43613403433,
+    "candidate_run_attempt": 1,
+    "readback_job": {
+      "id": 132510261010,
+      "url": "https://github.com/tatsuki-washimi/gwexpy/actions/runs/43615261787/job/132510261010",
+      "conclusion": "success"
+    }
+  },
+  "items": {
+    "publication_identity": {
+      "status": "complete",
+      "actor": "GitHub Actions",
+      "objective": "Verify publication identity and Release/PyPI bytes",
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/actions/runs/43615261787/job/132510261010",
+          "sha256": "582bdcfeca8fa82238de351ec07335b4e83ae2c42acb2ad8c524e78a4d797c65",
+          "observed_at_utc": "2026-11-14T16:29:40Z",
+          "observation": "Exact pypi_readback attempt succeeded; tag, manifest and Release/PyPI bytes reverified"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": ""
+    },
+    "github": {
+      "status": "complete",
+      "actor": "GitHub Actions",
+      "objective": "Observe Release notes, frozen notes/review-evidence hashes, assets and publication time",
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10",
+          "sha256": "94c9680b465bc8ece7cb05a5eb194a7cc20500e53c19e01847171346a325670f",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"assets\": [{\"browser_download_url\": \"https://github.com/tatsuki-washimi/gwexpy/releases/download/v0.2.10/distribution-sha256.json\", \"created_at\": \"2026-11-14T16:27:08Z\", \"digest\": \"sha256:20c83180b32b4bfda662392273dc55e0ec53a0cce31adc63fe7c4e8d08b1a8ad\", \"name\": \"distribution-sha256.json\", \"size\": 388, \"updated_at\": \"2026-11-14T16:27:08Z\"}, {\"browser_download_url\": \"https://github.com/tatsuki-washimi/gwexpy/releases/download/v0.2.10/gwexpy-0.2.10-py3-none-any.whl\", \"created_at\": \"2026-11-14T16:27:08Z\", \"digest\": \"sha256:0be63dc8bfdbe1a376ed176e83f6c62e377f4a74336c7f9d530785ca15030061\", \"name\": \"gwexpy-0.2.10-py3-none-any.whl\", \"size\": 951789, \"updated_at\": \"2026-11-14T16:27:08Z\"}, {\"browser_download_url\": \"https://github.com/tatsuki-washimi/gwexpy/releases/download/v0.2.10/gwexpy-0.2.10.tar.gz\", \"created_at\": \"2026-11-14T16:27:08Z\", \"digest\": \"sha256:983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3\", \"name\": \"gwexpy-0.2.10.tar.gz\", \"size\": 855096, \"updated_at\": \"2026-11-14T16:27:08Z\"}, {\"browser_download_url\": \"https://github.com/tatsuki-washimi/gwexpy/releases/download/v0.2.10/LICENSE.sha256\", \"created_at\": \"2026-11-14T16:27:08Z\", \"digest\": \"sha256:a3ed949a45e1083afa6dda0198bc8693d5278847d173fc6c9b7954ae0638a095\", \"name\": \"LICENSE.sha256\", \"size\": 65, \"updated_at\": \"2026-11-14T16:27:08Z\"}, {\"browser_download_url\": \"https://github.com/tatsuki-washimi/gwexpy/releases/download/v0.2.10/promotion-manifest.json\", \"created_at\": \"2026-11-14T16:27:08Z\", \"digest\": \"sha256:582bdcfeca8fa82238de351ec07335b4e83ae2c42acb2ad8c524e78a4d797c65\", \"name\": \"promotion-manifest.json\", \"size\": 6137, \"updated_at\": \"2026-11-14T16:27:08Z\"}], \"created_at\": \"2026-11-14T16:22:03Z\", \"frozen\": {\"release_notes\": {\"path\": \"release_notes/v0.2.10.md\", \"sha256\": \"09fe14c57a5f7d68a5ae8cffe001d79f03f1e5a52d7cc8d51c87a71660dc4b12\"}, \"review_evidence\": {\"path\": \"docs/developers/plans/manifests/audit-manifest-v0.2.10-release-readiness.yaml\", \"sha256\": \"d4d65ac515296f70627a6a04ea4c03f1658f8ccd9241ee175bd60d961620e335\"}}, \"published_at\": \"2026-11-14T16:27:09Z\", \"readback_succeeded\": true, \"source_committer_date\": \"2026-11-14T16:01:01Z\", \"tagger_date\": \"2026-11-14T16:22:03Z\"}"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "github",
+      "readback_succeeded": true
+    },
+    "pypi": {
+      "status": "complete",
+      "actor": "GitHub Actions",
+      "objective": "Record PyPI files and upload timestamps",
+      "evidence": [
+        {
+          "url": "https://pypi.org/pypi/gwexpy/0.2.10/json",
+          "sha256": "d47cd2956f7d5ffd1daf6d2d47e2adc89ecedf2e4293cf4d076eb60576d8fdde",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"files\": [{\"digests\": {\"blake2b_256\": \"21527d28c035c35dd8f1dacd442bf6f7afa9d849c1f154c4f5b3dc836d45dcd5\", \"md5\": \"b43d08b703860ff5b49b42119d06d259\", \"sha256\": \"0be63dc8bfdbe1a376ed176e83f6c62e377f4a74336c7f9d530785ca15030061\"}, \"filename\": \"gwexpy-0.2.10-py3-none-any.whl\", \"size\": 951789, \"upload_time_iso_8601\": \"2026-11-14T16:27:46.617248Z\", \"url\": \"https://files.pythonhosted.org/packages/21/52/7d28c035c35dd8f1dacd442bf6f7afa9d849c1f154c4f5b3dc836d45dcd5/gwexpy-0.2.10-py3-none-any.whl\"}, {\"digests\": {\"blake2b_256\": \"cbbd0850ab88124ea210844ebbcb207e57ee9044b6c70f3ae0f2997807a9263d\", \"md5\": \"ca92d8aae2913e9d226459fd102f2647\", \"sha256\": \"983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3\"}, \"filename\": \"gwexpy-0.2.10.tar.gz\", \"size\": 855096, \"upload_time_iso_8601\": \"2026-11-14T16:27:48.447933Z\", \"url\": \"https://files.pythonhosted.org/packages/cb/bd/0850ab88124ea210844ebbcb207e57ee9044b6c70f3ae0f2997807a9263d/gwexpy-0.2.10.tar.gz\"}], \"readback_succeeded\": true}"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "pypi",
+      "readback_succeeded": true
+    },
+    "zenodo": {
+      "status": "pending_review",
+      "actor": "GitHub Actions",
+      "objective": "Observe version DOI, archive identity and approved date disposition",
+      "evidence": [
+        {
+          "url": "https://zenodo.org/api/records?q=conceptrecid%3A19059422&all_versions=true&size=25",
+          "sha256": "380c2687840749c405f5306d5bef5a60aa64c04733b3d82ad27ffa834bc02fb2",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-11-14T16:27:18.263477+00:00\", \"doi\": \"10.5281/zenodo.24224264\", \"files\": [{\"checksum\": \"md5:9997a26c49ef7bfc61d5314c07e2c2b8\", \"id\": \"3e80554a-b144-4247-a2db-2790d61d6ba4\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.10.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/24224264/files/tatsuki-washimi/gwexpy-v0.2.10.zip/content\"}, \"size\": 37471874}], \"publication_date\": \"2026-11-14\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 24224264, \"updated\": \"2026-11-14T16:27:18.431085+00:00\"}"
+        }
+      ],
+      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "observer": "zenodo",
+      "readback_succeeded": true
+    },
+    "conda": {
+      "status": "pending_external",
+      "actor": "GitHub Actions",
+      "objective": "Observe feedstock and actual channel package",
+      "evidence": [
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "5506e5200623ef686007d98b60c30925386f598b0dc8c7acb599a513a49edafa",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"pending_external\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        }
+      ],
+      "pending_reason": "See separate feedstock PR and actual channel-package states",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "observer": "conda",
+      "readback_succeeded": false,
+      "components": {
+        "conda_feedstock": "pending_external",
+        "conda_package": "pending_external"
+      }
+    },
+    "docs": {
+      "status": "pending_review",
+      "actor": "Release Owner",
+      "objective": "Prepare and review EN/JA release/history updates",
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/pull/920",
+          "sha256": null,
+          "observed_at_utc": "2026-11-14T16:51:37Z",
+          "observation": "PR #920 updates the English and Japanese release status, installation guidance, changelog, and roadmap with verified GitHub/PyPI/Zenodo records and the observed conda-forge state; Release Owner review and merge are pending."
+        }
+      ],
+      "pending_reason": "Release Owner review and merge of PR #920 outstanding",
+      "resume_condition": "After PR #920 merges, deploy docs through docs-pages-isolated.yml and verify the live English and Japanese revisions and manifest hashes; resolve the Zenodo date disposition separately."
+    },
+    "pages": {
+      "status": "pending_external",
+      "actor": "GitHub Actions",
+      "objective": "Verify live EN/JA revision and artifact manifest hash",
+      "evidence": [],
+      "pending_reason": "Deployment not observed",
+      "resume_condition": "After docs merge, run isolated Pages and revision/hash readback"
+    },
+    "remote_cleanup": {
+      "status": "pending_external",
+      "actor": "GitHub Actions",
+      "objective": "Assess remote branches using ancestry and open PRs",
+      "evidence": [],
+      "pending_reason": "Assessment missing",
+      "resume_condition": "Run read-only remote assessment"
+    },
+    "local_cleanup": {
+      "status": "pending_external",
+      "actor": "maintainer local host",
+      "objective": "Assess worktrees, dirty files and active sessions",
+      "evidence": [],
+      "pending_reason": "Local evidence missing",
+      "resume_condition": "Supply maintainer local-host assessment"
+    },
+    "conda_feedstock": {
+      "status": "pending_external",
+      "actor": "GitHub Actions",
+      "objective": "Observe conda_feedstock",
+      "evidence": [
+        {
+          "url": "https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls",
+          "sha256": "a6c038aa728e4859af04d42b82064b274e3230ef85e59c23fd5438245efb4f58",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"reason\": \"Exact-version feedstock PR absent\", \"status\": \"pending_external\"}"
+        }
+      ],
+      "pending_reason": "Exact-version feedstock PR absent",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "observer": "conda_feedstock",
+      "readback_succeeded": false
+    },
+    "conda_package": {
+      "status": "pending_external",
+      "actor": "GitHub Actions",
+      "objective": "Observe conda_package",
+      "evidence": [
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "779a41aabdbb234411a3856e5ded68787158ddea314ad2522491218a01baab70",
+          "observed_at_utc": "2026-11-14T16:29:43Z",
+          "observation": "{\"inventory_files\": [], \"missing_from_repodata\": [], \"reason\": \"Exact build absent from final conda-forge repodata\", \"status\": \"pending_external\"}"
+        }
+      ],
+      "pending_reason": "Exact build absent from final conda-forge repodata",
+      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "observer": "conda_package",
+      "readback_succeeded": false
+    }
+  }
+}

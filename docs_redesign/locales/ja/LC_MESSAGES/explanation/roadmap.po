@@ -19,12 +19,12 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "*Last updated: 2026-11-07.*"
-msgstr "*最終更新: 2026-11-07。*"
+msgid "*Last updated: 2026-11-14.*"
+msgstr "*最終更新: 2026-11-14。*"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "**Released baseline**: the published v0.2.9 maintenance baseline and the v0.2.0 semantic contract"
-msgstr "**リリース済みの基準**：公開済みの v0.2.9 メンテナンス基準と v0.2.0 の semantic contract"
+msgid "**Released baseline**: the published v0.2.10 maintenance baseline and the v0.2.0 semantic contract"
+msgstr "**リリース済みの基準**：公開済みの v0.2.10 メンテナンス基準と v0.2.0 の semantic contract"
 
 #: docs_redesign/explanation/roadmap.md
 msgid "**Directional themes**: areas we may improve in upcoming iterations"
@@ -43,14 +43,17 @@ msgid "Exact timing, interoperable persistence, deterministic provenance, and pu
 msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で提供済みです。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "[v0.2.9](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) is the current released maintenance baseline. It aligns matrix phase calculations with physical units in radians or degrees, strictly validates HDF5 frequency units, restores feature units in `WhitenTransform.inverse_transform()`, and ensures import compatibility with GWpy 4.1.0."
-msgstr "[v0.2.9](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) は現在公開されているメンテナンス基準です。行列の位相計算でラジアンや度などの物理単位との整合性を保ち、HDF5周波数単位を厳密に検証し、`WhitenTransform.inverse_transform()` で特徴量単位を復元し、GWpy 4.1.0 との import 互換性を確保します。"
+msgid "[v0.2.10](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10) is the current released maintenance baseline. It consolidates scientific-data integrity fixes across HDF5 and collection I/O, axes and timestamps, units and metadata, analysis outputs, and diagnostics while retaining existing public APIs and supported persistence schemas."
+msgstr "[v0.2.10](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10) は現在公開されているメンテナンス基準です。既存の公開 API と対応する永続化スキーマを維持しながら、HDF5 とコレクション I/O、軸と時刻情報、単位とメタデータ、解析出力、診断に関する科学データの整合性修正をまとめています。"
 
 #: docs_redesign/explanation/roadmap.md
-msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.9"
-msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.9 でも維持されています。"
+msgid "Exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility were established in v0.2.0 and are retained by v0.2.10"
+msgstr "exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.10 でも維持されています。"
 
 #: docs_redesign/explanation/roadmap.md
+msgid "v0.2.10 was published on 2026-11-14 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.10/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10). The [Zenodo version record](https://zenodo.org/records/24224264) lists DOI [10.5281/zenodo.24224264](https://doi.org/10.5281/zenodo.24224264), archive `tatsuki-washimi/gwexpy-v0.2.10.zip`, and metadata `publication_date` 2026-11-14. The Release Owner's disposition of this Zenodo date is pending. As of 2026-11-14T16:51:37Z, no v0.2.10 conda-forge feedstock PR or package was observed; the latest package was v0.2.9. Check each installation source for its available versions."
+msgstr "v0.2.10 は2026-11-14（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.10/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.10) で公開されました。[Zenodo のバージョンレコード](https://zenodo.org/records/24224264) には DOI [10.5281/zenodo.24224264](https://doi.org/10.5281/zenodo.24224264)、アーカイブ `tatsuki-washimi/gwexpy-v0.2.10.zip`、メタデータの `publication_date` 2026-11-14 が記録されています。この Zenodo 日付に対する Release Owner の判断は保留中です。2026-11-14T16:51:37Z 時点で v0.2.10 の conda-forge feedstock PR とパッケージは確認されておらず、最新パッケージは v0.2.9 でした。各インストール元で利用可能なバージョンを確認してください。"
+
 msgid "v0.2.9 was published on 2026-11-07 UTC to [PyPI](https://pypi.org/project/gwexpy/0.2.9/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9). The [Zenodo record](https://zenodo.org/records/24025939) lists version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939), archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and metadata `publication_date` 2026-11-07. The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at 2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at 2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on conda-forge. No next-minor release theme is committed; future work remains directional."
 msgstr "v0.2.9 は2026-11-07（UTC）に [PyPI](https://pypi.org/project/gwexpy/0.2.9/) と [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) で公開されました。[Zenodoレコード](https://zenodo.org/records/24025939) にはバージョン DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939)、アーカイブ `tatsuki-washimi/gwexpy-v0.2.9.zip`、メタデータの `publication_date` 2026-11-07 が記録されています。Release Ownerは2026-11-07T05:45:00Zに、Zenodoの`publication_date`として2026-11-07を承認しました。conda-forge feedstockの[PR #19](https://github.com/conda-forge/gwexpy-feedstock/pull/19)は2026-11-07T05:45:59Zにマージされ、ビルドは成功しました。バージョン 0.2.9 は conda-forge で利用可能です。次のminor releaseのテーマは確定しておらず、今後の作業は方向性として扱います。"
 
