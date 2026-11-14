@@ -1,0 +1,16 @@
+issue: 586
+scope: Preserve dtype and values in in-memory Spectrogram-to-ObsPy Stream conversion.
+skills: [gwexpy_conda_jobs]
+checks:
+  regression_before_fix: int64 2^53+1 became 2^53
+  focused_tests: 13 passed, including int64 round trip, float32, complex64 and independence
+  ruff_check_and_format: passed
+  mypy: passed (one changed source file)
+  file_format_dtype_support: not tested; conversion is to an in-memory Stream
+  hosted_ci: pending
+physics_review: Values and dtype are preserved; no numerical transformation changed.
+files:
+  - gwexpy/interop/obspy_.py
+  - tests/interop/test_interop_obspy.py
+  - CHANGELOG.md
+  - docs/developers/plans/manifests/audit-manifest-586-obspy-spectrogram.yaml
