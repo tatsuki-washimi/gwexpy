@@ -40,10 +40,10 @@ PUBLISHED_V028_HISTORY_ENTRY = f"[{PUBLISHED_V028_VERSION}] - {PUBLISHED_V028_DA
 SOURCE_V0210_VERSION = "0.2.10"
 SOURCE_V0210_METADATA_DATE = "2026-11-14"
 SOURCE_V0210_HISTORY_ENTRY = f"[{SOURCE_V0210_VERSION}] - {SOURCE_V0210_METADATA_DATE}"
-CANDIDATE_V029_VERSION = "0.2.9"
-CANDIDATE_V029_METADATA_DATE = "2026-11-07"
-CANDIDATE_V029_HISTORY_ENTRY = (
-    f"[{CANDIDATE_V029_VERSION}] - {CANDIDATE_V029_METADATA_DATE}"
+PUBLISHED_V029_VERSION = "0.2.9"
+PUBLISHED_V029_METADATA_DATE = "2026-11-07"
+PUBLISHED_V029_HISTORY_ENTRY = (
+    f"[{PUBLISHED_V029_VERSION}] - {PUBLISHED_V029_METADATA_DATE}"
 )
 PUBLISHED_V027_VERSION = "0.2.7"
 PUBLISHED_V027_DATE = "2026-10-31"
@@ -205,7 +205,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
         (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
     )
     version = PUBLISHED_V024_VERSION
-    assert release_status["latest_release"] == CANDIDATE_V029_VERSION
+    assert release_status["latest_release"] == SOURCE_V0210_VERSION
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -479,7 +479,7 @@ def test_published_history_and_v0210_source_metadata_remain_distinct():
     )
     assert "candidate records are historical" not in release_note_text.lower()
 
-    assert release_status["latest_release"] == CANDIDATE_V029_VERSION
+    assert release_status["latest_release"] == SOURCE_V0210_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
@@ -533,9 +533,9 @@ def test_published_history_and_v0210_source_metadata_remain_distinct():
 
     # The redesign follows the actual publication readback while the frozen
     # source metadata retains its original planned date of 2026-11-03.
-    assert release_status["latest_release"] == CANDIDATE_V029_VERSION
+    assert release_status["latest_release"] == SOURCE_V0210_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
-    assert CANDIDATE_V029_HISTORY_ENTRY in changelog
+    assert PUBLISHED_V029_HISTORY_ENTRY in changelog
     assert PUBLISHED_V028_HISTORY_ENTRY in changelog
     assert PUBLISHED_V027_HISTORY_ENTRY in changelog
     assert PUBLISHED_V026_HISTORY_ENTRY in changelog
@@ -629,7 +629,7 @@ def test_japanese_inline_examples_preserve_matrix_and_pad_tokens() -> None:
     assert "pad= <値>" not in pad_messages[0].string
 
 
-def test_v029_release_status_and_v028_conda_forge_history_are_current() -> None:
+def test_v029_history_and_v0210_release_status_are_current() -> None:
     english = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
@@ -722,39 +722,40 @@ def test_v029_release_status_and_v028_conda_forge_history_are_current() -> None:
     )
     with installation_catalogue_path.open(encoding="utf-8") as stream:
         installation_catalogue = pofile.read_po(stream, locale="ja")
-    installation_msgid = (
-        "GWexpy {{ latest_release }} is available on "
-        "[PyPI](https://pypi.org/project/gwexpy/) and the "
-        "[GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases). "
-        "The [v0.2.9 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.9) "
-        "and [PyPI package](https://pypi.org/project/gwexpy/0.2.9/) were published on "
-        "2026-11-07 UTC. The [Zenodo record](https://zenodo.org/records/24025939) lists "
-        "version DOI [10.5281/zenodo.24025939](https://doi.org/10.5281/zenodo.24025939), "
-        "archive `tatsuki-washimi/gwexpy-v0.2.9.zip`, and publication date 2026-11-07. "
-        "The Release Owner accepted Zenodo's `publication_date` of 2026-11-07 at "
-        "2026-11-07T05:45:00Z. The conda-forge feedstock [PR #19]("
-        "https://github.com/conda-forge/gwexpy-feedstock/pull/19) merged at "
-        "2026-11-07T05:45:59Z and its build succeeded. Version 0.2.9 is available on "
-        "[conda-forge](https://anaconda.org/conda-forge/gwexpy). Check each install "
-        "source for its available versions."
-    )
-    installation_message = installation_catalogue.get(installation_msgid)
+    installation_messages = [
+        message
+        for message in installation_catalogue
+        if isinstance(message.id, str) and "The [v0.2.10 GitHub Release]" in message.id
+    ]
+    assert len(installation_messages) == 1
+    installation_message = installation_messages[0]
     installation_text = " ".join(installation.split())
 
-    assert "The [v0.2.9 GitHub Release]" in installation_text
-    assert "conda-forge feedstock [PR #19]" in installation_text
-    assert "Version 0.2.9 is available on [conda-forge]" in installation_text
-    assert "publication date 2026-11-07" in installation_text
-    assert "Release Owner accepted Zenodo's `publication_date`" in installation_text
-    assert installation_message is not None
-    assert "feedstockの[PR #19]" in installation_message.string
-    assert "2026-11-07T05:45:59Z" in installation_message.string
-    assert "マージされ、ビルドは成功しました" in installation_message.string
+    assert "The [v0.2.10 GitHub Release]" in installation_text
     assert (
-        "[conda-forge](https://anaconda.org/conda-forge/gwexpy) で利用可能です"
-        in installation_message.string
+        "[PyPI package](https://pypi.org/project/gwexpy/0.2.10/)" in installation_text
     )
-    assert "https://zenodo.org/records/24025939" in installation_message.string
+    assert "publication date 2026-11-14" in installation_text
+    assert (
+        "Release Owner's disposition of this Zenodo date is pending"
+        in installation_text
+    )
+    assert (
+        "no v0.2.10 conda-forge feedstock PR or package was observed"
+        in installation_text
+    )
+    assert "the latest package was v0.2.9" in installation_text
+    assert "https://zenodo.org/records/24224264" in installation_text
+    assert "v0.2.10 GitHub Release" in installation_message.id
+    assert "https://zenodo.org/records/24224264" in installation_message.id
+    assert "v0.2.10" in installation_message.string
+    assert "この Zenodo 日付に対する Release Owner の判断は保留中です" in (
+        installation_message.string
+    )
+    assert "v0.2.10 の conda-forge feedstock PR とパッケージは確認されておらず" in (
+        installation_message.string
+    )
+    assert "最新パッケージは v0.2.9 でした" in installation_message.string
 
 
 def test_v029_activity_snapshot_matches_immutable_release_tag() -> None:
@@ -929,7 +930,7 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     )
     assert rendered_headings[:6] == [
         SOURCE_V0210_HISTORY_ENTRY,
-        CANDIDATE_V029_HISTORY_ENTRY,
+        PUBLISHED_V029_HISTORY_ENTRY,
         PUBLISHED_V028_HISTORY_ENTRY,
         PUBLISHED_V027_HISTORY_ENTRY,
         PUBLISHED_V026_HISTORY_ENTRY,
@@ -942,7 +943,7 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     )
     assert canonical_releases[0] == SOURCE_V0210_HISTORY_ENTRY
     assert canonical_releases[1:] == [
-        CANDIDATE_V029_HISTORY_ENTRY,
+        PUBLISHED_V029_HISTORY_ENTRY,
         PUBLISHED_V028_HISTORY_ENTRY,
         PUBLISHED_V027_HISTORY_ENTRY,
         PUBLISHED_V026_HISTORY_ENTRY,
@@ -1005,7 +1006,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     current_release = (
         (REPO_ROOT / "CHANGELOG.md")
         .read_text(encoding="utf-8")
-        .split(f"## {CANDIDATE_V029_HISTORY_ENTRY}", 1)[1]
+        .split(f"## {PUBLISHED_V029_HISTORY_ENTRY}", 1)[1]
         .split(f"## {PUBLISHED_V028_HISTORY_ENTRY}", 1)[0]
     )
     # This release uses headings, paragraphs and list items. Split those
