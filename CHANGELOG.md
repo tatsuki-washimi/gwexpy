@@ -29,6 +29,8 @@
 
 - **GWINC dictionary conversion**: Warn with the trace name when a subtrace PSD cannot be converted instead of silently omitting it; hierarchy nodes without PSDs remain skipped (#780).
 
+- **MetPy conversion**: Propagate errors from `dequantify()` instead of continuing with potentially unit-stripped values (#792).
+
 - **GauCh calibration**: Build the GauCh input from single-FFT ASD samples and use the same two-sided KS statistic for the observed data and the Monte Carlo null, with a half-normal model for the DC and Nyquist bins. `overlap=fftlength/2` now works and gives the KAGRA configuration; it previously failed inside GWpy. Output axes, provenance keys, seed and generator handling, and NaN for dead bins are unchanged (#879). A Gaussian FFT-process null now handles the non-Rayleigh final bin of odd-length FFTs.
 
 - **`python -m gwexpy.time`**: The module imported `argparse` and `sys` from `gwpy.time.__main__`, which no GWpy 4.x release provides, so it failed with `ImportError` before doing anything. It now imports only the names GWpy defines and runs GWpy's `main()` when executed as a module, matching `python -m gwpy.time` (#784).

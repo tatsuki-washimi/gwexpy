@@ -68,10 +68,7 @@ def from_metpy_dataarray(
 
     # Dequantify: strip Pint wrapper if present
     if dequantify and hasattr(da, "metpy"):
-        try:
-            da = da.metpy.dequantify()
-        except Exception:
-            pass  # already plain
+        da = da.metpy.dequantify()
 
     # Try to convert Pint unit string → astropy
     unit_str = da.attrs.get("units")
