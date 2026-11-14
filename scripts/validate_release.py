@@ -517,6 +517,7 @@ def validate_s_to_r(
             "v0.2.7",
             "v0.2.8",
             "v0.2.9",
+            "v0.2.10",
         }
         and reviewed_commit == source_sha
     ):
@@ -555,7 +556,7 @@ def validate_s_to_r(
             str(contract["review_evidence_path"]),
             expected_tag,
         )
-    elif expected_tag in {"v0.2.7", "v0.2.8", "v0.2.9"}:
+    elif expected_tag in {"v0.2.7", "v0.2.8", "v0.2.9", "v0.2.10"}:
         try:
             source = _git_bytes(
                 root,
@@ -615,7 +616,8 @@ def validate_release(
     contract = _release_contract(expected_tag)
     artifact_prefix = str(contract["artifact_prefix"])
     if (
-        expected_tag in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7", "v0.2.8", "v0.2.9"}
+        expected_tag
+        in {"v0.2.4", "v0.2.5", "v0.2.6", "v0.2.7", "v0.2.8", "v0.2.9", "v0.2.10"}
         and review_evidence is None
     ):
         raise ReleaseValidationError(f"{expected_tag} requires release review evidence")
