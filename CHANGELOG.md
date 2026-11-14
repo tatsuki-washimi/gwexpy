@@ -23,6 +23,8 @@
 
 - **Matrix correlation method validation**: Reject unknown methods and Pearson inputs shorter than two samples with `ValueError`, matching the single-series call instead of returning silent NaN scores. Per-channel and parallel-worker failures that become NaN now emit a warning; successful partial results are retained (#786).
 
+- **Spatial FFT epoch**: Preserve `ScalarField.epoch` through `fft_space()` and `ifft_space()` while leaving the time axis unchanged (#725).
+
 - **Coupling target threshold failures**: Propagate `AttributeError` raised while computing a target threshold instead of silently substituting the background and returning NaN upper limits (#789).
 
 - **DTTXML time-series selection**: Materialize one-shot channel iterables before selection so generator inputs return the same channels as equivalent lists. Warn about requested channels absent from all sources while preserving matched channels (#785).
