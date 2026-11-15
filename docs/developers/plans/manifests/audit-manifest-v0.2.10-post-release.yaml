@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.10",
-  "recorded_at_utc": "2026-11-15T10:29:22Z",
-  "post_release_status": "pending_review",
+  "recorded_at_utc": "2026-11-15T10:35:15Z",
+  "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.10",
     "version": "0.2.10",
@@ -137,8 +137,8 @@
           "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "See separate feedstock PR and actual channel-package states",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "Feedstock PR #20 and recipe are complete; exact package remains absent from final repodata",
+      "resume_condition": "Re-observe the package inventory and final repodata on the next resume",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
@@ -147,7 +147,7 @@
       }
     },
     "docs": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "Release Owner",
       "objective": "Prepare and review EN/JA release/history updates",
       "evidence": [
@@ -156,18 +156,35 @@
           "sha256": null,
           "observed_at_utc": "2026-11-14T16:51:37Z",
           "observation": "PR #920 updates the English and Japanese release status, installation guidance, changelog, and roadmap with verified GitHub/PyPI/Zenodo records and the observed conda-forge state; Release Owner review and merge are pending."
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "8615e196731e7d0f13df5faacfdc1cc31f119d3b6219230027fd34059846e4db",
+          "observed_at_utc": "2026-11-15T10:35:06Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Release Owner review and merge of PR #920 outstanding",
-      "resume_condition": "After PR #920 merges, deploy docs through docs-pages-isolated.yml and verify the live English and Japanese revisions and manifest hashes; resolve the Zenodo date disposition separately."
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "docs",
+      "readback_succeeded": true
     },
     "pages": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Verify live EN/JA revision and artifact manifest hash",
-      "evidence": [],
-      "pending_reason": "Deployment not observed",
-      "resume_condition": "After docs merge, run isolated Pages and revision/hash readback"
+      "evidence": [
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "8615e196731e7d0f13df5faacfdc1cc31f119d3b6219230027fd34059846e4db",
+          "observed_at_utc": "2026-11-15T10:35:06Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "pages",
+      "readback_succeeded": true
     },
     "remote_cleanup": {
       "status": "pending_external",
@@ -201,12 +218,24 @@
           "sha256": "a4bb29f9b575b064dfa15be163bf731d7502215147aca22d4c4fc092fa74f44e",
           "observed_at_utc": "2026-11-15T10:29:22Z",
           "observation": "{\"author\": \"regro-cf-autotick-bot\", \"head_branch\": \"0.2.10_h48091d\", \"head_sha\": \"f9bdd8924be2a522090c2cfafdba5abb8db153e3\", \"merged_at\": \"2026-11-15T09:21:58Z\", \"number\": 20, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/20\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"f9bdd8924be2a522090c2cfafdba5abb8db153e3\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"d261ee48b59cde9c23427c570b448fb57c035515b40d13843fb2369295dc6b17\", \"source_sha256\": \"983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.10.tar.gz\", \"version\": \"0.2.10\"}, \"status\": \"complete\", \"updated_at\": \"2026-11-15T09:23:23Z\"}"
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/20",
+          "sha256": null,
+          "observed_at_utc": "2026-11-15T10:35:15Z",
+          "observation": "{\"head_sha\":\"f9bdd8924be2a522090c2cfafdba5abb8db153e3\",\"merge_commit_sha\":\"754803e2e70f359cd290e8f76ca4dd73bb017eaa\",\"merged_at\":\"2026-11-15T09:21:58Z\",\"number\":20,\"recipe\":{\"path\":\"recipe/recipe.yaml\",\"recipe_sha256\":\"d261ee48b59cde9c23427c570b448fb57c035515b40d13843fb2369295dc6b17\",\"source_sha256\":\"983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3\",\"source_url\":\"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.10.tar.gz\",\"version\":\"0.2.10\"},\"state\":\"closed\"}"
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/actions/runs/43698904190",
+          "sha256": null,
+          "observed_at_utc": "2026-11-15T10:35:15Z",
+          "observation": "{\"conclusion\":\"success\",\"copy_result\":{\"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\":true},\"head_sha\":\"754803e2e70f359cd290e8f76ca4dd73bb017eaa\",\"jobs\":[{\"conclusion\":\"success\",\"name\":\"linux_64_\",\"status\":\"completed\"}],\"run_id\":43698904190,\"status\":\"completed\"}"
         }
       ],
       "pending_reason": "",
       "resume_condition": "",
       "observer": "conda_feedstock",
-      "readback_succeeded": false
+      "readback_succeeded": true
     },
     "conda_package": {
       "status": "pending_external",
@@ -224,10 +253,22 @@
           "sha256": "5397694b3fa2aee0619b201628354c80e71676fa95a298557bf1d61aa0ee534f",
           "observed_at_utc": "2026-11-15T10:29:22Z",
           "observation": "{\"inventory_files\": [\"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\"], \"missing_from_repodata\": [\"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\"], \"reason\": \"Exact build absent from final conda-forge repodata\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": null,
+          "observed_at_utc": "2026-11-15T10:35:15Z",
+          "observation": "{\"artifact_sha256_scope\":\"conda .conda archive bytes; distinct from the PyPI sdist SHA-256\",\"basename\":\"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\",\"build\":\"pyhc364b38_0\",\"build_number\":0,\"labels\":[\"main\"],\"sha256\":\"7f754791dc56e3c3e51469193df9ff70b2796575e03fa548b51d5774400d6bc7\",\"size\":683623,\"subdir\":\"noarch\",\"upload_time\":\"2026-11-15 09:23:44.812000+00:00\",\"version\":\"0.2.10\"}"
+        },
+        {
+          "url": "https://conda.anaconda.org/conda-forge/noarch/repodata.json",
+          "sha256": null,
+          "observed_at_utc": "2026-11-15T10:35:15Z",
+          "observation": "{\"etag\":\"W/\\\"3aa1e32bf01a6e1ce92a87b888d62299\\\"\",\"filename\":\"gwexpy-0.2.10-pyhc364b38_0.conda\",\"http_status\":200,\"last_modified\":\"Sun, 15 Nov 2026 09:52:40 GMT\",\"present_in_packages\":false,\"present_in_packages.conda\":false,\"status\":\"pending_external\"}"
         }
       ],
-      "pending_reason": "Exact build absent from final conda-forge repodata",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "Exact 0.2.10 build is registered in Anaconda.org but absent from final noarch repodata",
+      "resume_condition": "Re-observe Anaconda.org and final noarch repodata; complete only when name, version, build, build number, size and SHA-256 match",
       "observer": "conda_package",
       "readback_succeeded": false
     }
