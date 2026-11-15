@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.10",
-  "recorded_at_utc": "2026-11-14T16:51:37Z",
+  "recorded_at_utc": "2026-11-15T09:21:33Z",
   "post_release_status": "pending_review",
   "release": {
     "tag": "v0.2.10",
@@ -88,8 +88,8 @@
       "readback_succeeded": true
     },
     "zenodo": {
-      "status": "pending_review",
-      "actor": "GitHub Actions",
+      "status": "complete",
+      "actor": "Release Owner",
       "objective": "Observe version DOI, archive identity and approved date disposition",
       "evidence": [
         {
@@ -97,12 +97,27 @@
           "sha256": "380c2687840749c405f5306d5bef5a60aa64c04733b3d82ad27ffa834bc02fb2",
           "observed_at_utc": "2026-11-14T16:29:43Z",
           "observation": "{\"conceptdoi\": \"10.5281/zenodo.19059422\", \"created\": \"2026-11-14T16:27:18.263477+00:00\", \"doi\": \"10.5281/zenodo.24224264\", \"files\": [{\"checksum\": \"md5:9997a26c49ef7bfc61d5314c07e2c2b8\", \"id\": \"3e80554a-b144-4247-a2db-2790d61d6ba4\", \"key\": \"tatsuki-washimi/gwexpy-v0.2.10.zip\", \"links\": {\"self\": \"https://zenodo.org/api/records/24224264/files/tatsuki-washimi/gwexpy-v0.2.10.zip/content\"}, \"size\": 37471874}], \"publication_date\": \"2026-11-14\", \"readback_succeeded\": true, \"reason\": \"Owner-approved Zenodo date disposition remains outstanding\", \"record_id\": 24224264, \"updated\": \"2026-11-14T16:27:18.431085+00:00\"}"
+        },
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy/issues/872#issuecomment-6892263520",
+          "sha256": null,
+          "observed_at_utc": "2026-11-15T09:21:33Z",
+          "observation": "{\"human_decision\":{\"actor\":\"tatsuki-washimi\",\"role\":\"release-owner\",\"decision\":\"ACCEPT_PUBLICATION_DATE\",\"doi\":\"10.5281/zenodo.24224264\",\"record_id\":24224264,\"publication_date\":\"2026-11-14\",\"decided_at_utc\":\"2026-11-15T09:21:33Z\"}}"
         }
       ],
-      "pending_reason": "Owner-approved Zenodo date disposition remains outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "zenodo",
-      "readback_succeeded": true
+      "readback_succeeded": true,
+      "human_decision": {
+        "actor": "tatsuki-washimi",
+        "role": "release-owner",
+        "decision": "ACCEPT_PUBLICATION_DATE",
+        "doi": "10.5281/zenodo.24224264",
+        "record_id": 24224264,
+        "publication_date": "2026-11-14",
+        "decided_at_utc": "2026-11-15T09:21:33Z"
+      }
     },
     "conda": {
       "status": "pending_external",
