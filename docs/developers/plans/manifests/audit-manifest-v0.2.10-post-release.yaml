@@ -1,7 +1,7 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.10",
-  "recorded_at_utc": "2026-11-15T10:35:15Z",
+  "recorded_at_utc": "2026-11-15T14:09:34Z",
   "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.10",
@@ -120,7 +120,7 @@
       }
     },
     "conda": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -135,15 +135,21 @@
           "sha256": "b96dd75691ae58905dea11b0fc593d8f0808a5644317db6eea050f41be1c1109",
           "observed_at_utc": "2026-11-15T10:29:22Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
+          "observed_at_utc": "2026-11-15T14:09:34Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "Feedstock PR #20 and recipe are complete; exact package remains absent from final repodata",
-      "resume_condition": "Re-observe the package inventory and final repodata on the next resume",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
         "conda_feedstock": "complete",
-        "conda_package": "pending_external"
+        "conda_package": "complete"
       }
     },
     "docs": {
@@ -235,10 +241,10 @@
       "pending_reason": "",
       "resume_condition": "",
       "observer": "conda_feedstock",
-      "readback_succeeded": true
+      "readback_succeeded": false
     },
     "conda_package": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_package",
       "evidence": [
@@ -265,12 +271,18 @@
           "sha256": null,
           "observed_at_utc": "2026-11-15T10:35:15Z",
           "observation": "{\"etag\":\"W/\\\"3aa1e32bf01a6e1ce92a87b888d62299\\\"\",\"filename\":\"gwexpy-0.2.10-pyhc364b38_0.conda\",\"http_status\":200,\"last_modified\":\"Sun, 15 Nov 2026 09:52:40 GMT\",\"present_in_packages\":false,\"present_in_packages.conda\":false,\"status\":\"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "c15a70d45cdc7bdec84ca39e5d5476c3a469b3fdc246c0e38ae2684b89d480a2",
+          "observed_at_utc": "2026-11-15T14:09:34Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.10-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"fddb2136ef306ee33299b0c4d89812bc\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7f754791dc56e3c3e51469193df9ff70b2796575e03fa548b51d5774400d6bc7\", \"size\": 683623, \"subdir\": \"noarch\", \"timestamp\": 1794734571786, \"version\": \"0.2.10\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7f754791dc56e3c3e51469193df9ff70b2796575e03fa548b51d5774400d6bc7\", \"size\": 683623}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Exact 0.2.10 build is registered in Anaconda.org but absent from final noarch repodata",
-      "resume_condition": "Re-observe Anaconda.org and final noarch repodata; complete only when name, version, build, build number, size and SHA-256 match",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_package",
-      "readback_succeeded": false
+      "readback_succeeded": true
     }
   }
 }
