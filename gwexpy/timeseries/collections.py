@@ -340,6 +340,20 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     """
 
+    def forecast(
+        self,
+        backend: str = "chronos",
+        *,
+        horizon: int,
+        quantiles: tuple[float, ...] | list[float] | None = None,
+    ) -> ForecastResult:
+        """Forecast each member as an independent univariate task batch."""
+        if backend != "chronos":
+            raise ValueError(f"Unsupported forecast backend: {backend!r}")
+        from ._forecast import forecast_collection
+
+        return forecast_collection(self, horizon=horizon, quantiles=quantiles)
+
     def plot(
         self,
         label: str = "key",
@@ -2580,3 +2594,6 @@ def _select_hdf5_window(series: Any, start: Any, end: Any) -> Any:
     if needs_explicit_axis(series):
         return _crop_explicit_axis(series, start, end)
     return apply_time_selection(series, start, end)
+
+
+from ._forecast import ForecastResult  # noqa: E402

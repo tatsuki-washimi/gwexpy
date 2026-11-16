@@ -51,6 +51,10 @@ Dictionary of TimeSeries objects.
 
 ## Methods
 
+### `forecast(backend="chronos", horizon=..., quantiles=...)`
+
+Forecast each member as an independent univariate task batch. This does not share information between channels. The returned `ForecastResult.point` and each entry in `ForecastResult.quantiles` are `TimeSeriesDict` objects that preserve the input keys. The `chronos-forecasting` package is not included in the base install, and the planned `[chronos]` extra is not registered yet.
+
 ### `EntryClass`
 
 ```python

@@ -758,6 +758,25 @@ class TimeSeries(
     # ARIMA / Modeling Methods
     # =========================================================================
 
+    def forecast(
+        self,
+        backend: str = "chronos",
+        *,
+        horizon: int,
+        quantiles: tuple[float, ...] | list[float] | None = None,
+    ) -> ForecastResult:
+        """Forecast future samples with an optional pretrained backend.
+
+        Chronos is loaded only when this method is called; it is not imported
+        by importing :mod:`gwexpy`. The returned ``ForecastResult`` stores the
+        median in ``point`` and each requested level in ``quantiles``.
+        """
+        if backend != "chronos":
+            raise ValueError(f"Unsupported forecast backend: {backend!r}")
+        from ._forecast import forecast_series
+
+        return forecast_series(self, horizon=horizon, quantiles=quantiles)
+
     def arima(
         self,
         order: tuple[int, int, int] = (1, 0, 0),
@@ -843,3 +862,6 @@ _timeseries_read.__signature__ = _gwf_parallel_read_signature(_timeseries_read)
 _timeseries_read.__doc__ = f"{_timeseries_read.__doc__}{_GWF_PARALLEL_HELP}"
 
 __all__ = ["TimeSeries"]
+
+
+from ._forecast import ForecastResult  # noqa: E402
