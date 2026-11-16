@@ -169,7 +169,7 @@ xarray 系の interop bridge は、GWexpy が独立した `xarray` extra を公�
 
 | 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
-| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> non-Histogram` は未完 | [API](../reference/api/gwexpy.interop.root_.rst) |
+| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> TimeSeries/FrequencySeries` に対応。`TCanvas`/`TPad` の走査は未対応 | [API](../reference/api/gwexpy.interop.root_.rst) |
 | [ObsPy](https://docs.obspy.org/) | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | 公開済み | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.rst) |
 | [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.lal_.rst) |
 | [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.pycbc_.rst) |
