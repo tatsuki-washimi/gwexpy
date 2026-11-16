@@ -164,7 +164,7 @@ def forecast_series(
     except ImportError as exc:
         raise ImportError(
             "Chronos forecasting requires the 'chronos-forecasting' package; "
-            "GWexpy's planned [chronos] extra is not registered yet."
+            "install it with `pip install 'gwexpy[chronos]'`."
         ) from exc
 
     pipeline = Chronos2Pipeline.from_pretrained(
@@ -230,7 +230,7 @@ def forecast_collection(
     except ImportError as exc:
         raise ImportError(
             "Chronos forecasting requires the 'chronos-forecasting' package; "
-            "GWexpy's planned [chronos] extra is not registered yet."
+            "install it with `pip install 'gwexpy[chronos]'`."
         ) from exc
     pipeline = Chronos2Pipeline.from_pretrained(
         "amazon/chronos-2", revision="29ec3766d36d6f73f0696f85560a422f50e8498c"
