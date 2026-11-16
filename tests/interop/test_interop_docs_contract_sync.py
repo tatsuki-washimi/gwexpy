@@ -219,7 +219,11 @@ def test_optional_dependency_policy_matches_contract():
 
     en_normalized = " ".join(en_docs.split())
     ja_normalized = " ".join(ja_docs.split())
-    assert "`gwexpy[all]` installs the declared GWexpy extras" in en_normalized
+    assert (
+        "`gwexpy[all]` installs the standard non-GUI GWexpy extras" in en_normalized
+    )
+    assert "excluding the large `chronos` forecasting extra" in en_normalized
     assert "does not install every public interop backend" in en_normalized
-    assert "`gwexpy[all]` は GWexpy が宣言している extra" in ja_docs
-    assert "すべての public interop backend" in ja_normalized
+    assert "`gwexpy[all]` は GUI を除く標準的な GWexpy extra" in ja_normalized
+    assert "大容量の `chronos` 予測 extra は含みません" in ja_normalized
+    assert "public interop backend をすべて導入するものではありません" in ja_normalized
