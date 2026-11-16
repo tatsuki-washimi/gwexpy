@@ -174,6 +174,40 @@ def test_from_root_th1_to_series_preserves_values_coordinates_and_units(
     assert result.name == f"series_{suffix}"
 
 
+@pytest.mark.parametrize(
+    ("series_cls", "interval_attr", "axis_title", "axis_unit"),
+    [
+        (TimeSeries, "dt", "Time [ms]", u.ms),
+        (FrequencySeries, "df", "Frequency [kHz]", u.kHz),
+    ],
+    ids=["time-series", "frequency-series"],
+)
+@pytest.mark.parametrize(
+    ("edges", "expected_centers"),
+    [
+        (np.array([2.0, 10.0]), [6.0]),
+        (np.array([2.0, 10.0, 18.0]), [6.0, 14.0]),
+    ],
+    ids=["single-bin", "uniform-multibin"],
+)
+def test_from_root_th1_regular_bins_preserve_bin_width(
+    ROOT, series_cls, interval_attr, axis_title, axis_unit, edges, expected_centers
+):
+    name = f"regular_bins_{series_cls.__name__}_{len(edges) - 1}"
+    hist = ROOT.TH1D(name, "", len(edges) - 1, edges)
+    hist.GetXaxis().SetTitle(axis_title)
+    for index in range(1, hist.GetNbinsX() + 1):
+        hist.SetBinContent(index, 42.0 + index)
+
+    result = series_cls.from_root(hist)
+
+    np.testing.assert_allclose(result.xindex.value, expected_centers)
+    assert result.xunit == axis_unit
+    interval = getattr(result, interval_attr)
+    assert interval is not None
+    assert interval.to_value(axis_unit) == pytest.approx(8.0)
+
+
 def test_from_root_th1_series_returns_sumw2_errors(ROOT):
     hist = ROOT.TH1D("series_errors", "", 2, 0.0, 2.0)
     hist.Sumw2()

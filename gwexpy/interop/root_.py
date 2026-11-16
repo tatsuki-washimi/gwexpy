@@ -504,16 +504,24 @@ def from_root(
                 stacklevel=2,
             )
 
-        x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(n)])
+        axis = obj.GetXaxis()
+        x = np.array([axis.GetBinCenter(i + 1) for i in range(n)])
+        bin_widths = np.array([axis.GetBinWidth(i + 1) for i in range(n)])
         name = obj.GetName()
         unit = _root_axis_unit(obj.GetYaxis())
         xunit = _root_axis_unit(obj.GetXaxis())
         coordinate_name = "frequencies" if is_frequencyseries_cls else "times"
         series_kwargs: dict[str, Any] = {
-            coordinate_name: x,
             "unit": unit,
             "name": name,
         }
+        if n > 0 and np.allclose(bin_widths, bin_widths[0]):
+            origin_name = "f0" if is_frequencyseries_cls else "x0"
+            interval_name = "df" if is_frequencyseries_cls else "dt"
+            series_kwargs[origin_name] = x[0]
+            series_kwargs[interval_name] = bin_widths[0]
+        else:
+            series_kwargs[coordinate_name] = x
         if xunit is not None:
             series_kwargs["xunit"] = xunit
 
