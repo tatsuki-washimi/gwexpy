@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 import numpy as np
@@ -45,6 +46,14 @@ def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     if unit_str:
         return f"{name} [{unit_str}]"
     return str(name)
+
+
+def _root_axis_unit(axis: Any) -> str | None:
+    """Extract the bracketed unit from a ROOT axis title, if present."""
+    import re
+
+    match = re.search(r"\[(.*?)\]", axis.GetTitle())
+    return match.group(1) if match else None
 
 
 def _error_values_in_data_unit(values, error_unit, series):
@@ -315,8 +324,21 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
 def from_root(
     cls: type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
 ) -> Union[T_s, tuple[T_s, T_s]]:
-    """Create a GWexpy series object from a ROOT ``TGraph`` or ``TH1``."""
+    """Create a GWexpy object from a ROOT ``TGraph`` or ``TH1``.
+
+    ``TH1`` objects can be converted to ``Histogram``, ``TimeSeries``, or
+    ``FrequencySeries``. For the series targets, bin contents become the
+    samples at the ROOT bin centers. Underflow and overflow contents and
+    errors cannot be represented in a series; nonzero flow bins are discarded
+    with a :class:`UserWarning`. With ``return_error=True``, return a pair of
+    data and error series. ROOT's ``GetBinError`` is used, so explicit
+    ``Sumw2`` errors are preserved and ROOT's default errors are used otherwise.
+    """
     ROOT = require_optional("ROOT")
+    from gwexpy.frequencyseries import FrequencySeries as FrequencySeriesType
+    from gwexpy.histogram import Histogram as HistogramType
+    from gwexpy.timeseries import TimeSeries as TimeSeriesType
+
     class_name = obj.ClassName() if hasattr(obj, "ClassName") else type(obj).__name__
     if _unsupported_root_histogram(class_name):
         raise TypeError(
@@ -345,9 +367,9 @@ def from_root(
     if not is_hist and not is_graph and not is_hist2d:
         raise TypeError(f"Object {obj} is neither TH1, TH2 nor TGraph")
 
-    is_histogram_cls = (
-        (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
-    )
+    is_histogram_cls = issubclass(cls, HistogramType)
+    is_frequencyseries_cls = issubclass(cls, FrequencySeriesType)
+    is_timeseries_cls = issubclass(cls, TimeSeriesType)
 
     if is_hist2d:
         if is_histogram_cls:
@@ -464,6 +486,46 @@ def from_root(
                 overflow_sumw2=overflow_sw2,
                 name=name,
             )
+
+        if not is_frequencyseries_cls and not is_timeseries_cls:
+            raise NotImplementedError(
+                f"TH1 to {cls.__name__} conversion is not implemented; use "
+                "Histogram, TimeSeries, or FrequencySeries."
+            )
+
+        # Series objects have no bins for values outside their coordinate
+        # range. Do not silently lose nonzero flow-bin information.
+        flow_errors = (obj.GetBinError(0), obj.GetBinError(n + 1))
+        if underflow != 0 or overflow != 0 or any(err != 0 for err in flow_errors):
+            warnings.warn(
+                "Nonzero underflow or overflow content/error is discarded "
+                "when converting a TH1 to a series.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(n)])
+        name = obj.GetName()
+        unit = _root_axis_unit(obj.GetYaxis())
+        xunit = _root_axis_unit(obj.GetXaxis())
+        coordinate_name = "frequencies" if is_frequencyseries_cls else "times"
+        series_kwargs: dict[str, Any] = {
+            coordinate_name: x,
+            "unit": unit,
+            "name": name,
+        }
+        if xunit is not None:
+            series_kwargs["xunit"] = xunit
+
+        res = cls(y, **series_kwargs)
+        if return_error:
+            assert ey is not None
+            error_kwargs = dict(series_kwargs)
+            error_kwargs["name"] = f"{name}_error"
+            err_res = cls(ey, **error_kwargs)
+            return res, err_res
+        return res
+
     else:  # is_graph
         if is_histogram_cls:
             raise TypeError("Cannot create Histogram from TGraph. Use TH1 instead.")
@@ -493,12 +555,16 @@ def from_root(
 
     # Regularity check
     if is_graph:
+        if not is_frequencyseries_cls and not is_timeseries_cls:
+            raise TypeError(
+                "TGraph can only be converted to TimeSeries or FrequencySeries."
+            )
         if n > 1:
             dx_vals = np.diff(x)
             if np.allclose(dx_vals, dx_vals[0]):
                 res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
             else:
-                if "Frequency" in cls.__name__:
+                if is_frequencyseries_cls:
                     res = cls(y, frequencies=x, unit=unit, name=name)
                 else:
                     res = cls(y, times=x, unit=unit, name=name)
@@ -509,7 +575,7 @@ def from_root(
             from typing import cast
 
             # Create a matching series for error
-            if "Frequency" in cls.__name__:
+            if is_frequencyseries_cls:
                 err_res = cls(
                     cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error"
                 )
@@ -517,13 +583,8 @@ def from_root(
                 err_res = cls(cast(Any, ey), times=x, unit=unit, name=f"{name}_error")
             return res, err_res
         return res
-    else:
-        # is_hist: Already returned above for Histogram class,
-        # but for other classes we need a fallback or error.
-        # Currently the logic was mixed. Let's make it consistent.
-        raise NotImplementedError(
-            "TH1 to non-Histogram class conversion not fully implemented yet."
-        )
+
+    raise TypeError("Unsupported ROOT object type for from_root().")
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:

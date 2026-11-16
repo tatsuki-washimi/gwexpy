@@ -102,10 +102,12 @@ publication decision is made.
 
 Some targets remain reference-indexed but are not fully public.
 
-- `root` stays `implemented_partial`
+- `root` stays `implemented_partial`: generic TH1-to-TimeSeries/FrequencySeries
+  conversion is supported, while `TCanvas`/`TPad` traversal and dataDisplay
+  sample-specific confirmation remain out of scope.
 
-Reason: the guide explicitly records an incomplete conversion boundary, and the
-contract must preserve that warning instead of silently upgrading the status.
+The contract must preserve this remaining boundary instead of silently
+upgrading the status to complete.
 
 ### No-helper rows
 
