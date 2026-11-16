@@ -147,6 +147,18 @@ msgid ""
 "below)."
 msgstr "フレームファイル対応と公式 GW ツール（NDS2 は下記の Conda 手順が必要です）。"
 
+#: ../../tutorials/installation.md:18
+msgid "Chronos Forecasting"
+msgstr "Chronos による時系列予測"
+
+#: ../../tutorials/installation.md:18
+msgid "`pip install \"gwexpy[chronos]\"`"
+msgstr "`pip install \"gwexpy[chronos]\"`"
+
+#: ../../tutorials/installation.md:18
+msgid "Zero-shot Chronos-2 forecasting; installs a large ML runtime."
+msgstr "Chronos-2 によるゼロショット予測です。大容量の機械学習ランタイムを導入します。"
+
 #: ../../tutorials/installation.md:18 1fbfa9b6be504605bb87b35e93af39cc
 msgid "Developer / Full"
 msgstr "開発 / 全機能"
@@ -157,9 +169,9 @@ msgstr "`pip install -e \".[dev,all]\"`"
 
 #: ../../tutorials/installation.md:18 9ee9b27c7f314581b74011d37dd4aa1b
 msgid ""
-"Editable install from source with all declared non-GUI optional features,"
-" for contributors."
-msgstr "コントリビューター向けに、宣言済みの GUI を除くオプション機能をすべて有効化したソースからの編集可能インストール。"
+"Editable source install with the standard non-GUI extras. The large `chronos`"
+" forecasting extra is installed separately."
+msgstr "標準の GUI を除く extras を含むソースからの編集可能インストールです。大容量の `chronos` 予測 extra は個別に導入します。"
 
 #: ../../tutorials/installation.md:34 3bfd887fdd2d435b8d8a002d652441bc
 msgid "1. Installation Steps"
@@ -543,3 +555,19 @@ msgid ""
 msgstr ""
 "[前提条件と規約](../explanation/prerequisites_and_conventions.md) - FFT・GPS "
 "時刻・GWpy 互換性の前提を確認する"
+
+#: ../../tutorials/installation.md:59
+msgid "`chronos`"
+msgstr "`chronos`"
+
+#: ../../tutorials/installation.md:59
+msgid "`chronos-forecasting`"
+msgstr "`chronos-forecasting`"
+
+#: ../../tutorials/installation.md:59
+msgid "Zero-shot Chronos-2 forecasting. Installs a large ML runtime; the pinned model weights are downloaded on the first forecast (about 478 MB)."
+msgstr "Chronos-2 によるゼロショット予測。大容量の機械学習ランタイムを導入し、固定したモデル重みは初回の予測時にダウンロードされます（約 478 MB）。"
+
+#: ../../tutorials/installation.md
+msgid "The `chronos` extra is intentionally excluded from `all` because it adds a large machine-learning runtime. Its pinned Chronos-2 model weights (about 478 MB) are downloaded when forecasting is first used. In CPU-only environments, choose the CPU PyTorch wheel using the [official PyTorch installation selector](https://pytorch.org/get-started/locally/) before installing this extra."
+msgstr "`chronos` extra は大容量の機械学習ランタイムを追加するため、`all` から意図的に除外しています。固定した Chronos-2 のモデル重み（約 478 MB）は、予測を初めて実行するときにダウンロードされます。CPU のみを使う環境では、この extra を導入する前に [PyTorch 公式インストール選択ツール](https://pytorch.org/get-started/locally/) で CPU 用 wheel を選んでください。"
