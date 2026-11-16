@@ -182,7 +182,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
-| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | Implemented, some paths still in progress | `TH1 -> non-Histogram` is incomplete | [API](../reference/api/gwexpy.interop.root_) |
+| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | Implemented, some paths still in progress | `TH1 -> TimeSeries/FrequencySeries` is supported; `TCanvas`/`TPad` traversal is not available | [API](../reference/api/gwexpy.interop.root_) |
 | [ObsPy](https://docs.obspy.org/) | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | Public | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_) |
 | [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.lal_) |
 | [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.pycbc_) |
