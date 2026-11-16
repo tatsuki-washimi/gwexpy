@@ -1,6 +1,6 @@
 # Virgo データ導線（frame path / dataDisplay ROOT product path）— 設計書
 
-> Last-updated: 2026-08-01 (rev 1 — 初版)
+> Last-updated: 2026-11-16 (rev 2 — generic TH1-to-series conversion completed)
 > Reviewer Status: **draft**（ユーザーレビュー待ち）
 
 Status: planned
@@ -162,9 +162,15 @@ TH2D -> [11. 12. 21. 22.]                                                  corre
 `to_th1d` / `to_th2d` は常に `TH1D` / `TH2D` を生成するので、gwexpy 内の round-trip
 テストだけではこの不具合は永久に検出されない。**Virgo とは独立に影響する既存バグ。**
 
-### F2. `TH1` → 非 Histogram クラスは未実装
+### F2. `TH1` → `TimeSeries` / `FrequencySeries`
 
-Status: completed (verified: `python /tmp/verify_root_dtype.py`)
+Status: completed for generic `TH1` → `TimeSeries` / `FrequencySeries` conversion
+(verified with the ROOT interoperability tests on ROOT 6.36.06, 2026-11-16).
+
+The observations below are the pre-implementation baseline. `TProfile` remains
+explicitly unsupported, and generic synthetic histograms do not establish
+compatibility with dataDisplay files; that requires the real-sample work in
+Issue #595.
 
 ```
 TH1D -> FrequencySeries: NotImplementedError: TH1 to non-Histogram class conversion not fully implemented yet.
@@ -172,12 +178,12 @@ TH1D -> TimeSeries:      NotImplementedError: TH1 to non-Histogram class convers
 TProfile -> TimeSeries:  NotImplementedError: TH1 to non-Histogram class conversion not fully implemented yet.
 ```
 
-`root_.py:480`。`from_root` は `is_hist and is_histogram_cls` のときだけ return し、
-それ以外は末尾の `raise` に落ちる。dataDisplay の FFT / COHE plot は `TH1` 系で保存される
-可能性が高いため、`FrequencySeries` への変換ができないと副経路の中核が成立しない。
+実装前の `root_.py` では、`from_root` は `is_hist and is_histogram_cls` のときだけ return し、
+それ以外は末尾の `raise` に落ちていた。dataDisplay の FFT / COHE plot は `TH1` 系で保存される
+可能性があるため、generic な `FrequencySeries` 変換は副経路の前提となる。
 
-docs 側にも既に `docs/web/ja/user_guide/interop.md:172` に「`TH1 -> non-Histogram` は未完」
-と記載があり、実測と整合している。
+実装前の docs には `TH1 -> non-Histogram` が未完と記録されていた。現在は generic な
+`TH1 -> TimeSeries/FrequencySeries` に対応したが、dataDisplay 固有の適合確認は未実施である。
 
 ### F3. `TCanvas` / `TFile` は非対応
 
@@ -245,8 +251,8 @@ Status: planned
 |---|---|---|---|
 | TIME | `TGraph` / `TGraphErrors` | `TimeSeries` | 実装済み |
 | BRMSTIME | `TGraph` / `TH1` | `TimeSeries` | TGraph 経由なら可 |
-| FFT | `TH1` / `TGraph` | `FrequencySeries` | **TH1 経路は未実装（F2）** |
-| COHE | `TGraph` / `TH1` | `FrequencySeries` | 同上 |
+| FFT | `TH1` / `TGraph` | `FrequencySeries` | generic `TH1` conversion is implemented; dataDisplay file compatibility remains unconfirmed |
+| COHE | `TGraph` / `TH1` | `FrequencySeries` | generic `TH1` conversion is implemented; dataDisplay file compatibility remains unconfirmed |
 | TRFCT | `TGraph` ペア | `FrequencySeriesDict` 等 | 未検討 |
 | 1D-DISTRIB | `TH1` | `Histogram` | 実装済み（ただし F1） |
 | FFTTIME | `TH2` | `Spectrogram` | 実装済み（ただし F1） |
@@ -386,6 +392,9 @@ Status: planned
 | E | feat | `TCanvas`/`TPad` 走査と `TFile` インベントリ（F3） | P2 |
 | F | docs | Virgo データアクセスガイド（ja/en） | P3 |
 
+実装状況（2026-11-16）: D（Issue #598）のgeneric TH1変換は実装・検証済み。dataDisplay
+実ファイルに対するIssue Cの調査と、TCanvas/TPad走査のIssue Eは引き続き別作業である。
+
 ```
 Phase 1（依存なし・並行可）
   A  ← Virgo と独立。単独で実装着手可能
@@ -417,6 +426,12 @@ Virgo 固有の channel 名・path をリポジトリにハードコードしな
 **D**: `TH1D` / `TH1F` → `FrequencySeries` / `TimeSeries` の値・xindex・unit・name 保持
 テスト、非等間隔 bin ケース、`TProfile` の明示エラー。underflow / overflow は series では
 表現できないため、破棄するか `meta` に退避するかを決める。
+
+実装記録（2026-11-16）: #598 の generic 変換は完了。bin center と軸・データ単位を保持し、
+`return_error=True` は ROOT の `GetBinError` を使う（sumw2 が無ければ ROOT の既定値）。
+series で表現できない nonzero underflow / overflow の内容または誤差は、警告して破棄する。
+PyROOT 6.36.06 で `tests/test_root_interop.py` を実行し、16 件が通過した。合成 histogram
+による確認は dataDisplay 実ファイルとの互換性を証明しない。
 
 **E**: contract 3 点セット（`interop/__init__.py` の `__all__`、
 `public_interop_contract.json` の `root` エントリ、`interop.md` ja/en の対応行）を同時更新。
@@ -494,9 +509,8 @@ Status: planned
   実測していない。docs には Issue B の結論が出るまで `.ffl` の使い方を書かない。
 - **Issue A は Virgo と独立**: `TH1F` / `TH2F` の破損は既存ユーザーに現時点で影響しうる。
   Virgo 関連 issue の進捗を待たずに実装へ進めてよい。
-- **ROOT テスト環境**: conda `gwexpy` 環境に ROOT が無いため、ROOT 関連の回帰テストは
-  CI で skip される可能性がある。Issue A の受け入れ条件には、テストが実際に実行される
-  環境の明示を含める。
+- **ROOT テスト環境**: ローカルでは `GWEXPY_RUN_ROOT=1` と PyROOT が必要。PR CI の
+  `interop-root` gate は `root_base=6.36.*` を導入して ROOT テストを実行する。
 
 ---
 
@@ -514,12 +528,13 @@ Status: planned
 > 5. TIME / FFT / BRMS / FFTTIME ごとの class mapping
 > 6. dataDisplay sample fixtures と regression tests
 
-同会話の対応状況表では次のように記録されていた。
+同会話の対応状況表では次のように記録されていた。F2 の「series は未実装」は実装前の
+baseline であり、現在の状態ではない。
 
 | 項目 | 会話中の記録 | 実測（§3） |
 |---|---|---|
 | `TGraph` → series | 実装済み | 実装済み（一致） |
-| `TH1D` → Histogram / series | 実装済み | **Histogram のみ。series は `NotImplementedError`（F2）** |
+| `TH1D` → Histogram / series | 実装済み | 実装前はHistogramのみ。現在はgeneric series変換も実装済み（#598、dataDisplay実ファイルは未確認） |
 | `TH2D` → Spectrogram | 実装済み | `TH2D` は正常。**`TH2F` は破損（F1）** |
 | `TCanvas` traversal | 未実装 | 未実装（一致） |
 | `TFile` 自動走査 | 未実装 | 未実装（一致） |
@@ -531,9 +546,11 @@ Status: planned
 
 ## Appendix B. 検証スクリプト
 
-§3 の F1〜F3 は次のスクリプトを `python /tmp/verify_root_dtype.py` として実行した結果である。
-PyROOT が必要（conda `gwexpy` 環境には ROOT が無いため system python で実行した）。
-`/tmp` 上のファイルは揮発性なので、再現時はここから復元する。
+§3 の F1〜F3 の初回調査では、次のスクリプトを `python /tmp/verify_root_dtype.py` として
+実行した。§3 に残した例外出力は実装前の baseline である。スクリプト自体は再実行すると
+現在の挙動を表示する。現在の ROOT 回帰テストは
+`GWEXPY_RUN_ROOT=1 pytest tests/test_root_interop.py` で実行する。PyROOT が必要で、CI の
+`interop-root` gate では `root_base=6.36.*` を使う。
 
 ```python
 """Verify F1/F2/F3 of the Virgo dataDisplay interop design doc."""
