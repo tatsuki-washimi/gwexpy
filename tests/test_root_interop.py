@@ -144,3 +144,112 @@ def test_from_root_tfile_raises(ROOT, tmp_path):
             TimeSeries.from_root(f)
     finally:
         f.Close()
+
+
+@pytest.mark.parametrize(
+    ("suffix", "series_cls", "axis_title", "axis_unit"),
+    [
+        ("D", TimeSeries, "Time [ms]", u.ms),
+        ("F", TimeSeries, "Time [ms]", u.ms),
+        ("D", FrequencySeries, "Frequency [kHz]", u.kHz),
+        ("F", FrequencySeries, "Frequency [kHz]", u.kHz),
+    ],
+)
+def test_from_root_th1_to_series_preserves_values_coordinates_and_units(
+    ROOT, suffix, series_cls, axis_title, axis_unit
+):
+    edges = np.array([0.0, 1.0, 3.0, 7.0])
+    hist = getattr(ROOT, f"TH1{suffix}")(f"series_{suffix}", "", len(edges) - 1, edges)
+    hist.GetXaxis().SetTitle(axis_title)
+    hist.GetYaxis().SetTitle("Amplitude [mV]")
+    for index, value in enumerate((1.25, 2.5, 4.0), start=1):
+        hist.SetBinContent(index, value)
+
+    result = series_cls.from_root(hist)
+
+    np.testing.assert_allclose(result.value, [1.25, 2.5, 4.0])
+    np.testing.assert_allclose(result.xindex.value, [0.5, 2.0, 5.0])
+    assert result.xunit == axis_unit
+    assert result.unit == u.mV
+    assert result.name == f"series_{suffix}"
+
+
+@pytest.mark.parametrize(
+    ("series_cls", "interval_attr", "axis_title", "axis_unit"),
+    [
+        (TimeSeries, "dt", "Time [ms]", u.ms),
+        (FrequencySeries, "df", "Frequency [kHz]", u.kHz),
+    ],
+    ids=["time-series", "frequency-series"],
+)
+@pytest.mark.parametrize(
+    ("edges", "expected_centers"),
+    [
+        (np.array([2.0, 10.0]), [6.0]),
+        (np.array([2.0, 10.0, 18.0]), [6.0, 14.0]),
+    ],
+    ids=["single-bin", "uniform-multibin"],
+)
+def test_from_root_th1_regular_bins_preserve_bin_width(
+    ROOT, series_cls, interval_attr, axis_title, axis_unit, edges, expected_centers
+):
+    name = f"regular_bins_{series_cls.__name__}_{len(edges) - 1}"
+    hist = ROOT.TH1D(name, "", len(edges) - 1, edges)
+    hist.GetXaxis().SetTitle(axis_title)
+    for index in range(1, hist.GetNbinsX() + 1):
+        hist.SetBinContent(index, 42.0 + index)
+
+    result = series_cls.from_root(hist)
+
+    np.testing.assert_allclose(result.xindex.value, expected_centers)
+    assert result.xunit == axis_unit
+    interval = getattr(result, interval_attr)
+    assert interval is not None
+    assert interval.to_value(axis_unit) == pytest.approx(8.0)
+
+
+def test_from_root_th1_series_returns_sumw2_errors(ROOT):
+    hist = ROOT.TH1D("series_errors", "", 2, 0.0, 2.0)
+    hist.Sumw2()
+    hist.GetYaxis().SetTitle("Amplitude [mV]")
+    hist.SetBinContent(1, 4.0)
+    hist.SetBinContent(2, 9.0)
+    hist.SetBinError(1, 0.5)
+    hist.SetBinError(2, 2.0)
+
+    result, error = TimeSeries.from_root(hist, return_error=True)
+
+    np.testing.assert_allclose(result.value, [4.0, 9.0])
+    np.testing.assert_allclose(error.value, [0.5, 2.0])
+    assert error.unit == result.unit == u.mV
+    assert error.name == "series_errors_error"
+    np.testing.assert_allclose(error.xindex.value, result.xindex.value)
+
+
+def test_from_root_th1_series_uses_root_default_bin_errors_without_sumw2(ROOT):
+    hist = ROOT.TH1D("series_poisson_errors", "", 2, 0.0, 2.0)
+    hist.SetBinContent(1, 4.0)
+    hist.SetBinContent(2, 9.0)
+    assert hist.GetSumw2N() == 0
+
+    _, error = FrequencySeries.from_root(hist, return_error=True)
+
+    np.testing.assert_allclose(error.value, [2.0, 3.0])
+
+
+def test_from_root_th1_series_warns_when_flow_bins_are_discarded(ROOT):
+    hist = ROOT.TH1D("series_flow", "", 2, 0.0, 2.0)
+    hist.SetBinContent(0, 3.0)
+    hist.SetBinContent(3, 4.0)
+
+    with pytest.warns(UserWarning, match="underflow or overflow"):
+        result = TimeSeries.from_root(hist)
+
+    np.testing.assert_allclose(result.value, [0.0, 0.0])
+
+
+def test_from_root_th1_series_rejects_profiles_explicitly(ROOT):
+    profile = ROOT.TProfile("profile_series", "", 2, 0.0, 2.0)
+
+    with pytest.raises(TypeError, match="does not support TProfile"):
+        TimeSeries.from_root(profile)
