@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.10",
-  "recorded_at_utc": "2026-11-15T10:35:15Z",
-  "post_release_status": "pending_external",
+  "recorded_at_utc": "2026-11-16T21:50:30Z",
+  "post_release_status": "complete",
   "release": {
     "tag": "v0.2.10",
     "version": "0.2.10",
@@ -120,7 +120,7 @@
       }
     },
     "conda": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -135,15 +135,27 @@
           "sha256": "b96dd75691ae58905dea11b0fc593d8f0808a5644317db6eea050f41be1c1109",
           "observed_at_utc": "2026-11-15T10:29:22Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
+          "observed_at_utc": "2026-11-15T14:09:34Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "304057783a993ede8aac3219bdf6bc95fcfd0dd9e6440ac5cd59e901668394fd",
+          "observed_at_utc": "2026-11-16T21:50:30Z",
+          "observation": "{\"components\":{\"conda_feedstock\":\"complete\",\"conda_package\":\"complete\"},\"readback_succeeded\":true,\"reason\":\"Both feedstock PR #20 and solver-visible 0.2.10 package readback succeeded; aggregate flag aligned with component observers.\"}"
         }
       ],
-      "pending_reason": "Feedstock PR #20 and recipe are complete; exact package remains absent from final repodata",
-      "resume_condition": "Re-observe the package inventory and final repodata on the next resume",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda",
-      "readback_succeeded": false,
+      "readback_succeeded": true,
       "components": {
         "conda_feedstock": "complete",
-        "conda_package": "pending_external"
+        "conda_package": "complete"
       }
     },
     "docs": {
@@ -162,6 +174,12 @@
           "sha256": "8615e196731e7d0f13df5faacfdc1cc31f119d3b6219230027fd34059846e4db",
           "observed_at_utc": "2026-11-15T10:35:06Z",
           "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "485a21723806621cb3426606dd715093a8acaec86d6f6fc7e15cca965670db5a",
+          "observed_at_utc": "2026-11-16T16:11:18Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 925, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/925\"}, \"page_sha256\": {\"about/changelog.html\": \"aadfcbadd74a1b0956c70096497083d722e203350dd77cb80096cfd01b774d0a\", \"ja/about/changelog.html\": \"14cdf296fd73fd14435d1235cd21144d67d28f55dc4fe3ddd3d21b333a5200f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43877236788, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43877236788\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3bffd19835e7f7e92fd53e0fcdfa372a2be21a22\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -179,6 +197,12 @@
           "sha256": "8615e196731e7d0f13df5faacfdc1cc31f119d3b6219230027fd34059846e4db",
           "observed_at_utc": "2026-11-15T10:35:06Z",
           "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "485a21723806621cb3426606dd715093a8acaec86d6f6fc7e15cca965670db5a",
+          "observed_at_utc": "2026-11-16T16:11:18Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.10-weekly.csv\": \"47080227fb261910f88e77b282743979738e010933ef0a25978cd5d7a9ff26b9\", \"docs_redesign/_static/images/development-activity-v0.2.10-ja.svg\": \"080372d27246f9f57c9a270c7d8062e2c6c59f8a954d3df313c46e646c883a34\", \"docs_redesign/_static/images/development-activity-v0.2.10.svg\": \"a44d629e38e0e71a4755c3bb4417273ac66b1170688d9a3a7c4d4c7bf1060ad2\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 925, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/925\"}, \"page_sha256\": {\"about/changelog.html\": \"aadfcbadd74a1b0956c70096497083d722e203350dd77cb80096cfd01b774d0a\", \"ja/about/changelog.html\": \"14cdf296fd73fd14435d1235cd21144d67d28f55dc4fe3ddd3d21b333a5200f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43877236788, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43877236788\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3bffd19835e7f7e92fd53e0fcdfa372a2be21a22\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -187,20 +211,36 @@
       "readback_succeeded": true
     },
     "remote_cleanup": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Assess remote branches using ancestry and open PRs",
-      "evidence": [],
-      "pending_reason": "Assessment missing",
-      "resume_condition": "Run read-only remote assessment"
+      "evidence": [
+        {
+          "url": "https://api.github.com/repos/tatsuki-washimi/gwexpy/branches",
+          "sha256": "611e2ffe1128045eb4958073056c0f97e37289d0d040c1245dd2e909321b7d8c",
+          "observed_at_utc": "2026-11-16T21:50:28Z",
+          "observation": "{\"assessment_scope\":\"v0.2.10 preparation, candidate, work and post-release branches\",\"branch_deletion_performed\":false,\"branches\":[{\"name\":\"post-release/v0.2.10\",\"protected\":false,\"sha\":\"44c34ad0e7c2906386e8b114cd87c17489cc146c\"},{\"name\":\"release/v0.2.10-candidate-r\",\"protected\":false,\"sha\":\"9ef980d7c472113f97bbd7602a6d499c14650342\"},{\"name\":\"release/v0.2.10-preparation\",\"protected\":false,\"sha\":\"9ee51d78e5053bd255b09b324f5cd5522857ebaf\"},{\"name\":\"work/v0.2.10-507\",\"protected\":false,\"sha\":\"be055e211bb45387ae35399a1c6760a666c48551\"},{\"name\":\"work/v0.2.10-507-gauch\",\"protected\":false,\"sha\":\"7cb3b2eac2873fae4c055861722d0f8e8e7d2dc7\"},{\"name\":\"work/v0.2.10-513\",\"protected\":false,\"sha\":\"58a8e79bc4bf252e323315e31e7c492e6d86cdb0\"},{\"name\":\"work/v0.2.10-544\",\"protected\":false,\"sha\":\"21b49271727c93debd3d5c1bb82af78a1632e361\"},{\"name\":\"work/v0.2.10-565\",\"protected\":false,\"sha\":\"8b7ccb590b95e884e3c8b5c97837a1253962c1c5\"},{\"name\":\"work/v0.2.10-569\",\"protected\":false,\"sha\":\"fb9d8e5d76375efaa5e458f5bb7c4e5e8d9b24ef\"},{\"name\":\"work/v0.2.10-771\",\"protected\":false,\"sha\":\"f21ae2d1b856b2a1007d7899a9db80d10f2cad8d\"},{\"name\":\"work/v0.2.10-772\",\"protected\":false,\"sha\":\"bef57f40f2304c1f15a858338e46b4f5df2f85d8\"},{\"name\":\"work/v0.2.10-773\",\"protected\":false,\"sha\":\"0e9032805d1d2f1398917317b09d4ad36b44a121\"},{\"name\":\"work/v0.2.10-775\",\"protected\":false,\"sha\":\"063060948d7845303fc19de537ae3c3b469442f9\"},{\"name\":\"work/v0.2.10-776\",\"protected\":false,\"sha\":\"ce8e23c94ea7552957184ede9e3cfe778facef2c\"},{\"name\":\"work/v0.2.10-777\",\"protected\":false,\"sha\":\"f07547dc80053bf0264dac87cad1499d110e0d52\"},{\"name\":\"work/v0.2.10-784\",\"protected\":false,\"sha\":\"8969367d15c529b26055a5626735222e4fcf9466\"},{\"name\":\"work/v0.2.10-879\",\"protected\":false,\"sha\":\"d23652a5ae09ba53da6ed99aa35a7bf0d38865d4\"},{\"name\":\"work/v0.2.10-879-followup\",\"protected\":false,\"sha\":\"ff58ab9e0364e035442bf617fec40ce19b41ce03\"},{\"name\":\"work/v0.2.10-881\",\"protected\":false,\"sha\":\"e5c67bed378429e5ff295c385fc7c79f6bc12036\"},{\"name\":\"work/v0.2.10-882\",\"protected\":false,\"sha\":\"7c46ed48616371ab74799bbc58f6bc9e5e66a7b7\"},{\"name\":\"work/v0.2.10-883\",\"protected\":false,\"sha\":\"6b60aeee60333684194ed66427900add0e06014d\"}],\"main_sha\":\"3bffd19835e7f7e92fd53e0fcdfa372a2be21a22\",\"open_post_release_pr\":{\"head\":\"post-release/v0.2.10\",\"number\":924,\"state\":\"OPEN\"},\"result\":\"Read-only inventory of 21 v0.2.10-related remote branches; no deletion performed. post-release/v0.2.10 remains until PR #924 merges.\"}"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "Release Owner"
     },
     "local_cleanup": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "maintainer local host",
       "objective": "Assess worktrees, dirty files and active sessions",
-      "evidence": [],
-      "pending_reason": "Local evidence missing",
-      "resume_condition": "Supply maintainer local-host assessment"
+      "evidence": [
+        {
+          "url": "https://github.com/tatsuki-washimi/gwexpy",
+          "sha256": "9f0abe9af914c6e6585086e037af5b42ef74c5055e98fb07e8cc735e20e00ffb",
+          "observed_at_utc": "2026-11-16T21:50:30Z",
+          "observation": "{\"assessment_scope\":\"full maintainer-host worktree inventory\",\"decision\":\"Retain all worktrees; prune v0.2.10 lanes after PR #924 merge at owner discretion.\",\"primary_checkout\":{\"branch\":\"fix/issue-887-hdf5-coordinate-preservation\",\"dirty_count\":14,\"head\":\"8c7c15cf51ac\",\"path\":\"~/work/gwexpy\"},\"tmux\":\"not assessed\",\"v0_2_10_related_worktrees\":28,\"worktree_count\":47,\"worktrees\":[{\"branch\":\"fix/issue-887-hdf5-coordinate-preservation\",\"dirty_count\":14,\"head\":\"8c7c15cf51ac\",\"path\":\"~/work/gwexpy\"},{\"branch\":\"feat-release-tools-20261105\",\"dirty_count\":0,\"head\":\"06e2bbec8b5f\",\"path\":\"~/SSD2TB/worktrees/gwexpy/feat-release-tools-20261105\"},{\"branch\":\"fix/v0210-correlation-method\",\"dirty_count\":0,\"head\":\"0be54593cd94\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-correlation-method\"},{\"branch\":\"fix/v0210-coupling-threshold\",\"dirty_count\":0,\"head\":\"127d70c541f7\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-coupling-threshold\"},{\"branch\":\"fix/v0210-dttxml-iterable\",\"dirty_count\":0,\"head\":\"18361f3ea240\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-dttxml-iterable\"},{\"branch\":\"fix/v0210-gwinc-diagnostics\",\"dirty_count\":0,\"head\":\"fc69acea1ed9\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-gwinc-diagnostics\"},{\"branch\":\"fix/v0210-metpy-dequantify\",\"dirty_count\":0,\"head\":\"25dee9490043\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-metpy-dequantify\"},{\"branch\":\"fix/v0210-obspy-precision\",\"dirty_count\":0,\"head\":\"db4d92f63682\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-obspy-precision\"},{\"branch\":\"fix/v0210-openems-axis\",\"dirty_count\":0,\"head\":\"95087efda68f\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-openems-axis\"},{\"branch\":\"fix/v0210-spatial-fft-epoch\",\"dirty_count\":0,\"head\":\"977c3d455ed0\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-spatial-fft-epoch\"},{\"branch\":\"fix/v0210-time-fft-epoch\",\"dirty_count\":0,\"head\":\"2bc315faea20\",\"path\":\"~/SSD2TB/worktrees/gwexpy/fix-v0210-time-fft-epoch\"},{\"branch\":\"post-release/v0.2.8-docs\",\"dirty_count\":0,\"head\":\"60bddc8c5239\",\"path\":\"~/SSD2TB/worktrees/gwexpy/post-release-v0.2.8-docs\"},{\"branch\":\"post-release/v0.2.10\",\"dirty_count\":0,\"head\":\"44c34ad0e7c2\",\"path\":\"~/SSD2TB/worktrees/gwexpy/post-release-v0210\"},{\"branch\":\"post-release/v0.2.8\",\"dirty_count\":0,\"head\":\"86c053ce2735\",\"path\":\"~/SSD2TB/worktrees/gwexpy/post-release-v028-followup\"},{\"branch\":\"release/v0.2.8-prep\",\"dirty_count\":0,\"head\":\"f3b68b415f4b\",\"path\":\"~/SSD2TB/worktrees/gwexpy/release-v0.2.8-prep\"},{\"branch\":\"detached\",\"dirty_count\":0,\"head\":\"d92c8e4e442f\",\"path\":\"~/SSD2TB/worktrees/gwexpy/v0210-candidate-r\"},{\"branch\":\"detached\",\"dirty_count\":0,\"head\":\"7213b37f631c\",\"path\":\"~/SSD2TB/worktrees/gwexpy/v0210-ci-fix\"},{\"branch\":\"release/v0.2.8-candidate-r-8484af7\",\"dirty_count\":0,\"head\":\"70d466592155\",\"path\":\"~/SSD2TB/worktrees/gwexpy/v028-candidate-r-8484af7\"},{\"branch\":\"detached\",\"dirty_count\":0,\"head\":\"c013e95bd666\",\"path\":\"~/SSD2TB/worktrees/gwexpy/v030-step1-baseline\"},{\"branch\":\"work/t3b-598-th1-to-series\",\"dirty_count\":0,\"head\":\"ea369d68ac7d\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-t3b-598-th1-to-series\"},{\"branch\":\"work/t3g-758-chronos2\",\"dirty_count\":0,\"head\":\"18e991b556f3\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-t3g-758-chronos2\"},{\"branch\":\"work/v0.2.10-507\",\"dirty_count\":0,\"head\":\"be055e211bb4\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-507\"},{\"branch\":\"work/v0.2.10-513\",\"dirty_count\":0,\"head\":\"080c9f12afdd\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-513\"},{\"branch\":\"work/v0.2.10-544\",\"dirty_count\":0,\"head\":\"21b49271727c\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-544\"},{\"branch\":\"work/v0.2.10-565\",\"dirty_count\":0,\"head\":\"06d07ae6290c\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-565\"},{\"branch\":\"work/v0.2.10-569\",\"dirty_count\":1,\"head\":\"fb9d8e5d7637\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-569\"},{\"branch\":\"work/v0.2.10-771\",\"dirty_count\":0,\"head\":\"f21ae2d1b856\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-771\"},{\"branch\":\"work/v0.2.10-772\",\"dirty_count\":0,\"head\":\"bef57f40f230\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-772\"},{\"branch\":\"work/v0.2.10-773\",\"dirty_count\":0,\"head\":\"5c5bc1dd1c92\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-773\"},{\"branch\":\"work/v0.2.10-776\",\"dirty_count\":0,\"head\":\"c413b592f067\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-776\"},{\"branch\":\"work/v0.2.10-777\",\"dirty_count\":0,\"head\":\"b79ed6740559\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-777\"},{\"branch\":\"work/v0.2.10-784\",\"dirty_count\":0,\"head\":\"1bb44311705b\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-784\"},{\"branch\":\"work/v0.2.10-879\",\"dirty_count\":0,\"head\":\"d23652a5ae09\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-879\"},{\"branch\":\"work/v0.2.10-879-followup\",\"dirty_count\":1,\"head\":\"ff58ab9e0364\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-879-followup\"},{\"branch\":\"work/v0.2.10-881\",\"dirty_count\":0,\"head\":\"5265eb7937da\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-881\"},{\"branch\":\"work/v0.2.10-882\",\"dirty_count\":0,\"head\":\"030b12f923f0\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-882\"},{\"branch\":\"work/v0.2.10-883\",\"dirty_count\":0,\"head\":\"9ede7effc0c2\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.10-883\"},{\"branch\":\"work/v0.2.8-767\",\"dirty_count\":0,\"head\":\"7204a06e8388\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.8-767\"},{\"branch\":\"work/v0.2.8-768\",\"dirty_count\":0,\"head\":\"9aa91fdf7afa\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.8-768\"},{\"branch\":\"work/v0.2.8-769\",\"dirty_count\":0,\"head\":\"ea2e82ecadad\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v0.2.8-769\"},{\"branch\":\"work/v030-725-char\",\"dirty_count\":0,\"head\":\"153882fe02d2\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-725-char\"},{\"branch\":\"work/v030-725-design\",\"dirty_count\":0,\"head\":\"7eafd3da731f\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-725-design\"},{\"branch\":\"work/v030-725-field\",\"dirty_count\":0,\"head\":\"1b18e1ba2822\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-725-field\"},{\"branch\":\"work/v030-725-impl\",\"dirty_count\":0,\"head\":\"32be578f36b5\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-725-impl\"},{\"branch\":\"work/v030-887-repro\",\"dirty_count\":0,\"head\":\"aa6c6d3c99ae\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-887-repro\"},{\"branch\":\"work/v030-axis-criterion\",\"dirty_count\":0,\"head\":\"3dbe055ab64e\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-axis-criterion\"},{\"branch\":\"work/v030-geometry\",\"dirty_count\":0,\"head\":\"08531531091e\",\"path\":\"~/SSD2TB/worktrees/gwexpy/work-v030-geometry\"}]}"
+        }
+      ],
+      "pending_reason": "",
+      "resume_condition": "",
+      "observer": "maintainer local host"
     },
     "conda_feedstock": {
       "status": "complete",
@@ -230,6 +270,12 @@
           "sha256": null,
           "observed_at_utc": "2026-11-15T10:35:15Z",
           "observation": "{\"conclusion\":\"success\",\"copy_result\":{\"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\":true},\"head_sha\":\"754803e2e70f359cd290e8f76ca4dd73bb017eaa\",\"jobs\":[{\"conclusion\":\"success\",\"name\":\"linux_64_\",\"status\":\"completed\"}],\"run_id\":43698904190,\"status\":\"completed\"}"
+        },
+        {
+          "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/20",
+          "sha256": "f969d768092fad72234662606b5d45d3ffe45c5f6c2603e9da7bb56b6a84d475",
+          "observed_at_utc": "2026-11-16T21:50:30Z",
+          "observation": "{\"pull\":{\"merged_at\":\"2026-11-15T09:21:58Z\",\"number\":20,\"state\":\"closed\",\"url\":\"https://github.com/conda-forge/gwexpy-feedstock/pull/20\"},\"readback_succeeded\":true,\"recipe\":{\"path\":\"recipe/recipe.yaml\",\"source_sha256\":\"983ed03fa3ca3e5732c1bd39a6cb5fc575828284769b94a0f5e18b39a20e3aa3\",\"version\":\"0.2.10\"},\"status\":\"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -238,7 +284,7 @@
       "readback_succeeded": true
     },
     "conda_package": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_package",
       "evidence": [
@@ -265,12 +311,18 @@
           "sha256": null,
           "observed_at_utc": "2026-11-15T10:35:15Z",
           "observation": "{\"etag\":\"W/\\\"3aa1e32bf01a6e1ce92a87b888d62299\\\"\",\"filename\":\"gwexpy-0.2.10-pyhc364b38_0.conda\",\"http_status\":200,\"last_modified\":\"Sun, 15 Nov 2026 09:52:40 GMT\",\"present_in_packages\":false,\"present_in_packages.conda\":false,\"status\":\"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "c15a70d45cdc7bdec84ca39e5d5476c3a469b3fdc246c0e38ae2684b89d480a2",
+          "observed_at_utc": "2026-11-15T14:09:34Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.10-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.10-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"fddb2136ef306ee33299b0c4d89812bc\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7f754791dc56e3c3e51469193df9ff70b2796575e03fa548b51d5774400d6bc7\", \"size\": 683623, \"subdir\": \"noarch\", \"timestamp\": 1794734571786, \"version\": \"0.2.10\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7f754791dc56e3c3e51469193df9ff70b2796575e03fa548b51d5774400d6bc7\", \"size\": 683623}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
         }
       ],
-      "pending_reason": "Exact 0.2.10 build is registered in Anaconda.org but absent from final noarch repodata",
-      "resume_condition": "Re-observe Anaconda.org and final noarch repodata; complete only when name, version, build, build number, size and SHA-256 match",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_package",
-      "readback_succeeded": false
+      "readback_succeeded": true
     }
   }
 }
