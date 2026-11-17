@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 import numpy as np
 from astropy import units as u
 
+from ..time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    classify_time_input,
+    set_time_reference,
+)
 from ..types.array4d import Array4D
 
 __all__ = ["FieldBase"]
@@ -58,7 +66,7 @@ def _axis_coordinates_close(left, right) -> bool:
     )
 
 
-class FieldBase(Array4D):
+class FieldBase(TimeReferenceMixin, Array4D):
     """Base class providing axis domain metadata handling for field objects.
 
     Maintains the invariant of four coordinate axes `(axis0, x, y, z)` and
@@ -69,6 +77,7 @@ class FieldBase(Array4D):
         "_axis0_domain",
         "_space_domains",
         "_axis0_offset",  # Preserved during fft_time for ifft_time reconstruction
+        "_axis0_dt",  # Sampling interval preserved across time/frequency transforms
     )
 
     # Axis name conventions
@@ -76,6 +85,9 @@ class FieldBase(Array4D):
     _FREQ_AXIS_NAME = "f"
     _REAL_AXIS_NAMES = ("x", "y", "z")
     _K_AXIS_NAMES = ("kx", "ky", "kz")
+
+    # Field axis coordinates use `_axis0_index`, not GWpy Series' `_x0`.
+    _time_reference_axis_attrs = ("_axis0_index",)
 
     _axis0_index: Any
     _axis1_index: Any
@@ -105,6 +117,21 @@ class FieldBase(Array4D):
         space_domain: str | dict[str, str] = "real",
     ):
         """Create a field object with domain-aware axis defaults."""
+        time_input = classify_time_input(epoch)
+        if time_input == "inf":
+            raise ValueError(
+                "epoch must not be infinite; pass a finite GPS time or omit it "
+                "when the absolute time is unknown"
+            )
+        time_reference = (
+            TIME_REFERENCE_ABSOLUTE
+            if time_input == "finite"
+            else TIME_REFERENCE_RELATIVE
+        )
+        # NaN means that the Field has no absolute epoch. Do not pass it to
+        # GWpy, where it could contaminate metadata or coordinate calculations.
+        effective_epoch = None if time_input == "nan" else epoch
+
         # Set default axis names based on domain
         if axis_names is None:
             time_name = (
@@ -124,7 +151,7 @@ class FieldBase(Array4D):
             value,
             unit=unit,
             name=name,
-            epoch=epoch,
+            epoch=effective_epoch,
             channel=channel,
             dtype=dtype,
             copy=copy,
@@ -170,8 +197,95 @@ class FieldBase(Array4D):
             )
 
         obj._validate_domain_units()
+        set_time_reference(obj, time_reference)
 
         return obj
+
+    def with_epoch(self, epoch: Any) -> FieldBase:
+        """Return a copy anchored at GPS ``epoch`` while retaining axis offsets.
+
+        The time coordinate on axis 0 is shifted by the GPS anchor. Spatial
+        coordinates and their real/k-space domain metadata are left untouched.
+        A dimensionless time axis is interpreted as seconds, matching the
+        existing SpectrogramMatrix anchoring rule.
+        """
+        from gwpy.time import to_gps
+
+        if self.time_reference != TIME_REFERENCE_RELATIVE:
+            raise ValueError("with_epoch requires a relative time reference")
+        if classify_time_input(epoch) != "finite":
+            raise ValueError("epoch must be a finite GPS time")
+
+        value = epoch.to_value(u.s) if isinstance(epoch, u.Quantity) else epoch
+        anchor = float(to_gps(value))
+        if not np.isfinite(anchor):
+            raise ValueError("epoch must be a finite GPS time")
+
+        result = self.copy()
+        dt = getattr(self, "_axis0_dt", None)
+        if self._axis0_domain == "time":
+            axis = self._axis0_index
+            axis_unit = getattr(axis, "unit", u.dimensionless_unscaled)
+            if axis_unit.is_equivalent(u.dimensionless_unscaled):
+                offsets = np.asarray(getattr(axis, "value", axis)) * u.s
+            elif axis_unit.is_equivalent(u.s):
+                offsets = axis.to(u.s)
+            else:
+                raise ValueError(
+                    "axis 0 must have time or dimensionless units to anchor it"
+                )
+
+            if len(offsets) >= 2:
+                dt = offsets[1] - offsets[0]
+            result._axis0_index = offsets + anchor * u.s
+        else:
+            # A time FFT stores its original time origin and sample spacing
+            # separately because axis 0 now contains frequencies.  Anchor that
+            # saved origin so a later ifft_time() reconstructs absolute times.
+            offset = getattr(self, "_axis0_offset", None)
+            if offset is None:
+                offsets = 0 * u.s
+            else:
+                offset_unit = getattr(offset, "unit", u.dimensionless_unscaled)
+                if offset_unit.is_equivalent(u.dimensionless_unscaled):
+                    offsets = np.asarray(getattr(offset, "value", offset)) * u.s
+                elif offset_unit.is_equivalent(u.s):
+                    offsets = offset.to(u.s)
+                else:
+                    raise ValueError(
+                        "stored time offset must have time or dimensionless units"
+                    )
+            result._axis0_offset = offsets + anchor * u.s
+
+            if dt is None and len(self._axis0_index) >= 2:
+                df = self._axis0_index[1] - self._axis0_index[0]
+                df_unit = getattr(df, "unit", u.dimensionless_unscaled)
+                df_value = float(getattr(df, "value", df))
+                nout = 2 * (len(self._axis0_index) - 1)
+                if np.isfinite(df_value) and df_value != 0 and nout > 0:
+                    dt = (1.0 / (nout * df_value)) * df_unit**-1
+
+        if dt is not None:
+            result._axis0_dt = dt.copy() if hasattr(dt, "copy") else dt
+            dt_unit = getattr(dt, "unit", u.dimensionless_unscaled)
+            if dt_unit.is_equivalent(u.dimensionless_unscaled):
+                dt_value = float(getattr(dt, "value", dt))
+            elif dt_unit.is_equivalent(u.s):
+                dt_value = float(dt.to_value(u.s))
+            else:
+                raise ValueError("stored sampling interval must have time units")
+            ulp = abs(float(np.spacing(anchor)))
+            if abs(dt_value) < 10 * ulp:
+                warnings.warn(
+                    f"dt={dt_value:g} s is below 10 ULP of epoch ({ulp:g} s); "
+                    "absolute time coordinates may be rounded",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+        result.epoch = anchor
+        set_time_reference(result, TIME_REFERENCE_ABSOLUTE)
+        return result
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
@@ -197,6 +311,8 @@ class FieldBase(Array4D):
 
         if getattr(self, "_axis0_offset", None) is None:
             self._axis0_offset = getattr(obj, "_axis0_offset", None)
+        if getattr(self, "_axis0_dt", None) is None:
+            self._axis0_dt = getattr(obj, "_axis0_dt", None)
 
         # Real-space start and direction of axes currently in k-space, recorded
         # by fft_space so that ifft_space can restore the coordinates.
@@ -205,6 +321,18 @@ class FieldBase(Array4D):
             self._space_origins = dict(parent_origins) if parent_origins else None
 
         self._validate_domain_units()
+
+    def _propagate_gwex_attrs(self, other: Any) -> None:
+        """Propagate GWexpy and time-FFT metadata to another Field."""
+        super()._propagate_gwex_attrs(other)
+        if not isinstance(other, FieldBase):
+            return
+
+        for name in ("_axis0_offset", "_axis0_dt"):
+            value = getattr(self, name, None)
+            if value is not None and getattr(other, name, None) is None:
+                copied = value.copy() if hasattr(value, "copy") else value
+                setattr(other, name, copied)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         """Validate domain and coordinate consistency before arithmetic."""
@@ -215,12 +343,27 @@ class FieldBase(Array4D):
             first = fields[0]
             for other in fields[1:]:
                 first._validate_field_alignment(other)
+                if (
+                    first.time_reference == TIME_REFERENCE_ABSOLUTE
+                    and first.epoch != other.epoch
+                ):
+                    raise ValueError(
+                        "Field epoch mismatch: absolute fields must share the "
+                        "same epoch before operation."
+                    )
 
         # Defer to superclass (Array4D -> Array -> GwpyArray)
         return super().__array_ufunc__(ufunc, method, *inputs, **kwargs)
 
     def _validate_field_alignment(self, other: FieldBase) -> None:
         """Reject arithmetic between fields on different physical grids."""
+        if self.time_reference != other.time_reference:
+            raise ValueError(
+                "Field time-reference mismatch: "
+                f"{self.time_reference} vs {other.time_reference}. "
+                "Convert both fields to the same time reference before operation."
+            )
+
         if self._axis0_domain != other._axis0_domain:
             raise ValueError(
                 f"Field domain mismatch: {self._axis0_domain} vs "

@@ -318,6 +318,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             dft,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=freqs,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
@@ -333,6 +334,7 @@ class ScalarField(FieldBase):
         )
         # Store the original time offset in metadata
         result._axis0_offset = t0
+        result._axis0_dt = dt
         result._validate_domain_units()
         self._propagate_gwex_attrs(result)
         return result
@@ -395,19 +397,34 @@ class ScalarField(FieldBase):
 
         # dt = 1 / (nout * df)
         dt_value = 1.0 / (nout * df_value)
-        dt_unit = 1 / df_unit
+        dt_unit = df_unit**-1
 
         # Restore time-axis origin if preserved from fft_time
         t0_offset = getattr(self, "_axis0_offset", None)
         if t0_offset is not None:
-            t0_value = t0_offset.value
-            times = (np.arange(nout) * dt_value + t0_value) * dt_unit
+            offset_unit = getattr(t0_offset, "unit", u.dimensionless_unscaled)
+            if offset_unit.is_equivalent(u.s) and offset_unit == dt_unit:
+                offset = t0_offset.to(dt_unit)
+                times = offset + np.arange(nout) * dt_value * dt_unit
+            elif offset_unit.is_equivalent(u.s):
+                offset = t0_offset.to(u.s)
+                if dt_unit.is_equivalent(u.dimensionless_unscaled):
+                    dt = dt_value * u.s
+                elif dt_unit.is_equivalent(u.s):
+                    dt = (dt_value * dt_unit).to(u.s)
+                else:
+                    raise ValueError("inverse FFT time step must have time units")
+                times = offset + np.arange(nout) * dt
+            else:
+                t0_value = getattr(t0_offset, "value", t0_offset)
+                times = (np.arange(nout) * dt_value + t0_value) * dt_unit
         else:
             times = np.arange(nout) * dt_value * dt_unit
 
         result = ScalarField(
             dift,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=times,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
@@ -1522,6 +1539,7 @@ class ScalarField(FieldBase):
             **metadata,
         )
         result._axis0_offset = getattr(self, "_axis0_offset", None)
+        result._axis0_dt = getattr(self, "_axis0_dt", None)
         self._propagate_gwex_attrs(result)
         return result
 
@@ -1694,6 +1712,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             zscore_data,
             unit=u.dimensionless_unscaled,
+            epoch=self.epoch,
             axis0=self._axis0_index,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
@@ -1783,6 +1802,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             result_data,
             unit=self.unit,
+            epoch=self.epoch,
             axis0=np.array([mean_time.value]) * mean_time.unit,
             axis1=subset._axis1_index,
             axis2=subset._axis2_index,
@@ -2116,6 +2136,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             new_data_2d.reshape(new_shape),
             unit=self.unit,
+            epoch=self.epoch,
             axis0=new_times,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
@@ -2202,6 +2223,7 @@ class ScalarField(FieldBase):
         result = ScalarField(
             new_data_2d.reshape(orig_shape),
             unit=self.unit,
+            epoch=self.epoch,
             axis0=self._axis0_index,
             axis1=self._axis1_index,
             axis2=self._axis2_index,
