@@ -129,6 +129,8 @@ To choose an averaging method, use `spectrogram(stride=..., method='welch')`
 
 - **`arima(order=(p,d,q))`**
   Fit an ARIMA time-series model.
+- **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
+  Run zero-shot forecasting with the optional Chronos-2 backend. Returns a `ForecastResult`; `point` is the median `TimeSeries`, and `quantiles` maps requested levels to forecast series. The `chronos-forecasting` package is not included in the base install, and the planned `[chronos]` extra is not registered yet.
 - **`impute(method="interpolate")`**
   Handle missing values (NaNs) in the data.
 - **`standardize(method="zscore")`**

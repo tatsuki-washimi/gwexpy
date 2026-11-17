@@ -17,8 +17,11 @@ from .pipeline import (
 )
 from .timeseries import TimeSeries
 
+ForecastResult = _import_module(f"{__name__}._forecast").ForecastResult
+
 __all__ = [
     "TimeSeries",
+    "ForecastResult",
     "TimeSeriesDict",
     "TimeSeriesList",
     "TimeSeriesMatrix",

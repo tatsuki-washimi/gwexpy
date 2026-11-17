@@ -126,6 +126,8 @@ psd = ts.psd(fftlength=1.0)
 
 - **`arima(order=(p,d,q))`**
   ARIMA 時系列モデルを適合します。
+- **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
+  optional な Chronos-2 backend でゼロショット予測を行い、中央値を `ForecastResult.point`、分位系列を `ForecastResult.quantiles` に返します。`chronos-forecasting` package は基本インストールに含まれず、予定している `[chronos]` extra もまだ登録されていません。
 - **`impute(method="interpolate")`**
   データ内の欠損値 (NaN) を処理します。
 - **`standardize(method="zscore")`**

@@ -51,6 +51,10 @@ TimeSeries オブジェクトの辞書。
 
 ## メソッド
 
+### `forecast(backend="chronos", horizon=..., quantiles=...)`
+
+各キーの系列を独立した 1 次元予測タスクとして batch 処理します。チャンネル間の情報共有を行う multivariate 予測ではありません。戻り値の `ForecastResult.point` と `ForecastResult.quantiles` はキーを保った `TimeSeriesDict` です。`chronos-forecasting` package は基本インストールに含まれず、予定している `[chronos]` extra もまだ登録されていません。
+
 ### `EntryClass`
 
 TimeSeries を作成するためのエントリクラス。

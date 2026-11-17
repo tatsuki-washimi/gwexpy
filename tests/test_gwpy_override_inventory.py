@@ -919,15 +919,15 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1150,
+        "cases": 1154,
         "constructors": 11,
-        "counterpart_absent_per_version": 441,
+        "counterpart_absent_per_version": 443,
         "counterpart_implementation_groups": 70,
         "counterpart_present_per_version": 134,
         "differential-required": 0,
         "fixed": 224,
-        "GWexpy-only": 882,
-        "logical_members": 575,
+        "GWexpy-only": 886,
+        "logical_members": 577,
         "no-finding": 44,
         "public_roots": 16,
         "GWpy-fails": 0,
@@ -955,7 +955,7 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 575
+    assert len(current["members"]) == 577
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(

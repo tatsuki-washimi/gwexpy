@@ -399,8 +399,8 @@ msgid "Declared GWexpy extras"
 msgstr "GWexpy extras で宣言済み"
 
 #: ../docs_redesign/reference/interop_capabilities.md c49e728682d6461aa3d13a8aac77b02f
-msgid "`zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub`"
-msgstr "`zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub`"
+msgid "`zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub`, `chronos-forecasting`"
+msgstr "`zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub`, `chronos-forecasting`"
 
 #: ../docs_redesign/reference/interop_capabilities.md 9292264803ed43c089e4f1b4a0bf0ca7
 msgid ""
@@ -434,13 +434,14 @@ msgstr "bridge が直接 import する場合、または受け渡す source obje
 
 #: ../docs_redesign/reference/interop_capabilities.md:101 f52730821cd3467a82191d0cb7ea1076
 msgid ""
-"`gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. It does "
-"not install every public interop backend; entries in the bare package row still "
-"require direct backend installs when the bridge imports the backend or when you need "
+"`gwexpy[all]` installs the standard non-GUI GWexpy extras as a convenience "
+"bundle, excluding the large `chronos` forecasting extra. It does not install "
+"every public interop backend; entries in the bare package row still require "
+"direct backend installs when the bridge imports the backend or when you need "
 "to create accepted source objects."
 msgstr ""
-"`gwexpy[all]` は GWexpy が宣言している extra をまとめて導入するための convenience bundle です。すべての public "
-"interop backend を導入するもの ではありません。個別 package install の行にある backend は、bridge が直接 import "
+"`gwexpy[all]` は GUI を除く標準的な GWexpy extra をまとめて導入します。大容量の `chronos` 予測 extra は含みません。public "
+"interop backend をすべて導入するものではありません。個別 package install の行にある backend は、bridge が直接 import "
 "する場合や受け渡す source object を作る場合に、個別に導入してください。"
 
 #: ../docs_redesign/reference/interop_capabilities.md:106 16ef908512bc4376973b810d55510742

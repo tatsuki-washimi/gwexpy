@@ -133,6 +133,11 @@ audio = [
   "tinytag>=1.10",
 ]
 
+# Zero-shot time-series forecasting (large optional ML runtime)
+chronos = [
+  "chronos-forecasting>=2.3.2,<3",
+]
+
 # Development tools
 dev = [
   "build",
@@ -149,7 +154,8 @@ dev = [
   "types-PyYAML",
 ]
 
-# Convenience: install non-GUI optional features (flattened to avoid self-referential extras)
+# Convenience bundle of standard non-GUI extras; intentionally excludes the heavyweight chronos extra.
+# Flattened to avoid self-referential extras.
 all = [
   # analysis
   "scikit-learn",
