@@ -80,6 +80,7 @@
       ~TimeSeries.fit
       ~TimeSeries.fit_arima
       ~TimeSeries.flatten
+      ~TimeSeries.forecast
       ~TimeSeries.from_arrakis
       ~TimeSeries.from_astropy_timeseries
       ~TimeSeries.from_control

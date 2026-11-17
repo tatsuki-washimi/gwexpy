@@ -95,13 +95,14 @@ directly.
 
 | Policy | Dependencies | Install guidance |
 | --- | --- | --- |
-| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Install the matching extra from PyPI as described in the [Installation Guide](../tutorials/installation.md), for example `pip install "gwexpy[control]"`. |
+| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub`, `chronos-forecasting` | Install the matching extra from PyPI as described in the [Installation Guide](../tutorials/installation.md), for example `pip install "gwexpy[control]"`. Chronos forecasting uses the separately installed `chronos` extra because it adds a large ML runtime. |
 | Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
 
-`gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. It
-does not install every public interop backend; entries in the bare package row
-still require direct backend installs when the bridge imports the backend or
-when you need to create accepted source objects.
+`gwexpy[all]` installs the standard non-GUI GWexpy extras as a convenience
+bundle, excluding the large `chronos` forecasting extra. It does not install
+every public interop backend; entries in the bare package row still require
+direct backend installs when the bridge imports the backend or when you need
+to create accepted source objects.
 
 The xarray-backed interop bridges list the `netcdf4` extra because GWexpy does
 not currently publish a standalone `xarray` extra. If you only need in-memory

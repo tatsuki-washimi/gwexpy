@@ -35,7 +35,8 @@ This table summarizes the commands; the sections below ([Minimal](#minimal), [Co
 | Minimal | `pip install gwexpy` | Numerical containers and basic arithmetic. Minimal dependencies. |
 | **Recommended** | `pip install "gwexpy[analysis,fitting,plotting]"` | Advanced statistics, curve fitting, and mapping features. |
 | GW Analysis | `pip install "gwexpy[gw,io]"` | Frame file support and official GW tools (NDS2 requires the Conda step below). |
-| Developer / Full | `pip install -e ".[dev,all]"` | Editable install from source with all declared non-GUI optional features, for contributors. |
+| Developer / Full | `pip install -e ".[dev,all]"` | Editable source install with the standard non-GUI extras. The large `chronos` forecasting extra is installed separately. |
+| Chronos Forecasting | `pip install "gwexpy[chronos]"` | Zero-shot Chronos-2 forecasting; installs a large ML runtime. |
 
 ## 1. Installation Steps
 
@@ -123,6 +124,14 @@ If you installed from [Quickstart](quickstart.md) and later discover you need GW
 | `audio` | `pydub`, `tinytag` | Audio export, processing, and optional metadata extraction. |
 | `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
 | `control` | `control` (python-control) | Control systems and transfer functions. |
+| `chronos` | `chronos-forecasting` | Zero-shot Chronos-2 forecasting. Installs a large ML runtime; the pinned model weights are downloaded on the first forecast (about 478 MB). |
+
+The `chronos` extra is intentionally excluded from `all` because it adds a
+large machine-learning runtime. Its pinned Chronos-2 model weights (about
+478 MB) are downloaded when forecasting is first used. In CPU-only
+environments, choose the CPU PyTorch wheel using the [official PyTorch
+installation selector](https://pytorch.org/get-started/locally/) before
+installing this extra.
 
 ---
 

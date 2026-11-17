@@ -561,7 +561,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/3bffd19835e7f7e92fd53e0fcdfa372a2be21a22">3bffd198</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/0aedbcab9c3ccd1b422d7a219fb9d4a19e56ca97">0aedbcab</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -715,8 +715,8 @@ directly.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Declared GWexpy extras</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">pydub</span></code></p></td>
-<td><p>Install the matching extra from PyPI as described in the <a class="reference internal" href="../tutorials/installation.html"><span class="std std-doc">Installation Guide</span></a>, for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[control]&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">pydub</span></code>, <code class="docutils literal notranslate"><span class="pre">chronos-forecasting</span></code></p></td>
+<td><p>Install the matching extra from PyPI as described in the <a class="reference internal" href="../tutorials/installation.html"><span class="std std-doc">Installation Guide</span></a>, for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[control]&quot;</span></code>. Chronos forecasting uses the separately installed <code class="docutils literal notranslate"><span class="pre">chronos</span></code> extra because it adds a large ML runtime.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Bare package installs</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">polars</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, <code class="docutils literal notranslate"><span class="pre">jax</span></code>, <code class="docutils literal notranslate"><span class="pre">cupy</span></code>, <code class="docutils literal notranslate"><span class="pre">pycbc</span></code>, <code class="docutils literal notranslate"><span class="pre">finesse</span></code>, <code class="docutils literal notranslate"><span class="pre">simpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">mne</span></code>, <code class="docutils literal notranslate"><span class="pre">neo</span></code>, <code class="docutils literal notranslate"><span class="pre">quantities</span></code>, <code class="docutils literal notranslate"><span class="pre">pyroomacoustics</span></code>, <code class="docutils literal notranslate"><span class="pre">specutils</span></code>, <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>, <code class="docutils literal notranslate"><span class="pre">PySpice</span></code>, <code class="docutils literal notranslate"><span class="pre">skrf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyOMA</span></code>, <code class="docutils literal notranslate"><span class="pre">multitaper</span></code>, <code class="docutils literal notranslate"><span class="pre">mtspec</span></code>, <code class="docutils literal notranslate"><span class="pre">pyuff</span></code>, <code class="docutils literal notranslate"><span class="pre">sdynpy</span></code>, <code class="docutils literal notranslate"><span class="pre">metpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wrf-python</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonica</span></code>, <code class="docutils literal notranslate"><span class="pre">emg3d</span></code>, <code class="docutils literal notranslate"><span class="pre">meshio</span></code></p></td>
@@ -725,10 +725,11 @@ directly.</p>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> installs the declared GWexpy extras as a convenience bundle. It
-does not install every public interop backend; entries in the bare package row
-still require direct backend installs when the bridge imports the backend or
-when you need to create accepted source objects.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> installs the standard non-GUI GWexpy extras as a convenience
+bundle, excluding the large <code class="docutils literal notranslate"><span class="pre">chronos</span></code> forecasting extra. It does not install
+every public interop backend; entries in the bare package row still require
+direct backend installs when the bridge imports the backend or when you need
+to create accepted source objects.</p>
 <p>The xarray-backed interop bridges list the <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra because GWexpy does
 not currently publish a standalone <code class="docutils literal notranslate"><span class="pre">xarray</span></code> extra. If you only need in-memory
 xarray conversion and want to avoid installing <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, install <code class="docutils literal notranslate"><span class="pre">xarray</span></code>
