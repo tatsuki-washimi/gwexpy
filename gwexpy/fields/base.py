@@ -11,7 +11,6 @@ from astropy import units as u
 from ..time._reference import (
     TIME_REFERENCE_ABSOLUTE,
     TIME_REFERENCE_RELATIVE,
-    TimeReferenceMixin,
     classify_time_input,
     set_time_reference,
 )
@@ -66,7 +65,7 @@ def _axis_coordinates_close(left, right) -> bool:
     )
 
 
-class FieldBase(TimeReferenceMixin, Array4D):
+class FieldBase(Array4D):
     """Base class providing axis domain metadata handling for field objects.
 
     Maintains the invariant of four coordinate axes `(axis0, x, y, z)` and

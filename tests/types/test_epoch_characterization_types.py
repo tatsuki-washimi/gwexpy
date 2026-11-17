@@ -45,6 +45,7 @@ class TestArrayFamilyConstructor:
         cls, shape = ARRAYS[name]
         a = cls(np.ones(shape), unit="m", **_kw(value))
         assert a.epoch is None
+        assert a.time_reference == "relative"
         assert a.shape == shape
         assert a.unit == u.m
 
@@ -53,16 +54,35 @@ class TestArrayFamilyConstructor:
         cls, shape = ARRAYS[name]
         a = cls(np.ones(shape), unit="m", **_kw(value))
         assert _epoch_float(a) == float(value)
+        assert a.time_reference == "absolute"
         assert a.shape == shape
         assert a.unit == u.m
 
-    @pytest.mark.parametrize("value", NONFINITE)
-    def test_nonfinite_raises_runtimeerror_current(self, name, value):
-        # characterizes current behavior, not a desired contract (#725):
-        # RuntimeError from the GPS conversion rather than ValueError.
+    def test_nan_epoch_is_relative(self, name):
         cls, shape = ARRAYS[name]
-        with pytest.raises(RuntimeError, match="Invalid argument"):
-            cls(np.ones(shape), unit="m", **_kw(value))
+        a = cls(np.ones(shape), unit="m", epoch=np.nan)
+        assert a.epoch is None
+        assert a.time_reference == "relative"
+
+    @pytest.mark.parametrize("value", [np.inf, -np.inf])
+    def test_infinite_epoch_raises_valueerror(self, name, value):
+        cls, shape = ARRAYS[name]
+        with pytest.raises(ValueError, match="must not be infinite"):
+            cls(np.ones(shape), unit="m", epoch=value)
+
+    @pytest.mark.parametrize("value", [np.nan, np.inf, -np.inf])
+    def test_nonfinite_setter_raises_valueerror(self, name, value):
+        cls, shape = ARRAYS[name]
+        a = cls(np.ones(shape), unit="m")
+        with pytest.raises(ValueError, match="must be a finite time"):
+            a.epoch = value
+
+    def test_with_epoch_anchors_relative_array(self, name):
+        cls, shape = ARRAYS[name]
+        a = cls(np.ones(shape), unit="m")
+        anchored = a.with_epoch(GPS)
+        assert anchored.time_reference == "absolute"
+        assert _epoch_float(anchored) == GPS
 
     @pytest.mark.parametrize("value", [OMIT, None, 0, GPS])
     def test_copy_pickle_keep_epoch(self, name, value):
@@ -95,6 +115,7 @@ class TestPlane2D:
     def test_missing_epoch_is_none(self, value):
         p = Plane2D(np.ones((4, 3)), unit="m", **_kw(value))
         assert p.epoch is None
+        assert p.time_reference == "relative"
         assert (p.x0.value, p.dx.value) == (0.0, 1.0)
         assert p.unit == u.m
 
@@ -102,12 +123,17 @@ class TestPlane2D:
     def test_finite_epoch(self, value):
         p = Plane2D(np.ones((4, 3)), unit="m", **_kw(value))
         assert _epoch_float(p) == float(value)
+        assert p.time_reference == "absolute"
 
-    @pytest.mark.parametrize("value", NONFINITE)
-    def test_nonfinite_raises_current(self, value):
-        # characterizes current behavior, not a desired contract (#725)
-        with pytest.raises(RuntimeError, match="Invalid argument"):
-            Plane2D(np.ones((4, 3)), unit="m", **_kw(value))
+    def test_nan_epoch_is_relative(self):
+        p = Plane2D(np.ones((4, 3)), unit="m", epoch=np.nan)
+        assert p.epoch is None
+        assert p.time_reference == "relative"
+
+    @pytest.mark.parametrize("value", [np.inf, -np.inf])
+    def test_infinite_epoch_raises(self, value):
+        with pytest.raises(ValueError, match="must not be infinite"):
+            Plane2D(np.ones((4, 3)), unit="m", epoch=value)
 
     @pytest.mark.parametrize("value", [OMIT, None, 0, GPS])
     def test_slice_pickle_keep_epoch(self, value):

@@ -1,6 +1,19 @@
 from __future__ import annotations
 
+from typing import Any
+
+from gwpy.types.array import Array as GwpyArray
 from gwpy.types.array2d import Array2D as GwpyArray2D
+
+from gwexpy.time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    inherit_time_reference,
+    resolve_time_inputs,
+    set_time_reference,
+)
 
 from ._stats import StatisticalMethodsMixin
 from .axis import AxisDescriptor
@@ -9,10 +22,16 @@ from .axis_api import AxisApiMixin
 __all__ = ["Array2D"]
 
 
-class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
+class Array2D(
+    AxisApiMixin,
+    StatisticalMethodsMixin,
+    TimeReferenceMixin,
+    GwpyArray2D,
+):
     """2D array with a unified axis API."""
 
     _metadata_slots = GwpyArray2D._metadata_slots + ("_axis0_name", "_axis1_name")
+    _time_reference_axis_attrs = ("_epoch",)
 
     def __new__(
         cls,
@@ -31,6 +50,14 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
         **kwargs,
     ):
         """Create a 2D array with explicit axis naming."""
+        time_reference, cleared = resolve_time_inputs(
+            {"epoch": kwargs.get("epoch")},
+            explicit_axis=False,
+            inherit=isinstance(data, GwpyArray),
+        )
+        if "epoch" in cleared:
+            kwargs = dict(kwargs)
+            kwargs["epoch"] = None
         obj = super().__new__(
             cls,
             data,
@@ -45,6 +72,17 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
             yunit=yunit,
             **kwargs,
         )
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+        elif isinstance(data, TimeReferenceMixin):
+            inherit_time_reference(obj, data)
+        elif isinstance(data, GwpyArray):
+            set_time_reference(
+                obj,
+                TIME_REFERENCE_ABSOLUTE
+                if getattr(data, "epoch", None) is not None
+                else TIME_REFERENCE_RELATIVE,
+            )
         if axis_names is None:
             name0, name1 = "axis0", "axis1"
         else:
@@ -74,6 +112,20 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
             self._axis1_name = parent_a1
         elif current_a1 is None:
             self._axis1_name = "axis1"
+
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
+
+    @property
+    def epoch(self) -> Any:
+        """GPS epoch associated with this array, or ``None`` if omitted."""
+        return GwpyArray2D.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        check_time_setter_value(value, name="epoch")
+        GwpyArray2D.epoch.__set__(self, value)
 
     @property
     def axes(self):

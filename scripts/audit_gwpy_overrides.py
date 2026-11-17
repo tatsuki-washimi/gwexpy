@@ -729,6 +729,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
     )
 
     time_reference_overrides = {
+        "gwexpy.fields.scalar.ScalarField": ("epoch",),
         "gwexpy.frequencyseries.frequencyseries.FrequencySeries": ("epoch",),
         "gwexpy.spectrogram.spectrogram.Spectrogram": (
             "__new__",
@@ -738,6 +739,11 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
         ),
         "gwexpy.timeseries.collections.TimeSeriesList": ("join",),
         "gwexpy.timeseries.timeseries.TimeSeries": ("epoch",),
+        "gwexpy.types.array.Array": ("epoch",),
+        "gwexpy.types.array2d.Array2D": ("epoch",),
+        "gwexpy.types.array3d.Array3D": ("epoch",),
+        "gwexpy.types.array4d.Array4D": ("epoch",),
+        "gwexpy.types.plane2d.Plane2D": ("epoch",),
     }
     for public_class, members in time_reference_overrides.items():
         for member in members:
