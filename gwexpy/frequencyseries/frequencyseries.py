@@ -19,6 +19,17 @@ from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.interop._optional import require_optional
 from gwexpy.interop._registry import ConverterRegistry
+from gwexpy.time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    get_time_reference,
+    inherits_time_reference,
+    rebuild_with_time_reference,
+    resolve_time_inputs,
+    set_time_reference,
+)
 from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
@@ -46,6 +57,11 @@ except ImportError:
         FREQ = "freq"
 
 
+def _build_gwexpy_frequencyseries(data: Any, kwargs: dict[str, Any]) -> Any:
+    """Unpickle helper that rebuilds a GWexpy ``FrequencySeries`` (#725)."""
+    return FrequencySeries(data, **kwargs)
+
+
 # =============================
 # FrequencySeries
 # =============================
@@ -57,6 +73,7 @@ class FrequencySeries(
     RegularityMixin,
     FittingMixin,
     StatisticalMethodsMixin,
+    TimeReferenceMixin,  # time_reference state of ``epoch`` (#725); before GWpy
     BaseFrequencySeries,
 ):
     """A data array holding some metadata to represent a frequency series.
@@ -88,6 +105,11 @@ class FrequencySeries(
     epoch : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional
         GPS epoch associated with these data,
         any input parsable by `~gwpy.time.to_gps` is fine.
+        Omitting it (or passing ``None`` or ``NaN``) makes the object
+        ``time_reference == "relative"``: no absolute time is known and
+        ``epoch`` keeps whatever finite value (or ``None``) GWpy reports.
+        A finite value, including an explicit ``0.0``, is an absolute GPS
+        time.  ``+Inf`` and ``-Inf`` raise `ValueError`.
 
     name : `str`, optional
         Descriptive title for this array.
@@ -110,6 +132,15 @@ class FrequencySeries(
     advanced features such as frequency-domain differentiation/integration,
     histogramming, and seamless interoperability with Polars, Pandas,
     and ROOT (TGraph/TH1).
+
+    The ``epoch`` is the time of the data the spectrum was computed from; it
+    is independent of the frequency axis (``f0``/``df``).  ``time_reference``
+    (``"absolute"`` or ``"relative"``) tells whether ``epoch`` is a known GPS
+    time: ``epoch == Time(0, "gps")`` alone does not, because a relative
+    series keeps its finite ``epoch``.  The state is carried by slicing,
+    arithmetic, ``ifft`` and by ``TimeSeries.fft``/``psd``/``csd``/
+    ``coherence``.  Assigning ``NaN`` or ``±Inf`` to ``epoch`` raises
+    `ValueError`.
 
     Key methods:
 
@@ -138,6 +169,11 @@ class FrequencySeries(
                      channel=None)>
 
     """
+
+    #: ``epoch`` (``_epoch``) is the time origin of a FrequencySeries; its
+    #: ``_x0``/``_xindex`` are the *frequency* axis, so they must not decide
+    #: whether the timing state is still undecided (#725).
+    _time_reference_axis_attrs = ("_epoch",)
 
     def plot(
         self,
@@ -212,7 +248,19 @@ class FrequencySeries(
         for key in ["fmin", "fmax"]:
             kwargs.pop(key, None)
 
-        return super().__new__(
+        # #725 (U-1): omitted/None/NaN epoch -> relative; finite (including
+        # 0.0) -> absolute; +/-Inf -> ValueError.  NaN is dropped here so it
+        # never reaches GWpy's ``to_gps`` (which raises RuntimeError).
+        epoch_omitted = epoch is None
+        time_reference, cleared = resolve_time_inputs(
+            {"epoch": epoch},
+            explicit_axis=False,
+            inherit=isinstance(data, TimeReferenceMixin),
+        )
+        if cleared:
+            epoch = None
+
+        new = super().__new__(
             cls,
             data,
             unit=unit,
@@ -224,6 +272,44 @@ class FrequencySeries(
             channel=channel,
             **kwargs,
         )
+        if (
+            time_reference == TIME_REFERENCE_RELATIVE
+            and epoch_omitted
+            and not cleared
+            and isinstance(data, BaseFrequencySeries)
+            and getattr(data, "_epoch", None) is not None
+        ):
+            # A plain GWpy series that already carries a finite epoch: the
+            # epoch was copied from ``data``, so it is an explicit GPS time.
+            time_reference = TIME_REFERENCE_ABSOLUTE
+        if time_reference is not None:
+            # Also clears a relative state inherited from ``data`` when an
+            # explicit finite epoch was given.
+            set_time_reference(new, time_reference)
+        return new
+
+    @property
+    def epoch(self) -> Any:
+        """GPS epoch of the data (``Time``) or ``None``; GWpy semantics.
+
+        ``time_reference`` says whether this is a known GPS time.  For a
+        ``"relative"`` series the value is only the finite (or missing)
+        projection GWpy reports, not an absolute time.  Assigning ``NaN`` or
+        ``±Inf`` raises `ValueError`; a finite assignment leaves
+        ``time_reference`` unchanged.
+        """
+        return BaseFrequencySeries.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        # Reject NaN/Inf here: GWpy's ``to_gps`` would otherwise fail with an
+        # unrelated ``RuntimeError`` (#725).
+        check_time_setter_value(value, name="epoch")
+        BaseFrequencySeries.epoch.__set__(self, value)
+
+    @epoch.deleter
+    def epoch(self) -> None:
+        BaseFrequencySeries.epoch.__delete__(self)
 
     def __array_finalize__(self, obj: Any) -> None:
         """Propagate gwexpy-specific attributes through NumPy operations.
@@ -252,10 +338,22 @@ class FrequencySeries(
         """Provide pickle serialization support."""
         from gwexpy.io.pickle_compat import frequencyseries_reduce_args
 
-        return frequencyseries_reduce_args(self)
+        reduced = frequencyseries_reduce_args(self)
+        if get_time_reference(self) != TIME_REFERENCE_RELATIVE:
+            return reduced
+        # A relative series is rebuilt through GWexpy so that its state is
+        # restored; the GWpy-only payload would come back as a GWpy series
+        # with no state (an absolute one).  Absolute payloads keep their
+        # GWpy-only portability.
+        return rebuild_with_time_reference, (
+            _build_gwexpy_frequencyseries,
+            reduced[1],
+            TIME_REFERENCE_RELATIVE,
+        )
 
     # --- Phase and Angle ---
 
+    @inherits_time_reference
     def phase(self, unwrap: bool = False) -> FrequencySeries:
         """Calculate the phase of this FrequencySeries.
 
@@ -360,6 +458,7 @@ class FrequencySeries(
                 channel=getattr(self, "channel", None),
             )
 
+    @inherits_time_reference
     def degree(self, unwrap: bool = False) -> FrequencySeries:
         """Calculate the phase of this FrequencySeries in degrees.
 
@@ -390,6 +489,7 @@ class FrequencySeries(
 
     # --- Calculus ---
 
+    @inherits_time_reference
     def differentiate(self, order: int = 1) -> FrequencySeries:
         """Differentiate the FrequencySeries in the frequency domain.
 
@@ -441,6 +541,7 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
+    @inherits_time_reference
     def integrate(self, order: int = 1) -> FrequencySeries:
         """Integrate the FrequencySeries in the frequency domain.
 
@@ -498,6 +599,7 @@ class FrequencySeries(
 
     # --- dB / Logarithmic ---
 
+    @inherits_time_reference
     def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> FrequencySeries:
         """Convert this series to decibels.
 
@@ -710,6 +812,7 @@ class FrequencySeries(
 
     # --- Time Calculus ---
 
+    @inherits_time_reference
     def ifft(
         self,
         *,
@@ -734,6 +837,24 @@ class FrequencySeries(
             Specify padding lengths for transient mode to override defaults.
         **kwargs : Any
             Additional arguments passed to parent ifft.
+
+        Returns
+        -------
+        `TimeSeries`
+            The unit is that of this series; ``dt`` follows from ``df`` and
+            the transform length.  ``epoch`` is this series' ``epoch`` and the
+            result keeps this series' ``time_reference`` (a relative
+            spectrum gives a relative time series, not GPS 0).
+
+        Notes
+        -----
+        Normalization: ``"gwpy"`` mode inverts ``TimeSeries.fft`` (GWpy
+        convention, ``rfft(x) / n`` with every bin except DC doubled).
+        ``"transient"`` mode inverts the transient amplitude spectrum
+        (``rfft(x) / n`` with the bins strictly between DC and Nyquist
+        doubled); it undoes the doubling for every bin but DC, so the
+        Nyquist bin of an even-length transform comes back at half its
+        amplitude (existing behavior; odd lengths round-trip exactly).
 
         """
         TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
@@ -814,6 +935,7 @@ class FrequencySeries(
             channel=self.channel,
         )
 
+    @inherits_time_reference
     def idct(self, type: int = 2, norm: str = "ortho", *, n: int | None = None) -> Any:
         """Compute the Inverse Discrete Cosine Transform (IDCT).
 
@@ -893,6 +1015,7 @@ class FrequencySeries(
             channel=self.channel,
         )
 
+    @inherits_time_reference
     def differentiate_time(self) -> Any:
         """Apply time differentiation in frequency domain.
 
@@ -926,6 +1049,7 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
+    @inherits_time_reference
     def integrate_time(self) -> Any:
         """Apply time integration in frequency domain.
 
@@ -968,6 +1092,7 @@ class FrequencySeries(
 
     # smooth() and find_peaks() are now inherited from SignalAnalysisMixin
 
+    @inherits_time_reference
     def quadrature_sum(self, other: Any) -> Any:
         """Compute sqrt(self^2 + other^2) assuming checking independence.
 
@@ -999,6 +1124,7 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
+    @inherits_time_reference
     def group_delay(self) -> Any:
         """Calculate the group delay of the series.
 
@@ -1031,6 +1157,7 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
+    @inherits_time_reference
     def rebin(self, width: float | u.Quantity) -> FrequencySeries:
         """Rebin the FrequencySeries to a new resolution.
 
@@ -1697,6 +1824,10 @@ class FrequencySeries(
 
         return from_pyspeckit(cls, spectrum, **kwargs)
 
+
+# ``smooth`` lives in the shared SignalAnalysisMixin, which rebuilds its result
+# from ``epoch=self.epoch``; keep the timing-reference state of the source (#725).
+setattr(FrequencySeries, "smooth", inherits_time_reference(FrequencySeries.smooth))
 
 # Preserve the inherited Unified I/O docstring structure so Astropy can
 # append format tables during reader/writer registration.

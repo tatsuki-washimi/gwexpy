@@ -47,6 +47,8 @@ from gwexpy.io.hdf5_series import (
     raise_for_attribute_limit,
     write_hdf5_series_any_axis,
 )
+from gwexpy.io.hdf5_time_reference import ATTRIBUTE, read_reference, write_reference
+from gwexpy.time._reference import get_time_reference, set_time_reference
 from gwexpy.timeseries._read import mark_irregular_hdf5_read
 
 from ._hdf5_exact_epoch import (
@@ -716,7 +718,7 @@ def _sidecar_snapshot(h5file: h5py.File) -> _SidecarSnapshot:
             name in h5file.attrs,
             h5file.attrs[name] if name in h5file.attrs else _MISSING,
         )
-        for name in (SIDECAR_ATTRIBUTE_V1, SIDECAR_ATTRIBUTE_V2)
+        for name in (SIDECAR_ATTRIBUTE_V1, SIDECAR_ATTRIBUTE_V2, ATTRIBUTE)
     )
 
 
@@ -808,6 +810,7 @@ def _write_dataset_once(
     if _dataset_path(dataset) != object_path:  # pragma: no cover - native invariant
         raise RuntimeError("native HDF5 writer returned an unexpected dataset path")
     _commit_sidecar(container.file, dataset, marker)
+    write_reference(dataset, get_time_reference(array))
     return dataset
 
 
@@ -904,7 +907,7 @@ def _verify_handle_recovery(recovery: _HandleRecovery) -> None:
     if h5py.h5o.get_info(linked.id).addr != h5py.h5o.get_info(recovery.dataset.id).addr:
         raise RuntimeError("HDF5 recovery dataset link changed object identity")
     for version, (_, exists, raw) in zip(
-        ("v1", "v2"), recovery.sidecar_snapshot, strict=True
+        ("v1", "v2", "time_reference"), recovery.sidecar_snapshot, strict=True
     ):
         present_name = f"sidecar_{version}_snapshot_present"
         if present_name not in recovery.group.attrs:
@@ -982,7 +985,9 @@ def _prepare_handle_recovery(
     )
     try:
         _link_handle_recovery_dataset(rollback, dataset)
-        for version, snapshot in zip(("v1", "v2"), sidecar_snapshot, strict=True):
+        for version, snapshot in zip(
+            ("v1", "v2", "time_reference"), sidecar_snapshot, strict=True
+        ):
             _store_handle_sidecar_snapshot(
                 rollback,
                 version,
@@ -1795,12 +1800,16 @@ def _read_open_container(
         validate_marker_record(marker, document)
     start = kwargs.pop("start", None)
     end = kwargs.pop("end", None)
+    state = read_reference(dataset)
     result = _read_core(dataset, kwargs)
     if not isinstance(result, target_class):  # pragma: no cover - reader invariant
         result = result.view(target_class)
 
     if marker is not None:
         result._gwex_t0_gps_ns = marker.epoch_ns
+
+    if state is not None:
+        set_time_reference(result, state)
 
     explicit_axis = needs_explicit_axis(result)
     if (start is not None or end is not None) and not explicit_axis:
@@ -1908,7 +1917,19 @@ def register_hdf5_exact_t0_io() -> None:
                     path,
                     write_kwargs,
                 )
-                return _native_writer()(array, target, path=path, **write_kwargs)
+                if isinstance(target, (h5py.File, h5py.Group)):
+                    dataset = _native_writer()(array, target, path=path, **write_kwargs)
+                    write_reference(dataset, get_time_reference(array))
+                    return dataset
+                # The native external-storage path is intentionally outside the
+                # staged transaction (external raw files cannot be rolled back).
+                # Update metadata after that existing write has completed.
+                dataset = _native_writer()(array, target, path=path, **write_kwargs)
+                with h5py.File(target, "a") as handle:
+                    name = path if path is not None else getattr(array, "name", None)
+                    output = _gwpy_io_hdf5.find_dataset(handle, path=name)
+                    write_reference(output, get_time_reference(array))
+                return dataset
             if path is not None:
                 _native_path_components(array, path)
             if isinstance(target, (h5py.File, h5py.Group)):

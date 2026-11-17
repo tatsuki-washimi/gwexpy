@@ -205,6 +205,9 @@ class TimeSeriesMatrixCoreMixin:
             xindex=common_axis,
             xunit=common_axis.unit if isinstance(common_axis, u.Quantity) else None,
         )
+        # Keep the origin of the source: the result used to fall back to 0.0
+        # here, which would read as GPS 0 for an absolute matrix (#725).
+        new_mat.epoch = getattr(self, "epoch", 0.0)
         new_mat.meta = meta_matrix
         return new_mat
 

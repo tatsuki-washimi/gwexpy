@@ -5,6 +5,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time._reference import inherits_time_reference
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.typing import ArrayLike, IndexLike
 
@@ -43,6 +44,17 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
 
     f0 : `float`, `~astropy.units.Quantity`, optional
         The start frequency.
+
+    epoch : `float`, optional
+        Time of the data the spectra were computed from (a keyword passed on
+        to `~gwexpy.types.seriesmatrix.SeriesMatrix`).  It is independent of
+        the frequency axis.  Omitting it, or passing ``None`` or ``NaN``,
+        makes the matrix ``time_reference == "relative"`` (like a
+        `FrequencySeries` built without ``epoch``); the public ``epoch`` is
+        ``0.0`` when omitted and ``None`` when ``None`` was given, so
+        ``epoch == 0.0`` alone is not GPS 0.  A finite value (including an
+        explicit ``0.0``) is an absolute GPS time.  ``+Inf`` and ``-Inf``
+        raise `ValueError`.
 
     **kwargs
         Additional keyword arguments:
@@ -143,3 +155,11 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
                         kwargs["names"] = cn
         obj = super().__new__(cls, data, **kwargs)
         return cast(FrequencySeriesMatrix, obj)
+
+
+# ``ifft``, ``filter``, ``apply_response`` and ``smooth`` rebuild a matrix with
+# an explicit ``epoch``; keep the ``time_reference`` state of the source (#725).
+for _m in ("ifft", "filter", "apply_response", "smooth"):
+    _method = getattr(FrequencySeriesMatrix, _m, None)
+    if _method is not None:
+        setattr(FrequencySeriesMatrix, _m, inherits_time_reference(_method))

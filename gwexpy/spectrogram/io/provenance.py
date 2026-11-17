@@ -28,6 +28,9 @@ from gwpy.io.hdf5 import identify_hdf5
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
+from gwexpy.io import hdf5_time_reference as timing_hdf5
+from gwexpy.time._reference import get_time_reference, set_time_reference
+
 from ..provenance import (
     HDF5_PROVENANCE_ATTRIBUTE,
     MAX_HDF5_PROVENANCE_SIDECAR_BYTES,
@@ -458,9 +461,22 @@ def _sidecar_provenance(
     return None if provenance is None else validated_provenance(provenance)
 
 
+class _SidecarSnapshot(tuple):
+    """Existing provenance snapshot plus the independent time sidecar."""
+
+    timing: tuple[bool, Any]
+
+    def __new__(cls, exists: bool, raw: Any, timing: tuple[bool, Any]):
+        obj = super().__new__(cls, (exists, raw))
+        obj.timing = timing
+        return obj
+
+
 def _sidecar_attr_snapshot(h5file: h5py.File) -> tuple[bool, Any]:
     key = HDF5_PROVENANCE_ATTRIBUTE
-    return key in h5file.attrs, h5file.attrs.get(key)
+    return _SidecarSnapshot(
+        key in h5file.attrs, h5file.attrs.get(key), timing_hdf5.snapshot(h5file)
+    )
 
 
 def _apply_sidecar_snapshot(h5file: h5py.File, snapshot: tuple[bool, Any]) -> None:
@@ -469,6 +485,8 @@ def _apply_sidecar_snapshot(h5file: h5py.File, snapshot: tuple[bool, Any]) -> No
         h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = raw
     elif HDF5_PROVENANCE_ATTRIBUTE in h5file.attrs:
         del h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]
+    if isinstance(snapshot, _SidecarSnapshot):
+        timing_hdf5.restore(h5file, snapshot.timing)
 
 
 def _restore_sidecar_attr(h5file: h5py.File, snapshot: tuple[bool, Any]) -> None:
@@ -725,6 +743,11 @@ def _record_sidecar_snapshot(
     rollback.attrs["sidecar_snapshot_present"] = exists
     if exists:
         rollback.attrs["sidecar_snapshot"] = raw
+    if isinstance(snapshot, _SidecarSnapshot):
+        time_exists, time_raw = snapshot.timing
+        rollback.attrs["time_reference_snapshot_present"] = time_exists
+        if time_exists:
+            rollback.attrs["time_reference_snapshot"] = time_raw
 
 
 def _ensure_recovery_hard_link(
@@ -795,9 +818,24 @@ def _valid_recovery_sidecar_snapshot(
     try:
         marker = artifact.attrs.get("sidecar_snapshot_present", missing)
         snapshot = artifact.attrs.get("sidecar_snapshot", missing)
+        timing_marker = artifact.attrs.get("time_reference_snapshot_present", missing)
+        timing_snapshot = artifact.attrs.get("time_reference_snapshot", missing)
     except BaseException as error:
         errors.append(error)
         return False
+
+    if timing_marker is not missing or timing_snapshot is not missing:
+        if not isinstance(timing_marker, (bool, np.bool_)) or bool(timing_marker) != (
+            timing_snapshot is not missing
+        ):
+            errors.append(ProvenanceSidecarError("invalid time-reference snapshot"))
+            return False
+        if timing_snapshot is not missing:
+            try:
+                timing_hdf5._decode(timing_snapshot)
+            except BaseException as error:
+                errors.append(error)
+                return False
 
     if marker is missing:
         if snapshot is not missing:
@@ -1030,6 +1068,7 @@ def _write_to_open_container(
     try:
         dataset = writer(array, container, path=path, **kwargs)
         _commit_sidecar(h5file, dataset, array.provenance)
+        timing_hdf5.write_reference(dataset, get_time_reference(array))
     except BaseException as operation_error:
         event_errors: list[BaseException] = [operation_error]
         restoration_errors: list[BaseException] = []
@@ -1103,6 +1142,93 @@ def _write_to_open_container(
     return dataset
 
 
+class AnonymousStreamRollbackError(RuntimeError):
+    """Report a failed stream rollback and the saved original, if available."""
+
+    def __init__(self, recovery_path: str | None) -> None:
+        self.recovery_path = recovery_path
+        super().__init__(
+            f"anonymous HDF5 stream rollback failed; recovery file: {recovery_path}"
+        )
+
+
+def _copy_binary_stream(source: Any, target: Any) -> None:
+    """Copy a binary stream while detecting short or failed writes."""
+    while chunk := source.read(1024 * 1024):
+        remaining = memoryview(chunk)
+        while remaining:
+            count = target.write(remaining.tobytes())
+            if not isinstance(count, int) or count <= 0 or count > len(remaining):
+                raise OSError("short write while copying HDF5 stream")
+            remaining = remaining[count:]
+
+
+def _write_anonymous_stream(
+    array: Any,
+    target: Any,
+    path: str | None,
+    writer: Callable[..., h5py.Dataset],
+    kwargs: dict[str, Any],
+) -> h5py.Dataset:
+    """Stage an anonymous output and restore its original bytes on failure."""
+    if not callable(getattr(target, "seekable", None)) or not target.seekable():
+        raise ValueError("anonymous HDF5 output must be seekable")
+    if not all(
+        callable(getattr(target, method, None))
+        for method in ("read", "write", "truncate")
+    ):
+        raise ValueError("anonymous HDF5 output must be readable and writable")
+    original_position = target.tell()
+    fd, recovery_path = tempfile.mkstemp(prefix="gwexpy-spectrogram-recovery-")
+    keep_recovery = False
+    try:
+        with os.fdopen(fd, "w+b") as previous, tempfile.TemporaryFile() as stage:
+            try:
+                target.seek(0)
+                _copy_binary_stream(target, previous)
+                previous.flush()
+                os.fsync(previous.fileno())
+            finally:
+                target.seek(original_position)
+            if kwargs.get("append", False):
+                previous.seek(0)
+                _copy_binary_stream(previous, stage)
+                mode = "a"
+            else:
+                mode = "w"
+            stage.seek(0)
+            with h5py.File(stage, mode) as handle:
+                result = _write_to_open_container(array, handle, path, writer, kwargs)
+            stage.seek(0)
+            try:
+                target.seek(0)
+                target.truncate()
+                _copy_binary_stream(stage, target)
+                target.truncate()
+                if callable(getattr(target, "flush", None)):
+                    target.flush()
+            except BaseException as operation_error:
+                try:
+                    previous.seek(0)
+                    target.seek(0)
+                    target.truncate()
+                    _copy_binary_stream(previous, target)
+                    target.truncate()
+                    target.seek(original_position)
+                    if callable(getattr(target, "flush", None)):
+                        target.flush()
+                except BaseException as rollback_error:
+                    keep_recovery = True
+                    raise AnonymousStreamRollbackError(
+                        recovery_path
+                    ) from rollback_error
+                raise operation_error
+            return result
+    finally:
+        if not keep_recovery and os.path.exists(recovery_path):
+            os.unlink(recovery_path)
+
+
 def _path_replacement_preflight(filepath: Path) -> tuple[bool, int | None]:
     """Reject links and retain regular-file mode bits for ``os.replace``."""
     try:
@@ -1167,10 +1293,12 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
             with _file_transaction(source):
                 with h5py.File(source, "r") as h5file:
                     provenance = _sidecar_provenance(h5file, path)
+                    state = timing_hdf5.read_reference(_dataset(h5file, path))
                     result = base_reader(h5file, path=path, **kwargs)
         elif isinstance(source, h5py.HLObject):
             with _file_transaction(source):
                 provenance = _sidecar_provenance(source, path)
+                state = timing_hdf5.read_reference(_dataset(source, path))
                 result = base_reader(source, path=path, **kwargs)
         else:
             source_name = getattr(source, "name", None)
@@ -1182,8 +1310,11 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
             with _file_transaction(source_name):
                 with h5py.File(source, "r") as h5file:
                     provenance = _sidecar_provenance(h5file, path)
+                    state = timing_hdf5.read_reference(_dataset(h5file, path))
                     result = base_reader(h5file, path=path, **kwargs)
         result = result.view(cls)
+        if state is not None:
+            set_time_reference(result, state)
         if provenance is not None:
             result.provenance = provenance
         return result
@@ -1200,7 +1331,15 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
                 return _write_to_open_container(
                     array, target, path, base_writer, kwargs
                 )
-        return base_writer(array, target, path=path, **kwargs)
+        target_name = getattr(target, "name", None)
+        if isinstance(target_name, (str, Path)):
+            with _file_transaction(target_name):
+                mode = "a" if kwargs.get("append", False) else "w"
+                with h5py.File(target, mode) as handle:
+                    return _write_to_open_container(
+                        array, handle, path, base_writer, kwargs
+                    )
+        return _write_anonymous_stream(array, target, path, base_writer, kwargs)
 
     io_registry.register_reader("hdf5", cls, read_hdf5_spectrogram, force=True)
     io_registry.register_writer("hdf5", cls, write_hdf5_spectrogram, force=True)

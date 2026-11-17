@@ -6,6 +6,9 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time._reference import inherit_time_reference
+from gwexpy.types.series_matrix_core import _preserve_cached_dx
+
 from .metadata import MetaData, MetaDataMatrix
 from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
 
@@ -199,7 +202,14 @@ class SeriesMatrixIndexingMixin:
 
             # Wrap in Series
             kwargs = self._get_series_kwargs(new_xidx, meta)
-            return series_cls(result, **kwargs)
+            # The element is built from explicit axis/epoch values, which read
+            # as absolute; give it the matrix's timing state (#725).
+            selected = inherit_time_reference(series_cls(result, **kwargs), self)
+            if isinstance(s, slice):
+                return _preserve_cached_dx(self, selected, step=s.step or 1)
+            if isinstance(s, (int, np.integer)):
+                return _preserve_cached_dx(self, selected)
+            return selected
 
         # 3. Handle label-based slicing for rows/cols
         ri = _resolve_label_key(r, self.row_index)
@@ -290,7 +300,15 @@ class SeriesMatrixIndexingMixin:
         result.rows = deepcopy(new_rows)
         result.cols = deepcopy(new_cols)
         result.xindex = new_xindex
+        if isinstance(s, slice):
+            _preserve_cached_dx(self, result, step=s.step or 1)
+        elif integer_sample_selector:
+            _preserve_cached_dx(self, result)
         result.attrs = deepcopy(getattr(self, "attrs", {}))
+        # A paired list selection goes through a plain ndarray, so NumPy's
+        # finalize saw no matrix: restore the epoch and the timing state (#725).
+        result.__dict__["epoch"] = getattr(self, "epoch", 0.0)
+        inherit_time_reference(result, self)
         if integer_sample_selector:
             result.name = getattr(self, "name", "")
 

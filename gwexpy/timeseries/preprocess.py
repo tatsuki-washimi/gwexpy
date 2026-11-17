@@ -30,6 +30,7 @@ from gwexpy.signal.preprocessing import (
     StandardizationModel,
     WhiteningModel,
 )
+from gwexpy.time._reference import inherits_time_reference
 
 from .utils import _coerce_t0_gps
 
@@ -800,6 +801,7 @@ def impute_timeseries(
 ) -> np.ndarray: ...
 
 
+@inherits_time_reference
 def impute_timeseries(
     ts: TimeSeriesT | npt.ArrayLike,
     *,
@@ -1026,6 +1028,7 @@ def impute_timeseries(
     return val
 
 
+@inherits_time_reference
 def standardize_timeseries(
     ts: TimeSeries,
     *,

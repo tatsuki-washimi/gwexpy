@@ -191,7 +191,9 @@ def forecast_series(
     }
 
     def make_output(data: np.ndarray) -> TimeSeries:
-        return TimeSeries(data, **output_kwargs)
+        from gwexpy.time._reference import inherit_time_reference
+
+        return inherit_time_reference(TimeSeries(data, **output_kwargs), series)
 
     outputs = {
         float(level): make_output(quantile_values[:, i])
@@ -253,13 +255,15 @@ def forecast_collection(
     from .timeseries import TimeSeries
 
     def output_series(key: str, series: TimeSeries, data: np.ndarray) -> TimeSeries:
+        from gwexpy.time._reference import inherit_time_reference
+
         kwargs = {
             **axis_kwargs_by_key[key],
             "unit": series.unit,
             "name": series.name,
             "channel": series.channel,
         }
-        return TimeSeries(data, **kwargs)
+        return inherit_time_reference(TimeSeries(data, **kwargs), series)
 
     point = TimeSeriesDict(
         (key, output_series(key, series, point_values[i]))

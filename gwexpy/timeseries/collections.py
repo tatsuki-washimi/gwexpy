@@ -39,6 +39,10 @@ from gwexpy.io.hdf5_collection import (
     write_hdf5_manifest,
 )
 from gwexpy.io.time_selection import apply_time_selection
+from gwexpy.time._reference import (
+    inherit_time_reference,
+    require_uniform_time_reference,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
@@ -1128,6 +1132,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write the collection to a supported target."""
+        from ._gwf_io import _require_absolute_for_gwf_write
+
+        _require_absolute_for_gwf_write(
+            target, kwargs.get("format"), ((repr(k), ts) for k, ts in self.items())
+        )
         from gwexpy._bootstrap import register_all
 
         register_all()
@@ -1450,6 +1459,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         # Dicts are ordered in modern python but keys() usually safe
         keys = list(self.keys())
         series_list = [self[k] for k in keys]
+        require_uniform_time_reference(series_list)
 
         vals, times, meta = align_timeseries_collection(
             series_list, how=align, **kwargs
@@ -1488,6 +1498,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             and len(set(exact_intervals)) == 1
         ):
             setattr(matrix, "_gwex_dt_gps_ns", exact_intervals[0])
+        # ``times=`` above is an explicit axis (absolute); the Matrix takes the
+        # timing state of the first series (#725).
+        if series_list:
+            inherit_time_reference(matrix, series_list[0])
         # Assign channel names from keys
         matrix.channel_names = keys
         return matrix
@@ -2138,6 +2152,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         from gwexpy.timeseries.matrix import TimeSeriesMatrix
         from gwexpy.timeseries.preprocess import align_timeseries_collection
 
+        require_uniform_time_reference(self)
         vals, times, meta = align_timeseries_collection(list(self), how=align, **kwargs)
         # Use names from metadata (from TS objects)
         names = meta.get("channel_names")
@@ -2164,6 +2179,10 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             and len(set(exact_intervals)) == 1
         ):
             setattr(matrix, "_gwex_dt_gps_ns", exact_intervals[0])
+        # The conversion above uses one matrix-level state, so mixed input
+        # states are rejected before alignment.
+        if len(self):
+            inherit_time_reference(matrix, self[0])
         if names:
             matrix.channel_names = names
         return matrix
@@ -2485,6 +2504,13 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
+        from ._gwf_io import _require_absolute_for_gwf_write
+
+        _require_absolute_for_gwf_write(
+            target,
+            kwargs.get("format"),
+            ((f"index {idx}", ts) for idx, ts in enumerate(self)),
+        )
         from gwexpy._bootstrap import register_all
 
         register_all()

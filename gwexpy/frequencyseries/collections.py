@@ -23,6 +23,10 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
+from gwexpy.time._reference import (
+    inherit_time_reference,
+    require_uniform_time_reference,
+)
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
     ListMapMixin,
@@ -505,6 +509,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         if not keys:
             return FrequencySeriesMatrix(np.empty((0, 0, 0)))
 
+        require_uniform_time_reference(self.values())
         first = self[keys[0]]
         n_row = len(keys)
         n_samp = len(first)
@@ -520,7 +525,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             data[i, 0] = fs.value
             meta_arr[i, 0] = MetaData(unit=fs.unit, name=fs.name, channel=fs.channel)
 
-        return FrequencySeriesMatrix(
+        matrix = FrequencySeriesMatrix(
             data,
             frequencies=first.frequencies,
             rows=keys,
@@ -528,6 +533,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             meta=MetaDataMatrix(meta_arr),
             epoch=first.epoch.gps if hasattr(first.epoch, "gps") else first.epoch,
         )
+        # Mixed input states are rejected before the matrix inherits the
+        # common state from the first series (#725).
+        return inherit_time_reference(matrix, first)
 
     def to_tmultigraph(self, name: str | None = None) -> Any:
         """Convert to ROOT TMultiGraph."""

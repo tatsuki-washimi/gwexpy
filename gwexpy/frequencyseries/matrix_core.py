@@ -72,6 +72,10 @@ class FrequencySeriesMatrixCoreMixin:
             f"<FrequencySeriesMatrix shape={self.shape}, df={self.df}, unit={u_meta}>"
         )
 
+    def _series_time_kwargs(self: _FrequencySeriesMatrixCoreLike) -> dict[str, Any]:
+        """Carry the matrix ``epoch`` onto element series (the axis is frequency)."""
+        return {"epoch": getattr(self, "epoch", None)}
+
     def _get_series_kwargs(self: _FrequencySeriesMatrixCoreLike, xindex, meta):
         return {
             "frequencies": xindex,

@@ -9,6 +9,7 @@ from astropy import units as u
 
 from gwexpy.interop._optional import require_optional
 from gwexpy.interop._registry import ConverterRegistry
+from gwexpy.time._reference import inherits_time_reference
 
 from ._typing import TimeSeriesAttrs
 
@@ -523,6 +524,7 @@ def _create_stlt_container(result, times, frequencies, sigma, metadata):
 class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
     """Provide special spectral transform methods."""
 
+    @inherits_time_reference
     def laplace(
         self,
         *,
@@ -1016,6 +1018,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         else:
             raise ValueError(f"Unknown output format: {output}")
 
+    @inherits_time_reference
     def emd(
         self,
         *,
@@ -1263,6 +1266,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         return out_dict
 
+    @inherits_time_reference
     def hilbert_analysis(
         self,
         *,

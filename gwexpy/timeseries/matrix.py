@@ -14,6 +14,11 @@ except ImportError:
 
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
+from gwexpy.time._reference import (
+    inherits_time_reference,
+    resolve_time_inputs,
+    set_time_reference,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.typing import ArrayLike, IndexLike
@@ -67,7 +72,13 @@ class TimeSeriesMatrix(  # type: ignore[misc]
         The sample rate of the data (1/dt).
 
     epoch : `float`, `~astropy.units.Quantity`, optional
-        The epoch of the data.
+        The epoch of the data.  Omitting ``t0``, ``epoch`` and ``times`` (or
+        passing ``None`` or ``NaN``) makes the matrix
+        ``time_reference == "relative"``: the time axis starts at ``0 s`` and
+        no absolute GPS time is known; ``epoch == 0.0`` then does **not** mean
+        GPS 0.  A finite value (including an explicit ``0.0``) or an explicit
+        ``times`` axis is an absolute GPS time.  ``+Inf`` and ``-Inf`` raise
+        `ValueError`.
 
     **kwargs
         Additional keyword arguments:
@@ -240,6 +251,24 @@ class TimeSeriesMatrix(  # type: ignore[misc]
         if sample_rate is not None and dt is not None:
             raise ValueError("give only one of sample_rate or dt")
 
+        # #725 (U-1): omitted/None/NaN t0, epoch or x0 -> relative; finite
+        # (including 0.0) or an explicit time axis (times/xindex) -> absolute;
+        # +/-Inf -> ValueError.  NaN is dropped here so it never reaches the
+        # axis.  A matrix passed as ``data`` keeps its state when no origin is
+        # given (``time_reference is None``).
+        time_reference, cleared = resolve_time_inputs(
+            {"t0": t0, "epoch": epoch, "x0": kwargs.get("x0")},
+            explicit_axis=times is not None or kwargs.get("xindex") is not None,
+            inherit=isinstance(data, SeriesMatrix),
+        )
+        for cleared_name in cleared:
+            if cleared_name == "t0":
+                t0 = None
+            elif cleared_name == "epoch":
+                epoch = None
+            else:
+                kwargs.pop(cleared_name, None)
+
         # 2. Map time-specific args to SeriesMatrix generic args
         if times is not None:
             # If times (xindex) is provided, it takes priority.
@@ -348,6 +377,9 @@ class TimeSeriesMatrix(  # type: ignore[misc]
             if t0 is not None:
                 obj._x0 = u.Quantity(kwargs["x0"], axis_unit)
 
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+
         return cast("TimeSeriesMatrix", obj)
 
 
@@ -444,3 +476,36 @@ for _m in _TSM_UNIVARIATE_METHODS:
             return _wrapper
 
         setattr(TimeSeriesMatrix, _m, _make_univ_wrapper(_m))
+
+
+# Methods that rebuild a matrix from per-element results or from an explicit
+# ``epoch``/axis.  Each returned matrix keeps the ``time_reference`` state of
+# the matrix the method was called on, including the FrequencySeriesMatrix and
+# SpectrogramMatrix results of the spectral methods (#725).
+_TSM_TIME_REFERENCE_METHODS = (
+    *_TSM_TIME_DOMAIN_METHODS,
+    *_TSM_BIVARIATE_METHODS,
+    *_TSM_UNIVARIATE_METHODS,
+    "radian",
+    "degree",
+    "impute",
+    "standardize",
+    "whiten_channels",
+    "rolling_mean",
+    "rolling_std",
+    "rolling_median",
+    "rolling_min",
+    "rolling_max",
+    "crop",
+    "lock_in",
+    "fft",
+    "psd",
+    "asd",
+    "spectrogram",
+    "spectrogram2",
+    "q_transform",
+)
+for _m in _TSM_TIME_REFERENCE_METHODS:
+    _method = getattr(TimeSeriesMatrix, _m, None)
+    if _method is not None:
+        setattr(TimeSeriesMatrix, _m, inherits_time_reference(_method))

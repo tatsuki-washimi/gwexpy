@@ -15,6 +15,7 @@ import numpy.typing as npt
 from astropy import units as u
 
 from gwexpy.interop._registry import ConverterRegistry
+from gwexpy.time._reference import inherits_time_reference
 
 from ._typing import TimeSeriesAttrs
 
@@ -163,6 +164,17 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Returns
         -------
         `FrequencySeries`
+            One-sided complex spectrum with the same unit as the input and
+            ``frequencies`` in Hz (``f0``/``df`` of the FFT, not the sample
+            rate).  Its ``epoch`` and ``time_reference`` are those of this
+            series; the values do not depend on ``time_reference``.
+
+        Notes
+        -----
+        Normalization (``mode="gwpy"``, as GWpy): ``rfft(x, n=nfft) / nfft``
+        with every bin except DC multiplied by 2, so a sinusoid's peak
+        amplitude is read directly.  ``mode="transient"`` uses the
+        amplitude-spectrum convention described in :meth:`_fft_transient`.
 
         """
         if mode == "gwpy":
@@ -182,6 +194,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         raise ValueError(f"Unknown mode: {mode}")
 
+    @inherits_time_reference
     def _fft_gwpy(
         self, nfft: NumberLike | None = None, **kwargs: Any
     ) -> FrequencySeries:
@@ -200,6 +213,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
             epoch=base_fs.epoch,
         )
 
+    @inherits_time_reference
     def _fft_transient(
         self,
         nfft: NumberLike | None = None,
@@ -365,30 +379,57 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         self._check_regular("rfft")
         return self._super_ts().rfft(*args, **kwargs)
 
+    @inherits_time_reference
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """Power spectral density (GWpy ``psd``), keeping the time reference.
+
+        Normalization: one-sided density in ``unit**2 / Hz`` (as
+        ``scipy.signal.welch(scaling="density")``); the averaging method,
+        window and overlap are those of GWpy.  ``epoch`` and
+        ``time_reference`` are those of this series.
+        """
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().psd(*args, **kwargs)
         return self._restore_spectral_metadata(res.view(FrequencySeries))
 
+    @inherits_time_reference
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """Amplitude spectral density, ``sqrt(psd)`` in ``unit / Hz**0.5``.
+
+        Same normalization as :meth:`psd`; ``epoch`` and ``time_reference``
+        are those of this series.
+        """
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().asd(*args, **kwargs)
         return self._restore_spectral_metadata(res.view(FrequencySeries))
 
+    @inherits_time_reference
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """Cross spectral density with ``other`` (GWpy ``csd``).
+
+        Normalization: one-sided density, same convention as :meth:`psd`.
+        ``time_reference`` follows this (the first) series.
+        """
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().csd(other, *args, **kwargs)
         return res.view(FrequencySeries)
 
+    @inherits_time_reference
     def coherence(self, *args: Any, **kwargs: Any) -> FrequencySeries:
+        """Magnitude-squared coherence with another series (GWpy ``coherence``).
+
+        Dimensionless, in ``[0, 1]``; the density normalization of the PSD and
+        CSD cancels.  ``time_reference`` follows this (the first) series.
+        """
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().coherence(*args, **kwargs)
         return res.view(FrequencySeries)
 
+    @inherits_time_reference
     def spectrogram(
         self,
         stride: float,
@@ -407,7 +448,10 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Returns
         -------
         Spectrogram
-            gwexpy.spectrogram.Spectrogram instance
+            gwexpy.spectrogram.Spectrogram instance.  Each row is a
+            one-sided PSD in ``unit**2 / Hz`` (same normalization as
+            :meth:`psd`).  ``epoch`` and ``time_reference`` are those of this
+            series.
 
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
@@ -423,6 +467,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         )
         return res.view(Spectrogram)
 
+    @inherits_time_reference
     def spectrogram2(
         self,
         fftlength: float,
@@ -444,6 +489,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         )
         return res.view(Spectrogram)
 
+    @inherits_time_reference
     def rayleigh_spectrogram(
         self,
         stride: float,
@@ -482,6 +528,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         )
         return res.view(Spectrogram)
 
+    @inherits_time_reference
     def _rayleigh_spectrogram_with_hop_count(
         self,
         stride: float,
@@ -510,6 +557,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         res.override_unit("")
         return res.view(Spectrogram)
 
+    @inherits_time_reference
     def dct(
         self,
         type: int = 2,
@@ -589,6 +637,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         fs.dt = self.dt
         return fs
 
+    @inherits_time_reference
     def cepstrum(
         self,
         kind: Literal["real", "complex", "power"] = "real",

@@ -13,6 +13,14 @@ from ._time import datetime_utc_to_gps, gps_to_datetime_utc
 
 
 def _ts_to_obspy_trace(ts, stats_extra=None, dtype=None):
+    from gwexpy.time._reference import TIME_REFERENCE_RELATIVE, get_time_reference
+
+    if get_time_reference(ts) == TIME_REFERENCE_RELATIVE:
+        raise ValueError(
+            "Cannot export a relative-time TimeSeries to ObsPy without an "
+            "explicit GPS epoch; anchor it with .with_epoch(epoch) first."
+        )
+
     obspy = require_optional("obspy")
     from .base import to_plain_array
 
@@ -164,6 +172,14 @@ def _spec_to_obspy_stream(spec, **kwargs):
 
     Each frequency bin becomes a Trace.
     """
+    from gwexpy.time._reference import TIME_REFERENCE_RELATIVE, get_time_reference
+
+    if get_time_reference(spec) == TIME_REFERENCE_RELATIVE:
+        raise ValueError(
+            "Cannot export a relative-time Spectrogram to ObsPy without an "
+            "explicit GPS epoch; anchor it with .with_epoch(epoch) first."
+        )
+
     obspy = require_optional("obspy")
     from .base import to_plain_array
 
