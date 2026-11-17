@@ -234,3 +234,53 @@ def test_field_arithmetic_rejects_different_absolute_epochs(reverse):
 
     with pytest.raises(ValueError, match="epoch mismatch"):
         left + right
+
+
+def test_field_extract_points_preserves_time_reference_and_metadata():
+    rel = make_field(axis0=np.array([3.0, 3.25, 3.5, 3.75]) * u.s)
+    abs_field = make_field(
+        axis0=np.array(
+            [1_400_000_003.0, 1_400_000_003.25, 1_400_000_003.5, 1_400_000_003.75]
+        )
+        * u.s,
+        epoch=1_400_000_000.0,
+    )
+
+    rel_ts = rel.extract_points([(0.0 * u.m, 5.0 * u.m, 2.5 * u.m)])[0]
+    abs_ts = abs_field.extract_points([(0.0 * u.m, 5.0 * u.m, 2.5 * u.m)])[0]
+
+    assert rel_ts.time_reference == "relative"
+    assert rel_ts.unit == rel.unit
+    assert_array_equal(rel_ts.times.to_value(u.s), [3.0, 3.25, 3.5, 3.75])
+
+    assert abs_ts.time_reference == "absolute"
+    assert abs_ts.unit == abs_field.unit
+    assert_array_equal(
+        abs_ts.times.to_value(u.s),
+        [1_400_000_003.0, 1_400_000_003.25, 1_400_000_003.5, 1_400_000_003.75],
+    )
+
+
+def test_field_compute_psd_propagates_time_reference():
+    rel = make_field()
+    abs_field = make_field(epoch=1_400_000_000.0)
+
+    rel_psd = rel.compute_psd((1.0 * u.m, 4.0 * u.m, 0.0 * u.m), fftlength=0.5)
+    abs_psd = abs_field.compute_psd((1.0 * u.m, 4.0 * u.m, 0.0 * u.m), fftlength=0.5)
+
+    assert rel_psd.time_reference == "relative"
+    assert rel_psd.epoch is None
+
+    assert abs_psd.time_reference == "absolute"
+    assert abs_psd.epoch == abs_field.epoch
+
+
+def test_field_compute_xcorr_returns_relative_lag_axis():
+    abs_field = make_field(epoch=1_400_000_000.0)
+
+    xcorr = abs_field.compute_xcorr(
+        (1.0 * u.m, 4.0 * u.m, 0.0 * u.m),
+        (-2.0 * u.m, 6.0 * u.m, 5.0 * u.m),
+    )
+
+    assert xcorr.time_reference == "relative"

@@ -131,13 +131,14 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
 SUBPROCESS_OUTPUT_LIMIT = 2_000_000
-EXPECTED_EVIDENCE_CASES = 396
+EXPECTED_EVIDENCE_CASES = 397
 EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
 SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
 SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
     {
         "test_terminal_array_family_T_matches_gwpy",
         "test_terminal_plot_show_lifecycle_matches_gwpy",
+        "test_time_reference_overrides_preserve_gwpy_finite_behavior",
     }
 )
 
@@ -564,6 +565,11 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
                 f"The {member} override changed GWpy native routing, data, "
                 "metadata, or failure outcomes for ordinary inputs."
             )
+            io_comparator = (
+                "gwpy-native-io-with-gwexpy-time-reference-sidecar"
+                if member == "write"
+                else "exact-io-outcome-payload-and-metadata"
+            )
             io_observations: Mapping[str, Mapping[str, Any]] | None = None
             if is_non_intersecting_safety_exception:
                 io_observations = NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS
@@ -579,7 +585,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
                     f"tests/io/test_gwpy_override_terminal_io.py::{node}",
                     issues=("#639", issue, "#704"),
                     pre_fix=io_pre_fix,
-                    comparator="exact-io-outcome-payload-and-metadata",
+                    comparator=io_comparator,
                     observations=io_observations,
                     additional_behavior=additional_behavior,
                     compatibility_exception=(
@@ -721,6 +727,31 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
             comparator="exact-cadence-property-outcome",
         ),
     )
+
+    time_reference_overrides = {
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries": ("epoch",),
+        "gwexpy.spectrogram.spectrogram.Spectrogram": (
+            "__new__",
+            "epoch",
+            "t0",
+            "x0",
+        ),
+        "gwexpy.timeseries.timeseries.TimeSeries": ("epoch",),
+    }
+    for public_class, members in time_reference_overrides.items():
+        for member in members:
+            register(
+                public_class,
+                member,
+                _terminal_closure(
+                    "no-finding",
+                    "finite-time-reference-gwpy-parity",
+                    "tests/test_gwpy_override_inventory.py"
+                    "::test_time_reference_overrides_preserve_gwpy_finite_behavior",
+                    issues=("#639", "#725"),
+                    comparator="exact-values-and-time-axis-metadata",
+                ),
+            )
 
     collection = "gwexpy.timeseries.collections.TimeSeriesDict"
     collection_terminal = {

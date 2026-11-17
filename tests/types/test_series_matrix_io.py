@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from astropy import units as u
 
 from gwexpy.timeseries import TimeSeriesMatrix
 
@@ -180,6 +181,40 @@ class TestToHdf5:
         finally:
             Path(path).unlink(missing_ok=True)
 
+    @pytest.mark.parametrize("n_t", [0, 1], ids=["empty-axis", "one-sample"])
+    def test_short_sample_axis_writes_without_inferred_cadence(self, tmp_path, n_t):
+        matrix = TimeSeriesMatrix(
+            np.ones((1, 1, n_t)), xindex=np.arange(n_t, dtype=float) * u.s
+        )
+        target = tmp_path / f"short-axis-{n_t}.h5"
+
+        matrix.to_hdf5(target)
+
+        loaded = TimeSeriesMatrix.read(target, format="hdf5")
+        assert loaded.shape == matrix.shape
+
+    def test_cadence_preparation_failure_preserves_existing_target(self, tmp_path):
+        original = _make_tsm(n_t=3)
+        target = tmp_path / "existing.h5"
+        original.to_hdf5(target)
+        before = target.read_bytes()
+
+        replacement = TimeSeriesMatrix(
+            np.ones((1, 1, 3)), xindex=np.arange(3, dtype=float) * u.s
+        )
+
+        class InvalidAxis:
+            def __getitem__(self, key):
+                raise ValueError("injected axis read failure")
+
+        if hasattr(replacement, "_dx"):
+            del replacement._dx
+        replacement._xindex = InvalidAxis()
+        with pytest.raises(ValueError, match="injected axis read failure"):
+            replacement.to_hdf5(target)
+
+        assert target.read_bytes() == before
+
 
 # ---------------------------------------------------------------------------
 # __repr__ / __str__ / _repr_html_
@@ -267,6 +302,39 @@ class TestRead:
             assert loaded is not None
         finally:
             Path(path).unlink(missing_ok=True)
+
+    @pytest.mark.parametrize(
+        ("missing", "remaining"),
+        [
+            ("gwexpy_dx_unit", "gwexpy_dx_unit"),
+            ("gwexpy_dx", "gwexpy_dx"),
+        ],
+    )
+    def test_incomplete_cadence_attribute_pair_is_rejected(
+        self, tmp_path, missing, remaining
+    ):
+        import h5py
+
+        target = tmp_path / "incomplete-cadence.h5"
+        _make_tsm().to_hdf5(target)
+        with h5py.File(target, "a") as handle:
+            del handle.attrs[missing]
+
+        with pytest.raises(ValueError, match=remaining):
+            TimeSeriesMatrix.read(target, format="hdf5")
+
+    def test_legacy_file_without_cadence_attributes_uses_axis(self, tmp_path):
+        import h5py
+
+        source = _make_tsm()
+        target = tmp_path / "legacy-no-cadence.h5"
+        source.to_hdf5(target)
+        with h5py.File(target, "a") as handle:
+            del handle.attrs["gwexpy_dx"]
+            del handle.attrs["gwexpy_dx_unit"]
+
+        loaded = TimeSeriesMatrix.read(target, format="hdf5")
+        assert loaded.dt == source.dt
 
     def test_write_fallback_unknown_format_raises(self):
         # Lines 136-144 — fallback write with unknown format raises

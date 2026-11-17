@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gc
 import io
+import json
 import os
 from collections.abc import Mapping
 from pathlib import Path
@@ -15,12 +16,15 @@ from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 from gwexpy.io.hdf5_collection import read_hdf5_keymap, read_hdf5_order
+from gwexpy.io.hdf5_time_reference import ATTRIBUTE as TIME_REFERENCE_ATTRIBUTE
 from gwexpy.timeseries import (
     TimeSeries,
     TimeSeriesDict,
     TimeSeriesList,
     TimeSeriesMatrix,
 )
+
+_GWEXPY_PRIVATE_FILE_ATTRS = {TIME_REFERENCE_ATTRIBUTE}
 
 
 def _channel_text(value: Any) -> str | None:
@@ -63,7 +67,9 @@ def _native_hdf_snapshot(path: Path) -> dict[str, Any]:
         snapshot["/"] = {
             "kind": "group",
             "attrs": {
-                key: _normalise_hdf_value(value) for key, value in h5file.attrs.items()
+                key: _normalise_hdf_value(value)
+                for key, value in h5file.attrs.items()
+                if key not in _GWEXPY_PRIVATE_FILE_ATTRS
             },
         }
 
@@ -85,6 +91,11 @@ def _native_hdf_snapshot(path: Path) -> dict[str, Any]:
 
         h5file.visititems(capture)
     return snapshot
+
+
+def _assert_time_reference_sidecar(path: Path, expected: dict[str, str]) -> None:
+    with h5py.File(path, "r") as h5file:
+        assert json.loads(h5file.attrs[TIME_REFERENCE_ATTRIBUTE]) == expected
 
 
 def _series_pair(offset: float = 0.0) -> tuple[TimeSeries, GwpyTimeSeries]:
@@ -211,6 +222,12 @@ def test_native_hdf5_auto_write_matches_gwpy(
         assert actual_source.write(actual_path) is expected_source.write(expected_path)
 
     assert _native_hdf_snapshot(actual_path) == _native_hdf_snapshot(expected_path)
+    if family == "series":
+        _assert_time_reference_sidecar(actual_path, {"/signal": "absolute"})
+    else:
+        _assert_time_reference_sidecar(
+            actual_path, {"/H1:A": "absolute", "/L1:B": "absolute"}
+        )
 
 
 @pytest.mark.parametrize("layout", ["dataset", "group"])

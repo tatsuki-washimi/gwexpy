@@ -202,6 +202,7 @@ class NameExpectation(str, Enum):
 
 class EpochExpectation(str, Enum):
     PRESERVE = "preserve epoch"
+    AXIS_FIRST_SAMPLE = "derive selected series epoch from explicit time axis"
 
 
 class AttrsExpectation(str, Enum):
@@ -665,20 +666,34 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                     Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
                 )
             ),
-            _error(
+            _result(
                 family,
                 "scalar_selection",
                 Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
-                ValueError,
                 surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.SERIES,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.SCALAR_SERIES_CELL,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_SCALAR_EXACT,
+                name_expectation=NameExpectation.CELL_NAME,
+                epoch_expectation=EpochExpectation.AXIS_FIRST_SAMPLE,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
                 scenario=InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS,
             ),
-            _error(
+            _result(
                 family,
                 "scalar_selection",
                 Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
-                ValueError,
                 surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.SERIES,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.SCALAR_SERIES_CELL,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_SCALAR_EXACT,
+                name_expectation=NameExpectation.CELL_NAME,
+                epoch_expectation=EpochExpectation.AXIS_FIRST_SAMPLE,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
                 scenario=InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS,
             ),
             *(
