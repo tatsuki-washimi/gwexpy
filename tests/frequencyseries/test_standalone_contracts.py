@@ -149,14 +149,15 @@ def test_bifrequencymap_projection_helpers_return_gwpy_frequencyseries():
 
     projected = bmap.propagate(input_spectrum, interpolate=False)
 
-    assert type(projected) is GwpyFrequencySeries
+    assert type(projected) is FrequencySeries
     assert projected.value.tolist() == [6, 15]
     assert projected.frequencies.value.tolist() == [10, 20]
     assert projected.frequencies.unit == u.Hz
     assert projected.unit == u.m * u.s
     assert projected.name == "Projected: map x input"
     assert projected.channel is None
-    assert projected.epoch is None
+    assert projected.epoch == input_spectrum.epoch
+    assert projected.time_reference == "absolute"
 
     diagonal = bmap.diagonal(method="mean")
     assert type(diagonal) is GwpyFrequencySeries
@@ -164,12 +165,13 @@ def test_bifrequencymap_projection_helpers_return_gwpy_frequencyseries():
     assert diagonal.name == "map (diagonal mean)"
 
     convolved = bmap.convolute(input_spectrum, interpolate=False)
-    assert type(convolved) is GwpyFrequencySeries
+    assert type(convolved) is FrequencySeries
     assert convolved.value.tolist() == [6, 15]
     assert convolved.frequencies.value.tolist() == [10, 20]
     assert convolved.unit == u.Hz * u.m * u.s
     assert convolved.channel is None
-    assert convolved.epoch is None
+    assert convolved.epoch == input_spectrum.epoch
+    assert convolved.time_reference == "absolute"
 
     nearest = bmap.get_slice(2 * u.kHz, axis="f1")
     assert type(nearest) is GwpyFrequencySeries
