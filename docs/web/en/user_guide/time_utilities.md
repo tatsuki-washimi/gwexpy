@@ -376,6 +376,10 @@ If `dt` is below 10 float64 ULPs of the target GPS epoch, `with_epoch()` emits a
 
 Exporters that require an absolute UTC/GPS timestamp (such as GWF, ObsPy / miniSEED / SAC / GSE2, and ndscope HDF5) reject `relative` data with `ValueError` instead of silently writing GPS `0` (`1980-01-06`). Anchor relative data with `.with_epoch(epoch)` before exporting.
 
+### HDF5 Compatibility with Plain GWpy Readers
+
+GWexpy stores `time_reference` in an HDF5 sidecar attribute (`_gwexpy_time_reference_v1`) so files remain readable by plain GWpy readers. Readers that ignore this sidecar only see the public finite coordinates (such as `t0 = 0 s`), so a `relative` dataset opened directly with plain GWpy will appear to start at GPS `0` (`1980-01-06`).
+
 ---
 
 ## Next to Read

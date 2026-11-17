@@ -403,6 +403,10 @@ assert anchored.t0.value == 1_400_000_003.0
 
 GWF、ObsPy（miniSEED / SAC / GSE2）、ndscope HDF5 など絶対 GPS / UTC 時刻のみを扱うエクスポータは、`relative` なデータを暗黙に GPS `0`（`1980-01-06`）として出力せず `ValueError` で拒否します。出力前に `.with_epoch(epoch)` で絶対時刻へアンカーしてください。
 
+### 素の GWpy HDF5 リーダーでの互換性（ダウングレード時の挙動）
+
+GWexpy は `time_reference` を HDF5 の sidecar 属性（`_gwexpy_time_reference_v1`）に保存し、素の GWpy リーダーとの読込互換性を維持しています。sidecar を解釈しない読み手は公開されている有限座標（例: `t0 = 0 s`）のみを参照するため、`relative` なデータを素の GWpy で開いた場合は GPS `0`（`1980-01-06`）として解釈されます。
+
 ---
 
 ## 次に読む

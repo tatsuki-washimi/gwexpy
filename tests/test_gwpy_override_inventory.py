@@ -828,7 +828,7 @@ def test_time_reference_overrides_preserve_gwpy_finite_behavior() -> None:
     from gwpy.types import Array2D as GwpyArray2D
 
     from gwexpy.fields import ScalarField
-    from gwexpy.frequencyseries import FrequencySeries
+    from gwexpy.frequencyseries import BifrequencyMap, FrequencySeries
     from gwexpy.spectrogram import Spectrogram
     from gwexpy.timeseries import TimeSeries, TimeSeriesList
     from gwexpy.types import Array, Array2D, Array3D, Array4D, Plane2D
@@ -908,6 +908,7 @@ def test_time_reference_overrides_preserve_gwpy_finite_behavior() -> None:
         (Array3D, GwpyArray, (2, 2, 2)),
         (Array4D, GwpyArray, (2, 2, 2, 2)),
         (Plane2D, GwpyArray2D, (2, 2)),
+        (BifrequencyMap, GwpyArray2D, (2, 2)),
         (ScalarField, GwpyArray, (2, 2, 2, 2)),
     ):
         actual_arr = arr_cls(np.ones(shape), epoch=gps, unit=unit)
@@ -1020,16 +1021,16 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1216,
-        "constructors": 12,
-        "counterpart_absent_per_version": 461,
-        "counterpart_implementation_groups": 79,
-        "counterpart_present_per_version": 147,
+        "cases": 1224,
+        "constructors": 13,
+        "counterpart_absent_per_version": 463,
+        "counterpart_implementation_groups": 81,
+        "counterpart_present_per_version": 149,
         "differential-required": 0,
         "fixed": 224,
-        "GWexpy-only": 922,
-        "logical_members": 608,
-        "no-finding": 70,
+        "GWexpy-only": 926,
+        "logical_members": 612,
+        "no-finding": 74,
         "public_roots": 16,
         "GWpy-fails": 0,
         "unreviewed": 0,
@@ -1056,8 +1057,8 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 608
-    assert len(manifest["cases"]) == 1216
+    assert len(current["members"]) == 612
+    assert len(manifest["cases"]) == 1224
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
@@ -1593,6 +1594,7 @@ def test_golden_constructor_set_and_unified_io_counterparts_are_frozen() -> None
     }
     assert constructors == {
         ("gwexpy.fields.scalar.ScalarField", "__new__"),
+        ("gwexpy.frequencyseries.bifrequencymap.BifrequencyMap", "__new__"),
         ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "__new__"),
         ("gwexpy.plot.field.FieldPlot", "__init__"),
         ("gwexpy.plot.plot.Plot", "__init__"),
@@ -1763,7 +1765,7 @@ def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
     _refresh_summary(audit, manifest)
 
     audit.validate_manifest(manifest)
-    assert manifest["summary"]["no-finding"] == 71
+    assert manifest["summary"]["no-finding"] == 75
     assert manifest["summary"]["differential-required"] == 0
 
 
@@ -1796,7 +1798,7 @@ def test_all_provisional_cases_can_reach_terminal_gate() -> None:
     for case in present_cases:
         _make_present_case_pending(manifest, case)
     _refresh_summary(audit, manifest)
-    assert manifest["summary"]["differential-required"] == len(present_cases) == 294
+    assert manifest["summary"]["differential-required"] == len(present_cases) == 298
 
     for case in present_cases:
         _transition_pending_case(manifest, case=case)

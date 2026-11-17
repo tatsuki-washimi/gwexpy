@@ -212,6 +212,7 @@ class TestBifrequencyMap:
     def test_missing_epoch_stays_none(self, value):
         bf = BifrequencyMap(np.ones((4, 4)), unit="m", **_kw(value))
         assert bf.epoch is None
+        assert bf.time_reference == "relative"
         assert bf.shape == (4, 4)
         assert bf.unit == u.m
         assert (bf.x0.value, bf.dx.value, bf.y0.value, bf.dy.value) == (
@@ -225,12 +226,41 @@ class TestBifrequencyMap:
     def test_finite_epoch(self, value, expected):
         bf = BifrequencyMap(np.ones((4, 4)), unit="m", **_kw(value))
         assert _epoch_float(bf) == expected
+        assert bf.time_reference == "absolute"
 
-    @pytest.mark.parametrize("value", NONFINITE)
-    def test_nonfinite_epoch_raises_current(self, value):
-        # characterizes current behavior, not a desired contract (#725)
-        with pytest.raises(RuntimeError, match="Invalid argument"):
+    def test_nan_epoch_is_relative(self):
+        bf = BifrequencyMap(np.ones((4, 4)), unit="m", epoch=np.nan)
+        assert bf.epoch is None
+        assert bf.time_reference == "relative"
+
+    @pytest.mark.parametrize("value", [np.inf, -np.inf])
+    def test_infinite_epoch_raises(self, value):
+        with pytest.raises(ValueError, match="must not be infinite"):
             BifrequencyMap(np.ones((4, 4)), unit="m", epoch=value)
+
+    def test_propagate_preserves_input_spectrum_time_reference(self):
+        from gwexpy.frequencyseries import FrequencySeries
+
+        freqs = np.array([1.0, 2.0, 3.0, 4.0]) * u.Hz
+        bf = BifrequencyMap.from_points(
+            np.eye(4), freqs, freqs, unit=u.dimensionless_unscaled
+        )
+
+        rel_in = FrequencySeries(np.ones(4), frequencies=freqs, unit=u.m)
+        rel_out = bf.propagate(rel_in)
+        assert isinstance(rel_out, FrequencySeries)
+        assert rel_out.time_reference == "relative"
+        assert rel_out.epoch is None
+        assert rel_out.unit == u.m
+        np.testing.assert_array_equal(rel_out.value, np.ones(4))
+
+        abs_in = FrequencySeries(np.ones(4), frequencies=freqs, unit=u.m, epoch=GPS)
+        abs_out = bf.propagate(abs_in)
+        assert isinstance(abs_out, FrequencySeries)
+        assert abs_out.time_reference == "absolute"
+        assert _epoch_float(abs_out) == GPS
+        assert abs_out.unit == u.m
+        np.testing.assert_array_equal(abs_out.value, np.ones(4))
 
     @pytest.mark.parametrize("value", [OMIT, None, 0, GPS])
     def test_slice_and_pickle_keep_epoch(self, value):

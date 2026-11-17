@@ -6,7 +6,18 @@ import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
 from gwpy.types import Array2D
+from gwpy.types.array import Array as GwpyArray
 from scipy.interpolate import interp1d
+
+from gwexpy.time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    inherit_time_reference,
+    resolve_time_inputs,
+    set_time_reference,
+)
 
 _NOT_GIVEN = object()
 
@@ -19,7 +30,7 @@ _IMPLICIT_DIAGONAL_AXIS1 = _ImplicitDiagonalAxis(0)
 _IMPLICIT_DIAGONAL_AXIS2 = _ImplicitDiagonalAxis(1)
 
 
-class BifrequencyMap(Array2D):
+class BifrequencyMap(TimeReferenceMixin, Array2D):
     """A map class with two distinct frequency axes.
 
     `BifrequencyMap` represents a 2-dimensional frequency-frequency mapping,
@@ -66,6 +77,50 @@ class BifrequencyMap(Array2D):
                     frequency1=[10.0 Hz, ..., 30.0 Hz])>
 
     """
+
+    _time_reference_axis_attrs = ("_epoch",)
+
+    def __new__(cls, data, *args: Any, **kwargs: Any) -> BifrequencyMap:
+        """Create a BifrequencyMap with unified #725 epoch semantics."""
+        time_reference, cleared = resolve_time_inputs(
+            {"epoch": kwargs.get("epoch")},
+            explicit_axis=False,
+            inherit=isinstance(data, GwpyArray),
+        )
+        if "epoch" in cleared:
+            kwargs = dict(kwargs)
+            kwargs["epoch"] = None
+        obj = super().__new__(cls, data, *args, **kwargs)
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+        elif isinstance(data, TimeReferenceMixin):
+            inherit_time_reference(obj, data)
+        elif isinstance(data, GwpyArray):
+            set_time_reference(
+                obj,
+                TIME_REFERENCE_ABSOLUTE
+                if getattr(data, "epoch", None) is not None
+                else TIME_REFERENCE_RELATIVE,
+            )
+        return obj
+
+    def __array_finalize__(self, obj: Any) -> None:
+        super().__array_finalize__(obj)
+        if obj is None:
+            return
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
+
+    @property
+    def epoch(self) -> Any:
+        """GPS epoch associated with this map, or ``None`` if omitted."""
+        return Array2D.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        check_time_setter_value(value, name="epoch")
+        Array2D.epoch.__set__(self, value)
 
     @property
     def frequency1(self):
@@ -167,12 +222,27 @@ class BifrequencyMap(Array2D):
         new_unit = self.unit * input_spectrum.unit
 
         # Return as FrequencySeries (axis is map axis 2 = frequency2)
-        return FrequencySeries(
+        from gwexpy.time._reference import (
+            TIME_REFERENCE_ABSOLUTE,
+            get_time_reference,
+            inherit_time_reference,
+        )
+
+        from .frequencyseries import FrequencySeries as GwexpyFrequencySeries
+
+        out_epoch = (
+            input_spectrum.epoch
+            if get_time_reference(input_spectrum) == TIME_REFERENCE_ABSOLUTE
+            else None
+        )
+        result = GwexpyFrequencySeries(
             out_val,
             frequencies=self.frequency2,
             unit=new_unit,
+            epoch=out_epoch,
             name=f"Projected: {self.name} x {input_spectrum.name}",
         )
+        return inherit_time_reference(result, input_spectrum)
 
     def inverse(self, rcond=None) -> BifrequencyMap:
         """Calculate the (pseudo-)inverse of the BifrequencyMap.

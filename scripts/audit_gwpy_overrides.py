@@ -730,6 +730,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
 
     time_reference_overrides = {
         "gwexpy.fields.scalar.ScalarField": ("epoch",),
+        "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap": ("__new__", "epoch"),
         "gwexpy.frequencyseries.frequencyseries.FrequencySeries": ("epoch",),
         "gwexpy.spectrogram.spectrogram.Spectrogram": (
             "__new__",
