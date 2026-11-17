@@ -125,7 +125,7 @@ class TestImportOrderIsolated:
             assert "hdf.ndscope" not in before
 
             collection = TimeSeriesDict(
-                {"X1:TEST": TimeSeries(np.arange(4), sample_rate=2)}
+                {"X1:TEST": TimeSeries(np.arange(4), sample_rate=2, t0=0)}
             )
             with tempfile.TemporaryDirectory() as directory:
                 path = Path(directory) / "collection.hdf5"
