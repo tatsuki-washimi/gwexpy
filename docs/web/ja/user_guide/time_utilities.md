@@ -388,7 +388,7 @@ GWexpy のコンテナ（`TimeSeries`、`FrequencySeries`、`Spectrogram`、各 
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-rel = TimeSeries(np.arange(10.0), dt=0.25)
+rel = TimeSeries(np.arange(20.0), dt=0.25)
 assert rel.time_reference == "relative"
 
 sliced = rel[12:]  # 相対オフセット 3.0 s

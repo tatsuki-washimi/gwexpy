@@ -361,7 +361,7 @@ Use `.with_epoch(gps)` to anchor a relative container to an explicit GPS epoch w
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-rel = TimeSeries(np.arange(10.0), dt=0.25)
+rel = TimeSeries(np.arange(20.0), dt=0.25)
 assert rel.time_reference == "relative"
 
 sliced = rel[12:]  # relative offset 3.0 s

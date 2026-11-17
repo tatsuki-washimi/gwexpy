@@ -187,12 +187,16 @@ class Array2D(
 
         # Create fresh instance to ensure metadata correctness
         # Passing xindex/yindex explicitly swaps them
-        return self.__class__(
-            new_data.value,
-            unit=new_data.unit,
-            axis_names=(self._axis1_name, self._axis0_name),
-            xindex=old_y,
-            yindex=old_x,
+        return inherit_time_reference(
+            self.__class__(
+                new_data.value,
+                unit=new_data.unit,
+                epoch=self.epoch,
+                axis_names=(self._axis1_name, self._axis0_name),
+                xindex=old_y,
+                yindex=old_x,
+            ),
+            self,
         )
 
     def _transpose_int(self, axes: tuple[int, ...]):

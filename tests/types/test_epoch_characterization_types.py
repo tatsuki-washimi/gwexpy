@@ -109,6 +109,19 @@ class TestArray2DSlicing:
         assert a.T.shape == (3, 4)
         assert a.unit == u.m
 
+    def test_named_swapaxes_preserves_epoch_and_time_reference(self, value):
+        a = Array2D(
+            np.arange(12.0).reshape(4, 3),
+            unit="m",
+            axis_names=("x", "y"),
+            **_kw(value),
+        )
+        swapped = a.swapaxes("x", "y")
+        expected_ref = "relative" if value in (OMIT, None) else "absolute"
+        assert swapped.time_reference == expected_ref
+        assert _epoch_float(swapped) == _expected(value)
+        assert swapped.shape == (3, 4)
+
 
 class TestPlane2D:
     @pytest.mark.parametrize("value", [OMIT, None])
@@ -142,6 +155,21 @@ class TestPlane2D:
         back = pickle.loads(pickle.dumps(p))
         assert _epoch_float(back) == _expected(value)
         assert back.unit == u.m
+
+    @pytest.mark.parametrize("value", [OMIT, None, 0, GPS])
+    def test_named_swapaxes_preserves_epoch_and_time_reference(self, value):
+        p = Plane2D(
+            np.ones((4, 3)),
+            unit="m",
+            axis1_name="x",
+            axis2_name="y",
+            **_kw(value),
+        )
+        swapped = p.swapaxes("x", "y")
+        expected_ref = "relative" if value in (OMIT, None) else "absolute"
+        assert swapped.time_reference == expected_ref
+        assert _epoch_float(swapped) == _expected(value)
+        assert swapped.shape == (3, 4)
 
 
 def _sm(value):
