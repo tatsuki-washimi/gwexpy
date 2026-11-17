@@ -113,16 +113,24 @@ class TestConstructor:
 
 
 class TestConstructorAxes:
-    def test_explicit_times_is_absolute(self):
+    def test_explicit_times_without_epoch_is_relative(self):
         times = (np.arange(NT) + 10.0) * u.s
         sg = Spectrogram(_data(), times=times, f0=0.0, df=DF, unit=UNIT)
-        assert sg.time_reference == ABS
+        assert sg.time_reference == REL
         np.testing.assert_array_equal(sg.times.value, times.value)
 
-    def test_explicit_times_with_nan_epoch_is_absolute(self):
+        sg_none = Spectrogram(
+            _data(), times=times, epoch=None, f0=0.0, df=DF, unit=UNIT
+        )
+        assert sg_none.time_reference == REL
+
+        sg_abs = Spectrogram(_data(), times=times, epoch=0.0, f0=0.0, df=DF, unit=UNIT)
+        assert sg_abs.time_reference == ABS
+
+    def test_explicit_times_with_nan_epoch_is_relative(self):
         times = (np.arange(NT) + 10.0) * u.s
         sg = Spectrogram(_data(), times=times, epoch=np.nan, f0=0.0, df=DF)
-        assert sg.time_reference == ABS
+        assert sg.time_reference == REL
         np.testing.assert_array_equal(sg.times.value, times.value)
 
     def test_frequency_axis_does_not_decide_the_state(self):

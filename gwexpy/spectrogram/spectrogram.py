@@ -80,8 +80,7 @@ class Spectrogram(
         ``time_reference == "relative"``: the time axis starts at ``0 s``
         (or wherever it was cropped to) and no absolute GPS time is known.
         A finite value, including an explicit ``0.0``, is an absolute GPS
-        time, as is an explicit ``times`` axis.  ``+Inf`` and ``-Inf`` raise
-        `ValueError`.
+        time.  ``+Inf`` and ``-Inf`` raise `ValueError`.
 
     frequencies : array-like, optional
         Frequency values corresponding to each column. If provided,

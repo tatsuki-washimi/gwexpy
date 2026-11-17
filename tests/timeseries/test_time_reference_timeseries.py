@@ -232,9 +232,12 @@ class TestConstructorOtherForms:
         with pytest.raises(ValueError, match="t0 must not be infinite"):
             TimeSeries(_data(), "m", -np.inf, DT)
 
-    def test_explicit_axis_or_exact_epoch_is_absolute(self):
+    def test_explicit_axis_without_origin_is_relative_and_exact_epoch_is_absolute(self):
         times = np.arange(N) * DT
-        assert TimeSeries(_data(), times=times).time_reference == ABS
+        assert TimeSeries(_data(), times=times).time_reference == REL
+        assert TimeSeries(_data(), times=times, t0=None).time_reference == REL
+        assert TimeSeries(_data(), times=times, t0=np.nan).time_reference == REL
+        assert TimeSeries(_data(), times=times, t0=0.0).time_reference == ABS
         assert TimeSeries(_data(), dt=DT, t0_ns=5_000_000_000).time_reference == ABS
         assert (
             TimeSeries(_data(), dt=DT, t0=LIGOTimeGPS(1400000000)).time_reference == ABS

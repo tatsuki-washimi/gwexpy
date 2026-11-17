@@ -38,15 +38,15 @@ def test_collection_to_matrix_rejects_mixed_time_reference(
     else:
         collection_type = SpectrogramList if container == "list" else SpectrogramDict
 
-        def make_spectrogram():
+        def make_spectrogram(*, epoch=None):
             return Spectrogram(
                 np.ones((4, 2)),
                 times=np.arange(4) * 0.25 * u.s,
                 frequencies=np.arange(2) * u.Hz,
+                epoch=epoch,
             )
 
-        relative, absolute = make_spectrogram(), make_spectrogram()
-        set_time_reference(relative, "relative")
+        relative, absolute = make_spectrogram(), make_spectrogram(epoch=0)
     ordered = [relative, absolute] if relative_first else [absolute, relative]
     if container == "list":
         collection = collection_type(ordered)

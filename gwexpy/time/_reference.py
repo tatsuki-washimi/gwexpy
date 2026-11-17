@@ -121,8 +121,10 @@ def resolve_time_inputs(
         The constructor arguments that name the time origin (for example
         ``{"t0": t0, "epoch": epoch, "x0": x0}``).  ``None`` means omitted.
     explicit_axis
-        ``True`` when a complete time axis (``times=``/``xindex=``) was given.
-        Such an axis is an explicit finite time and decides ``"absolute"``.
+        Retained for caller compatibility. Under #725 Option A, an explicit
+        time axis (``times=``/``xindex=``) without a finite ``t0``/``epoch``/
+        ``x0`` does not establish an absolute GPS reference and remains
+        ``"relative"`` (unless inherited from ``data``).
     inherit
         ``True`` when the data already carries a state (a series that has an
         axis); an omitted origin then keeps that state.
@@ -156,13 +158,9 @@ def resolve_time_inputs(
                 "absolute time is unknown"
             )
         if kind == "nan":
-            state = (
-                TIME_REFERENCE_ABSOLUTE if explicit_axis else TIME_REFERENCE_RELATIVE
-            )
-            return state, (name,)
+            return TIME_REFERENCE_RELATIVE, (name,)
         return TIME_REFERENCE_ABSOLUTE, ()
-    if explicit_axis:
-        return TIME_REFERENCE_ABSOLUTE, ()
+    del explicit_axis
     return (None if inherit else TIME_REFERENCE_RELATIVE), ()
 
 

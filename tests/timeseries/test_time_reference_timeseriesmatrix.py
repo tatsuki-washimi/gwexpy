@@ -115,19 +115,23 @@ class TestConstructor:
         with pytest.raises(ValueError, match="must not be infinite"):
             TimeSeriesMatrix(_values(), dt=DT, **kw)
 
-    def test_explicit_times_axis_is_absolute(self):
+    def test_explicit_times_axis_without_epoch_is_relative(self):
         m = TimeSeriesMatrix(_values(), times=np.arange(T) * DT * u.s)
-        assert m.time_reference == ABS
+        assert m.time_reference == REL
         assert m.t0.value == 0.0
         m2 = TimeSeriesMatrix(_values(), xindex=np.arange(T) * DT * u.s)
-        assert m2.time_reference == ABS
+        assert m2.time_reference == REL
+        m3 = TimeSeriesMatrix(_values(), times=np.arange(T) * DT * u.s, epoch=0.0)
+        assert m3.time_reference == ABS
 
-    def test_explicit_axis_with_nan_origin_stays_absolute(self):
+    def test_explicit_axis_with_nan_or_none_origin_stays_relative(self):
         m = TimeSeriesMatrix(
             _values(), times=np.arange(T) * DT * u.s, epoch=float("nan")
         )
-        assert m.time_reference == ABS
+        assert m.time_reference == REL
         assert np.all(np.isfinite(m.times.value))
+        m_none = TimeSeriesMatrix(_values(), times=np.arange(T) * DT * u.s, epoch=None)
+        assert m_none.time_reference == REL
 
     def test_t0_and_epoch_together_keep_the_old_error(self):
         with pytest.raises(ValueError, match="give only one of epoch or t0"):
