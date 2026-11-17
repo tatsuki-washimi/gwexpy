@@ -736,6 +736,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
             "t0",
             "x0",
         ),
+        "gwexpy.timeseries.collections.TimeSeriesList": ("join",),
         "gwexpy.timeseries.timeseries.TimeSeries": ("epoch",),
     }
     for public_class, members in time_reference_overrides.items():

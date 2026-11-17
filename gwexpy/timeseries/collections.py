@@ -2502,6 +2502,11 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
         return (GwpyTimeSeriesList, tuple(self))
 
+    def join(self, *args: Any, **kwargs: Any) -> Any:
+        """Join elements after verifying uniform ``time_reference`` states."""
+        require_uniform_time_reference(self)
+        return super().join(*args, **kwargs)
+
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
         from ._gwf_io import _require_absolute_for_gwf_write

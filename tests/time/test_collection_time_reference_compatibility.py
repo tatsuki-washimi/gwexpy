@@ -60,3 +60,25 @@ def test_collection_to_matrix_rejects_mixed_time_reference(
 
     with pytest.raises(ValueError, match="time_reference"):
         collection.to_matrix()
+
+
+@pytest.mark.parametrize("relative_first", [True, False])
+def test_timeserieslist_join_rejects_mixed_time_reference(relative_first):
+    relative = TimeSeries(np.arange(4.0), dt=0.25)
+    absolute = TimeSeries(np.arange(4.0), dt=0.25, t0=1.0)
+    ordered = [relative, absolute] if relative_first else [absolute, relative]
+
+    with pytest.raises(ValueError, match="time_reference"):
+        TimeSeriesList(ordered).join(pad=0.0, gap="pad")
+
+
+def test_timeserieslist_join_preserves_uniform_time_reference():
+    rel_a = TimeSeries(np.arange(4.0), dt=0.25)
+    rel_b = TimeSeries(np.arange(4.0), dt=0.25)[4:]
+    rel_joined = TimeSeriesList([rel_a, rel_b]).join(pad=0.0, gap="pad")
+    assert rel_joined.time_reference == "relative"
+
+    abs_a = TimeSeries(np.arange(4.0), dt=0.25, t0=1_400_000_000.0)
+    abs_b = TimeSeries(np.arange(4.0), dt=0.25, t0=1_400_000_001.0)
+    abs_joined = TimeSeriesList([abs_a, abs_b]).join(pad=0.0, gap="pad")
+    assert abs_joined.time_reference == "absolute"

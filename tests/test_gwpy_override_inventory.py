@@ -823,10 +823,11 @@ def test_time_reference_overrides_preserve_gwpy_finite_behavior() -> None:
     from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
     from gwpy.spectrogram import Spectrogram as GwpySpectrogram
     from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+    from gwpy.timeseries import TimeSeriesList as GwpyTimeSeriesList
 
     from gwexpy.frequencyseries import FrequencySeries
     from gwexpy.spectrogram import Spectrogram
-    from gwexpy.timeseries import TimeSeries
+    from gwexpy.timeseries import TimeSeries, TimeSeriesList
 
     gps = 1_400_000_000.0
     values = np.arange(12.0).reshape(4, 3)
@@ -877,6 +878,25 @@ def test_time_reference_overrides_preserve_gwpy_finite_behavior() -> None:
         assert actual.t0 == expected.t0
         assert actual.x0 == expected.x0
         np.testing.assert_array_equal(actual.times.value, expected.times.value)
+
+    actual_joined = TimeSeriesList(
+        [
+            TimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit),
+            TimeSeries(np.arange(4.0), t0=gps + 1.0, dt=0.25, unit=unit),
+        ]
+    ).join(pad=0.0, gap="pad")
+    expected_joined = GwpyTimeSeriesList(
+        [
+            GwpyTimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit),
+            GwpyTimeSeries(np.arange(4.0), t0=gps + 1.0, dt=0.25, unit=unit),
+        ]
+    ).join(pad=0.0, gap="pad")
+    np.testing.assert_array_equal(actual_joined.value, expected_joined.value)
+    assert actual_joined.t0 == expected_joined.t0
+    assert actual_joined.epoch == expected_joined.epoch
+    np.testing.assert_array_equal(
+        actual_joined.times.value, expected_joined.times.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -981,16 +1001,16 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1182,
+        "cases": 1184,
         "constructors": 12,
         "counterpart_absent_per_version": 451,
-        "counterpart_implementation_groups": 76,
-        "counterpart_present_per_version": 140,
+        "counterpart_implementation_groups": 77,
+        "counterpart_present_per_version": 141,
         "differential-required": 0,
         "fixed": 224,
         "GWexpy-only": 902,
-        "logical_members": 591,
-        "no-finding": 56,
+        "logical_members": 592,
+        "no-finding": 58,
         "public_roots": 16,
         "GWpy-fails": 0,
         "unreviewed": 0,
@@ -1017,8 +1037,8 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 591
-    assert len(manifest["cases"]) == 1182
+    assert len(current["members"]) == 592
+    assert len(manifest["cases"]) == 1184
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
@@ -1724,7 +1744,7 @@ def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
     _refresh_summary(audit, manifest)
 
     audit.validate_manifest(manifest)
-    assert manifest["summary"]["no-finding"] == 57
+    assert manifest["summary"]["no-finding"] == 59
     assert manifest["summary"]["differential-required"] == 0
 
 
@@ -1757,7 +1777,7 @@ def test_all_provisional_cases_can_reach_terminal_gate() -> None:
     for case in present_cases:
         _make_present_case_pending(manifest, case)
     _refresh_summary(audit, manifest)
-    assert manifest["summary"]["differential-required"] == len(present_cases) == 280
+    assert manifest["summary"]["differential-required"] == len(present_cases) == 282
 
     for case in present_cases:
         _transition_pending_case(manifest, case=case)
