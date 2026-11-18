@@ -332,3 +332,79 @@ def test_geomap_optional_backend_error_contract(monkeypatch: pytest.MonkeyPatch)
     message = str(excinfo.value)
     assert "pygmt is required for GeoMap" in message
     assert "pip install pygmt" in message
+
+
+def test_field_plot_add_scalar_colorbar_false_leaves_axes_unchanged():
+    field = _deterministic_scalar_field()
+    plot = FieldPlot()
+
+    try:
+        plot.add_scalar(
+            field,
+            x="x",
+            y="y",
+            slice_kwargs={"t": 0, "z": 0},
+            colorbar=False,
+        )
+        assert len(plot.figure.axes) == 1
+        assert len(plot.gca().child_axes) == 0
+        assert plot.last_field_colorbar is None
+    finally:
+        plt.close(plot.figure)
+
+
+def test_field_plot_angle_axis_label_contract():
+    field = SimpleNamespace(
+        value=np.ones((1, 3, 2, 1)),
+        shape=(1, 3, 2, 1),
+        unit=u.m,
+        name="elevation",
+        _axis0_name="t",
+        _axis1_name="lon",
+        _axis2_name="lat",
+        _axis3_name="z",
+        axis_names=("t", "lon", "lat", "z"),
+        _axis0_index=np.array([0.0]) * u.s,
+        _axis1_index=np.linspace(137.0, 137.2, 3) * u.deg,
+        _axis2_index=np.linspace(36.5, 36.4, 2) * u.deg,
+        _axis3_index=np.array([0.0]) * u.m,
+        space_domains={"lon": "angle", "lat": "angle", "z": "real"},
+        geo=SimpleNamespace(active=True, crs="EPSG:6668", local_origin=None),
+        get_slice=lambda x_axis=None, y_axis=None, **kw: (
+            np.ones((3, 2)) * u.m,
+            np.linspace(137.0, 137.2, 3) * u.deg,
+            np.linspace(36.5, 36.4, 2) * u.deg,
+            "lon",
+            "lat",
+        ),
+    )
+    plot = FieldPlot()
+
+    try:
+        plot.add_terrain(field)
+        ax = plot.gca()
+        assert ax.get_xlabel() == "lon [deg]"
+        assert ax.get_ylabel() == "lat [deg]"
+
+        real_field = _deterministic_scalar_field()
+        with pytest.raises(ValueError, match="to_local_cartesian"):
+            plot.add_scalar(real_field, x="x", y="y", slice_kwargs={"t": 0, "z": 0})
+    finally:
+        plt.close(plot.figure)
+
+
+def test_field_plot_animate_scalar_axes_count_contract():
+    field = _deterministic_scalar_field()
+    plot = FieldPlot()
+
+    try:
+        ani = plot.animate_scalar(field, x="x", y="y", axis="t", slice_kwargs={"z": 0})
+        fig = ani._fig
+        n_top = len(fig.axes)
+        n_all = sum(1 + len(ax.child_axes) for ax in fig.axes)
+        for frame in field._axis0_index:
+            ani._draw_frame(frame)
+            assert len(fig.axes) == n_top
+            assert sum(1 + len(ax.child_axes) for ax in fig.axes) == n_all
+    finally:
+        plt.close(plot.figure)
