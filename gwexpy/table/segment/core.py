@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from gwexpy.table.segment.cell import _UNSET, CellStatus, SegmentCell
+from gwexpy.table.segment.ops import _OpsMixin
 from gwexpy.table.segment.status import (
     _MissingMixin,
     is_scalar_nan,
@@ -156,7 +157,7 @@ class RowProxy:
 # ---------------------------------------------------------------------------
 
 
-class SegmentTable(_MissingMixin):
+class SegmentTable(_MissingMixin, _OpsMixin):
     """Segment-keyed analysis table.
 
     Each row holds exactly one ``span`` (:class:`gwpy.segments.Segment`)
