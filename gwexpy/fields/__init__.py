@@ -8,6 +8,8 @@ from .demo import (
     make_sinusoidal_wave,
     make_standing_wave,
 )
+from .geo import GeoMetadata, geo_bounds
+from .io import list_fields
 from .scalar import ScalarField
 from .signal import (
     coherence_map,
@@ -35,7 +37,10 @@ __all__ = [
     "compute_freq_space",
     "compute_xcorr",
     "time_delay_map",
+    "GeoMetadata",
     "coherence_map",
+    "geo_bounds",
+    "list_fields",
 ]
 
 
