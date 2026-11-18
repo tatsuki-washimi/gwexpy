@@ -74,6 +74,7 @@ Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
 - :doc:`Field API: Advanced Analysis Workflow <field_advanced_workflow>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Field API: Advanced Analysis Integration <field_advanced_integration>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Field API: GSI DEM to Spatial Spectrum <field_dem_spatial_spectrum>` :bdg-primary:`Intermediate` :bdg-secondary:`20 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Field API: Layered Geographic and Terrain Visualization <field_layered_visualization>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 
 IV. Advanced Signal Processing
 ------------------------------
@@ -171,6 +172,8 @@ Table-based analysis for time segments.
    ml_preprocessing_methods
    advanced_linear_algebra
    field_advanced_integration
+   field_dem_spatial_spectrum
+   field_layered_visualization
    rayleigh_gauch_tutorial
    advanced_coupling
    advanced_decomposition

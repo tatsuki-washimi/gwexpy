@@ -74,6 +74,7 @@ III. 高次元フィールド（フィールドAPI）
 - :doc:`フィールドAPI: 高度解析ワークフロー <field_advanced_workflow>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`フィールドAPI: 高度解析の統合 <field_advanced_integration>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`フィールドAPI: 国土地理院 DEM の空間スペクトル <field_dem_spatial_spectrum>` :bdg-primary:`中級` :bdg-secondary:`20分` :bdg-info:`解析実務者`
+- :doc:`フィールドAPI: 地形・地図・物理場のレイヤー可視化 <field_layered_visualization>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
 
 IV. 高度な信号処理
 ------------------
@@ -170,6 +171,8 @@ VII. セグメント解析
    ml_preprocessing_methods
    advanced_linear_algebra
    field_advanced_integration
+   field_dem_spatial_spectrum
+   field_layered_visualization
    rayleigh_gauch_tutorial
    advanced_coupling
    advanced_decomposition
