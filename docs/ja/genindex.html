@@ -388,7 +388,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/5f1686d50a6de4f4c03be71c0d2b1a7304397068">5f1686d5</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a31268ad44adc1c201ce298e48e31868dd10de61">a31268ad</a>
   · 入門例の検証対象 0.2.4
   · <a href="about/documentation_version.html">版情報</a>
   · <a href="about/known_limitations.html">既知の制限</a>
@@ -508,6 +508,8 @@
       </ul></li>
       <li><a href="reference/api/noise.html#gwexpy.noise.apply_line_mask">apply_line_mask() (gwexpy.noise モジュール)</a>
 </li>
+      <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeriesMatrix.html#gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response">apply_response() (gwexpy.frequencyseries.FrequencySeriesMatrix のメソッド)</a>
+</li>
       <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.ar">ar() (gwexpy.timeseries.TimeSeries のメソッド)</a>
 </li>
       <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.arima">arima() (gwexpy.timeseries.TimeSeries のメソッド)</a>
@@ -530,6 +532,8 @@
 
       <ul>
         <li><a href="reference/api/gwexpy.table.SegmentTable.html#gwexpy.table.SegmentTable.asd">(gwexpy.table.SegmentTable のメソッド)</a>
+</li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.asd">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.stat_info.association_edges">association_edges() (gwexpy.analysis.stat_info モジュール)</a>
@@ -769,6 +773,8 @@
       <ul>
         <li><a href="reference/api/gwexpy.table.SegmentTable.html#gwexpy.table.SegmentTable.crop">(gwexpy.table.SegmentTable のメソッド)</a>
 </li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.crop">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/fields.html#gwexpy.fields.VectorField.cross">cross() (gwexpy.fields.VectorField のメソッド)</a>
 </li>
@@ -800,6 +806,8 @@
 
       <ul>
         <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.degree">(gwexpy.spectrogram.Spectrogram のメソッド)</a>
+</li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.degree">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.delta">delta (gwexpy.types.AxisDescriptor のプロパティ)</a>
@@ -872,14 +880,24 @@
         <li><a href="reference/api/gwexpy.histogram.HistogramList.html#gwexpy.histogram.HistogramList.EntryClass">(gwexpy.histogram.HistogramList の属性)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeriesMatrix.html#gwexpy.frequencyseries.FrequencySeriesMatrix.epoch">epoch (gwexpy.frequencyseries.FrequencySeriesMatrix の属性)</a>
+      <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.epoch">epoch (gwexpy.frequencyseries.FrequencySeries のプロパティ)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.epoch">(gwexpy.spectrogram.Spectrogram のプロパティ)</a>
 </li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.epoch">(gwexpy.timeseries.TimeSeries のプロパティ)</a>
+</li>
+        <li><a href="reference/api/types.html#gwexpy.types.Array.epoch">(gwexpy.types.Array のプロパティ)</a>
+</li>
+        <li><a href="reference/api/types.html#gwexpy.types.Array2D.epoch">(gwexpy.types.Array2D のプロパティ)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/fitting.html#gwexpy.fitting.GeneralizedLeastSquares.errordef">errordef (gwexpy.fitting.GeneralizedLeastSquares の属性)</a>
 </li>
       <li><a href="reference/api/fitting.html#gwexpy.fitting.FitResult.errors">errors (gwexpy.fitting.FitResult のプロパティ)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.estimate_bkg_mem_bytes">estimate_bkg_mem_bytes() (gwexpy.analysis.coupling モジュール)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.estimate_coupling">estimate_coupling() (gwexpy.analysis.coupling モジュール)</a>
@@ -913,6 +931,8 @@
 </li>
       </ul></li>
       <li><a href="reference/api/gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.fetch_open_data">fetch_open_data() (gwexpy.segments.DataQualityFlag のクラスメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.fft">fft() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.fft_space">fft_space() (gwexpy.fields.ScalarField のメソッド)</a>
 </li>
@@ -953,6 +973,8 @@
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.filter">filter() (gwexpy.fields.ScalarField のメソッド)</a>
 
       <ul>
+        <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeriesMatrix.html#gwexpy.frequencyseries.FrequencySeriesMatrix.filter">(gwexpy.frequencyseries.FrequencySeriesMatrix のメソッド)</a>
+</li>
         <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.filter">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
@@ -1114,10 +1136,10 @@
         <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.from_mne">(gwexpy.spectrogram.Spectrogram のクラスメソッド)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/gwexpy.interop.mne_.html#gwexpy.interop.mne_.from_mne_raw">from_mne_raw() (gwexpy.interop.mne_ モジュール)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/gwexpy.interop.mne_.html#gwexpy.interop.mne_.from_mne_raw">from_mne_raw() (gwexpy.interop.mne_ モジュール)</a>
+</li>
       <li><a href="reference/api/gwexpy.interop.mt_.html#gwexpy.interop.mt_.from_mth5">from_mth5() (gwexpy.interop.mt_ モジュール)</a>
 </li>
       <li><a href="reference/api/gwexpy.interop.multitaper_.html#gwexpy.interop.multitaper_.from_mtspec">from_mtspec() (gwexpy.interop.multitaper_ モジュール)</a>
@@ -1904,6 +1926,8 @@
         <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.highpass">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.hilbert">hilbert() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
       <li><a href="reference/api/table.html#gwexpy.table.segment_table.SegmentTable.hist">hist() (gwexpy.table.segment_table.SegmentTable のメソッド)</a>
 
       <ul>
@@ -1929,7 +1953,11 @@
       <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.idct">idct() (gwexpy.frequencyseries.FrequencySeries のメソッド)</a>
 </li>
       <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.ifft">ifft() (gwexpy.frequencyseries.FrequencySeries のメソッド)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeriesMatrix.html#gwexpy.frequencyseries.FrequencySeriesMatrix.ifft">(gwexpy.frequencyseries.FrequencySeriesMatrix のメソッド)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.ifft_space">ifft_space() (gwexpy.fields.ScalarField のメソッド)</a>
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.FieldDict.ifft_space_all">ifft_space_all() (gwexpy.fields.FieldDict のメソッド)</a>
@@ -1967,6 +1995,8 @@
       <ul>
         <li><a href="reference/api/preprocessing.html#gwexpy.signal.preprocessing.impute">(gwexpy.signal.preprocessing モジュール)</a>
 </li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.impute">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
       </ul></li>
       <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.imshow">imshow() (gwexpy.spectrogram.Spectrogram のメソッド)</a>
 
@@ -1976,10 +2006,10 @@
       </ul></li>
       <li><a href="reference/api/types.html#gwexpy.types.AxisDescriptor.index">index (gwexpy.types.AxisDescriptor の属性)</a>
 </li>
-      <li><a href="reference/api/gwexpy.time.Time.html#gwexpy.time.Time.info">info (gwexpy.time.Time の属性)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/gwexpy.time.Time.html#gwexpy.time.Time.info">info (gwexpy.time.Time の属性)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.inject_noise">inject_noise() (gwexpy.noise モジュール)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.response.ResponseFunctionResult.injected_freqs">injected_freqs (gwexpy.analysis.response.ResponseFunctionResult の属性)</a>
@@ -2062,16 +2092,18 @@
         <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.list_class">(gwexpy.timeseries.TimeSeriesMatrix の属性)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.livetime">livetime (gwexpy.segments.DataQualityFlag のプロパティ)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/table.html#gwexpy.table.segment_cell.SegmentCell.loader">loader (gwexpy.table.segment_cell.SegmentCell の属性)</a>
 
       <ul>
         <li><a href="reference/api/gwexpy.table.SegmentCell.html#gwexpy.table.SegmentCell.loader">(gwexpy.table.SegmentCell の属性)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.lock_in">lock_in() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
       <li><a href="reference/api/noise.html#gwexpy.noise.asd.lorentzian_line">lorentzian_line() (gwexpy.noise.asd モジュール)</a>
 
       <ul>
@@ -2564,7 +2596,11 @@
       <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.provenance">provenance (gwexpy.spectrogram.Spectrogram のプロパティ)</a>
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.psd">psd() (gwexpy.fields.ScalarField のメソッド)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.psd">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2572,6 +2608,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/signal.html#gwexpy.signal.qtransform.q_scan">q_scan() (gwexpy.signal.qtransform モジュール)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.q_transform">q_transform() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       <li><a href="reference/api/signal.html#gwexpy.signal.qtransform.QGram">QGram (gwexpy.signal.qtransform のクラス)</a>
 </li>
@@ -2626,7 +2664,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.radian">radian() (gwexpy.spectrogram.Spectrogram のメソッド)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.radian">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/astro.html#gwexpy.astro.range_spectrogram">range_spectrogram() (gwexpy.astro モジュール)</a>
 </li>
       <li><a href="reference/api/astro.html#gwexpy.astro.range_timeseries">range_timeseries() (gwexpy.astro モジュール)</a>
@@ -2683,10 +2725,10 @@
         <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.rebin">(gwexpy.spectrogram.Spectrogram のメソッド)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/signal.html#gwexpy.signal.window.recommended_overlap">recommended_overlap() (gwexpy.signal.window モジュール)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/noise.html#gwexpy.noise.red_noise">red_noise() (gwexpy.noise モジュール)</a>
 
       <ul>
@@ -2722,6 +2764,16 @@
       <li><a href="reference/api/analysis.html#gwexpy.analysis.response.ResponseFunctionResult">ResponseFunctionResult (gwexpy.analysis.response のクラス)</a>
 </li>
       <li><a href="reference/api/types.html#gwexpy.types.Array.rms">rms() (gwexpy.types.Array のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.rolling_max">rolling_max() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.rolling_mean">rolling_mean() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.rolling_median">rolling_median() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.rolling_min">rolling_min() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.rolling_std">rolling_std() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       <li><a href="reference/api/gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.round">round() (gwexpy.segments.DataQualityFlag のメソッド)</a>
 </li>
@@ -2849,12 +2901,12 @@
         <li><a href="reference/api/plot.html#gwexpy.plot.Plot.show">(gwexpy.plot.Plot のメソッド)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/gwexpy.time.Time.html#gwexpy.time.Time.sidereal_time">sidereal_time() (gwexpy.time.Time のメソッド)</a>
 </li>
       <li><a href="reference/api/detector.html#gwexpy.detector.ChannelList.sieve">sieve() (gwexpy.detector.ChannelList のメソッド)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.stats.SpectralStats.sigma">sigma (gwexpy.analysis.stats.SpectralStats の属性)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold">SigmaThreshold (gwexpy.analysis.coupling のクラス)</a>
@@ -2877,6 +2929,14 @@
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.slice_map2d">slice_map2d() (gwexpy.fields.ScalarField のメソッド)</a>
 </li>
+      <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.smooth">smooth() (gwexpy.frequencyseries.FrequencySeries のメソッド)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.frequencyseries.FrequencySeriesMatrix.html#gwexpy.frequencyseries.FrequencySeriesMatrix.smooth">(gwexpy.frequencyseries.FrequencySeriesMatrix のメソッド)</a>
+</li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.smooth">(gwexpy.timeseries.TimeSeries のメソッド)</a>
+</li>
+      </ul></li>
       <li><a href="reference/api/fitting.html#gwexpy.fitting.GLS.solve">solve() (gwexpy.fitting.GLS のメソッド)</a>
 </li>
       <li><a href="reference/api/fields.html#gwexpy.fields.ScalarField.spectral_density">spectral_density() (gwexpy.fields.ScalarField のメソッド)</a>
@@ -2890,6 +2950,10 @@
       <li><a href="reference/api/analysis.html#gwexpy.analysis.stats.SpectralStats">SpectralStats (gwexpy.analysis.stats のクラス)</a>
 </li>
       <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram">Spectrogram (gwexpy.spectrogram のクラス)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.spectrogram">spectrogram() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.spectrogram2">spectrogram2() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.response.ResponseFunctionResult.spectrogram_bkg">spectrogram_bkg (gwexpy.analysis.response.ResponseFunctionResult の属性)</a>
 </li>
@@ -2907,6 +2971,8 @@
 
       <ul>
         <li><a href="reference/api/preprocessing.html#gwexpy.signal.preprocessing.standardize">(gwexpy.signal.preprocessing モジュール)</a>
+</li>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.standardize">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
       <li><a href="reference/api/gwexpy.segments.Segment.html#gwexpy.segments.Segment.start">start (gwexpy.segments.Segment のプロパティ)</a>
@@ -2951,8 +3017,12 @@
         <li><a href="reference/api/types.html#gwexpy.types.AxisApiMixin.T">(gwexpy.types.AxisApiMixin のプロパティ)</a>
 </li>
       </ul></li>
-      <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.t0">t0 (gwexpy.timeseries.TimeSeries のプロパティ)</a>
+      <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.t0">t0 (gwexpy.spectrogram.Spectrogram のプロパティ)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.t0">(gwexpy.timeseries.TimeSeries のプロパティ)</a>
 </li>
+      </ul></li>
       <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.t0_gps_ns">t0_gps_ns (gwexpy.timeseries.TimeSeries のプロパティ)</a>
 </li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.response.ResponseFunctionResult.table">table (gwexpy.analysis.response.ResponseFunctionResult の属性)</a>
@@ -3389,6 +3459,8 @@
         <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.whiten">(gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
 </li>
       </ul></li>
+      <li><a href="reference/api/gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix.whiten_channels">whiten_channels() (gwexpy.timeseries.TimeSeriesMatrix のメソッド)</a>
+</li>
       <li><a href="reference/api/signal.html#gwexpy.signal.qtransform.QPlane.whitening_duration">whitening_duration (gwexpy.signal.qtransform.QPlane のプロパティ)</a>
 
       <ul>
@@ -3397,10 +3469,10 @@
       </ul></li>
       <li><a href="reference/api/preprocessing.html#gwexpy.signal.preprocessing.WhiteningModel">WhiteningModel (gwexpy.signal.preprocessing のクラス)</a>
 </li>
-      <li><a href="reference/api/signal.html#gwexpy.signal.qtransform.QTile.windowsize">windowsize (gwexpy.signal.qtransform.QTile のプロパティ)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/api/signal.html#gwexpy.signal.qtransform.QTile.windowsize">windowsize (gwexpy.signal.qtransform.QTile のプロパティ)</a>
+</li>
       <li><a href="reference/api/analysis.html#gwexpy.analysis.response.ResponseFunctionResult.witness_name">witness_name (gwexpy.analysis.response.ResponseFunctionResult の属性)</a>
 </li>
       <li><a href="reference/api/detector.html#gwexpy.detector.ChannelList.write">write (gwexpy.detector.ChannelList の属性)</a>
@@ -3433,8 +3505,12 @@
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.x0">x0 (gwexpy.timeseries.TimeSeries のプロパティ)</a>
+      <li><a href="reference/api/gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram.x0">x0 (gwexpy.spectrogram.Spectrogram のプロパティ)</a>
+
+      <ul>
+        <li><a href="reference/api/gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries.x0">(gwexpy.timeseries.TimeSeries のプロパティ)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 

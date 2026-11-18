@@ -159,6 +159,7 @@
       ~FrequencySeries.value_at
       ~FrequencySeries.var
       ~FrequencySeries.view
+      ~FrequencySeries.with_epoch
       ~FrequencySeries.write
       ~FrequencySeries.zip
       ~FrequencySeries.zpk
@@ -201,6 +202,7 @@
       ~FrequencySeries.si
       ~FrequencySeries.size
       ~FrequencySeries.strides
+      ~FrequencySeries.time_reference
       ~FrequencySeries.unit
       ~FrequencySeries.value
       ~FrequencySeries.x0

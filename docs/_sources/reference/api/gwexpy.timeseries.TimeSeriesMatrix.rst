@@ -165,6 +165,7 @@
       ~TimeSeriesMatrix.view
       ~TimeSeriesMatrix.whiten
       ~TimeSeriesMatrix.whiten_channels
+      ~TimeSeriesMatrix.with_epoch
       ~TimeSeriesMatrix.write
    
    
@@ -190,6 +191,7 @@
       ~TimeSeriesMatrix.dtype
       ~TimeSeriesMatrix.duration
       ~TimeSeriesMatrix.dx
+      ~TimeSeriesMatrix.epoch
       ~TimeSeriesMatrix.flags
       ~TimeSeriesMatrix.flat
       ~TimeSeriesMatrix.imag
@@ -209,6 +211,7 @@
       ~TimeSeriesMatrix.span
       ~TimeSeriesMatrix.strides
       ~TimeSeriesMatrix.t0
+      ~TimeSeriesMatrix.time_reference
       ~TimeSeriesMatrix.times
       ~TimeSeriesMatrix.units
       ~TimeSeriesMatrix.value

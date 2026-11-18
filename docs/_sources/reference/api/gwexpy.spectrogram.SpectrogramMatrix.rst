@@ -118,6 +118,7 @@
       ~SpectrogramMatrix.value_at
       ~SpectrogramMatrix.var
       ~SpectrogramMatrix.view
+      ~SpectrogramMatrix.with_epoch
       ~SpectrogramMatrix.write
    
    
@@ -142,6 +143,7 @@
       ~SpectrogramMatrix.dtype
       ~SpectrogramMatrix.duration
       ~SpectrogramMatrix.dx
+      ~SpectrogramMatrix.epoch
       ~SpectrogramMatrix.f0
       ~SpectrogramMatrix.flags
       ~SpectrogramMatrix.flat
@@ -160,6 +162,7 @@
       ~SpectrogramMatrix.size
       ~SpectrogramMatrix.strides
       ~SpectrogramMatrix.t0
+      ~SpectrogramMatrix.time_reference
       ~SpectrogramMatrix.times
       ~SpectrogramMatrix.units
       ~SpectrogramMatrix.value

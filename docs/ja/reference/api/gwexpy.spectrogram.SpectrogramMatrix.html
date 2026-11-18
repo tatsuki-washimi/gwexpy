@@ -564,7 +564,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/5f1686d50a6de4f4c03be71c0d2b1a7304397068">5f1686d5</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a31268ad44adc1c201ce298e48e31868dd10de61">a31268ad</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -959,7 +959,10 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
 <td><p>New view of array with the same data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code>(target[, format])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_epoch</span></code>(epoch)</p></td>
+<td><p>Return a copy anchored at GPS <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code>(target[, format])</p></td>
 <td><p>Write the matrix to a file.</p></td>
 </tr>
 </tbody>
@@ -1010,59 +1013,65 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dx</span></code></p></td>
 <td><p>Step size between samples on the x-axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">f0</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></p></td>
+<td><p>Time origin of the matrix (see <em>Timing reference</em>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">f0</span></code></p></td>
 <td><p>Return the starting frequency.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
 <td><p>Information about the memory layout of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
 <td><p>A 1-D iterator over the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></p></td>
 <td><p>Frequency array (yindex).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.imag" title="gwexpy.spectrogram.SpectrogramMatrix.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.imag" title="gwexpy.spectrogram.SpectrogramMatrix.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
 <td><p>Return a fully independent imaginary component with both axes intact.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
 <td><p>Return True if this series has a regular grid (constant spacing).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
 <td><p>Length of one array element in bytes.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loc</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loc</span></code></p></td>
 <td><p>Label-based indexer for direct value access.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
 <td><p>View of the matrix transposed array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></p></td>
 <td><p>2D array of names for each matrix element.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
 <td><p>Total bytes consumed by the elements of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
 <td><p>Number of array dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.real" title="gwexpy.spectrogram.SpectrogramMatrix.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.real" title="gwexpy.spectrogram.SpectrogramMatrix.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
 <td><p>Return a fully independent real component with both axes intact.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
 <td><p>Tuple of array dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.shape3D" title="gwexpy.spectrogram.SpectrogramMatrix.shape3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape3D</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.shape3D" title="gwexpy.spectrogram.SpectrogramMatrix.shape3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape3D</span></code></a></p></td>
 <td><p>Return the display-oriented 3D shape view.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
 <td><p>Number of elements in the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
 <td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></p></td>
 <td><p>Start time (x0).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_reference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;absolute&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">t0</span></code> is a GPS time) or <code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code> (unknown).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
 <td><p>Time array (xindex).</p></td>

@@ -118,6 +118,7 @@
       ~FrequencySeriesMatrix.value_at
       ~FrequencySeriesMatrix.var
       ~FrequencySeriesMatrix.view
+      ~FrequencySeriesMatrix.with_epoch
       ~FrequencySeriesMatrix.write
    
    
@@ -143,6 +144,7 @@
       ~FrequencySeriesMatrix.dtype
       ~FrequencySeriesMatrix.duration
       ~FrequencySeriesMatrix.dx
+      ~FrequencySeriesMatrix.epoch
       ~FrequencySeriesMatrix.f0
       ~FrequencySeriesMatrix.flags
       ~FrequencySeriesMatrix.flat
@@ -161,6 +163,7 @@
       ~FrequencySeriesMatrix.shape3D
       ~FrequencySeriesMatrix.size
       ~FrequencySeriesMatrix.strides
+      ~FrequencySeriesMatrix.time_reference
       ~FrequencySeriesMatrix.units
       ~FrequencySeriesMatrix.value
       ~FrequencySeriesMatrix.x0

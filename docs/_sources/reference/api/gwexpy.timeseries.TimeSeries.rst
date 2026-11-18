@@ -244,6 +244,7 @@
       ~TimeSeries.var
       ~TimeSeries.view
       ~TimeSeries.whiten
+      ~TimeSeries.with_epoch
       ~TimeSeries.write
       ~TimeSeries.xcorr
       ~TimeSeries.zip
@@ -291,6 +292,7 @@
       ~TimeSeries.strides
       ~TimeSeries.t0
       ~TimeSeries.t0_gps_ns
+      ~TimeSeries.time_reference
       ~TimeSeries.times
       ~TimeSeries.unit
       ~TimeSeries.value

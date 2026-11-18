@@ -126,6 +126,7 @@
       ~Spectrogram.var
       ~Spectrogram.variance
       ~Spectrogram.view
+      ~Spectrogram.with_epoch
       ~Spectrogram.zip
       ~Spectrogram.zpk
    
@@ -173,6 +174,7 @@
       ~Spectrogram.span
       ~Spectrogram.strides
       ~Spectrogram.t0
+      ~Spectrogram.time_reference
       ~Spectrogram.times
       ~Spectrogram.unit
       ~Spectrogram.value

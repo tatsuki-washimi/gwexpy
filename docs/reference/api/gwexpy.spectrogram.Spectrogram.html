@@ -563,7 +563,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/5f1686d50a6de4f4c03be71c0d2b1a7304397068">5f1686d5</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a31268ad44adc1c201ce298e48e31868dd10de61">a31268ad</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -579,8 +579,8 @@
 <h1>gwexpy.spectrogram.Spectrogram<a class="headerlink" href="#gwexpy-spectrogram-spectrogram" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike1D</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike1D</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detector.html#gwexpy.detector.Channel" title="gwexpy.detector.Channel"><span class="pre">Channel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InteropMixin</span></code>, <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.spectrogram.Spectrogram/#gwpy.spectrogram.Spectrogram" title="(in GWpy v4.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs:</span> <span class="pre">~typing.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InteropMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeReferenceMixin</span></code>, <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.spectrogram.Spectrogram/#gwpy.spectrogram.Spectrogram" title="(in GWpy v4.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p>
 <p>A 2D time-frequency spectrogram.</p>
 <p><cite>Spectrogram</cite> represents a 2-dimensional array of spectral data,
 where the first dimension corresponds to time and the second
@@ -599,7 +599,12 @@ supported pickle and HDF5 round-trips.</p>
 <li><p><strong>times</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Time values corresponding to each row. If provided, <cite>dt</cite> and
 <cite>t0</cite> are ignored.</p></li>
 <li><p><strong>dt</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – Time step between rows.</p></li>
-<li><p><strong>t0</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – Start time of the data.</p></li>
+<li><p><strong>t0</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – Start time of the data.  Omitting <code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">epoch</span></code> (or passing
+<code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>) makes the spectrogram
+<code class="docutils literal notranslate"><span class="pre">time_reference</span> <span class="pre">==</span> <span class="pre">&quot;relative&quot;</span></code>: the time axis starts at <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">s</span></code>
+(or wherever it was cropped to) and no absolute GPS time is known.
+A finite value, including an explicit <code class="docutils literal notranslate"><span class="pre">0.0</span></code>, is an absolute GPS
+time.  <code class="docutils literal notranslate"><span class="pre">+Inf</span></code> and <code class="docutils literal notranslate"><span class="pre">-Inf</span></code> raise <cite>ValueError</cite>.</p></li>
 <li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Frequency values corresponding to each column. If provided,
 <cite>df</cite> and <cite>f0</cite> are ignored.</p></li>
 <li><p><strong>df</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – Frequency step between columns.</p></li>
@@ -1006,10 +1011,13 @@ supported pickle and HDF5 round-trips.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
 <td><p>New view of array with the same data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_epoch</span></code>(epoch)</p></td>
+<td><p>Return a copy anchored at GPS <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
 <td><p>Zip the <cite>xindex</cite> and <cite>value</cite> arrays of this <cite>Series</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, ...])</p></td>
 <td><p>Filter this <cite>Spectrogram</cite> by applying a zero-pole-gain filter.</p></td>
 </tr>
 </tbody>
@@ -1057,8 +1065,8 @@ supported pickle and HDF5 round-trips.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dy</span></code></p></td>
 <td><p>Y-axis sample separation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></p></td>
-<td><p>GPS epoch for these data.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.epoch" title="gwexpy.spectrogram.Spectrogram.epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></a></p></td>
+<td><p>GPS epoch of the first time bin (<code class="docutils literal notranslate"><span class="pre">Time</span></code>); GWpy semantics.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">equivalencies</span></code></p></td>
 <td><p>A list of equivalencies that will be applied by default during unit conversions.</p></td>
@@ -1123,48 +1131,72 @@ supported pickle and HDF5 round-trips.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
 <td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></p></td>
-<td><p>GPS time of first time bin.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.t0" title="gwexpy.spectrogram.Spectrogram.t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></a></p></td>
+<td><p>Time of the first time bin; GWpy semantics (see <code class="docutils literal notranslate"><span class="pre">time_reference</span></code>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_reference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;absolute&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">t0</span></code> is a GPS time) or <code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code> (unknown).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
 <td><p>Series of GPS times for each sample</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit</span></code></p></td>
 <td><p>The physical unit of these data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
 <td><p>The numerical value of this instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></p></td>
-<td><p>X-axis coordinate of the first data point.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.x0" title="gwexpy.spectrogram.Spectrogram.x0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></a></p></td>
+<td><p>Axis origin of the time axis; GWpy semantics (see <code class="docutils literal notranslate"><span class="pre">time_reference</span></code>).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
 <td><p>Positions of the data on the x-axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
 <td><p>X-axis [low, high) segment encompassed by these data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
 <td><p>Unit of x-axis index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y0</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y0</span></code></p></td>
 <td><p>Y-axis coordinate of the first data point.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yindex</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yindex</span></code></p></td>
 <td><p>Positions of the data on the y-axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yspan</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yspan</span></code></p></td>
 <td><p>Y-axis [low, high) segment encompassed by these data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yunit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">yunit</span></code></p></td>
 <td><p>Unit of Y-axis index.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.epoch">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">epoch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></em><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.epoch" title="Link to this definition">#</a></dt>
+<dd><p>GPS epoch of the first time bin (<code class="docutils literal notranslate"><span class="pre">Time</span></code>); GWpy semantics.</p>
+<p>For a <code class="docutils literal notranslate"><span class="pre">time_reference</span> <span class="pre">==</span> <span class="pre">&quot;relative&quot;</span></code> spectrogram this is the finite
+projection GWpy reports (<code class="docutils literal notranslate"><span class="pre">Time(0,</span> <span class="pre">gps)</span></code> at origin <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">s</span></code>), not a
+known GPS time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.t0">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></em><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.t0" title="Link to this definition">#</a></dt>
+<dd><p>Time of the first time bin; GWpy semantics (see <code class="docutils literal notranslate"><span class="pre">time_reference</span></code>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.x0">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></em><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.x0" title="Link to this definition">#</a></dt>
+<dd><p>Axis origin of the time axis; GWpy semantics (see <code class="docutils literal notranslate"><span class="pre">time_reference</span></code>).</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pcolormesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(12,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto-gps'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.plot" title="Link to this definition">#</a></dt>
@@ -1708,6 +1740,9 @@ the Spectrogram has no name, where <code class="docutils literal notranslate"><s
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram"><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.__init__"><code class="docutils literal notranslate"><span class="pre">Spectrogram.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.epoch"><code class="docutils literal notranslate"><span class="pre">Spectrogram.epoch</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.t0"><code class="docutils literal notranslate"><span class="pre">Spectrogram.t0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.x0"><code class="docutils literal notranslate"><span class="pre">Spectrogram.x0</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.plot"><code class="docutils literal notranslate"><span class="pre">Spectrogram.plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.provenance"><code class="docutils literal notranslate"><span class="pre">Spectrogram.provenance</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.bootstrap"><code class="docutils literal notranslate"><span class="pre">Spectrogram.bootstrap()</span></code></a></li>

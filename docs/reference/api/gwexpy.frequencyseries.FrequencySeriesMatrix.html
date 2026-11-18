@@ -563,7 +563,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/5f1686d50a6de4f4c03be71c0d2b1a7304397068">5f1686d5</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a31268ad44adc1c201ce298e48e31868dd10de61">a31268ad</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -598,6 +598,15 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <cite>df</cite> and <cite>f0</cite> are ignored.</p></li>
 <li><p><strong>df</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The frequency resolution.</p></li>
 <li><p><strong>f0</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The start frequency.</p></li>
+<li><p><strong>epoch</strong> (<cite>float</cite>, optional) – Time of the data the spectra were computed from (a keyword passed on
+to <cite>~gwexpy.types.seriesmatrix.SeriesMatrix</cite>).  It is independent of
+the frequency axis.  Omitting it, or passing <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>,
+makes the matrix <code class="docutils literal notranslate"><span class="pre">time_reference</span> <span class="pre">==</span> <span class="pre">&quot;relative&quot;</span></code> (like a
+<cite>FrequencySeries</cite> built without <code class="docutils literal notranslate"><span class="pre">epoch</span></code>); the public <code class="docutils literal notranslate"><span class="pre">epoch</span></code> is
+<code class="docutils literal notranslate"><span class="pre">0.0</span></code> when omitted and <code class="docutils literal notranslate"><span class="pre">None</span></code> when <code class="docutils literal notranslate"><span class="pre">None</span></code> was given, so
+<code class="docutils literal notranslate"><span class="pre">epoch</span> <span class="pre">==</span> <span class="pre">0.0</span></code> alone is not GPS 0.  A finite value (including an
+explicit <code class="docutils literal notranslate"><span class="pre">0.0</span></code>) is an absolute GPS time.  <code class="docutils literal notranslate"><span class="pre">+Inf</span></code> and <code class="docutils literal notranslate"><span class="pre">-Inf</span></code>
+raise <cite>ValueError</cite>.</p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments:
 - <cite>channel_names</cite>: list of strings for channel labels.
 - <cite>unit</cite>: physical unit of the data.
@@ -615,7 +624,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
 <td><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth</span></code>(width[, method, ignore_nan])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.smooth" title="gwexpy.frequencyseries.FrequencySeriesMatrix.smooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth</span></code></a>(width[, method, ignore_nan])</p></td>
 <td><p>Smooth the frequency series matrix along the frequency axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
@@ -663,7 +672,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_exact</span></code>(other[, inplace, pad, gap, tol])</p></td>
 <td><p>Append another matrix with strict contiguity checking.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_response</span></code>(response[, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response" title="gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_response</span></code></a>(response[, inplace])</p></td>
 <td><p>Apply a complex frequency response to the matrix.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code>([axis, out, keepdims])</p></td>
@@ -738,7 +747,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill</span></code>(value)</p></td>
 <td><p>Fill the array with a scalar value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code>(*filt, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.filter" title="gwexpy.frequencyseries.FrequencySeriesMatrix.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>(*filt, **kwargs)</p></td>
 <td><p>Apply a filter to the FrequencySeriesMatrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten</span></code>([order])</p></td>
@@ -750,7 +759,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getfield</span></code>(dtype[, offset])</p></td>
 <td><p>Returns a field of the given array as a certain type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ifft</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.ifft" title="gwexpy.frequencyseries.FrequencySeriesMatrix.ifft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ifft</span></code></a>()</p></td>
 <td><p>Compute the inverse FFT of this frequency-domain matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate</span></code>(xindex, **kwargs)</p></td>
@@ -861,7 +870,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skewness</span></code>([axis, nan_policy])</p></td>
 <td><p>Compute the skewness of the data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth</span></code>(width[, method, ignore_nan])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.smooth" title="gwexpy.frequencyseries.FrequencySeriesMatrix.smooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth</span></code></a>(width[, method, ignore_nan])</p></td>
 <td><p>Smooth the frequency series matrix along the frequency axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code>([axis, kind, order, stable])</p></td>
@@ -957,7 +966,10 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
 <td><p>New view of array with the same data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code>(target[, format])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_epoch</span></code>(epoch)</p></td>
+<td><p>Return a copy anchored at GPS <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code>(target[, format])</p></td>
 <td><p>Write the matrix to a file.</p></td>
 </tr>
 </tbody>
@@ -1011,59 +1023,65 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dx</span></code></p></td>
 <td><p>Step size between samples on the x-axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">f0</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></p></td>
+<td><p>Time origin of the matrix (see <em>Timing reference</em>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">f0</span></code></p></td>
 <td><p>Starting frequency (x0).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
 <td><p>Information about the memory layout of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
 <td><p>A 1-D iterator over the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></p></td>
 <td><p>Frequency array (xindex).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></p></td>
 <td><p>Return the imaginary component without aliasing public metadata.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
 <td><p>Return True if this series has a regular grid (constant spacing).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
 <td><p>Length of one array element in bytes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loc</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loc</span></code></p></td>
 <td><p>Label-based indexer for direct value access.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
 <td><p>View of the matrix transposed array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></p></td>
 <td><p>2D array of names for each matrix element.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
 <td><p>Total bytes consumed by the elements of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
 <td><p>Number of array dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
 <td><p>Return the real component without aliasing public metadata.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.series_type" title="gwexpy.frequencyseries.FrequencySeriesMatrix.series_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">series_type</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.series_type" title="gwexpy.frequencyseries.FrequencySeriesMatrix.series_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">series_type</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
 <td><p>Tuple of array dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape3D</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape3D</span></code></p></td>
 <td><p>Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
 <td><p>Number of elements in the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
 <td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_reference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;absolute&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">t0</span></code> is a GPS time) or <code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code> (unknown).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">units</span></code></p></td>
 <td><p>2D array of units for each matrix element.</p></td>
@@ -1122,6 +1140,76 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <span class="sig-name descname"><span class="pre">default_yunit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.default_yunit" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response">
+<span class="sig-name descname"><span class="pre">apply_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response" title="Link to this definition">#</a></dt>
+<dd><p>Apply a complex frequency response to the matrix.</p>
+<p>Extension method (not in GWpy) to support complex filtering/calibration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>array-like</em><em> or </em><em>Quantity</em>) – Complex frequency response array aligned with self.frequencies.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in-place.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.filter" title="Link to this definition">#</a></dt>
+<dd><p>Apply a filter to the FrequencySeriesMatrix.</p>
+<p>Matches GWpy FrequencySeries.filter behavior (magnitude-only response)
+by delegating to gwpy.frequencyseries._fdcommon.fdfilter.
+Use apply_response() for complex response application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*filt</strong> (<em>filter arguments</em>) – Filter definition.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, modify in-place. Default False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments passed to fdfilter (e.g. analog=True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix" title="gwexpy.frequencyseries.FrequencySeriesMatrix">FrequencySeriesMatrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.ifft">
+<span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.ifft" title="Link to this definition">#</a></dt>
+<dd><p>Compute the inverse FFT of this frequency-domain matrix.</p>
+<p>Matches GWpy FrequencySeries.ifft normalization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The time-domain matrix resulting from the inverse FFT.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeriesMatrix.html#gwexpy.timeseries.TimeSeriesMatrix" title="gwexpy.timeseries.TimeSeriesMatrix">TimeSeriesMatrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.smooth">
+<span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'amplitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.smooth" title="Link to this definition">#</a></dt>
+<dd><p>Smooth the frequency series matrix along the frequency axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Full width of the smoothing window in samples.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – Smoothing method: ‘amplitude’, ‘power’, ‘complex’, ‘db’.
+Default is ‘amplitude’.</p></li>
+<li><p><strong>ignore_nan</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, ignore NaNs during smoothing. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.meta">
 <span class="sig-name descname"><span class="pre">meta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix" title="gwexpy.types.MetaDataMatrix"><span class="pre">MetaDataMatrix</span></a></em><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.meta" title="Link to this definition">#</a></dt>
@@ -1140,11 +1228,6 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.name" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeriesMatrix.epoch">
-<span class="sig-name descname"><span class="pre">epoch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.epoch" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1217,11 +1300,14 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.series_type"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.series_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.default_xunit"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.default_xunit</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.default_yunit"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.default_yunit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.apply_response"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.apply_response()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.filter"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.ifft"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.ifft()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.smooth"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.smooth()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.meta"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.meta</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.rows"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.rows</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.cols"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.cols</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.name"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.epoch"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.epoch</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.attrs"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.attrs</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.unit"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.unit</span></code></a></li>
 </ul>
