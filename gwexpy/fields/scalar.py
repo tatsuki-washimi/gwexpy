@@ -59,19 +59,25 @@ def _resample_2d_grid(
 ) -> np.ndarray:
     """Resample a 2D array defined on ascending ``(src_x_asc, src_y_asc)``."""
     out = np.full(dst_x_src.shape, np.nan, dtype=np.float64)
+    # Raster samples represent cells. Target centers inside the outer half-cell
+    # footprint use the nearest edge sample instead of becoming a NaN border.
+    x_low = src_x_asc[0] - 0.5 * (src_x_asc[1] - src_x_asc[0])
+    x_high = src_x_asc[-1] + 0.5 * (src_x_asc[-1] - src_x_asc[-2])
+    y_low = src_y_asc[0] - 0.5 * (src_y_asc[1] - src_y_asc[0])
+    y_high = src_y_asc[-1] + 0.5 * (src_y_asc[-1] - src_y_asc[-2])
     in_bounds = (
         np.isfinite(dst_x_src)
         & np.isfinite(dst_y_src)
-        & (dst_x_src >= src_x_asc[0])
-        & (dst_x_src <= src_x_asc[-1])
-        & (dst_y_src >= src_y_asc[0])
-        & (dst_y_src <= src_y_asc[-1])
+        & (dst_x_src >= x_low)
+        & (dst_x_src <= x_high)
+        & (dst_y_src >= y_low)
+        & (dst_y_src <= y_high)
     )
     if not np.any(in_bounds):
         return out
 
-    px = dst_x_src[in_bounds]
-    py = dst_y_src[in_bounds]
+    px = np.clip(dst_x_src[in_bounds], src_x_asc[0], src_x_asc[-1])
+    py = np.clip(dst_y_src[in_bounds], src_y_asc[0], src_y_asc[-1])
     nx, ny = src_x_asc.size, src_y_asc.size
 
     if method == "nearest":
@@ -3278,7 +3284,19 @@ class ScalarField(FieldBase):
             Reprojected field with active :class:`GeoMetadata` reflecting the
             new CRS, transform, and reprojection history.
 
+        Raises
+        ------
+        TypeError
+            If field values are complex. The resampling kernel currently
+            supports real values only.
+
         """
+        if np.iscomplexobj(self.value):
+            raise TypeError(
+                "to_projected() cannot resample complex field values; "
+                "convert to a real-valued quantity explicitly first."
+            )
+
         from gwexpy.io.utils import ensure_dependency
 
         pyproj = ensure_dependency("pyproj", extra="geospatial")

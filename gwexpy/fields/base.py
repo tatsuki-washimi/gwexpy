@@ -359,6 +359,23 @@ class FieldBase(Array4D):
 
     def _validate_field_alignment(self, other: FieldBase) -> None:
         """Reject arithmetic between fields on different physical grids."""
+        left_geo = self.geo
+        right_geo = other.geo
+        left_active = left_geo is not None and left_geo.active
+        right_active = right_geo is not None and right_geo.active
+        if left_active != right_active or (
+            left_geo is not None
+            and right_geo is not None
+            and left_active
+            and right_active
+            and (left_geo.crs or "").strip().upper()
+            != (right_geo.crs or "").strip().upper()
+        ):
+            raise ValueError(
+                "Field CRS mismatch: active georeferencing must agree before "
+                "arithmetic. Reproject operands to a common CRS first."
+            )
+
         if self.time_reference != other.time_reference:
             raise ValueError(
                 "Field time-reference mismatch: "
