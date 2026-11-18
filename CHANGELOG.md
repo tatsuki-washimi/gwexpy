@@ -4,6 +4,8 @@
 
 ### Added
 
+- **SegmentTable workflow**: Add explicit cell status, expressions, row and column operations, table combination, and versioned HDF5 persistence with lazy payload restoration (#592, #355, #405, #408).
+- **SegmentTable reducers**: Define the `Reducer` state protocol and a streaming eager batch runner for later per-segment and grouped statistics (#592, S-7).
 - ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
 - Persist `TimeSeries` forecast uncertainty in HDF5 and restore statistical relationships in `TimeSeriesDict`; accept `percentiles` as an alias for quantile requests and expose percentile-indexed results.
 - `TimeSeriesDict.forecast(targets=[...])` with the Chronos-2 backend forecasts the selected members jointly (MISO for one target, MIMO for several) and passes the remaining members as past-only covariates. All members must share the same time axis and time reference; other backends reject `targets`.

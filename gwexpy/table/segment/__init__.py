@@ -19,6 +19,7 @@ from gwexpy.table.segment.io import (
     get_payload_serializer,
     register_payload_serializer,
 )
+from gwexpy.table.segment.stats import Reducer
 
 __all__ = [
     "BinOp",
@@ -29,6 +30,7 @@ __all__ = [
     "Expr",
     "Literal",
     "RowProxy",
+    "Reducer",
     "SegmentCell",
     "SegmentColumn",
     "SegmentTable",
