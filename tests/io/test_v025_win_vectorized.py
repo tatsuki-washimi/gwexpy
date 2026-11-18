@@ -68,7 +68,7 @@ def test_win_bulk_decode_exact_values_without_python_sample_append(
 
     sys.settrace(trace)
     try:
-        stream = win_io._read_win_fixed(path)
+        stream = win_io._read_win_fixed(path, timezone="UTC")
     finally:
         sys.settrace(None)
 

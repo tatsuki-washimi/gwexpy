@@ -122,10 +122,16 @@ def test_win_alias_family_public_surface_is_dict_first(monkeypatch):
     monkeypatch.setattr(win_io, "_read_win_fixed", lambda *a, **k: stream)
 
     assert str(
-        next(iter(TimeSeriesDict.read("dummy.win", format="win").keys()))
+        next(
+            iter(TimeSeriesDict.read("dummy.win", format="win", timezone="UTC").keys())
+        )
     ).endswith("A1_01")
     assert str(
-        next(iter(TimeSeriesDict.read("dummy.cnt", format="win32").keys()))
+        next(
+            iter(
+                TimeSeriesDict.read("dummy.cnt", format="win32", timezone="UTC").keys()
+            )
+        )
     ).endswith("A1_01")
 
 
