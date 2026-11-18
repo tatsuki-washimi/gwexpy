@@ -6,9 +6,11 @@ from typing import TYPE_CHECKING, Any, cast
 from .axis import AxisDescriptor
 
 if TYPE_CHECKING:
+    from astropy.units import Quantity
+
     from .mixin._protocols import AxisApiHost
 
-__all__ = ["AxisApiMixin"]
+__all__ = ["AxisApiMixin", "AxisDescriptor"]
 
 
 class AxisApiMixin(ABC):
@@ -69,6 +71,25 @@ class AxisApiMixin(ABC):
             raise KeyError(f"Axis '{key}' not found, available: {self.axis_names}")
         else:
             raise TypeError(f"Axis key must be int or str, got {type(key)}")
+
+    def is_axis_regular(
+        self,
+        key: int | str,
+        *,
+        rtol: float | None = None,
+        atol_ulps: float | None = None,
+        max_deviation: float | None = None,
+    ) -> bool:
+        """Check whether the selected axis is regularly spaced."""
+        return self.axis(key).is_regular(
+            rtol=rtol,
+            atol_ulps=atol_ulps,
+            max_deviation=max_deviation,
+        )
+
+    def axis_mean_delta(self, key: int | str) -> Quantity | None:
+        """Return the least-squares mean spacing for the selected axis."""
+        return self.axis(key).mean_delta()
 
     def _get_axis_index(self, key: int | str) -> int:
         if isinstance(key, int):
