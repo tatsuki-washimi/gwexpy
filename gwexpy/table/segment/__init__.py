@@ -15,6 +15,10 @@ from gwexpy.table.segment.expr import (
     UnaryOp,
     col,
 )
+from gwexpy.table.segment.io import (
+    get_payload_serializer,
+    register_payload_serializer,
+)
 
 __all__ = [
     "BinOp",
@@ -30,4 +34,6 @@ __all__ = [
     "SegmentTable",
     "UnaryOp",
     "col",
+    "get_payload_serializer",
+    "register_payload_serializer",
 ]

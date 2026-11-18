@@ -17,6 +17,7 @@ import pandas as pd
 
 from gwexpy.table.segment.cell import _UNSET, CellStatus, SegmentCell
 from gwexpy.table.segment.combine import _CombineMixin
+from gwexpy.table.segment.io import _IOMixin
 from gwexpy.table.segment.ops import _OpsMixin
 from gwexpy.table.segment.status import (
     _MissingMixin,
@@ -158,7 +159,7 @@ class RowProxy:
 # ---------------------------------------------------------------------------
 
 
-class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
+class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin, _IOMixin):
     """Segment-keyed analysis table.
 
     Each row holds exactly one ``span`` (:class:`gwpy.segments.Segment`)
@@ -200,6 +201,7 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
     _segment_index: Any
     _provenance: list[dict[str, Any]]
     _external_attrs: dict[str, Any]
+    _provenance_doc: Optional[dict[str, Any]]
 
     # ------------------------------------------------------------------
     # Construction
@@ -229,6 +231,7 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
         self._segment_index = None
         self._provenance = []
         self._external_attrs = {}
+        self._provenance_doc = None
 
         # Build initial schema from meta columns
         schema: dict[str, str] = {}
@@ -320,45 +323,6 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
         if span != "span":
             df = df.rename(columns={span: "span"})
         return cls(df)
-
-    @classmethod
-    def read_csv(
-        cls,
-        filepath: str,
-        span_cols: tuple[str, str] = ("start", "end"),
-        **kwargs: Any,
-    ) -> SegmentTable:
-        """Read a :class:`SegmentTable` from a CSV file.
-
-        Parameters
-        ----------
-        filepath:
-            Path to the CSV file.
-        span_cols:
-            The two column names to use as the ``span`` start and end values.
-            Ignored if a column named ``"span"`` already exists (containing
-            Segment objects or compatible).
-        **kwargs:
-            Forwarded to :func:`pandas.read_csv`.
-
-        Returns
-        -------
-        SegmentTable
-
-        """
-        import pandas as pd
-        from gwpy.segments import Segment
-
-        df = pd.read_csv(filepath, **kwargs)
-        if "span" not in df.columns:
-            s1, s2 = span_cols
-            df["span"] = [Segment(float(s), float(e)) for s, e in zip(df[s1], df[s2])]
-        else:
-            df["span"] = [_coerce_span_value(value) for value in df["span"]]
-        return cls(df)
-
-    # Alias for backward compatibility or ease of use
-    read = read_csv
 
     # ------------------------------------------------------------------
     # Column management
@@ -604,6 +568,9 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
         new_table._units = dict(self._units)
         new_table._provenance = [dict(p) for p in self._provenance]
         new_table._external_attrs = dict(self._external_attrs)
+        new_table._provenance_doc = (
+            dict(self._provenance_doc) if self._provenance_doc is not None else None
+        )
         return new_table
 
     def _slice_inplace(self, indices: Sequence[int]) -> None:
@@ -1318,6 +1285,9 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin):
         new_table._units = dict(self._units)
         new_table._provenance = [dict(p) for p in self._provenance]
         new_table._external_attrs = dict(self._external_attrs)
+        new_table._provenance_doc = (
+            dict(self._provenance_doc) if self._provenance_doc is not None else None
+        )
         return new_table
 
     def clear_cache(self) -> None:
