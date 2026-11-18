@@ -27,7 +27,7 @@ def test_v2_contract_loads_with_v3_defaults():
     contract = load_public_io_contract(CONTRACT_PATH)
 
     assert contract["schema_version"] == 3
-    assert len(contract["formats"]) == 25
+    assert len(contract["formats"]) == 26
 
     formats = _formats_by_canonical(contract)
     assert formats["hdf5"]["registry_auto_identify"] is True

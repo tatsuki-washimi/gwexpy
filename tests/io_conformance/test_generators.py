@@ -21,6 +21,7 @@ _FROZEN_GENERATORS = (
     ("audio", "tests.io_conformance.generators.audio"),
     ("hdf5", "tests.io_conformance.generators.hdf5"),
     ("hdf_ndscope", "tests.io_conformance.generators.hdf_ndscope"),
+    ("gwdama", "tests.io_conformance.generators.gwdama"),
     ("gwf", "tests.io_conformance.generators.gwf"),
     ("sdb", "tests.io_conformance.generators.sdb"),
     ("zarr", "tests.io_conformance.generators.zarr_store"),

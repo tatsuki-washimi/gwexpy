@@ -101,6 +101,7 @@ timezone values are rejected before any epoch-type branch.
 |---|---|---|---|
 | `gwf` | absolute | none | not accepted |
 | `hdf.ndscope` | absolute | none | not accepted |
+| `hdf.gwdama` | absolute | none | not accepted |
 | `hdf5` | absolute | none | not accepted |
 | `xml.diaggui` | absolute | override | epoch localize only |
 | `csv` | absolute default; see routes below | none | component localize |
@@ -183,6 +184,24 @@ not add `time_scale=` or `time_unit=`.
   rather than being masked by a fall-through to another reader.
 - Reason: the ndscope schema is collection-oriented, and public docs already
   present it as a `TimeSeriesDict`-first HDF5 family.
+
+### `hdf.gwdama`
+
+- Public contract: `TimeSeriesDict` read/write with `format="hdf.gwdama"`.
+- Aliases: `gwdama`, `gwdama-hdf5`. The implementation uses base dependency
+  `h5py` and does not import the `gwdama` package.
+- Layout: 1-D datasets may appear at the root or within arbitrarily nested
+  groups. Dataset attributes include `sample_rate` (or `dt`), `t0`, `channel`,
+  and `unit`. `group=` selects a subtree for reading or writing.
+- Sampling metadata: missing both `sample_rate` and `dt` raises `ValueError`;
+  missing `t0` warns and uses 0.0. Conflicting sampling attributes are rejected.
+  Unknown dataset, group, and root attributes survive a read/write round trip.
+- Format detection: the registry identifier checks for a GWDama structure or
+  GWexpy marker. Auto-identification works for the public `TimeSeriesDict`
+  reader; explicit format is recommended because `.h5` and `.hdf5` are shared
+  with native HDF5 and NDScope.
+- Registry adapters for `TimeSeries` and `TimeSeriesMatrix` are implementation
+  conveniences outside the public contract.
 
 ### `xml.diaggui`
 

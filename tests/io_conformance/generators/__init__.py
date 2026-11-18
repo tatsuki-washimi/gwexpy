@@ -34,6 +34,10 @@ GENERATOR_SPECS: tuple[GeneratorSpec, ...] = (
         module_name="tests.io_conformance.generators.hdf_ndscope",
     ),
     GeneratorSpec(
+        name="gwdama",
+        module_name="tests.io_conformance.generators.gwdama",
+    ),
+    GeneratorSpec(
         name="gwf",
         module_name="tests.io_conformance.generators.gwf",
     ),

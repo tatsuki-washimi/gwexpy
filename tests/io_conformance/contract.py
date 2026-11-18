@@ -94,6 +94,7 @@ _DEFAULT_BLOCKING_FORMATS = frozenset(
 _DEFAULT_FIXTURE_GENERATORS = {
     "gwf": "gwf",
     "hdf.ndscope": "hdf_ndscope",
+    "hdf.gwdama": "gwdama",
     "hdf5": "hdf5",
     "csv": "csv_txt",
     "txt": "csv_txt",

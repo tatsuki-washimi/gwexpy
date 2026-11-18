@@ -274,7 +274,7 @@ def test_docs_describe_machine_readable_time_contract() -> None:
     time_bearing = {
         canonical for canonical, entry in contract.items() if "time_semantics" in entry
     }
-    assert len(time_bearing) == 23
+    assert len(time_bearing) == 24
     assert "`time_semantics`" in contract_md
     assert "`epoch_arg`" in contract_md
     assert "`timezone_arg`" in contract_md

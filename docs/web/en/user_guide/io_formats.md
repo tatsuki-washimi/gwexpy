@@ -109,6 +109,7 @@ If the main question is whether a format is for a single channel or multiple cha
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
 | **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, and `EventTable` |
 | **hdf.ndscope** | - | `TimeSeriesDict` | ndscope-compatible schema; aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.gwdama** | - | `TimeSeriesDict` | GWDama hierarchical HDF5; aliases: `gwdama`, `gwdama-hdf5`; uses base `h5py` |
 | **xml.diaggui** | - | `TimeSeriesDict` | Requires `products`; legacy alias: `dttxml` |
 | **NDS2 / GWOSC** | `TimeSeries` | - | Use `fetch()` / `fetch_open_data()` |
 | **ATS.MTH5** | `TimeSeries` | - | Partial single-path support |
@@ -155,6 +156,7 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `StateVector.read()`, `StateVectorDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`; other classes use `format="hdf5"` | Long-term storage with metadata | Native time-series HDF5 auto-identifies; prefer explicit format for other families |
 | **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Writers use `rate_hz`; readers also accept external `sample_rate`. A group holding data but neither attribute raises `ValueError` naming the group, rather than being silently skipped. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.gwdama** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.gwdama", group="run1")`, `.write(..., format="hdf.gwdama")` | GWDama hierarchical HDF5 | Specify `format` because HDF5 suffixes are shared. Nested groups are supported. Missing `sample_rate` and `dt` raises `ValueError`; missing `t0` warns and uses 0.0. Unknown HDF5 attributes round-trip. Requires only `h5py`, not `gwdama`. |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT outputs | `products` is required; legacy alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | Open data access | Network path |
@@ -350,6 +352,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 | Format | Status | Notes |
 |---|---|---|
 | `hdf.ndscope` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| `hdf.gwdama` | Implemented, explicit format | `TimeSeriesDict` GWDama HDF5 read/write with nested groups and `group=` selection. Aliases: `gwdama`, `gwdama-hdf5` |
 | `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
 | `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
 
