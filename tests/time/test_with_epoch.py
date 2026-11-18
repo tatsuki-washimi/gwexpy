@@ -14,18 +14,21 @@ GPS = 1_400_000_000.0
 
 def cases(dt=0.125):
     return [
-        TimeSeries(np.arange(8), dt=dt, unit="m"),
-        FrequencySeries(np.arange(8), df=1, unit="m"),
-        Spectrogram(np.ones((8, 3)), dt=dt, df=1, unit="m"),
-        TimeSeriesMatrix(np.ones((1, 1, 8)), dt=dt, unit="m"),
-        FrequencySeriesMatrix(np.ones((1, 1, 8)), df=1, unit="m"),
+        TimeSeries(np.arange(8), dt=dt, unit="m", t0=None),
+        FrequencySeries(np.arange(8), df=1, unit="m", epoch=None),
+        Spectrogram(np.ones((8, 3)), dt=dt, df=1, unit="m", epoch=None),
+        TimeSeriesMatrix(np.ones((1, 1, 8)), dt=dt, unit="m", t0=None),
+        FrequencySeriesMatrix(np.ones((1, 1, 8)), df=1, unit="m", epoch=None),
         SpectrogramMatrix(
             np.ones((1, 1, 8, 3)),
             times=np.arange(8) * dt * u.s,
             frequencies=np.arange(3) * u.Hz,
             unit="m",
+            epoch=None,
         ),
-        SeriesMatrix(np.ones((1, 1, 8)), xindex=np.arange(8) * u.Hz, unit="m"),
+        SeriesMatrix(
+            np.ones((1, 1, 8)), xindex=np.arange(8) * u.Hz, unit="m", epoch=None
+        ),
     ]
 
 
@@ -55,7 +58,7 @@ def test_sliced_matrix_anchor_keeps_original_relative_origin():
 @pytest.mark.parametrize("scale, warned", [(9, True), (10, False), (11, False)])
 def test_warning_boundary(scale, warned):
     dt = scale * np.spacing(GPS)
-    source = TimeSeries(np.arange(8), dt=dt)
+    source = TimeSeries(np.arange(8), dt=dt, t0=None)
     if warned:
         with pytest.warns(UserWarning, match="ULP"):
             source.with_epoch(GPS)
@@ -79,7 +82,7 @@ def test_absolute_input_rejected():
 
 
 def test_matrix_spacing_survives_float_coordinate_rounding():
-    source = TimeSeriesMatrix(np.ones((1, 1, 8)), dt=0.1)
+    source = TimeSeriesMatrix(np.ones((1, 1, 8)), dt=0.1, t0=None)
     result = source.with_epoch(GPS)
     assert result.dt == source.dt
     assert result.copy().dt == source.dt
@@ -212,7 +215,7 @@ def test_matrix_warning_boundary_and_spacing(scale, warned):
     import warnings
 
     dt = scale * np.spacing(GPS)
-    source = TimeSeriesMatrix(np.ones((1, 1, 8)), dt=dt)
+    source = TimeSeriesMatrix(np.ones((1, 1, 8)), dt=dt, t0=None)
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
         result = source.with_epoch(GPS)
@@ -222,7 +225,7 @@ def test_matrix_warning_boundary_and_spacing(scale, warned):
 
 
 def test_relative_frequency_epoch_is_an_offset():
-    source = FrequencySeries(np.arange(4), df=1)
+    source = FrequencySeries(np.arange(4), df=1, epoch=None)
     source.epoch = 2
     result = source.with_epoch(GPS)
     assert result.epoch.gps == pytest.approx(GPS + 2)
@@ -230,7 +233,10 @@ def test_relative_frequency_epoch_is_an_offset():
 
 def test_spectrogram_matrix_unitless_times_keep_numeric_axis():
     source = SpectrogramMatrix(
-        np.ones((1, 1, 4, 2)), times=np.arange(4) * 0.1, frequencies=np.arange(2)
+        np.ones((1, 1, 4, 2)),
+        times=np.arange(4) * 0.1,
+        frequencies=np.arange(2),
+        epoch=None,
     )
     result = source.with_epoch(GPS)
     np.testing.assert_array_equal(result.times, GPS + source.times)

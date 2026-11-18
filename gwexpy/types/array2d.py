@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from gwpy.types.array import Array as GwpyArray
 from gwpy.types.array2d import Array2D as GwpyArray2D
 
 from gwexpy.time._reference import (
-    TIME_REFERENCE_ABSOLUTE,
-    TIME_REFERENCE_RELATIVE,
+    TIME_INPUT_UNSET,
     TimeReferenceMixin,
     check_time_setter_value,
     inherit_time_reference,
@@ -51,9 +49,9 @@ class Array2D(
     ):
         """Create a 2D array with explicit axis naming."""
         time_reference, cleared = resolve_time_inputs(
-            {"epoch": kwargs.get("epoch")},
+            {"epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET},
             explicit_axis=False,
-            inherit=isinstance(data, GwpyArray),
+            inherit=isinstance(data, TimeReferenceMixin),
         )
         if "epoch" in cleared:
             kwargs = dict(kwargs)
@@ -76,13 +74,6 @@ class Array2D(
             set_time_reference(obj, time_reference)
         elif isinstance(data, TimeReferenceMixin):
             inherit_time_reference(obj, data)
-        elif isinstance(data, GwpyArray):
-            set_time_reference(
-                obj,
-                TIME_REFERENCE_ABSOLUTE
-                if getattr(data, "epoch", None) is not None
-                else TIME_REFERENCE_RELATIVE,
-            )
         if axis_names is None:
             name0, name1 = "axis0", "axis1"
         else:

@@ -347,7 +347,8 @@ GWexpy containers (`TimeSeries`, `FrequencySeries`, `Spectrogram`, their `Matrix
 
 | Constructor `t0` / `epoch` / `x0` | `time_reference` | Meaning |
 | --- | --- | --- |
-| Omitted, `None`, or `NaN` | `"relative"` | No absolute GPS origin is known; public `t0` remains finite (e.g. `0 s`) for GWpy compatibility. |
+| Omitted | `"absolute"` | GWpy-compatible default (`t0` is `0 s`, `FrequencySeries.epoch` stays `None` if no GPS epoch was supplied). |
+| Explicit `None` or `NaN` | `"relative"` | Explicitly marks the container as having no absolute GPS origin; public `t0` remains finite (e.g. `0 s`) for GWpy compatibility. |
 | Finite value (including `0.0`) | `"absolute"` | Origin is a known GPS time (`0.0` means GPS epoch `1980-01-06 00:00:00 UTC`). |
 | `+Inf` or `-Inf` | Raises `ValueError` | Infinite origins are rejected. |
 
@@ -361,7 +362,7 @@ Use `.with_epoch(gps)` to anchor a relative container to an explicit GPS epoch w
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-rel = TimeSeries(np.arange(20.0), dt=0.25)
+rel = TimeSeries(np.arange(20.0), dt=0.25, t0=None)
 assert rel.time_reference == "relative"
 
 sliced = rel[12:]  # relative offset 3.0 s

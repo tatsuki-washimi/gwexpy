@@ -131,9 +131,7 @@ class TestFrequencySeriesOperations:
         assert ts.t0.value == exp
         assert _epoch_float(ts) == exp
         assert ts.epoch is not None
-        assert ts.time_reference == (
-            "relative" if value in (OMIT, None) else "absolute"
-        )
+        assert ts.time_reference == ("relative" if value is None else "absolute")
         assert np.all(np.isfinite(ts.times.value))
         assert ts.dt.value == pytest.approx(1.0 / (2 * (N - 1) * DF))
         assert len(ts) == 2 * (N - 1)
@@ -212,7 +210,7 @@ class TestBifrequencyMap:
     def test_missing_epoch_stays_none(self, value):
         bf = BifrequencyMap(np.ones((4, 4)), unit="m", **_kw(value))
         assert bf.epoch is None
-        assert bf.time_reference == "relative"
+        assert bf.time_reference == ("absolute" if value is OMIT else "relative")
         assert bf.shape == (4, 4)
         assert bf.unit == u.m
         assert (bf.x0.value, bf.dx.value, bf.y0.value, bf.dy.value) == (
@@ -246,7 +244,7 @@ class TestBifrequencyMap:
             np.eye(4), freqs, freqs, unit=u.dimensionless_unscaled
         )
 
-        rel_in = FrequencySeries(np.ones(4), frequencies=freqs, unit=u.m)
+        rel_in = FrequencySeries(np.ones(4), frequencies=freqs, unit=u.m, epoch=None)
         rel_out = bf.propagate(rel_in)
         assert isinstance(rel_out, FrequencySeries)
         assert rel_out.time_reference == "relative"

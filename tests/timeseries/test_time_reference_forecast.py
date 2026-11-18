@@ -35,7 +35,7 @@ def test_forecast_preserves_time_reference_for_series_and_dict(monkeypatch):
     fake_chronos.Chronos2Pipeline = _FakePipeline
     monkeypatch.setitem(sys.modules, "chronos", fake_chronos)
 
-    rel = TimeSeries(np.arange(8.0), dt=0.25, unit=u.m, name="rel")
+    rel = TimeSeries(np.arange(8.0), dt=0.25, t0=None, unit=u.m, name="rel")
     abs_ts = TimeSeries(
         np.arange(8.0), t0=1_400_000_000.0, dt=0.25, unit=u.m, name="abs"
     )

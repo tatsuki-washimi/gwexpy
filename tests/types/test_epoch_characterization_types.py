@@ -45,7 +45,7 @@ class TestArrayFamilyConstructor:
         cls, shape = ARRAYS[name]
         a = cls(np.ones(shape), unit="m", **_kw(value))
         assert a.epoch is None
-        assert a.time_reference == "relative"
+        assert a.time_reference == ("absolute" if value is OMIT else "relative")
         assert a.shape == shape
         assert a.unit == u.m
 
@@ -79,7 +79,7 @@ class TestArrayFamilyConstructor:
 
     def test_with_epoch_anchors_relative_array(self, name):
         cls, shape = ARRAYS[name]
-        a = cls(np.ones(shape), unit="m")
+        a = cls(np.ones(shape), unit="m", epoch=None)
         anchored = a.with_epoch(GPS)
         assert anchored.time_reference == "absolute"
         assert _epoch_float(anchored) == GPS
@@ -117,7 +117,7 @@ class TestArray2DSlicing:
             **_kw(value),
         )
         swapped = a.swapaxes("x", "y")
-        expected_ref = "relative" if value in (OMIT, None) else "absolute"
+        expected_ref = "relative" if value is None else "absolute"
         assert swapped.time_reference == expected_ref
         assert _epoch_float(swapped) == _expected(value)
         assert swapped.shape == (3, 4)
@@ -128,7 +128,7 @@ class TestPlane2D:
     def test_missing_epoch_is_none(self, value):
         p = Plane2D(np.ones((4, 3)), unit="m", **_kw(value))
         assert p.epoch is None
-        assert p.time_reference == "relative"
+        assert p.time_reference == ("absolute" if value is OMIT else "relative")
         assert (p.x0.value, p.dx.value) == (0.0, 1.0)
         assert p.unit == u.m
 
@@ -166,7 +166,7 @@ class TestPlane2D:
             **_kw(value),
         )
         swapped = p.swapaxes("x", "y")
-        expected_ref = "relative" if value in (OMIT, None) else "absolute"
+        expected_ref = "relative" if value is None else "absolute"
         assert swapped.time_reference == expected_ref
         assert _epoch_float(swapped) == _expected(value)
         assert swapped.shape == (3, 4)

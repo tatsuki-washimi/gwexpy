@@ -55,8 +55,10 @@ def _data() -> np.ndarray:
 
 
 def _make(kind: str) -> FrequencySeries:
-    kwargs: dict[str, float] = {}
-    if kind == "absolute_zero":
+    kwargs: dict[str, float | None] = {}
+    if kind == "relative":
+        kwargs["epoch"] = None
+    elif kind == "absolute_zero":
         kwargs["epoch"] = 0.0
     elif kind == "absolute_gps":
         kwargs["epoch"] = GPS
@@ -83,10 +85,13 @@ def _assert_epoch(obj, expected: float | None) -> None:
 
 
 class TestConstructor:
-    @pytest.mark.parametrize("kw", [{}, {"epoch": None}, {"epoch": np.nan}])
-    def test_missing_or_nan_is_relative(self, kw):
+    @pytest.mark.parametrize(
+        ("kw", "expected_state"),
+        [({}, ABS), ({"epoch": None}, REL), ({"epoch": np.nan}, REL)],
+    )
+    def test_missing_or_nan_is_relative(self, kw, expected_state):
         fs = FrequencySeries(_data(), df=DF, f0=F0, unit=UNIT, **kw)
-        assert fs.time_reference == REL
+        assert fs.time_reference == expected_state
         assert fs.epoch is None  # public value unchanged (GWpy)
         assert fs.f0.value == F0
         assert fs.df.value == DF
@@ -131,11 +136,12 @@ class TestConstructor:
             FrequencySeries(_data(), df=DF, f0=F0, epoch=epoch)
 
     def test_frequency_axis_does_not_decide_the_state(self):
-        # an explicit frequency axis says nothing about the time origin
-        fs = FrequencySeries(_data(), frequencies=F0 + DF * np.arange(N))
+        # an explicit frequency axis with epoch=None is relative; omitted is absolute
+        fs = FrequencySeries(_data(), frequencies=F0 + DF * np.arange(N), epoch=None)
         assert fs.time_reference == REL
-        fs2 = FrequencySeries(_data(), f0=F0, df=DF, epoch=0.0)
+        fs2 = FrequencySeries(_data(), frequencies=F0 + DF * np.arange(N))
         assert fs2.time_reference == ABS
+        assert fs2.epoch is None
 
     def test_state_is_a_read_only_property(self):
         fs = _make("relative")
@@ -171,9 +177,11 @@ class TestConstructorFromSeries:
         assert out.time_reference == ABS
         assert _epoch_gps(out) == GPS
 
-    def test_plain_gwpy_series_without_epoch_is_relative(self):
+    def test_plain_gwpy_series_without_epoch_defaults_to_absolute(self):
         g = GwpyFrequencySeries(_data(), df=DF, f0=F0)
-        assert FrequencySeries(g).time_reference == REL
+        out = FrequencySeries(g)
+        assert out.time_reference == ABS
+        assert out.epoch is None
 
     def test_view_of_gwpy_series_defaults_to_absolute(self):
         # no information is available on a bare view: the documented default
@@ -317,7 +325,7 @@ class TestOperations:
 
     def test_state_independent_of_data_scale(self):
         # R-15: the state is a property of the timing, not of the values
-        fs = FrequencySeries(_data() * 1e-21, df=DF, f0=F0, unit=UNIT)
+        fs = FrequencySeries(_data() * 1e-21, df=DF, f0=F0, unit=UNIT, epoch=None)
         assert fs.time_reference == REL
         assert (fs * 1e-20).time_reference == REL
 
@@ -328,8 +336,10 @@ class TestOperations:
 def _spectrum_of(ts_kind: str) -> FrequencySeries:
     rng = np.random.default_rng(7)
     x = rng.standard_normal(256)
-    kw = {"t0": GPS} if ts_kind == "absolute_gps" else {}
-    if ts_kind == "absolute_zero":
+    kw: dict[str, float | None] = {"t0": None}
+    if ts_kind == "absolute_gps":
+        kw = {"t0": GPS}
+    elif ts_kind == "absolute_zero":
         kw = {"t0": 0.0}
     return TimeSeries(x, sample_rate=64.0, unit=UNIT, **kw).fft()
 
@@ -373,7 +383,7 @@ class TestIfft:
         # transient mode halves the Nyquist bin of an even-length transform
         # (existing behavior, see the ifft docstring), so it uses odd lengths.
         rng = np.random.default_rng(3)
-        kw = {}
+        kw: dict[str, float | None] = {"t0": None}
         if kind == "absolute_zero":
             kw = {"t0": 0.0}
         elif kind == "absolute_gps":
@@ -401,7 +411,7 @@ class TestIfft:
 
 def _ts(kind: str, seed: int = 0) -> TimeSeries:
     rng = np.random.default_rng(seed)
-    kw = {}
+    kw: dict[str, float | None] = {"t0": None}
     if kind == "absolute_zero":
         kw = {"t0": 0.0}
     elif kind == "absolute_gps":

@@ -66,7 +66,7 @@ def _freqs() -> u.Quantity:
 
 
 def _make(kind: str, *, shape=(2, 2, NT, NF)) -> SpectrogramMatrix:
-    kw = {} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
+    kw = {"epoch": np.nan} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
     return SpectrogramMatrix(
         _values(shape),
         times=_times(ORIGIN[kind]),
@@ -95,19 +95,19 @@ def _epoch_gps(obj) -> float:
 
 class TestConstructor:
     @pytest.mark.parametrize(
-        ("kw", "public"),
+        ("kw", "expected_state", "public"),
         [
-            ({}, 0.0),  # public value unchanged: omitted is 0.0
-            ({"epoch": None}, None),  # public value unchanged: None is kept
-            ({"epoch": np.nan}, 0.0),  # NaN is never stored
-            ({"epoch": float("nan") * u.s}, 0.0),
+            ({}, ABS, 0.0),  # omitted -> GWpy-compatible absolute
+            ({"epoch": None}, REL, None),  # explicit None -> relative
+            ({"epoch": np.nan}, REL, 0.0),  # NaN is never stored
+            ({"epoch": float("nan") * u.s}, REL, 0.0),
         ],
     )
-    def test_missing_or_nan_is_relative(self, kw, public):
+    def test_missing_or_nan_is_relative(self, kw, expected_state, public):
         m = SpectrogramMatrix(
             _values(), times=_times(0.0), frequencies=_freqs(), unit=UNIT, **kw
         )
-        assert m.time_reference == REL
+        assert m.time_reference == expected_state
         assert m.epoch == public
         assert np.all(np.isfinite(np.asarray(m.times.value)))
         assert m.dt.value == DT
@@ -128,14 +128,24 @@ class TestConstructor:
                 _values(), times=_times(0.0), frequencies=_freqs(), epoch=epoch
             )
 
-    def test_times_alone_does_not_make_the_matrix_absolute(self):
-        """``epoch`` is independent of ``times`` in this class."""
+    def test_times_alone_is_absolute_and_explicit_none_is_relative(self):
+        """Omitted epoch defaults to absolute; explicit epoch=None is relative."""
         m = SpectrogramMatrix(
             _values(), times=_times(GPS), frequencies=_freqs(), unit=UNIT
         )
-        assert m.time_reference == REL
+        assert m.time_reference == ABS
         assert m.epoch == 0.0
         assert np.asarray(m.times.value)[0] == GPS
+
+        m_rel = SpectrogramMatrix(
+            _values(),
+            times=_times(GPS),
+            frequencies=_freqs(),
+            unit=UNIT,
+            epoch=None,
+        )
+        assert m_rel.time_reference == REL
+        assert m_rel.epoch is None
 
     def test_three_dimensional_layout(self):
         m = SpectrogramMatrix(
@@ -144,7 +154,7 @@ class TestConstructor:
         assert m.time_reference == ABS
         assert m[0].time_reference == ABS
         rel = SpectrogramMatrix(
-            _values((3, NT, NF)), times=_times(0.0), frequencies=_freqs()
+            _values((3, NT, NF)), times=_times(0.0), frequencies=_freqs(), epoch=None
         )
         assert rel.time_reference == REL
         assert rel[0].time_reference == REL
@@ -167,7 +177,7 @@ class TestConstructor:
 
 @pytest.mark.parametrize(
     ("t0", "expected"),
-    [("omitted", REL), (None, REL), (float("nan"), REL), (0.0, ABS), (GPS, ABS)],
+    [("omitted", ABS), (None, REL), (float("nan"), REL), (0.0, ABS), (GPS, ABS)],
 )
 def test_state_agrees_with_spectrogram(t0, expected):
     """#725 acceptance 6: Spectrogram and SpectrogramMatrix agree."""
@@ -282,8 +292,10 @@ def test_scalar_selection_keeps_state_axes_and_unit(kind):
 
 
 def test_relative_matrix_with_gps_times_selects_without_epoch_conflict():
-    """Step 6 observation 10: this used to raise only at element extraction."""
-    m = SpectrogramMatrix(_values(), times=_times(GPS), frequencies=_freqs(), unit=UNIT)
+    """Step 6 observation 10: relative matrix selects without epoch conflict."""
+    m = SpectrogramMatrix(
+        _values(), times=_times(GPS), frequencies=_freqs(), unit=UNIT, epoch=np.nan
+    )
     assert m.time_reference == REL
     sg = m[0, 0]
     assert sg.time_reference == REL
@@ -323,7 +335,7 @@ def test_absolute_epoch_that_agrees_with_times_selects():
 
 
 def _spectrograms(kind: str, count: int = 2) -> list[Spectrogram]:
-    kw = {} if kind == "relative" else {"t0": ORIGIN[kind]}
+    kw = {"t0": None} if kind == "relative" else {"t0": ORIGIN[kind]}
     return [
         Spectrogram(
             _values((2, 2, NT, NF))[0, j],
@@ -399,9 +411,19 @@ def test_direct_construction_from_gps_times_stays_epoch_zero_current():
         unit=UNIT,
     )
     assert m.epoch == 0.0
-    assert m.time_reference == REL
+    assert m.time_reference == ABS
     assert np.asarray(m.times.value)[0] == GPS
-    assert m[0, 0].time_reference == REL
+
+    m_rel = SpectrogramMatrix(
+        np.asarray(sg.value).reshape(1, 1, NT, NF),
+        times=sg.times,
+        frequencies=sg.frequencies,
+        unit=UNIT,
+        epoch=np.nan,
+    )
+    assert m_rel.epoch == 0.0
+    assert m_rel.time_reference == REL
+    assert m_rel[0, 0].time_reference == REL
 
 
 @pytest.mark.parametrize("kind", KINDS)

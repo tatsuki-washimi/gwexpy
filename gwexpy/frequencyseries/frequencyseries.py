@@ -20,7 +20,7 @@ from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.interop._optional import require_optional
 from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.time._reference import (
-    TIME_REFERENCE_ABSOLUTE,
+    TIME_INPUT_UNSET,
     TIME_REFERENCE_RELATIVE,
     TimeReferenceMixin,
     check_time_setter_value,
@@ -42,7 +42,6 @@ if TYPE_CHECKING:
     except ImportError:
         pass
     from gwpy.detector import Channel
-    from gwpy.time import SupportsToGps
     from gwpy.typing import ArrayLike1D, UnitLike
 
 # Runtime fallback for SeriesType if not available from gwpy
@@ -234,7 +233,7 @@ class FrequencySeries(
         df: u.Quantity | float | None = None,
         frequencies: ArrayLike1D | None = None,
         name: str | None = None,
-        epoch: SupportsToGps | None = None,
+        epoch: Any = TIME_INPUT_UNSET,
         channel: Channel | str | None = None,
         **kwargs: Any,
     ) -> FrequencySeries:
@@ -248,17 +247,16 @@ class FrequencySeries(
         for key in ["fmin", "fmax"]:
             kwargs.pop(key, None)
 
-        # #725 (U-1): omitted/None/NaN epoch -> relative; finite (including
-        # 0.0) -> absolute; +/-Inf -> ValueError.  NaN is dropped here so it
-        # never reaches GWpy's ``to_gps`` (which raises RuntimeError).
-        epoch_omitted = epoch is None
+        # #725 (Plan I): omitted epoch -> absolute (GWpy-compatible default,
+        # public epoch remains None); explicit None/NaN -> relative; finite
+        # (including 0.0) -> absolute; +/-Inf -> ValueError.
+        epoch_omitted = epoch is TIME_INPUT_UNSET
         time_reference, cleared = resolve_time_inputs(
             {"epoch": epoch},
             explicit_axis=False,
             inherit=isinstance(data, TimeReferenceMixin),
         )
-        if cleared:
-            epoch = None
+        effective_epoch = None if (epoch_omitted or cleared) else epoch
 
         new = super().__new__(
             cls,
@@ -268,20 +266,10 @@ class FrequencySeries(
             df=df,
             frequencies=frequencies,
             name=name,
-            epoch=epoch,
+            epoch=effective_epoch,
             channel=channel,
             **kwargs,
         )
-        if (
-            time_reference == TIME_REFERENCE_RELATIVE
-            and epoch_omitted
-            and not cleared
-            and isinstance(data, BaseFrequencySeries)
-            and getattr(data, "_epoch", None) is not None
-        ):
-            # A plain GWpy series that already carries a finite epoch: the
-            # epoch was copied from ``data``, so it is an explicit GPS time.
-            time_reference = TIME_REFERENCE_ABSOLUTE
         if time_reference is not None:
             # Also clears a relative state inherited from ``data`` when an
             # explicit finite epoch was given.

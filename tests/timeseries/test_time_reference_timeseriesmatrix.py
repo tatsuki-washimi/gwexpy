@@ -60,9 +60,9 @@ def _values() -> np.ndarray:
     return out
 
 
-def _tkw(kind: str) -> dict[str, float]:
+def _tkw(kind: str) -> dict[str, float | None]:
     if kind == "relative":
-        return {}
+        return {"t0": None}
     return {"t0": EXPECTED_T0[kind]}
 
 
@@ -93,7 +93,7 @@ class TestConstructor:
     def test_missing_or_nan_is_relative(self, name, value):
         kw = {} if isinstance(value, str) else {name: value}
         m = TimeSeriesMatrix(_values(), dt=DT, unit=UNIT, **kw)
-        assert m.time_reference == REL
+        assert m.time_reference == (ABS if value == "omitted" else REL)
         assert m.t0.value == 0.0  # public values unchanged
         assert m.epoch == 0.0
         assert np.all(np.isfinite(m.times.value))
@@ -115,12 +115,12 @@ class TestConstructor:
         with pytest.raises(ValueError, match="must not be infinite"):
             TimeSeriesMatrix(_values(), dt=DT, **kw)
 
-    def test_explicit_times_axis_without_epoch_is_relative(self):
+    def test_explicit_times_axis_without_epoch_is_absolute(self):
         m = TimeSeriesMatrix(_values(), times=np.arange(T) * DT * u.s)
-        assert m.time_reference == REL
+        assert m.time_reference == ABS
         assert m.t0.value == 0.0
         m2 = TimeSeriesMatrix(_values(), xindex=np.arange(T) * DT * u.s)
-        assert m2.time_reference == REL
+        assert m2.time_reference == ABS
         m3 = TimeSeriesMatrix(_values(), times=np.arange(T) * DT * u.s, epoch=0.0)
         assert m3.time_reference == ABS
 
@@ -151,10 +151,10 @@ class TestConstructor:
         rel = _make("relative")
         assert TimeSeriesMatrix(rel, t0=GPS).time_reference == ABS
         assert rel.time_reference == REL
-        assert TimeSeriesMatrix(_make("absolute_gps"), t0=None).time_reference == ABS
+        assert TimeSeriesMatrix(_make("absolute_gps"), t0=None).time_reference == REL
 
     def test_scale_invariance(self):
-        tiny = TimeSeriesMatrix(_values() * 1e-20, dt=DT)
+        tiny = TimeSeriesMatrix(_values() * 1e-20, dt=DT, t0=None)
         assert tiny.time_reference == REL
         assert TimeSeriesMatrix(_values() * 1e-20, dt=DT, t0=0).time_reference == ABS
 
@@ -162,7 +162,7 @@ class TestConstructor:
 @pytest.mark.parametrize(
     ("kw", "expected"),
     [
-        ({}, REL),
+        ({}, ABS),
         ({"t0": None}, REL),
         ({"t0": float("nan")}, REL),
         ({"epoch": float("nan")}, REL),

@@ -64,7 +64,7 @@ def _assert_close(actual: float, expected: float, *scale: float) -> None:
 
 def _make(kind: str) -> TimeSeries:
     if kind == "relative":
-        return TimeSeries(_data(), dt=DT, unit=UNIT, name="x")
+        return TimeSeries(_data(), dt=DT, unit=UNIT, name="x", t0=None)
     if kind == "absolute_zero":
         return TimeSeries(_data(), dt=DT, unit=UNIT, name="x", t0=0.0)
     if kind == "absolute_gps":
@@ -166,7 +166,7 @@ class TestConstructor:
     def test_missing_or_nan_is_relative_with_gwpy_public_values(self, kind, missing):
         kwargs = {} if isinstance(missing, str) else {kind: missing}
         ts = TimeSeries(_data(), dt=DT, unit=UNIT, **kwargs)
-        assert ts.time_reference == REL
+        assert ts.time_reference == (ABS if missing == "omitted" else REL)
         # public finite values are exactly the GWpy ones
         assert ts.t0.value == 0.0
         assert ts.t0.unit == u.s
@@ -186,13 +186,15 @@ class TestConstructor:
         assert ts.t0.value == 0.0
         assert float(ts.epoch.gps) == 0.0
 
-    def test_omitted_and_zero_have_identical_numbers_but_different_state(self, kind):
-        omitted = TimeSeries(_data(), dt=DT, unit=UNIT)
+    def test_explicit_none_and_zero_have_identical_numbers_but_different_state(
+        self, kind
+    ):
+        none_ts = TimeSeries(_data(), dt=DT, unit=UNIT, **{kind: None})
         zero = TimeSeries(_data(), dt=DT, unit=UNIT, **{kind: 0.0})
-        assert omitted.t0 == zero.t0
-        np.testing.assert_array_equal(omitted.times.value, zero.times.value)
-        np.testing.assert_array_equal(omitted.value, zero.value)
-        assert (omitted.time_reference, zero.time_reference) == (REL, ABS)
+        assert none_ts.t0 == zero.t0
+        np.testing.assert_array_equal(none_ts.times.value, zero.times.value)
+        np.testing.assert_array_equal(none_ts.value, zero.value)
+        assert (none_ts.time_reference, zero.time_reference) == (REL, ABS)
 
     @pytest.mark.parametrize("gps", [GPS, 1, 1e-3, -5.0, GPS * u.s, 1400000.0 * u.ms])
     def test_finite_is_absolute_and_unchanged(self, kind, gps):
@@ -232,9 +234,11 @@ class TestConstructorOtherForms:
         with pytest.raises(ValueError, match="t0 must not be infinite"):
             TimeSeries(_data(), "m", -np.inf, DT)
 
-    def test_explicit_axis_without_origin_is_relative_and_exact_epoch_is_absolute(self):
+    def test_explicit_axis_without_origin_is_absolute_and_explicit_none_is_relative(
+        self,
+    ):
         times = np.arange(N) * DT
-        assert TimeSeries(_data(), times=times).time_reference == REL
+        assert TimeSeries(_data(), times=times).time_reference == ABS
         assert TimeSeries(_data(), times=times, t0=None).time_reference == REL
         assert TimeSeries(_data(), times=times, t0=np.nan).time_reference == REL
         assert TimeSeries(_data(), times=times, t0=0.0).time_reference == ABS
@@ -465,7 +469,7 @@ class TestEdgeCases:
         "data", [[], [1.0], [np.nan, 1.0]], ids=["empty", "one", "nan"]
     )
     def test_short_and_nan_data_are_relative(self, data):
-        ts = TimeSeries(data, dt=DT, unit=UNIT)
+        ts = TimeSeries(data, dt=DT, unit=UNIT, t0=None)
         assert ts.time_reference == REL
         assert len(ts) == len(data)
         assert ts.t0.value == 0.0
@@ -474,14 +478,14 @@ class TestEdgeCases:
     @pytest.mark.parametrize("scale", [1.0, 1e-20, 1e20])
     def test_state_is_independent_of_data_scale(self, scale):
         # R-15: f(X) and f(X * 1e-20) agree; the state never depends on values.
-        rel = TimeSeries(_data() * scale, dt=DT, unit=UNIT)
+        rel = TimeSeries(_data() * scale, dt=DT, unit=UNIT, t0=None)
         zero = TimeSeries(_data() * scale, dt=DT, unit=UNIT, t0=0.0)
         assert (rel.time_reference, zero.time_reference) == (REL, ABS)
         assert rel.resample(FS / 2).time_reference == REL
         assert zero.resample(FS / 2).time_reference == ABS
 
     def test_non_second_axis_unit_keeps_state(self):
-        ts = TimeSeries(_data(), dt=1.0 * u.ms, unit=UNIT)
+        ts = TimeSeries(_data(), dt=1.0 * u.ms, unit=UNIT, t0=None)
         assert ts.time_reference == REL
         assert ts.dt.unit == u.ms
         assert ts[10:20].time_reference == REL

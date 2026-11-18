@@ -15,6 +15,8 @@ except ImportError:
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    TimeReferenceMixin,
     inherits_time_reference,
     resolve_time_inputs,
     set_time_reference,
@@ -217,9 +219,9 @@ class TimeSeriesMatrix(  # type: ignore[misc]
         data: ArrayLike | BaseTimeSeries | TimeSeriesMatrix | None = None,
         times: IndexLike | None = None,
         dt: float | u.Quantity | None = None,
-        t0: float | u.Quantity | None = None,
+        t0: Any = TIME_INPUT_UNSET,
         sample_rate: float | u.Quantity | None = None,
-        epoch: float | u.Quantity | None = None,
+        epoch: Any = TIME_INPUT_UNSET,
         **kwargs: Any,
     ) -> TimeSeriesMatrix:
         """Create a new TimeSeriesMatrix.
@@ -245,28 +247,34 @@ class TimeSeriesMatrix(  # type: ignore[misc]
             if dt.unit != u.dimensionless_unscaled and phys != "time":
                 should_coerce = False
 
+        t0_omitted = t0 is TIME_INPUT_UNSET
+        epoch_omitted = epoch is TIME_INPUT_UNSET
+        raw_t0 = None if t0_omitted else t0
+        raw_epoch = None if epoch_omitted else epoch
+
         # 1. Enforce Mutual Exclusivity (GWpy rules)
-        if epoch is not None and t0 is not None:
+        if raw_epoch is not None and raw_t0 is not None:
             raise ValueError("give only one of epoch or t0")
         if sample_rate is not None and dt is not None:
             raise ValueError("give only one of sample_rate or dt")
 
-        # #725 (U-1): omitted/None/NaN t0, epoch or x0 -> relative; finite
-        # (including 0.0) or an explicit time axis (times/xindex) -> absolute;
-        # +/-Inf -> ValueError.  NaN is dropped here so it never reaches the
-        # axis.  A matrix passed as ``data`` keeps its state when no origin is
-        # given (``time_reference is None``).
+        # #725 (Plan I): omitted t0/epoch/x0 -> absolute (GWpy-compatible
+        # default); explicit None/NaN -> relative; finite (including 0.0) ->
+        # absolute; +/-Inf -> ValueError.  A matrix passed as ``data`` keeps
+        # its state when no origin is given (``time_reference is None``).
         time_reference, cleared = resolve_time_inputs(
-            {"t0": t0, "epoch": epoch, "x0": kwargs.get("x0")},
+            {
+                "t0": t0,
+                "epoch": epoch,
+                "x0": kwargs["x0"] if "x0" in kwargs else TIME_INPUT_UNSET,
+            },
             explicit_axis=times is not None or kwargs.get("xindex") is not None,
-            inherit=isinstance(data, SeriesMatrix),
+            inherit=isinstance(data, TimeReferenceMixin),
         )
+        t0 = None if "t0" in cleared else raw_t0
+        epoch = None if "epoch" in cleared else raw_epoch
         for cleared_name in cleared:
-            if cleared_name == "t0":
-                t0 = None
-            elif cleared_name == "epoch":
-                epoch = None
-            else:
+            if cleared_name not in ("t0", "epoch"):
                 kwargs.pop(cleared_name, None)
 
         # 2. Map time-specific args to SeriesMatrix generic args

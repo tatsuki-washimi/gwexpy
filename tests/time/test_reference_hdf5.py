@@ -25,7 +25,10 @@ from gwexpy.timeseries import TimeSeries
 @pytest.mark.parametrize("absolute", [False, True])
 def test_round_trip_and_plain_gwpy(tmp_path, cls, gwpy_cls, shape, axis, absolute):
     source = cls(
-        np.ones(shape), name="signal", **axis, **({"epoch": 0} if absolute else {})
+        np.ones(shape),
+        name="signal",
+        **axis,
+        **({"epoch": 0} if absolute else {"epoch": None}),
     )
     path = tmp_path / "source.h5"
     source.write(path, format="hdf5", path="signal")
@@ -39,7 +42,7 @@ def test_round_trip_and_plain_gwpy(tmp_path, cls, gwpy_cls, shape, axis, absolut
 
 @pytest.mark.parametrize("container", ["path", "handle", "filelike"])
 def test_timeseries_input_forms(tmp_path, container):
-    source = TimeSeries([1, 2, 3], dt=1, name="signal")
+    source = TimeSeries([1, 2, 3], dt=1, t0=None, name="signal")
     if container == "filelike":
         target = io.BytesIO()
         source.write(target, format="hdf5", path="signal")
@@ -57,7 +60,7 @@ def test_timeseries_input_forms(tmp_path, container):
 
 
 def test_frequency_relative_with_finite_epoch_round_trip(tmp_path):
-    source = FrequencySeries([1, 2, 3], df=1, name="signal")
+    source = FrequencySeries([1, 2, 3], df=1, epoch=None, name="signal")
     source.epoch = 2
     path = tmp_path / "frequency.h5"
     source.write(path, format="hdf5", path="signal")
@@ -102,7 +105,7 @@ def test_handle_overwrite_rolls_back_state_and_dataset(tmp_path, monkeypatch, ki
 
 @pytest.mark.parametrize("container", ["handle", "filelike"])
 def test_frequency_input_forms(tmp_path, container):
-    source = FrequencySeries([1, 2, 3], df=1, name="signal")
+    source = FrequencySeries([1, 2, 3], df=1, epoch=None, name="signal")
     source.epoch = 2
     if container == "filelike":
         target = io.BytesIO()
@@ -164,7 +167,7 @@ def test_spectrogram_recovery_artifact_retains_timing_snapshot(tmp_path, monkeyp
 
 
 def test_timeseries_external_storage_state(tmp_path):
-    source = TimeSeries(np.arange(3, dtype=np.float32), dt=1, name="signal")
+    source = TimeSeries(np.arange(3, dtype=np.float32), dt=1, t0=None, name="signal")
     path = tmp_path / "external.h5"
     raw = tmp_path / "raw.dat"
     source.write(
@@ -205,7 +208,7 @@ def test_timeseries_recovery_artifact_retains_timing_snapshot(tmp_path, monkeypa
 
     path = tmp_path / "recovery.h5"
     first = TimeSeries([1, 2], dt=1, name="signal", t0=0)
-    second = TimeSeries([3, 4], dt=1, name="signal")
+    second = TimeSeries([3, 4], dt=1, t0=None, name="signal")
     first.write(path, format="hdf5", path="signal")
     original_write = hdf5_time_reference.write_reference
     original_restore = ts_hdf5._restore_sidecar_attribute
@@ -230,7 +233,7 @@ def test_timeseries_recovery_artifact_retains_timing_snapshot(tmp_path, monkeypa
 
 
 def test_spectrogram_named_filelike_roundtrip(tmp_path):
-    source = Spectrogram(np.ones((4, 2)), dt=1, df=1, name="signal")
+    source = Spectrogram(np.ones((4, 2)), dt=1, df=1, epoch=None, name="signal")
     with open(tmp_path / "spectrogram.h5", "w+b") as target:
         source.write(target, format="hdf5", path="signal")
         target.seek(0)
@@ -269,7 +272,7 @@ def test_frequency_sidecar_preflight_preserves_existing_dataset(
 
 
 def test_anonymous_spectrogram_writer_persists_reference(tmp_path):
-    source = Spectrogram(np.ones((4, 2)), dt=1, df=1, name="signal")
+    source = Spectrogram(np.ones((4, 2)), dt=1, df=1, epoch=None, name="signal")
     target = io.BytesIO()
     source.write(target, format="hdf5", path="signal")
     path = tmp_path / "copied.h5"
@@ -348,7 +351,7 @@ def test_frequency_preflight_uses_group_relative_path(tmp_path, monkeypatch):
 
 def test_frequency_preflight_preserves_hdf5_dotdot_component(tmp_path):
     path = tmp_path / "literal-dotdot.h5"
-    source = FrequencySeries([1, 2, 3], df=1, name="signal")
+    source = FrequencySeries([1, 2, 3], df=1, epoch=None, name="signal")
     source.write(path, format="hdf5", path="a/../signal")
     result = FrequencySeries.read(path, format="hdf5", path="a/../signal")
     assert result.time_reference == "relative"
@@ -408,7 +411,7 @@ def test_frequency_external_group_path_append(tmp_path):
         target.create_group("measurements")
     with h5py.File(main, "w") as target:
         target["alias"] = h5py.ExternalLink(str(external), "/measurements")
-    source = FrequencySeries([1, 2, 3], df=1, name="signal")
+    source = FrequencySeries([1, 2, 3], df=1, epoch=None, name="signal")
     source.write(main, format="hdf5", path="alias/signal", append=True)
     # Opening the destination directly avoids an HDF5 external-link cache
     # behavior also present with GWpy's native writer.
@@ -489,7 +492,7 @@ def test_anonymous_spectrogram_stream_commit_failure_restores_bytes():
 
 def test_anonymous_spectrogram_append_preserves_existing_dataset(tmp_path):
     target = io.BytesIO()
-    first = Spectrogram(np.ones((4, 2)), dt=1, df=1, name="first")
+    first = Spectrogram(np.ones((4, 2)), dt=1, df=1, epoch=None, name="first")
     second = Spectrogram(np.zeros((4, 2)), dt=1, df=1, name="second", epoch=0)
     first.write(target, format="hdf5", path="first")
     second.write(target, format="hdf5", path="second", append=True)
@@ -512,7 +515,7 @@ def test_frequency_hardlink_overwrite_updates_both_names(tmp_path):
     )
     os.link(first, alias)
     inode = first.stat().st_ino
-    FrequencySeries([4, 5, 6], df=1, name="signal").write(
+    FrequencySeries([4, 5, 6], df=1, epoch=None, name="signal").write(
         first, format="hdf5", path="signal", overwrite=True
     )
     assert first.stat().st_ino == alias.stat().st_ino == inode
@@ -931,7 +934,7 @@ def test_frequency_full_overwrite_preflights_fresh_sidecar(tmp_path, monkeypatch
     from gwexpy.io import hdf5_time_reference as timing
 
     path = tmp_path / "full.h5"
-    FrequencySeries([1, 2, 3], df=1, name="signal").write(
+    FrequencySeries([1, 2, 3], df=1, epoch=None, name="signal").write(
         path, format="hdf5", path="signal"
     )
     old = json.dumps(
@@ -942,7 +945,7 @@ def test_frequency_full_overwrite_preflights_fresh_sidecar(tmp_path, monkeypatch
     with h5py.File(path, "a") as target:
         target.attrs[timing.ATTRIBUTE] = old
     monkeypatch.setattr(timing, "MAX_BYTES", len(old.encode("utf-8")))
-    source = FrequencySeries([4, 5, 6], df=1, name="new")
+    source = FrequencySeries([4, 5, 6], df=1, epoch=None, name="new")
     source.write(path, format="hdf5", path="new", overwrite=True)
     result = FrequencySeries.read(path, format="hdf5", path="new")
     np.testing.assert_array_equal(result.value, source.value)

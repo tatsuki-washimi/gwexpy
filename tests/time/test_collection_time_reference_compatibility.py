@@ -29,11 +29,11 @@ def test_collection_to_matrix_rejects_mixed_time_reference(
 ):
     if family == "timeseries":
         collection_type = TimeSeriesList if container == "list" else TimeSeriesDict
-        relative = TimeSeries(np.arange(4), dt=0.25)
+        relative = TimeSeries(np.arange(4), dt=0.25, t0=None)
         absolute = TimeSeries(np.arange(4), dt=0.25, t0=0)
     elif family == "frequencyseries":
         collection_type = FrequencySeriesDict
-        relative = FrequencySeries(np.arange(4), df=1)
+        relative = FrequencySeries(np.arange(4), df=1, epoch=None)
         absolute = FrequencySeries(np.arange(4), df=1, epoch=0)
     else:
         collection_type = SpectrogramList if container == "list" else SpectrogramDict
@@ -64,7 +64,7 @@ def test_collection_to_matrix_rejects_mixed_time_reference(
 
 @pytest.mark.parametrize("relative_first", [True, False])
 def test_timeserieslist_join_rejects_mixed_time_reference(relative_first):
-    relative = TimeSeries(np.arange(4.0), dt=0.25)
+    relative = TimeSeries(np.arange(4.0), dt=0.25, t0=None)
     absolute = TimeSeries(np.arange(4.0), dt=0.25, t0=1.0)
     ordered = [relative, absolute] if relative_first else [absolute, relative]
 
@@ -73,8 +73,8 @@ def test_timeserieslist_join_rejects_mixed_time_reference(relative_first):
 
 
 def test_timeserieslist_join_preserves_uniform_time_reference():
-    rel_a = TimeSeries(np.arange(4.0), dt=0.25)
-    rel_b = TimeSeries(np.arange(4.0), dt=0.25)[4:]
+    rel_a = TimeSeries(np.arange(4.0), dt=0.25, t0=None)
+    rel_b = TimeSeries(np.arange(4.0), dt=0.25, t0=None)[4:]
     rel_joined = TimeSeriesList([rel_a, rel_b]).join(pad=0.0, gap="pad")
     assert rel_joined.time_reference == "relative"
 

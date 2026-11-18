@@ -8,6 +8,8 @@ import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray
 
+from gwexpy.time._reference import TIME_INPUT_UNSET
+
 from .array import Array
 from .axis import AxisDescriptor, coerce_1d_quantity
 
@@ -64,7 +66,7 @@ class Array4D(Array):
         *,
         unit=None,
         name=None,
-        epoch=None,
+        epoch=TIME_INPUT_UNSET,
         channel=None,
         dtype=None,
         copy=True,

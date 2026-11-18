@@ -11,10 +11,11 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
-from gwpy.types import Series
 
 from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
     TIME_REFERENCE_ABSOLUTE,
+    TimeReferenceMixin,
     inherit_time_reference,
     resolve_time_inputs,
 )
@@ -112,9 +113,13 @@ def _prepare_time_reference(
         return TIME_REFERENCE_ABSOLUTE
 
     state, clear = resolve_time_inputs(
-        {"t0": t0, "epoch": kwargs.get("epoch"), "x0": kwargs.get("x0")},
+        {
+            "t0": t0,
+            "epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET,
+            "x0": kwargs["x0"] if "x0" in kwargs else TIME_INPUT_UNSET,
+        },
         explicit_axis=times_given or kwargs.get("xindex") is not None,
-        inherit=isinstance(data, Series),
+        inherit=isinstance(data, TimeReferenceMixin),
     )
     for name in clear:
         if name == "t0" and len(args) >= 2:

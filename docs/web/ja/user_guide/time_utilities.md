@@ -374,7 +374,8 @@ GWexpy のコンテナ（`TimeSeries`、`FrequencySeries`、`Spectrogram`、各 
 
 | コンストラクタの `t0` / `epoch` / `x0` | `time_reference` | 意味 |
 | --- | --- | --- |
-| 省略、`None`、`NaN` | `"relative"` | 絶対 GPS 時刻は未定。GWpy 互換のため公開 `t0` は有限値（例: `0 s`）を保ちます。 |
+| 省略 | `"absolute"` | GWpy 互換の既定動作（`t0` は `0 s`、`FrequencySeries.epoch` は GPS 指定がなければ `None` のまま）。 |
+| 明示的な `None`、`NaN` | `"relative"` | 絶対 GPS 時刻が未定であることを明示。GWpy 互換のため公開 `t0` は有限値（例: `0 s`）を保ちます。 |
 | 有限値（`0.0` を含む） | `"absolute"` | 既知の GPS 時刻（`0.0` は GPS エポック `1980-01-06 00:00:00 UTC`）。 |
 | `+Inf` / `-Inf` | `ValueError` | 無限大の時刻原点は拒否されます。 |
 
@@ -388,7 +389,7 @@ GWexpy のコンテナ（`TimeSeries`、`FrequencySeries`、`Spectrogram`、各 
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-rel = TimeSeries(np.arange(20.0), dt=0.25)
+rel = TimeSeries(np.arange(20.0), dt=0.25, t0=None)
 assert rel.time_reference == "relative"
 
 sliced = rel[12:]  # 相対オフセット 3.0 s

@@ -7,8 +7,7 @@ from astropy.units import dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray
 
 from gwexpy.time._reference import (
-    TIME_REFERENCE_ABSOLUTE,
-    TIME_REFERENCE_RELATIVE,
+    TIME_INPUT_UNSET,
     TimeReferenceMixin,
     check_time_setter_value,
     inherit_time_reference,
@@ -40,7 +39,7 @@ class Array(
         *,
         unit=None,
         name=None,
-        epoch=None,
+        epoch=TIME_INPUT_UNSET,
         channel=None,
         dtype=None,
         copy=True,
@@ -50,12 +49,13 @@ class Array(
         axis_names=None,
     ):
         """Create an array and initialize axis names."""
+        epoch_omitted = epoch is TIME_INPUT_UNSET
         time_reference, cleared = resolve_time_inputs(
             {"epoch": epoch},
             explicit_axis=False,
-            inherit=isinstance(value, GwpyArray),
+            inherit=isinstance(value, TimeReferenceMixin),
         )
-        effective_epoch = None if "epoch" in cleared else epoch
+        effective_epoch = None if (epoch_omitted or "epoch" in cleared) else epoch
         obj = super().__new__(
             cls,
             value,
@@ -73,13 +73,6 @@ class Array(
             set_time_reference(obj, time_reference)
         elif isinstance(value, TimeReferenceMixin):
             inherit_time_reference(obj, value)
-        elif isinstance(value, GwpyArray):
-            set_time_reference(
-                obj,
-                TIME_REFERENCE_ABSOLUTE
-                if getattr(value, "epoch", None) is not None
-                else TIME_REFERENCE_RELATIVE,
-            )
         if axis_names is None:
             axis_names = [f"axis{i}" for i in range(obj.ndim)]
         else:

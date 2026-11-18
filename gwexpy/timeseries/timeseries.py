@@ -26,6 +26,7 @@ from numpy.typing import ArrayLike
 
 from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
     TIME_REFERENCE_RELATIVE,
     TimeReferenceMixin,
     check_time_setter_value,
@@ -423,7 +424,7 @@ class TimeSeries(
             data,
             parent_args,
             parent_kwargs,
-            t0=t0,
+            t0=bound.arguments["t0"] if t0_supplied else TIME_INPUT_UNSET,
             times_given=times_supplied,
             exact_t0_ns=exact_t0_ns,
         )

@@ -64,7 +64,7 @@ def _build(**kwargs) -> SeriesMatrix:
 
 def _make(kind: str) -> SeriesMatrix:
     if kind == "relative":
-        return _build()
+        return _build(epoch=np.nan)
     if kind == "absolute_zero":
         return _build(epoch=0.0)
     return _build(epoch=GPS)
@@ -85,17 +85,17 @@ class TestConstructor:
         assert TIME_REFERENCE_NAME == "time_reference"
 
     @pytest.mark.parametrize(
-        ("kw", "public"),
+        ("kw", "expected_state", "public"),
         [
-            ({}, 0.0),  # public value unchanged: omitted is 0.0
-            ({"epoch": None}, None),  # public value unchanged: None is kept
-            ({"epoch": np.nan}, 0.0),  # NaN is never stored
-            ({"epoch": float("nan") * u.s}, 0.0),
+            ({}, ABS, 0.0),  # omitted -> GWpy-compatible absolute
+            ({"epoch": None}, REL, None),  # explicit None -> relative
+            ({"epoch": np.nan}, REL, 0.0),  # NaN is never stored
+            ({"epoch": float("nan") * u.s}, REL, 0.0),
         ],
     )
-    def test_missing_or_nan_is_relative(self, kw, public):
+    def test_missing_or_nan_is_relative(self, kw, expected_state, public):
         m = _build(**kw)
-        assert m.time_reference == REL
+        assert m.time_reference == expected_state
         assert m.epoch == public
         assert m.meta[0, 0].unit == UNIT
         assert m.dx.value == pytest.approx(DX)
@@ -113,13 +113,15 @@ class TestConstructor:
         with pytest.raises(ValueError, match="must not be infinite"):
             _build(epoch=epoch)
 
-    def test_explicit_zero_and_omitted_are_distinguishable(self):
-        assert _build().epoch == _build(epoch=0.0).epoch == 0.0
-        assert _build().time_reference == REL
+    def test_explicit_none_and_zero_are_distinguishable(self):
+        assert _build(epoch=np.nan).epoch == _build(epoch=0.0).epoch == 0.0
+        assert _build(epoch=np.nan).time_reference == REL
+        assert _build(epoch=None).time_reference == REL
+        assert _build().time_reference == ABS
         assert _build(epoch=0.0).time_reference == ABS
 
     def test_state_does_not_depend_on_data_scale(self):
-        small = SeriesMatrix(_values() * 1e-20, xindex=_axis(), xunit="s")
+        small = SeriesMatrix(_values() * 1e-20, xindex=_axis(), xunit="s", epoch=None)
         assert small.time_reference == REL
         assert (
             SeriesMatrix(

@@ -45,6 +45,7 @@ import numpy as np
 from astropy import units as u
 
 __all__ = [
+    "TIME_INPUT_UNSET",
     "TIME_REFERENCE_ABSOLUTE",
     "TIME_REFERENCE_NAME",
     "TIME_REFERENCE_RELATIVE",
@@ -71,6 +72,8 @@ _STATE_KEY = f"_gwex_{TIME_REFERENCE_NAME}"
 #: Key of the state in an instance ``__dict__`` (for containers that pickle
 #: selected ``__dict__`` entries, such as ``SeriesMatrix``).
 TIME_REFERENCE_STATE_KEY = _STATE_KEY
+#: Sentinel for an omitted constructor time-origin argument (distinct from ``None``).
+TIME_INPUT_UNSET = object()
 _VALID_STATES = (TIME_REFERENCE_ABSOLUTE, TIME_REFERENCE_RELATIVE)
 
 TimeInputKind = Literal["missing", "nan", "inf", "finite"]
@@ -143,25 +146,35 @@ def resolve_time_inputs(
         If the single given origin is ``+Inf`` or ``-Inf``.
 
     """
-    given = {name: value for name, value in candidates.items() if value is not None}
+    given = {
+        name: value
+        for name, value in candidates.items()
+        if value is not TIME_INPUT_UNSET
+    }
     if len(given) > 1:
-        # Conflicting authorities: leave the failure (or GWpy's own
-        # precedence) to GWpy and treat what survives as explicit.
-        return TIME_REFERENCE_ABSOLUTE, ()
+        non_none = {name: value for name, value in given.items() if value is not None}
+        if not non_none:
+            return TIME_REFERENCE_RELATIVE, ()
+        if len(non_none) > 1:
+            # Conflicting authorities: leave the failure (or GWpy's own
+            # precedence) to GWpy and treat what survives as explicit.
+            return TIME_REFERENCE_ABSOLUTE, ()
+        given = non_none
     if given:
         (name, value), *_ = given.items()
+        if value is None:
+            return TIME_REFERENCE_RELATIVE, ()
         kind = classify_time_input(value)
         if kind == "inf":
             raise ValueError(
                 f"{name} must not be infinite (got {value!r}); pass a finite "
-                f"GPS time, or omit {name} (or pass None/NaN) when the "
-                "absolute time is unknown"
+                f"GPS time, or pass None/NaN when the absolute time is unknown"
             )
         if kind == "nan":
             return TIME_REFERENCE_RELATIVE, (name,)
         return TIME_REFERENCE_ABSOLUTE, ()
     del explicit_axis
-    return (None if inherit else TIME_REFERENCE_RELATIVE), ()
+    return (None if inherit else TIME_REFERENCE_ABSOLUTE), ()
 
 
 def resolve_matrix_epoch(
@@ -208,7 +221,7 @@ def resolve_matrix_epoch(
 
     """
     state, cleared = resolve_time_inputs(
-        {"epoch": None if omitted else epoch},
+        {"epoch": TIME_INPUT_UNSET if omitted else epoch},
         explicit_axis=explicit_axis,
         inherit=inherit and omitted,
     )

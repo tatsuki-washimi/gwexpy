@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any, Self, SupportsIndex
 import numpy as np
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
-from gwpy.types import Series
 
 from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
     TIME_REFERENCE_RELATIVE,
     TimeReferenceMixin,
     check_time_setter_value,
@@ -136,7 +136,7 @@ class Spectrogram(
         cls,
         data: Any,
         unit: Any = None,
-        t0: Any = None,
+        t0: Any = TIME_INPUT_UNSET,
         dt: Any = None,
         f0: Any = None,
         df: Any = None,
@@ -147,25 +147,29 @@ class Spectrogram(
         **kwargs: Any,
     ) -> Spectrogram:
         """Create a new Spectrogram (GWpy signature, plus the #725 time rules)."""
-        # #725 (U-1): omitted/None/NaN t0, epoch or x0 -> relative; finite
-        # (including 0.0) or an explicit time axis -> absolute; +/-Inf ->
-        # ValueError.  NaN is dropped here so it never reaches the axis.
+        # #725 (Plan I): omitted t0/epoch/x0 -> absolute (GWpy-compatible
+        # default); explicit None/NaN -> relative; finite (including 0.0) ->
+        # absolute; +/-Inf -> ValueError.
+        t0_omitted = t0 is TIME_INPUT_UNSET
         time_reference, cleared = resolve_time_inputs(
-            {"t0": t0, "epoch": kwargs.get("epoch"), "x0": kwargs.get("x0")},
+            {
+                "t0": t0,
+                "epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET,
+                "x0": kwargs["x0"] if "x0" in kwargs else TIME_INPUT_UNSET,
+            },
             explicit_axis=times is not None or kwargs.get("xindex") is not None,
-            inherit=isinstance(data, Series),
+            inherit=isinstance(data, TimeReferenceMixin),
         )
+        effective_t0 = None if (t0_omitted or "t0" in cleared) else t0
         for cleared_name in cleared:
-            if cleared_name == "t0":
-                t0 = None
-            else:
+            if cleared_name != "t0":
                 kwargs[cleared_name] = None
 
         new = super().__new__(
             cls,
             data,
             unit=unit,
-            t0=t0,
+            t0=effective_t0,
             dt=dt,
             f0=f0,
             df=df,

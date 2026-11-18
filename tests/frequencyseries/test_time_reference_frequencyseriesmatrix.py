@@ -56,7 +56,7 @@ def _values() -> np.ndarray:
 
 
 def _make(kind: str) -> FrequencySeriesMatrix:
-    kw = {} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
+    kw = {"epoch": np.nan} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
     return FrequencySeriesMatrix(_values(), df=DF, f0=F0, unit=UNIT, **kw)
 
 
@@ -79,17 +79,17 @@ def _epoch_gps(obj) -> float | None:
 
 class TestConstructor:
     @pytest.mark.parametrize(
-        ("kw", "public"),
+        ("kw", "expected_state", "public"),
         [
-            ({}, 0.0),  # public value unchanged: omitted is 0.0
-            ({"epoch": None}, None),  # public value unchanged: None is kept
-            ({"epoch": np.nan}, 0.0),  # NaN is never stored
-            ({"epoch": float("nan") * u.s}, 0.0),
+            ({}, ABS, 0.0),  # omitted -> GWpy-compatible absolute
+            ({"epoch": None}, REL, None),  # explicit None -> relative
+            ({"epoch": np.nan}, REL, 0.0),  # NaN is never stored
+            ({"epoch": float("nan") * u.s}, REL, 0.0),
         ],
     )
-    def test_missing_or_nan_is_relative(self, kw, public):
+    def test_missing_or_nan_is_relative(self, kw, expected_state, public):
         m = FrequencySeriesMatrix(_values(), df=DF, f0=F0, unit=UNIT, **kw)
-        assert m.time_reference == REL
+        assert m.time_reference == expected_state
         assert m.epoch == public
         assert m.f0.value == F0
         assert m.df.value == DF
@@ -109,11 +109,15 @@ class TestConstructor:
         with pytest.raises(ValueError, match="must not be infinite"):
             FrequencySeriesMatrix(_values(), df=DF, f0=F0, epoch=epoch)
 
-    def test_frequencies_argument_does_not_make_it_absolute(self):
+    def test_frequencies_argument_does_not_make_it_relative_when_omitted(self):
         m = FrequencySeriesMatrix(
-            _values(), frequencies=(F0 + DF * np.arange(N)) * u.Hz
+            _values(), frequencies=(F0 + DF * np.arange(N)) * u.Hz, epoch=None
         )
         assert m.time_reference == REL
+        m_abs = FrequencySeriesMatrix(
+            _values(), frequencies=(F0 + DF * np.arange(N)) * u.Hz
+        )
+        assert m_abs.time_reference == ABS
 
     @pytest.mark.parametrize("kind", KINDS)
     def test_rebuild_from_a_matrix_keeps_state(self, kind):
@@ -124,14 +128,14 @@ class TestConstructor:
         assert rebuilt.f0.value == F0
 
     def test_scale_invariance(self):
-        tiny = FrequencySeriesMatrix(_values() * 1e-20, df=DF)
+        tiny = FrequencySeriesMatrix(_values() * 1e-20, df=DF, epoch=None)
         assert tiny.time_reference == REL
 
 
 @pytest.mark.parametrize(
     ("kw", "expected"),
     [
-        ({}, REL),
+        ({}, ABS),
         ({"epoch": None}, REL),
         ({"epoch": float("nan")}, REL),
         ({"epoch": 0}, ABS),
@@ -276,7 +280,7 @@ def test_diagonal_trace_and_det_series_keep_state_and_epoch(kind):
 
 @pytest.mark.parametrize("kind", KINDS)
 def test_dict_to_matrix_keeps_state_and_values(kind):
-    kw = {} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
+    kw = {"epoch": np.nan} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
     series = {
         f"c{j}": FrequencySeries(
             _values()[0, j], df=DF, f0=F0, unit=UNIT, name=f"c{j}", **kw
@@ -301,7 +305,9 @@ def test_matrix_to_dict_to_matrix_round_trip(kind):
         df=DF,
         f0=F0,
         unit=UNIT,
-        **({} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}),
+        **(
+            {"epoch": np.nan} if kind == "relative" else {"epoch": EXPECTED_EPOCH[kind]}
+        ),
     )
     back = m.to_dict().to_matrix()
     assert back.time_reference == EXPECTED_STATE[kind]

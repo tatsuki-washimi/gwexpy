@@ -6,12 +6,11 @@ import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
 from gwpy.types import Array2D
-from gwpy.types.array import Array as GwpyArray
 from scipy.interpolate import interp1d
 
 from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
     TIME_REFERENCE_ABSOLUTE,
-    TIME_REFERENCE_RELATIVE,
     TimeReferenceMixin,
     check_time_setter_value,
     inherit_time_reference,
@@ -83,9 +82,9 @@ class BifrequencyMap(TimeReferenceMixin, Array2D):
     def __new__(cls, data, *args: Any, **kwargs: Any) -> BifrequencyMap:
         """Create a BifrequencyMap with unified #725 epoch semantics."""
         time_reference, cleared = resolve_time_inputs(
-            {"epoch": kwargs.get("epoch")},
+            {"epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET},
             explicit_axis=False,
-            inherit=isinstance(data, GwpyArray),
+            inherit=isinstance(data, TimeReferenceMixin),
         )
         if "epoch" in cleared:
             kwargs = dict(kwargs)
@@ -95,13 +94,6 @@ class BifrequencyMap(TimeReferenceMixin, Array2D):
             set_time_reference(obj, time_reference)
         elif isinstance(data, TimeReferenceMixin):
             inherit_time_reference(obj, data)
-        elif isinstance(data, GwpyArray):
-            set_time_reference(
-                obj,
-                TIME_REFERENCE_ABSOLUTE
-                if getattr(data, "epoch", None) is not None
-                else TIME_REFERENCE_RELATIVE,
-            )
         return obj
 
     def __array_finalize__(self, obj: Any) -> None:
@@ -223,7 +215,6 @@ class BifrequencyMap(TimeReferenceMixin, Array2D):
 
         # Return as FrequencySeries (axis is map axis 2 = frequency2)
         from gwexpy.time._reference import (
-            TIME_REFERENCE_ABSOLUTE,
             get_time_reference,
             inherit_time_reference,
         )

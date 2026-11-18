@@ -53,7 +53,9 @@ def _data() -> np.ndarray:
 
 def _make(kind: str, **extra) -> Spectrogram:
     kw: dict = {}
-    if kind == "absolute_zero":
+    if kind == "relative":
+        kw["epoch"] = None
+    elif kind == "absolute_zero":
         kw["epoch"] = 0.0
     elif kind == "absolute_gps":
         kw["epoch"] = GPS
@@ -87,7 +89,7 @@ class TestConstructor:
     def test_missing_or_nan_is_relative(self, argument, value):
         kw = {} if isinstance(value, str) else {argument: value}
         sg = Spectrogram(_data(), dt=DT, f0=0.0, df=DF, unit=UNIT, **kw)
-        assert sg.time_reference == REL
+        assert sg.time_reference == (ABS if value == "omitted" else REL)
         # the public values are finite and unchanged (GWpy)
         assert _t0(sg) == 0.0
         assert _epoch(sg) == 0.0
@@ -113,10 +115,12 @@ class TestConstructor:
 
 
 class TestConstructorAxes:
-    def test_explicit_times_without_epoch_is_relative(self):
+    def test_explicit_times_without_epoch_is_absolute_and_explicit_none_is_relative(
+        self,
+    ):
         times = (np.arange(NT) + 10.0) * u.s
         sg = Spectrogram(_data(), times=times, f0=0.0, df=DF, unit=UNIT)
-        assert sg.time_reference == REL
+        assert sg.time_reference == ABS
         np.testing.assert_array_equal(sg.times.value, times.value)
 
         sg_none = Spectrogram(
@@ -134,7 +138,9 @@ class TestConstructorAxes:
         np.testing.assert_array_equal(sg.times.value, times.value)
 
     def test_frequency_axis_does_not_decide_the_state(self):
-        sg = Spectrogram(_data(), dt=DT, frequencies=np.arange(NF) * DF * u.Hz)
+        sg = Spectrogram(
+            _data(), dt=DT, frequencies=np.arange(NF) * DF * u.Hz, epoch=None
+        )
         assert sg.time_reference == REL
 
     def test_positional_t0_follows_the_gwpy_signature(self):
@@ -339,7 +345,7 @@ class TestOperations:
 
     def test_state_independent_of_data_scale(self):
         # R-15: the state is a property of the timing, not of the values
-        sg = Spectrogram(_data() * 1e-42, dt=DT, f0=0.0, df=DF, unit=UNIT)
+        sg = Spectrogram(_data() * 1e-42, dt=DT, f0=0.0, df=DF, unit=UNIT, epoch=None)
         assert sg.time_reference == REL
         assert (sg * 1e-20).time_reference == REL
 
@@ -348,7 +354,7 @@ class TestOperations:
 
 
 def _ts(kind: str) -> TimeSeries:
-    kw: dict = {}
+    kw: dict = {"t0": None}
     if kind == "absolute_zero":
         kw["t0"] = 0.0
     elif kind == "absolute_gps":
