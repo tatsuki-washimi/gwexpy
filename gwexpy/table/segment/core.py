@@ -9,13 +9,13 @@ instances that support lazy loading and optional caching.
 
 from __future__ import annotations
 
-import copy
 from collections.abc import Callable, Sequence
 from typing import Any, Optional, Union, cast
 
+import numpy as np
 import pandas as pd
 
-from gwexpy.table.segment.cell import SegmentCell
+from gwexpy.table.segment.cell import CellStatus, SegmentCell
 
 __all__ = ["RowProxy", "SegmentTable"]
 
@@ -435,10 +435,18 @@ class SegmentTable:
                 # Both provided: data takes priority; loader as fallback ignored
                 # (simpler semantics for v0.1)
                 for val in data:
-                    cells.append(SegmentCell(value=val))
+                    cells.append(
+                        val.clone()
+                        if isinstance(val, SegmentCell)
+                        else SegmentCell(value=val)
+                    )
             else:
                 for val in data:
-                    cells.append(SegmentCell(value=val))
+                    cells.append(
+                        val.clone()
+                        if isinstance(val, SegmentCell)
+                        else SegmentCell(value=val)
+                    )
         else:
             # loader only
             assert loader is not None
@@ -754,6 +762,12 @@ class SegmentTable:
     ) -> SegmentTable:
         """Select rows by boolean mask or column conditions.
 
+        .. note::
+            For backward compatibility, ``select()`` shares the underlying
+            :class:`~gwexpy.table.segment.cell.SegmentCell` objects with the
+            source table. Prefer :meth:`filter` for isolated cell status and
+            richer column expressions.
+
         Parameters
         ----------
         mask:
@@ -852,7 +866,11 @@ class SegmentTable:
             return target
         return None
 
-    def to_pandas(self, meta_only: bool = True) -> pd.DataFrame:
+    def to_pandas(
+        self,
+        meta_only: bool = True,
+        missing_as: str = "summary",
+    ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` representation.
 
         Parameters
@@ -861,21 +879,34 @@ class SegmentTable:
             If ``True`` (default), return only the meta columns.  If
             ``False``, payload columns are appended as object columns
             containing the resolved cell values.
+        missing_as:
+            How non-valid payload cells (``UNLOADED``, ``MISSING``, ``FAILED``,
+            ``MASKED``, ``NOT_APPLICABLE``) are represented when
+            ``meta_only=False``: ``"summary"`` (default, human-readable status
+            tag) or ``"nan"`` (``numpy.nan``).
 
         Returns
         -------
         pandas.DataFrame
 
         """
+        if missing_as not in ("summary", "nan"):
+            raise ValueError(
+                f"Invalid missing_as {missing_as!r}; expected 'summary' or 'nan'."
+            )
         df = self._meta.copy()
         if not meta_only:
             for col, cells in self._payload.items():
-                df[col] = [
-                    c.get()
-                    if c.is_loaded()
-                    else c._summary(self._schema.get(col, "object"))
-                    for c in cells
-                ]
+                kind = self._schema.get(col, "object")
+                col_values: list[Any] = []
+                for c in cells:
+                    if c.status == CellStatus.VALID:
+                        col_values.append(c.get())
+                    elif missing_as == "summary":
+                        col_values.append(c._summary(kind))
+                    else:
+                        col_values.append(np.nan)
+                df[col] = col_values
         return df
 
     def copy(self, deep: bool = False) -> SegmentTable:
@@ -885,8 +916,8 @@ class SegmentTable:
         ----------
         deep:
             If ``False`` (default), meta is copied and payload cells are
-            referenced (shallow).  If ``True``, payload values are also
-            deep-copied where possible.
+            cloned shallowly (sharing values/loaders, isolating cell state).
+            If ``True``, payload values are also deep-copied where possible.
 
         Returns
         -------
@@ -902,25 +933,7 @@ class SegmentTable:
                 new_table._schema[col] = self._schema[col]
 
         for col, cells in self._payload.items():
-            if deep:
-                new_cells = [
-                    SegmentCell(
-                        value=copy.deepcopy(c.value) if c.value is not None else None,
-                        loader=c.loader,
-                        cacheable=c.cacheable,
-                    )
-                    for c in cells
-                ]
-                for nc, oc in zip(new_cells, cells):
-                    nc._loaded = oc._loaded
-            else:
-                new_cells = [
-                    SegmentCell(value=c.value, loader=c.loader, cacheable=c.cacheable)
-                    for c in cells
-                ]
-                for nc, oc in zip(new_cells, cells):
-                    nc._loaded = oc._loaded
-            new_table._payload[col] = new_cells
+            new_table._payload[col] = [c.clone(deep=deep) for c in cells]
             new_table._schema[col] = self._schema[col]
 
         return new_table

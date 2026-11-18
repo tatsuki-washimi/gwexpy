@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from gwexpy.table.segment.cell import SegmentCell
+from gwexpy.table.segment.cell import CellStatus, SegmentCell
 
-__all__ = ["SegmentCell"]
+__all__ = ["CellStatus", "SegmentCell"]
