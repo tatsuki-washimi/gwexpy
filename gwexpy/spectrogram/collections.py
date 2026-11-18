@@ -24,6 +24,10 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
+from gwexpy.time._reference import (
+    inherit_time_reference,
+    require_uniform_time_reference,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -31,6 +35,19 @@ from .provenance import ProvenanceSidecarError
 from .spectrogram import Spectrogram
 
 logger = logging.getLogger(__name__)
+
+
+def _epoch_seconds(series):
+    """GPS seconds of ``series.epoch`` (``0.0`` if it has none), for a Matrix.
+
+    A SpectrogramMatrix stores its ``epoch`` as a raw number; the timing state
+    is carried separately (``inherit_time_reference``), so a relative series
+    gives a relative matrix and the epoch is not reset to ``0.0`` (#725).
+    """
+    epoch = getattr(series, "epoch", None)
+    if epoch is None:
+        return 0.0
+    return float(getattr(epoch, "gps", epoch))
 
 
 def _resolve_crop_compat_args(*args, **kwargs):
@@ -451,6 +468,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         if not self:
             return SpectrogramMatrix(np.empty((0, 0, 0)))
 
+        require_uniform_time_reference(self)
         s0 = self[0]
         shape0 = s0.shape
         times0 = s0.times
@@ -493,13 +511,17 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         meta_matrix = MetaDataMatrix(meta_arr)
 
         global_unit = s0.unit if all(s.unit == s0.unit for s in self) else None
-        return SpectrogramMatrix(
-            arr,
-            times=times0,
-            frequencies=freqs0,
-            meta=meta_matrix,
-            name=None,
-            unit=global_unit,
+        return inherit_time_reference(
+            SpectrogramMatrix(
+                arr,
+                times=times0,
+                frequencies=freqs0,
+                meta=meta_matrix,
+                name=None,
+                unit=global_unit,
+                epoch=_epoch_seconds(s0),
+            ),
+            s0,
         )
 
     def to_torch(self, *args, **kwargs) -> list:
@@ -909,6 +931,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         if not vals:
             return SpectrogramMatrix(np.empty((0, 0, 0)))
 
+        require_uniform_time_reference(vals)
         s0 = vals[0]
         shape0 = s0.shape
         times0 = s0.times
@@ -951,14 +974,18 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         meta_matrix = MetaDataMatrix(meta_arr)
 
         global_unit = s0.unit if all(s.unit == s0.unit for s in vals) else None
-        return SpectrogramMatrix(
-            arr,
-            times=times0,
-            frequencies=freqs0,
-            rows=keys,
-            meta=meta_matrix,
-            name=None,
-            unit=global_unit,
+        return inherit_time_reference(
+            SpectrogramMatrix(
+                arr,
+                times=times0,
+                frequencies=freqs0,
+                rows=keys,
+                meta=meta_matrix,
+                name=None,
+                unit=global_unit,
+                epoch=_epoch_seconds(s0),
+            ),
+            s0,
         )
 
     def to_torch(self, *args, **kwargs) -> dict:

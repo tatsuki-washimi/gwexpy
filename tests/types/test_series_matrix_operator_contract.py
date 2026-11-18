@@ -26,6 +26,7 @@ from astropy.units import UnitConversionError
 
 from gwexpy.frequencyseries import FrequencySeriesMatrix
 from gwexpy.spectrogram import Spectrogram, SpectrogramMatrix
+from gwexpy.time._reference import set_time_reference
 from gwexpy.timeseries import TimeSeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.types.seriesmatrix import SeriesMatrix
@@ -130,6 +131,10 @@ def _slicing_spectrogram_matrix(
         matrix.times = np.array([1234567890.25, 1234567891.25]) * u.s
         matrix.frequencies = np.array([20.0, 21.0]) * u.Hz
         matrix.epoch = epoch
+        # changed by U-1 (#725): assigning a finite epoch after construction
+        # keeps the state (relative, as ``epoch`` was omitted above), so the
+        # fixture declares its explicit GPS epoch absolute like the 3-D one.
+        set_time_reference(matrix, "absolute")
         matrix.name = "four-dimensional-slice"
         matrix.meta.row_keys = ["meta-row-0", "meta-row-1"]
         matrix.meta.col_keys = ["meta-col-0", "meta-col-1"]
@@ -400,16 +405,19 @@ def test_spectrogram_scalar_structural_selection_preserves_epoch_and_axes(
     [(True, 0), (False, (0, 1))],
     ids=["3d", "4d"],
 )
-def test_spectrogram_scalar_selection_rejects_conflicting_epoch_and_time_axis(
+def test_spectrogram_scalar_selection_uses_explicit_time_axis_when_epoch_differs(
     three_dimensional, selector
 ):
-    """A scalar result never resolves conflicting matrix time authorities."""
+    """The explicit axis supplies selected time; epoch remains the origin."""
     source = _slicing_spectrogram_matrix(three_dimensional=three_dimensional)
     source.times = np.array([10.0, 11.0]) * u.s
     snapshot = _observable_source_snapshot(source)
 
-    with pytest.raises(ValueError, match="epoch and explicit times"):
-        source[selector]
+    result = source[selector]
+    assert result.time_reference == "absolute"
+    assert result.t0.value == pytest.approx(10.0)
+    np.testing.assert_array_equal(result.times, source.times)
+    np.testing.assert_array_equal(result.frequencies, source.frequencies)
 
     _assert_source_unchanged(source, snapshot)
 

@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time._reference import inherit_time_reference, inherits_time_reference
+
 from .metadata import MetaData, MetaDataMatrix
 
 _XINDEX_RTOL = 1e-9
@@ -41,6 +43,7 @@ class SeriesMatrixMathMixin:
         def view(self, *args: Any, **kwargs: Any) -> Any: ...  # noqa: D102
         def copy(self, *args: Any, **kwargs: Any) -> Any: ...  # noqa: D102
         def astype(self, *args: Any, **kwargs: Any) -> Any: ...  # noqa: D102
+        def _series_time_kwargs(self) -> dict[str, Any]: ...  # noqa: D102
         def _ufunc_dispatch(  # noqa: D102
             self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
         ) -> Any: ...
@@ -441,6 +444,7 @@ class SeriesMatrixMathMixin:
         """Compare elementwise with ``>=``."""
         return self._binary_op(np.greater_equal, other)
 
+    @inherits_time_reference
     def __matmul__(self, other):
         """Perform matrix multiplication while broadcasting over the sample axis."""
         if not isinstance(other, type(self)):
@@ -558,6 +562,7 @@ class SeriesMatrixMathMixin:
     # behaviour and keeps the metadata independent.
     # ------------------------------------------------------------------
 
+    @inherits_time_reference
     def _rebuild_with_values(self, values: Any, meta: Any = None) -> Any:
         """Return a same-class matrix holding *values* with independent metadata."""
         from .seriesmatrix_base import _copy_meta_cells, _copy_metadata_dict
@@ -729,14 +734,19 @@ class SeriesMatrixMathMixin:
             series_cls = _Series
 
         name = f"trace({self.name})" if getattr(self, "name", "") else "trace"
-        return series_cls(
-            summed,
-            xindex=self.xindex,
-            xunit=getattr(self, "xunit", None),
-            unit=ref_unit,
-            name=name,
+        return inherit_time_reference(
+            series_cls(
+                summed,
+                xindex=self.xindex,
+                xunit=getattr(self, "xunit", None),
+                unit=ref_unit,
+                name=name,
+                **self._series_time_kwargs(),
+            ),
+            self,
         )
 
+    @inherits_time_reference
     def diagonal(self, offset=0, axis1=0, axis2=1, **kwargs):
         """Extract diagonal elements from the matrix."""
         output = kwargs.pop("output", "list")
@@ -768,6 +778,7 @@ class SeriesMatrixMathMixin:
                     unit=meta.unit,
                     name=meta.name,
                     channel=meta.channel,
+                    **self._series_time_kwargs(),
                 )
             )
 
@@ -844,14 +855,19 @@ class SeriesMatrixMathMixin:
             series_cls = _Series
 
         name = f"det({self.name})" if getattr(self, "name", "") else "det"
-        return series_cls(
-            det_vals,
-            xindex=self.xindex,
-            xunit=getattr(self, "xunit", None),
-            unit=result_unit,
-            name=name,
+        return inherit_time_reference(
+            series_cls(
+                det_vals,
+                xindex=self.xindex,
+                xunit=getattr(self, "xunit", None),
+                unit=result_unit,
+                name=name,
+                **self._series_time_kwargs(),
+            ),
+            self,
         )
 
+    @inherits_time_reference
     def inv(self, swap_rowcol: bool = True):
         """Compute the matrix inverse at each sample point."""
         from collections import OrderedDict
@@ -912,6 +928,7 @@ class SeriesMatrixMathMixin:
             attrs=deepcopy(getattr(self, "attrs", {})),
         )
 
+    @inherits_time_reference
     def schur(
         self, keep_rows, keep_cols=None, eliminate_rows=None, eliminate_cols=None
     ):
@@ -1018,6 +1035,7 @@ class SeriesMatrixMathMixin:
         """Return the absolute value of the matrix element-wise."""
         return self._unary_op(np.absolute)
 
+    @inherits_time_reference
     def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any):
         """Return the element-wise complex phase angle of the matrix.
 

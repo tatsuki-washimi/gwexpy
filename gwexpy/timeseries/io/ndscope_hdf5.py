@@ -328,6 +328,15 @@ def write_timeseriesdict_ndscope_hdf5(
         names = ", ".join(sorted(kwargs))
         raise TypeError(f"Unsupported NDScope writer keyword arguments: {names}")
 
+    from gwexpy.time._reference import TIME_REFERENCE_RELATIVE, get_time_reference
+
+    for key, ts in tsdict.items():
+        if get_time_reference(ts) == TIME_REFERENCE_RELATIVE:
+            raise ValueError(
+                f"Cannot write relative-time TimeSeries ({key!r}) to ndscope HDF5 "
+                "without an explicit GPS epoch; anchor it with .with_epoch(epoch) first."
+            )
+
     mode = "w" if overwrite else "w-"
     # group_meta tracks the first-seen metadata for each group so that
     # subsequent series in the same group can be validated for consistency.

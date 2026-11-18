@@ -23,6 +23,7 @@ from astropy.time import Time
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from numpy.typing import ArrayLike
 
+from gwexpy.time._reference import inherit_time_reference
 from gwexpy.types.mixin import RegularityMixin
 
 from ._epoch import _EXACT_BUFFER_APPEND_DEPTH
@@ -190,6 +191,8 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 name=res.name,
                 channel=getattr(res, "channel", None),
             )
+            # ``times=`` is an explicit axis; keep the source's state (#725).
+            inherit_time_reference(result, self)
 
         if track_buffer_epoch:
             assert exact_t0_ns is not None

@@ -21,6 +21,8 @@ import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike
 
+from gwexpy.time._reference import inherits_time_reference
+
 from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
@@ -464,6 +466,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
     # asfreq - Reindex to New Grid
     # ===============================
 
+    @inherits_time_reference
     def asfreq(
         self,
         rule: str | NumberLike | u.Quantity,
@@ -644,6 +647,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
     # _resample_time_bin - Internal
     # ===============================
 
+    @inherits_time_reference
     def _resample_time_bin(
         self,
         rule: str | NumberLike | u.Quantity,

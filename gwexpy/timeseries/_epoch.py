@@ -12,6 +12,14 @@ import numpy as np
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 
+from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    TIME_REFERENCE_ABSOLUTE,
+    TimeReferenceMixin,
+    inherit_time_reference,
+    resolve_time_inputs,
+)
+
 _EXACT_BUFFER_APPEND_DEPTH: ContextVar[int] = ContextVar(
     "_EXACT_BUFFER_APPEND_DEPTH", default=0
 )
@@ -78,8 +86,56 @@ def _integral_dt_gps_ns(value: Any) -> int:
         raise exact_error from None
 
 
+def _prepare_time_reference(
+    data: Any,
+    args: list[Any],
+    kwargs: dict[str, Any],
+    *,
+    t0: Any,
+    times_given: bool,
+    exact_t0_ns: int | None,
+) -> str | None:
+    """Resolve the timing-reference state requested by constructor arguments.
+
+    ``args`` and ``kwargs`` are the arguments that will be forwarded to GWpy;
+    a ``NaN`` ``t0``/``epoch``/``x0`` is removed from them in place so that it
+    never reaches (and poisons) the axis.  Returns ``"absolute"`` or
+    ``"relative"`` when the arguments decide the state, or ``None`` when the
+    state is inherited from ``data`` (a series that already has an axis).
+
+    Raises
+    ------
+    ValueError
+        If ``t0``, ``epoch`` or ``x0`` is ``+Inf`` or ``-Inf``.
+
+    """
+    if exact_t0_ns is not None:
+        return TIME_REFERENCE_ABSOLUTE
+
+    state, clear = resolve_time_inputs(
+        {
+            "t0": t0,
+            "epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET,
+            "x0": kwargs["x0"] if "x0" in kwargs else TIME_INPUT_UNSET,
+        },
+        explicit_axis=times_given or kwargs.get("xindex") is not None,
+        inherit=isinstance(data, TimeReferenceMixin),
+    )
+    for name in clear:
+        if name == "t0" and len(args) >= 2:
+            args[1] = None
+        else:
+            kwargs[name] = None
+    return state
+
+
 def _restore_exact_time_authority(source: Any, result: Any) -> Any:
-    """Restore private exact epoch and cadence state on a derived series."""
+    """Restore private exact epoch and cadence state on a derived series.
+
+    Also carries the source's timing-reference state (``time_reference``): a
+    result rebuilt with an explicit ``x0`` would otherwise read as absolute.
+    """
+    inherit_time_reference(result, source)
     exact_t0_ns = getattr(source, "_gwex_t0_gps_ns", None)
     if exact_t0_ns is None:
         return result

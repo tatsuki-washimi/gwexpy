@@ -25,6 +25,16 @@ from astropy import units as u
 from numpy.typing import ArrayLike
 
 from gwexpy.fitting.mixin import FittingMixin
+from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    get_time_reference,
+    inherits_time_reference,
+    rebuild_with_time_reference,
+    set_time_reference,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -36,6 +46,7 @@ from ._epoch import (
     _EXACT_BUFFER_APPEND_DEPTH,
     _integer_gps_ns,
     _integral_dt_gps_ns,
+    _prepare_time_reference,
 )
 from ._gwf_io import (
     _GWF_BACKENDS,
@@ -108,6 +119,7 @@ class TimeSeries(
     StatisticsMixin,  # Statistical analysis & correlation
     FittingMixin,  # Fitting functionality
     PhaseMethodsMixin,  # Phase/Angle methods (radian, degree, phase, angle)
+    TimeReferenceMixin,  # time_reference state (#725); before the GWpy base
     TimeSeriesCore,  # Core operations (tail, crop, append, find_peaks, RegularityMixin)
 ):
     """A data array holding some metadata to represent a time-series.
@@ -311,6 +323,11 @@ class TimeSeries(
 
     def write(self, target, *args, **kwargs):  # type: ignore[override]
         """Write a `TimeSeries` through the registered I/O handlers."""
+        from ._gwf_io import _require_absolute_for_gwf_write
+
+        _require_absolute_for_gwf_write(
+            target, kwargs.get("format"), [(repr(self.name or "TimeSeries"), self)]
+        )
         from gwexpy._bootstrap import register_all
 
         register_all()
@@ -400,6 +417,18 @@ class TimeSeries(
                     f"t0_ns cannot be combined with another epoch authority ({names})"
                 )
 
+        # #725 (U-1): omitted/None/NaN t0 or epoch -> relative; finite
+        # (including 0.0) -> absolute; +/-Inf -> ValueError.  NaN is removed
+        # here so it never reaches the axis.
+        time_reference = _prepare_time_reference(
+            data,
+            parent_args,
+            parent_kwargs,
+            t0=bound.arguments["t0"] if t0_supplied else TIME_INPUT_UNSET,
+            times_given=times_supplied,
+            exact_t0_ns=exact_t0_ns,
+        )
+
         should_coerce = True
         xunit = parent_kwargs.get("xunit", None)
         if xunit is not None:
@@ -465,6 +494,10 @@ class TimeSeries(
             replace_t0(float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit)))
 
         new = super().__new__(cls, data, *parent_args, **parent_kwargs)
+        if time_reference is not None:
+            # Also clears a relative state inherited from ``data`` when an
+            # explicit finite epoch was given.
+            set_time_reference(new, time_reference)
         if exact_t0_ns is not None:
             new._gwex_t0_gps_ns = exact_t0_ns
             try:
@@ -511,6 +544,26 @@ class TimeSeries(
 
         BaseTimeSeries.t0.__delete__(self)
         self.__dict__.pop("_gwex_t0_gps_ns", None)
+
+    @property
+    def epoch(self) -> Any:
+        """GWpy-compatible GPS epoch view (``Time``), unchanged in ``relative`` state.
+
+        For a ``time_reference == "relative"`` series this is still the finite
+        GWpy projection (``Time(0, gps)`` at origin 0), not a known GPS time.
+        """
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        return BaseTimeSeries.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        # Reject NaN/Inf here: GWpy's ``to_gps`` would otherwise fail first
+        # with an unrelated ``RuntimeError`` (#725).
+        check_time_setter_value(value, name="epoch")
+        BaseTimeSeries.epoch.__set__(self, value)
 
     @property
     def x0(self) -> Any:
@@ -574,6 +627,10 @@ class TimeSeries(
         """Set a GWpy epoch alias without desynchronizing exact authority."""
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
+        # #725 (U-1): a non-finite assignment is rejected, never stored.
+        # A finite assignment keeps GWpy semantics and leaves the
+        # ``time_reference`` state unchanged.
+        check_time_setter_value(value, name=alias)
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
         if alias == "t0":
             BaseTimeSeries.t0.__set__(self, value)
@@ -676,9 +733,23 @@ class TimeSeries(
 
     def __reduce_ex__(self, protocol: SupportsIndex):
         """Provide pickle serialization support."""
-        from gwexpy.io.pickle_compat import timeseries_reduce_args
+        from gwexpy.io.pickle_compat import (
+            _build_gwexpy_timeseries,
+            timeseries_reduce_args,
+        )
 
-        return timeseries_reduce_args(self)
+        reduced = timeseries_reduce_args(self)
+        if get_time_reference(self) != TIME_REFERENCE_RELATIVE:
+            return reduced
+        # A relative series is rebuilt through GWexpy so that its state is
+        # restored; the payload would otherwise carry an explicit
+        # ``epoch=0.0`` and come back as an absolute GPS 0.  (Absolute
+        # payloads keep their GWpy-only portability.)
+        return rebuild_with_time_reference, (
+            _build_gwexpy_timeseries,
+            reduced[1],
+            TIME_REFERENCE_RELATIVE,
+        )
 
     # Basic operations (tail, crop, append, find_peaks) are inherited from TimeSeriesCore
 
@@ -834,6 +905,10 @@ class TimeSeries(
         """
         return self.arima(order=(p, 0, q), **kwargs)
 
+
+# ``smooth`` lives in the shared SignalAnalysisMixin, which rebuilds its result
+# from ``t0=self.t0``; keep the timing-reference state of the source (#725).
+setattr(TimeSeries, "smooth", inherits_time_reference(TimeSeries.smooth))
 
 _timeseries_new = cast(Any, TimeSeries.__new__)
 _parent_timeseries_new_signature = inspect.signature(

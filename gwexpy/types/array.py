@@ -6,6 +6,16 @@ import numpy as np
 from astropy.units import dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray
 
+from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    inherit_time_reference,
+    mask_unset_signature_defaults,
+    resolve_time_inputs,
+    set_time_reference,
+)
+
 from ._stats import StatisticalMethodsMixin
 from .axis import AxisDescriptor
 from .axis_api import AxisApiMixin
@@ -13,18 +23,25 @@ from .axis_api import AxisApiMixin
 __all__ = ["Array"]
 
 
-class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
+class Array(
+    AxisApiMixin,
+    StatisticalMethodsMixin,
+    TimeReferenceMixin,
+    GwpyArray,
+):
     """N-dimensional array with a unified axis API."""
 
     _metadata_slots = getattr(GwpyArray, "_metadata_slots", ()) + ("_axis_names",)
+    _time_reference_axis_attrs = ("_epoch",)
 
+    @mask_unset_signature_defaults
     def __new__(
         cls,
         value,
         *,
         unit=None,
         name=None,
-        epoch=None,
+        epoch=TIME_INPUT_UNSET,
         channel=None,
         dtype=None,
         copy=True,
@@ -34,12 +51,19 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
         axis_names=None,
     ):
         """Create an array and initialize axis names."""
+        epoch_omitted = epoch is TIME_INPUT_UNSET
+        time_reference, cleared = resolve_time_inputs(
+            {"epoch": epoch},
+            explicit_axis=False,
+            inherit=isinstance(value, TimeReferenceMixin),
+        )
+        effective_epoch = None if (epoch_omitted or "epoch" in cleared) else epoch
         obj = super().__new__(
             cls,
             value,
             unit=unit,
             name=name,
-            epoch=epoch,
+            epoch=effective_epoch,
             channel=channel,
             dtype=dtype,
             copy=copy,
@@ -47,6 +71,10 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
             order=order,
             ndmin=ndmin,
         )
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+        elif isinstance(value, TimeReferenceMixin):
+            inherit_time_reference(obj, value)
         if axis_names is None:
             axis_names = [f"axis{i}" for i in range(obj.ndim)]
         else:
@@ -69,6 +97,16 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
         for key, val in getattr(obj, "__dict__", {}).items():
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
+
+    @property
+    def epoch(self) -> Any:
+        """GPS epoch associated with this array, or ``None`` if omitted."""
+        return GwpyArray.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        check_time_setter_value(value, name="epoch")
+        GwpyArray.epoch.__set__(self, value)
 
     @property
     def axes(self):

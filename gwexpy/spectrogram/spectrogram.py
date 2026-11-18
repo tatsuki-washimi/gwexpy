@@ -8,6 +8,17 @@ import numpy as np
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
+from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    TIME_REFERENCE_RELATIVE,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    get_time_reference,
+    inherit_time_reference,
+    rebuild_with_time_reference,
+    resolve_time_inputs,
+    set_time_reference,
+)
 from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -21,7 +32,22 @@ if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeriesList
 
 
-class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
+def _build_gwexpy_spectrogram_with_provenance(
+    data: Any, kwargs: dict[str, Any], provenance: dict[str, Any] | None
+) -> Any:
+    """Unpickle helper that rebuilds a GWexpy ``Spectrogram`` (#725)."""
+    result = Spectrogram(data, **kwargs)
+    result.provenance = provenance
+    return result
+
+
+class Spectrogram(
+    PlotMixin,
+    PhaseMethodsMixin,
+    InteropMixin,
+    TimeReferenceMixin,  # time_reference state (#725); before the GWpy base
+    BaseSpectrogram,
+):
     """A 2D time-frequency spectrogram.
 
     `Spectrogram` represents a 2-dimensional array of spectral data,
@@ -49,7 +75,12 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Time step between rows.
 
     t0 : `float`, `~astropy.units.Quantity`, optional
-        Start time of the data.
+        Start time of the data.  Omitting ``t0`` and ``epoch`` (or passing
+        ``None`` or ``NaN``) makes the spectrogram
+        ``time_reference == "relative"``: the time axis starts at ``0 s``
+        (or wherever it was cropped to) and no absolute GPS time is known.
+        A finite value, including an explicit ``0.0``, is an absolute GPS
+        time.  ``+Inf`` and ``-Inf`` raise `ValueError`.
 
     frequencies : array-like, optional
         Frequency values corresponding to each column. If provided,
@@ -101,6 +132,101 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     """
 
+    def __new__(
+        cls,
+        data: Any,
+        unit: Any = None,
+        t0: Any = TIME_INPUT_UNSET,
+        dt: Any = None,
+        f0: Any = None,
+        df: Any = None,
+        times: Any = None,
+        frequencies: Any = None,
+        name: str | None = None,
+        channel: Any = None,
+        **kwargs: Any,
+    ) -> Spectrogram:
+        """Create a new Spectrogram (GWpy signature, plus the #725 time rules)."""
+        # #725 (Plan I): omitted t0/epoch/x0 -> absolute (GWpy-compatible
+        # default); explicit None/NaN -> relative; finite (including 0.0) ->
+        # absolute; +/-Inf -> ValueError.
+        t0_omitted = t0 is TIME_INPUT_UNSET
+        time_reference, cleared = resolve_time_inputs(
+            {
+                "t0": t0,
+                "epoch": kwargs["epoch"] if "epoch" in kwargs else TIME_INPUT_UNSET,
+                "x0": kwargs["x0"] if "x0" in kwargs else TIME_INPUT_UNSET,
+            },
+            explicit_axis=times is not None or kwargs.get("xindex") is not None,
+            inherit=isinstance(data, TimeReferenceMixin),
+        )
+        effective_t0 = None if (t0_omitted or "t0" in cleared) else t0
+        for cleared_name in cleared:
+            if cleared_name != "t0":
+                kwargs[cleared_name] = None
+
+        new = super().__new__(
+            cls,
+            data,
+            unit=unit,
+            t0=effective_t0,
+            dt=dt,
+            f0=f0,
+            df=df,
+            times=times,
+            frequencies=frequencies,
+            name=name,
+            channel=channel,
+            **kwargs,
+        )
+        if time_reference is not None:
+            # Also clears a relative state inherited from ``data`` when an
+            # explicit finite epoch was given.
+            set_time_reference(new, time_reference)
+        return new
+
+    # ``epoch``, ``t0`` and ``x0`` are GWpy aliases of one time origin; reject
+    # a non-finite assignment instead of storing it (#725).  A finite
+    # assignment keeps GWpy semantics and leaves ``time_reference`` unchanged.
+    @property
+    def epoch(self) -> Any:
+        """GPS epoch of the first time bin (``Time``); GWpy semantics.
+
+        For a ``time_reference == "relative"`` spectrogram this is the finite
+        projection GWpy reports (``Time(0, gps)`` at origin ``0 s``), not a
+        known GPS time.
+        """
+        return BaseSpectrogram.epoch.__get__(self, type(self))
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        check_time_setter_value(value, name="epoch")
+        BaseSpectrogram.epoch.__set__(self, value)
+
+    @property
+    def t0(self) -> Any:
+        """Time of the first time bin; GWpy semantics (see ``time_reference``)."""
+        return BaseSpectrogram.t0.__get__(self, type(self))
+
+    @t0.setter
+    def t0(self, value: Any) -> None:
+        check_time_setter_value(value, name="t0")
+        BaseSpectrogram.t0.__set__(self, value)
+
+    @property
+    def x0(self) -> Any:
+        """Axis origin of the time axis; GWpy semantics (see ``time_reference``)."""
+        return BaseSpectrogram.x0.__get__(self, type(self))
+
+    @x0.setter
+    def x0(self, value: Any) -> None:
+        check_time_setter_value(value, name="x0")
+        BaseSpectrogram.x0.__set__(self, value)
+
+    @x0.deleter
+    def x0(self) -> None:
+        BaseSpectrogram.x0.__delete__(self)
+
     def plot(
         self,
         method: str = "pcolormesh",
@@ -151,7 +277,26 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def __reduce_ex__(self, protocol: SupportsIndex):
         from gwexpy.io.pickle_compat import spectrogram_reduce_args
 
-        return spectrogram_reduce_args(self)
+        reduced = spectrogram_reduce_args(self)
+        if get_time_reference(self) != TIME_REFERENCE_RELATIVE:
+            return reduced
+        # A relative spectrogram is rebuilt through GWexpy so that its state
+        # is restored; the GWpy-only payload would come back as a GWpy
+        # spectrogram with no state (an absolute one).  The explicit ``times``
+        # carry the time axis, so ``epoch`` is not repeated.  Absolute
+        # payloads keep their GWpy-only portability.
+        kwargs = {
+            "unit": self.unit,
+            "name": self.name,
+            "channel": self.channel,
+            "times": self.times,
+            "frequencies": self.frequencies,
+        }
+        return rebuild_with_time_reference, (
+            _build_gwexpy_spectrogram_with_provenance,
+            (np.asarray(self.value), kwargs, self.provenance),
+            TIME_REFERENCE_RELATIVE,
+        )
 
     def _new_with_explicit_axes(
         self,
@@ -178,6 +323,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             channel=self.channel,
         )
         result.provenance = self.provenance
+        # ``times=`` is an explicit axis; keep the source's state (#725).
+        inherit_time_reference(result, self)
         return result
 
     @staticmethod
@@ -987,6 +1134,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                 channel=channel,
                 epoch=epoch,
             )
+            inherit_time_reference(ts, self)  # explicit times/epoch (#725)
             # Bypass validation by using list.append
             list.append(ts_list, ts)
 
@@ -1064,6 +1212,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                 channel=channel,
                 epoch=epoch,
             )
+            inherit_time_reference(fs, self)  # explicit epoch (#725)
             # Bypass validation by using list.append
             list.append(fs_list, fs)
 

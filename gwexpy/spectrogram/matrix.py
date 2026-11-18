@@ -6,8 +6,15 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time._reference import (
+    inherit_time_reference,
+    inherits_time_reference,
+    resolve_matrix_epoch,
+    set_time_reference,
+)
 from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.series_matrix_core import _preserve_cached_dx
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.seriesmatrix_base import (
     _copy_metadata_dict,
@@ -24,14 +31,39 @@ from .spectrogram import Spectrogram
 _SELECTED_CELL_METADATA_ATTR = "gwexpy_selected_cell_metadata"
 
 
-def _gps_seconds(value: Any) -> float | None:
-    """Return a matrix epoch or explicit time coordinate as GPS seconds."""
+def _as_time_seconds(value: Any) -> u.Quantity | None:
+    """Interpret a numeric or dimensionless time coordinate in seconds."""
     if value is None:
         return None
-    gps_value = getattr(value, "gps", value)
-    if hasattr(gps_value, "to_value"):
-        gps_value = gps_value.to_value(u.s)
-    return float(gps_value)
+    time_value = getattr(value, "gps", value)
+    if isinstance(time_value, u.Quantity):
+        if time_value.unit.is_equivalent(u.s):
+            return time_value.to(u.s)
+        if time_value.unit.is_equivalent(u.dimensionless_unscaled):
+            return time_value.to_value(u.dimensionless_unscaled) * u.s
+        return time_value.to(u.s)
+    return u.Quantity(time_value, u.s)
+
+
+def _time_axis_for_selection(value: Any) -> Any:
+    """Keep physical time units and interpret numeric axes as seconds."""
+    if value is None:
+        return None
+    unit = getattr(value, "unit", None)
+    if unit is not None and u.Unit(unit).is_equivalent(u.s):
+        try:
+            return value.copy()
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            return deepcopy(value)
+    return _as_time_seconds(value)
+
+
+def _time_interval_for_selection(value: Any) -> u.Quantity | None:
+    """Keep a physical cadence unit; normalize numeric axes to seconds."""
+    unit = getattr(value, "unit", None)
+    if value is not None and unit is not None and u.Unit(unit).is_equivalent(u.s):
+        return value
+    return _as_time_seconds(value)
 
 
 def _selected_metadata_keys(keys: list[str], selector: Any) -> list[str]:
@@ -262,8 +294,24 @@ class SpectrogramMatrix(  # type: ignore[misc]
             if len(meta_units) == 1:
                 obj.unit = next(iter(meta_units))
 
-        obj.epoch = kwargs.get("epoch", 0.0)
+        # #725 (U-1): omitted/None/NaN epoch -> relative; finite (including
+        # 0.0) -> absolute; +/-Inf -> ValueError.  ``epoch`` is independent of
+        # ``times`` here, so ``times`` alone does not make the matrix absolute.
+        # A matrix passed as ``data`` keeps its epoch and state when ``epoch``
+        # is omitted.
+        source = data if isinstance(data, SpectrogramMatrix) else None
+        epoch, time_reference = resolve_matrix_epoch(
+            kwargs.get("epoch"),
+            omitted="epoch" not in kwargs,
+            default=getattr(source, "epoch", 0.0),
+            inherit=source is not None,
+        )
+        obj.epoch = epoch
         obj._value = obj.view(np.ndarray)
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+        elif source is not None:
+            inherit_time_reference(obj, source)
         return obj
 
     @staticmethod
@@ -319,6 +367,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         new.frequencies = self._resupplied_frequencies(self.frequencies)
         return new
 
+    @inherits_time_reference
     def _component_result(
         self,
         values: np.ndarray,
@@ -347,7 +396,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         # ``attrs`` through SeriesMatrix.__new__.  Assign an explicit deep
         # copy after construction instead of inheriting ndarray's shared dict.
         result.attrs = deepcopy(getattr(self, "attrs", {}))
-        return result
+        return _preserve_cached_dx(self, result)
 
     @property
     def real(self) -> SpectrogramMatrix:
@@ -499,6 +548,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
             )
         return values if converted is None else converted
 
+    @inherits_time_reference
     def _ufunc_dispatch(self, ufunc, method, *inputs, **kwargs):
         """Apply *ufunc* to this matrix, propagating per-element units.
 
@@ -980,20 +1030,18 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     f"key {_SELECTED_CELL_METADATA_ATTR!r}"
                 )
             epoch = self.epoch
-            epoch_seconds = _gps_seconds(epoch)
-            first_time_seconds = _gps_seconds(self.times[0])
-            if (
-                epoch_seconds is not None
-                and first_time_seconds is not None
-                and not np.isclose(
-                    epoch_seconds, first_time_seconds, rtol=0.0, atol=1e-9
-                )
-            ):
-                raise ValueError(
-                    "SpectrogramMatrix scalar selection requires matrix epoch "
-                    "and explicit times[0] to agree"
-                )
-            if epoch is None:
+            selected_time_axis = _time_axis_for_selection(self.times)
+            first_time = (
+                None
+                if selected_time_axis is None or len(selected_time_axis) == 0
+                else selected_time_axis[0]
+            )
+            if first_time is not None:
+                # The matrix epoch is the coordinate origin, while ``times``
+                # may begin at a nonzero offset. The explicit axis supplies
+                # the selected element's actual first sample time.
+                t0 = first_time
+            elif epoch is None:
                 t0 = None
             elif hasattr(epoch, "gps"):
                 t0 = cast(Any, epoch).gps * u.s
@@ -1001,10 +1049,11 @@ class SpectrogramMatrix(  # type: ignore[misc]
                 # Older GWpy constructors expose a numeric GPS epoch; it is
                 # already a valid ``t0`` authority.
                 t0 = epoch
+            selected_dt = _time_interval_for_selection(self.dt)
             result = self.series_class(
                 raw_data,
                 t0=t0,
-                dt=self.dt,
+                dt=selected_dt,
                 frequencies=self._resupplied_frequencies(self.frequencies),
                 unit=metadata.unit if metadata else self.unit,
                 name=metadata.name if metadata and metadata.name else self.name,
@@ -1015,7 +1064,18 @@ class SpectrogramMatrix(  # type: ignore[misc]
             # assigning xindex through its public setter would overwrite t0,
             # so retain the constructed t0 and install an independent copy of
             # the explicit coordinates directly.
-            result._xindex = self._resupplied_frequencies(self.times)
+            result._xindex = self._resupplied_frequencies(selected_time_axis)
+            # GWpy normalizes constructor ``t0`` numerically to seconds while
+            # the matrix can expose another physical time unit (for example
+            # milliseconds). Restore the origin and interval with their source
+            # units after installing that explicit axis.
+            if first_time is not None:
+                result._x0 = deepcopy(first_time)
+            if selected_dt is not None:
+                result._dx = deepcopy(selected_dt)
+            # The element was built from explicit values (absolute); it takes
+            # the matrix's timing state (#725).
+            inherit_time_reference(result, self)
             result_attrs = deepcopy(source_attrs)
             if metadata is not None:
                 # A GWpy Spectrogram has no native MetaData container.  The
@@ -1118,7 +1178,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         for attribute, value in getattr(self, "__dict__", {}).items():
             if attribute.startswith("_gwex_"):
                 ret.__dict__[attribute] = deepcopy(value)
-        return ret
+        return _preserve_cached_dx(self, ret)
 
     def to_series_2Dlist(self):
         """Convert matrix to a 2D nested list of Spectrogram objects."""

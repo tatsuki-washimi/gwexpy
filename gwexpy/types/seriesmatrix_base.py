@@ -10,6 +10,15 @@ from typing import TYPE_CHECKING, Any, Optional, Self, SupportsIndex, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.time._reference import (
+    TIME_REFERENCE_STATE_KEY,
+    TimeReferenceMixin,
+    check_time_setter_value,
+    inherit_time_reference,
+    inherits_time_reference,
+    resolve_matrix_epoch,
+    set_time_reference,
+)
 from gwexpy.types.mixin import InteropMixin, RegularityMixin
 
 from ._stats import StatisticalMethodsMixin
@@ -18,7 +27,7 @@ from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 if TYPE_CHECKING:
     from gwexpy.types.typing import IndexLike, MetaDataCollectionType, UnitLike
 from .series_matrix_analysis import SeriesMatrixAnalysisMixin
-from .series_matrix_core import SeriesMatrixCoreMixin
+from .series_matrix_core import SeriesMatrixCoreMixin, _preserve_cached_dx
 from .series_matrix_indexing import SeriesMatrixIndexingMixin
 from .series_matrix_io import SeriesMatrixIOMixin
 from .series_matrix_math import SeriesMatrixMathMixin
@@ -47,6 +56,8 @@ _SERIESMATRIX_PICKLE_METADATA_FIELDS = (
     "name",
     "epoch",
     "attrs",
+    # #725: the timing-reference state is only present while "relative".
+    TIME_REFERENCE_STATE_KEY,
 )
 
 # Marker meaning "keep each cell's own unit" for :func:`_copy_meta_cells`.
@@ -232,6 +243,7 @@ class PerformanceWarning(RuntimeWarning):
 
 
 class SeriesMatrix(  # type: ignore[misc]
+    TimeReferenceMixin,  # time_reference state of ``epoch`` (#725)
     RegularityMixin,
     InteropMixin,
     SeriesMatrixCoreMixin,
@@ -271,7 +283,40 @@ class SeriesMatrix(  # type: ignore[misc]
     all and always raises ``TypeError``, even for dimensionless operands.
     Full unit-aware floor-division and remainder are deferred to the v0.2.0
     semantic-contract redesign (issue #637).
+
+    Timing reference
+    ----------------
+    ``time_reference`` is ``"absolute"`` when ``epoch`` is a known GPS time
+    and ``"relative"`` when no absolute time is known.  Omitting ``epoch``
+    (or passing ``None`` or ``NaN``) makes the matrix relative; the public
+    ``epoch`` value is unchanged (``0.0`` when omitted, ``None`` when ``None``
+    was given), so ``epoch == 0.0`` alone does **not** mean GPS 0.  A finite
+    ``epoch``, including an explicit ``0.0``, is an absolute GPS time.
+    ``+Inf`` and ``-Inf`` raise `ValueError`.  Assigning ``NaN`` or ``±Inf``
+    to ``epoch`` later also raises `ValueError`; a finite assignment leaves
+    ``time_reference`` unchanged.  The state is carried by slicing, copies,
+    arithmetic, pickle and the conversion to and from element series.
+    ``epoch`` is the origin at construction time: slicing the sample axis
+    moves the coordinate origin but not ``epoch``.
     """
+
+    @property
+    def epoch(self) -> Any:
+        """Time origin of the matrix (see *Timing reference*).
+
+        A raw public value (``float``, ``None``, ...); ``time_reference`` says
+        whether it is a known GPS time.  Assigning ``NaN`` or ``±Inf`` raises
+        `ValueError`.
+        """
+        try:
+            return self.__dict__["epoch"]
+        except KeyError:
+            raise AttributeError("epoch") from None
+
+    @epoch.setter
+    def epoch(self, value: Any) -> None:
+        check_time_setter_value(value, name="epoch")
+        self.__dict__["epoch"] = value
 
     def __new__(
         cls,
@@ -413,12 +458,19 @@ class SeriesMatrix(  # type: ignore[misc]
             name = (
                 getattr(source_matrix, "name", "") if source_matrix is not None else ""
             )
-        if epoch is _UNSET:
-            epoch = (
+        # #725 (U-1): omitted/None/NaN epoch -> relative; finite (including
+        # 0.0) -> absolute; +/-Inf -> ValueError.  The public value is kept as
+        # before (0.0 when omitted, None when None); NaN is never stored.
+        epoch_value, time_reference = resolve_matrix_epoch(
+            epoch,
+            omitted=epoch is _UNSET,
+            default=(
                 getattr(source_matrix, "epoch", 0.0)
                 if source_matrix is not None
                 else 0.0
-            )
+            ),
+            inherit=source_matrix is not None,
+        )
         if attrs is _UNSET:
             attrs = (
                 deepcopy(getattr(source_matrix, "attrs", {}))
@@ -431,8 +483,12 @@ class SeriesMatrix(  # type: ignore[misc]
         obj.cols = MetaDataDict(cast(Any, cols), expected_size=M, key_prefix="col")
         obj.xindex = xindex
         obj.name = cast(str, name)
-        obj.epoch = cast(float, epoch)
+        obj.epoch = epoch_value
         obj.attrs = cast(dict[str, Any], attrs) or {}
+        if time_reference is not None:
+            set_time_reference(obj, time_reference)
+        elif source_matrix is not None:
+            inherit_time_reference(obj, source_matrix)
 
         return obj
 
@@ -452,7 +508,8 @@ class SeriesMatrix(  # type: ignore[misc]
         self.rows = cast(MetaDataDict, getattr(obj, "rows", None))
         self.cols = cast(MetaDataDict, getattr(obj, "cols", None))
         self.name = getattr(obj, "name", "")
-        self.epoch = getattr(obj, "epoch", 0.0)
+        # Raw copy: a view must not re-validate (or fail on) a stored value.
+        self.__dict__["epoch"] = getattr(obj, "epoch", 0.0)
         # NOTE: attrs is shared by reference here on purpose -- a plain
         # ``.view()`` is a lightweight view and the metadata contract
         # (test_typed_view_preserves_metadata_by_reference) requires
@@ -467,10 +524,11 @@ class SeriesMatrix(  # type: ignore[misc]
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
 
+    @inherits_time_reference
     def _component_result(self, values: np.ndarray, *, name: str | None) -> Any:
         """Rebuild a unary component with fully independent public metadata."""
         matrix_cls = cast(Any, self.__class__)
-        return matrix_cls(
+        result = matrix_cls(
             values,
             xindex=_copy_xindex(self.xindex),
             xunit=self.xunit,
@@ -481,6 +539,7 @@ class SeriesMatrix(  # type: ignore[misc]
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
         )
+        return _preserve_cached_dx(self, result)
 
     @property
     def real(self) -> Self:
@@ -522,6 +581,7 @@ class SeriesMatrix(  # type: ignore[misc]
             ),
         )
 
+    @inherits_time_reference
     def copy(self, order: Any = "C") -> Any:
         """Copy values and every public metadata field independently.
 
@@ -529,7 +589,7 @@ class SeriesMatrix(  # type: ignore[misc]
         keys, which the legacy structural mixin predates.
         """
         matrix_cls = cast(Any, self.__class__)
-        return matrix_cls(
+        result = matrix_cls(
             np.array(self.view(np.ndarray), copy=True, order=order),
             meta=_copy_metadata_matrix(self.meta),
             rows=_copy_metadata_dict(self.rows, "row"),
@@ -540,7 +600,9 @@ class SeriesMatrix(  # type: ignore[misc]
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
         )
+        return _preserve_cached_dx(self, result)
 
+    @inherits_time_reference
     def astype(
         self,
         dtype: Any,
@@ -556,7 +618,7 @@ class SeriesMatrix(  # type: ignore[misc]
         if not copy and values is self.value:
             return self
         matrix_cls = cast(Any, self.__class__)
-        return matrix_cls(
+        result = matrix_cls(
             values,
             meta=_copy_metadata_matrix(self.meta),
             rows=_copy_metadata_dict(self.rows, "row"),
@@ -567,13 +629,15 @@ class SeriesMatrix(  # type: ignore[misc]
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
         )
+        return _preserve_cached_dx(self, result)
 
+    @inherits_time_reference
     def transpose(self, *axes: Any) -> Any:
         """Transpose rows/columns with independent, correctly keyed metadata."""
         if axes:
             return np.transpose(self.value, axes)
         matrix_cls = cast(Any, self.__class__)
-        return matrix_cls(
+        result = matrix_cls(
             np.transpose(self.value, (1, 0, 2)),
             meta=MetaDataMatrix(
                 deepcopy(np.asarray(self.meta, dtype=object).T),
@@ -588,12 +652,14 @@ class SeriesMatrix(  # type: ignore[misc]
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
         )
+        return _preserve_cached_dx(self, result)
 
     @property
     def T(self) -> SeriesMatrix:
         """Return the B0 row/column transpose."""
         return cast(SeriesMatrix, self.transpose())
 
+    @inherits_time_reference
     def reshape(
         self,
         *shape: Any,
@@ -628,7 +694,7 @@ class SeriesMatrix(  # type: ignore[misc]
         )
         same_layout = target_shape[:2] == self.meta.shape
         matrix_cls = cast(Any, self.__class__)
-        return matrix_cls(
+        result = matrix_cls(
             values,
             meta=MetaDataMatrix(
                 meta_values,
@@ -643,6 +709,7 @@ class SeriesMatrix(  # type: ignore[misc]
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
         )
+        return _preserve_cached_dx(self, result)
 
     def _reduce_with_protocol(self, protocol: int) -> tuple[Any, ...]:
         """Include SeriesMatrix metadata in ndarray-subclass pickle state."""
@@ -817,6 +884,7 @@ class SeriesMatrix(  # type: ignore[misc]
                 result_meta[idx] = ufunc(*meta_args, **ufunc_kwargs)
             return MetaDataMatrix(result_meta)
 
+    @inherits_time_reference
     def _ufunc_dispatch(
         self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
     ) -> Any:
@@ -904,7 +972,7 @@ class SeriesMatrix(  # type: ignore[misc]
         )
         rows = self.rows
         cols = self.cols
-        return self.__class__(
+        result = self.__class__(
             result_values,
             xindex=_copy_xindex(self.xindex),
             xunit=self.xunit,
@@ -918,6 +986,7 @@ class SeriesMatrix(  # type: ignore[misc]
             # (the #442 metadata-sharing defect).
             attrs=deepcopy(getattr(self, "attrs", {})),
         )
+        return _preserve_cached_dx(self, result)
 
     def _ufunc_values(
         self, ufunc: Any, value_arrays: list[np.ndarray], ufunc_kwargs: dict[str, Any]

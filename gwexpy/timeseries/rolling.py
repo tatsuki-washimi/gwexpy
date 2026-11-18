@@ -12,6 +12,8 @@ try:
 except ImportError:  # pragma: no cover - bottleneck is optional
     _BN_AVAILABLE = False
 
+from gwexpy.time._reference import inherits_time_reference
+
 from .collections import TimeSeriesDict, TimeSeriesList
 from .matrix import TimeSeriesMatrix
 from .timeseries import TimeSeries
@@ -138,6 +140,7 @@ def _apply_matrix_op(
     return new_mat
 
 
+@inherits_time_reference
 def _apply_timeseries_op(
     ts: TimeSeries,
     window,

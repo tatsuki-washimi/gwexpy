@@ -594,11 +594,26 @@ def compute_psd(
         else:
             psd_unit = u.dimensionless_unscaled
 
-        fs_obj = FrequencySeries(
-            psd_values,
-            frequencies=freqs * freq_unit,
-            unit=psd_unit,
-            name=label,
+        from gwexpy.time._reference import (
+            TIME_REFERENCE_ABSOLUTE,
+            get_time_reference,
+            inherit_time_reference,
+        )
+
+        psd_epoch = (
+            field.epoch
+            if get_time_reference(field) == TIME_REFERENCE_ABSOLUTE
+            else None
+        )
+        fs_obj = inherit_time_reference(
+            FrequencySeries(
+                psd_values,
+                frequencies=freqs * freq_unit,
+                unit=psd_unit,
+                name=label,
+                epoch=psd_epoch,
+            ),
+            field,
         )
         results.append(fs_obj)
 
@@ -991,12 +1006,17 @@ def compute_xcorr(
         corr = corr[start:end]
         lag_times = lag_times[start:end]
 
-    return TimeSeries(
+    from gwexpy.time._reference import TIME_REFERENCE_RELATIVE, set_time_reference
+
+    result = TimeSeries(
         corr,
         times=lag_times,
         unit=u.dimensionless_unscaled if normalize else field.unit**2,
         name="xcorr",
     )
+    # Cross-correlation has a lag coordinate, not an absolute GPS time axis.
+    set_time_reference(result, TIME_REFERENCE_RELATIVE)
+    return result
 
 
 def time_delay_map(

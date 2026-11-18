@@ -1102,8 +1102,21 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
 
 
 def _assert_object_metadata(cell: ContractCell, matrix, result) -> None:
-    assert cell.epoch_expectation is EpochExpectation.PRESERVE
-    assert _epoch_value(result.epoch) == _epoch_value(matrix.epoch)
+    if cell.epoch_expectation is EpochExpectation.PRESERVE:
+        assert _epoch_value(result.epoch) == _epoch_value(matrix.epoch)
+    elif cell.epoch_expectation is EpochExpectation.AXIS_FIRST_SAMPLE:
+        expected_epoch = matrix.times[0].to_value(u.s)
+        np.testing.assert_allclose(
+            _epoch_value(result.epoch),
+            expected_epoch,
+            rtol=0,
+            atol=max(
+                2e-12,
+                4 * np.spacing(max(abs(float(expected_epoch)), 1.0)),
+            ),
+        )
+    else:  # pragma: no cover - every enum value is intentionally handled
+        raise AssertionError(cell.epoch_expectation)
     if cell.name_expectation is NameExpectation.CELL_NAME:
         assert result.name == matrix.meta[_scalar_metadata_index(cell, matrix)].name
         return
@@ -1391,14 +1404,22 @@ def test_scalar_and_integer_sample_selector_cells_are_complete() -> None:
         Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
     }
     assert {
-        (cell.operand, cell.exception_class)
+        (cell.operand, cell.expected_result, cell.epoch_expectation)
         for cell in B0_CONTRACT
         if cell.family is MatrixFamily.SPECTROGRAM
         and cell.operation == "scalar_selection"
         and cell.scenario is InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS
     } == {
-        (Operand.SPECTROGRAM_BATCH_SCALAR_FIRST, ValueError),
-        (Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE, ValueError),
+        (
+            Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+            ResultExpectation.SERIES,
+            EpochExpectation.AXIS_FIRST_SAMPLE,
+        ),
+        (
+            Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+            ResultExpectation.SERIES,
+            EpochExpectation.AXIS_FIRST_SAMPLE,
+        ),
     }
     assert {
         (cell.operand, cell.exception_class)

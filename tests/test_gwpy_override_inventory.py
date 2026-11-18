@@ -817,6 +817,108 @@ def test_terminal_cadence_fixture_name_matches_selected_evidence_scope() -> None
         assert closure["fixture"] == "cadence-set-copy-and-slice"
 
 
+def test_time_reference_overrides_preserve_gwpy_finite_behavior() -> None:
+    import numpy as np
+    from astropy import units as u
+    from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
+    from gwpy.spectrogram import Spectrogram as GwpySpectrogram
+    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+    from gwpy.timeseries import TimeSeriesList as GwpyTimeSeriesList
+    from gwpy.types import Array as GwpyArray
+    from gwpy.types import Array2D as GwpyArray2D
+
+    from gwexpy.fields import ScalarField
+    from gwexpy.frequencyseries import BifrequencyMap, FrequencySeries
+    from gwexpy.spectrogram import Spectrogram
+    from gwexpy.timeseries import TimeSeries, TimeSeriesList
+    from gwexpy.types import Array, Array2D, Array3D, Array4D, Plane2D
+
+    gps = 1_400_000_000.0
+    values = np.arange(12.0).reshape(4, 3)
+    unit = u.m
+
+    actual_ts = TimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit)
+    expected_ts = GwpyTimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit)
+    actual_ts.epoch = gps + 4.0
+    expected_ts.epoch = gps + 4.0
+    np.testing.assert_array_equal(actual_ts.value, expected_ts.value)
+    assert actual_ts.t0 == expected_ts.t0
+    assert actual_ts.epoch == expected_ts.epoch
+    np.testing.assert_array_equal(actual_ts.times.value, expected_ts.times.value)
+
+    actual_fs = FrequencySeries(np.arange(4.0), f0=1.0, df=0.5, epoch=gps, unit=unit)
+    expected_fs = GwpyFrequencySeries(
+        np.arange(4.0), f0=1.0, df=0.5, epoch=gps, unit=unit
+    )
+    actual_fs.epoch = gps + 4.0
+    expected_fs.epoch = gps + 4.0
+    np.testing.assert_array_equal(actual_fs.value, expected_fs.value)
+    assert actual_fs.epoch == expected_fs.epoch
+    np.testing.assert_array_equal(
+        actual_fs.frequencies.value, expected_fs.frequencies.value
+    )
+
+    actual_sg = Spectrogram(values, t0=gps, dt=0.25, f0=1.0, df=0.5, unit=unit)
+    expected_sg = GwpySpectrogram(values, t0=gps, dt=0.25, f0=1.0, df=0.5, unit=unit)
+    np.testing.assert_array_equal(actual_sg.value, expected_sg.value)
+    assert actual_sg.epoch == expected_sg.epoch
+    assert actual_sg.t0 == expected_sg.t0
+    assert actual_sg.x0 == expected_sg.x0
+    np.testing.assert_array_equal(actual_sg.times.value, expected_sg.times.value)
+    np.testing.assert_array_equal(
+        actual_sg.frequencies.value, expected_sg.frequencies.value
+    )
+
+    for attribute, value in (
+        ("epoch", gps + 1.0),
+        ("t0", gps + 2.0),
+        ("x0", gps + 3.0),
+    ):
+        actual = actual_sg.copy()
+        expected = expected_sg.copy()
+        setattr(actual, attribute, value)
+        setattr(expected, attribute, value)
+        assert actual.epoch == expected.epoch
+        assert actual.t0 == expected.t0
+        assert actual.x0 == expected.x0
+        np.testing.assert_array_equal(actual.times.value, expected.times.value)
+
+    actual_joined = TimeSeriesList(
+        [
+            TimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit),
+            TimeSeries(np.arange(4.0), t0=gps + 1.0, dt=0.25, unit=unit),
+        ]
+    ).join(pad=0.0, gap="pad")
+    expected_joined = GwpyTimeSeriesList(
+        [
+            GwpyTimeSeries(np.arange(4.0), t0=gps, dt=0.25, unit=unit),
+            GwpyTimeSeries(np.arange(4.0), t0=gps + 1.0, dt=0.25, unit=unit),
+        ]
+    ).join(pad=0.0, gap="pad")
+    np.testing.assert_array_equal(actual_joined.value, expected_joined.value)
+    assert actual_joined.t0 == expected_joined.t0
+    assert actual_joined.epoch == expected_joined.epoch
+    np.testing.assert_array_equal(
+        actual_joined.times.value, expected_joined.times.value
+    )
+
+    for arr_cls, gwpy_cls, shape in (
+        (Array, GwpyArray, (4,)),
+        (Array2D, GwpyArray2D, (2, 2)),
+        (Array3D, GwpyArray, (2, 2, 2)),
+        (Array4D, GwpyArray, (2, 2, 2, 2)),
+        (Plane2D, GwpyArray2D, (2, 2)),
+        (BifrequencyMap, GwpyArray2D, (2, 2)),
+        (ScalarField, GwpyArray, (2, 2, 2, 2)),
+    ):
+        actual_arr = arr_cls(np.ones(shape), epoch=gps, unit=unit)
+        expected_arr = gwpy_cls(np.ones(shape), epoch=gps, unit=unit)
+        actual_arr.epoch = gps + 4.0
+        expected_arr.epoch = gps + 4.0
+        assert actual_arr.epoch == expected_arr.epoch
+        np.testing.assert_array_equal(actual_arr.value, expected_arr.value)
+
+
 @pytest.mark.parametrize(
     ("module_name", "class_name", "shape"),
     [
@@ -919,16 +1021,16 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1158,
-        "constructors": 11,
-        "counterpart_absent_per_version": 445,
-        "counterpart_implementation_groups": 70,
-        "counterpart_present_per_version": 134,
+        "cases": 1224,
+        "constructors": 13,
+        "counterpart_absent_per_version": 463,
+        "counterpart_implementation_groups": 81,
+        "counterpart_present_per_version": 149,
         "differential-required": 0,
         "fixed": 224,
-        "GWexpy-only": 890,
-        "logical_members": 579,
-        "no-finding": 44,
+        "GWexpy-only": 926,
+        "logical_members": 612,
+        "no-finding": 74,
         "public_roots": 16,
         "GWpy-fails": 0,
         "unreviewed": 0,
@@ -955,8 +1057,8 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 579
-    assert len(manifest["cases"]) == 1158
+    assert len(current["members"]) == 612
+    assert len(manifest["cases"]) == 1224
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
@@ -1253,7 +1355,7 @@ def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
 
     selectors = audit.manifest_evidence_selectors(_load_manifest())
 
-    assert len(selectors) == 62
+    assert len(selectors) == 63
     assert list(selectors) == sorted(selectors, key=lambda item: item.encode("utf-8"))
     assert {
         selector
@@ -1264,6 +1366,8 @@ def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
         "::test_terminal_array_family_T_matches_gwpy",
         "tests/test_gwpy_override_inventory.py"
         "::test_terminal_plot_show_lifecycle_matches_gwpy",
+        "tests/test_gwpy_override_inventory.py"
+        "::test_time_reference_overrides_preserve_gwpy_finite_behavior",
     }
 
 
@@ -1362,16 +1466,16 @@ def test_evidence_junit_requires_exact_reviewed_count_and_no_skips(
 ) -> None:
     audit = _load_audit_module()
     accepted = tmp_path / "accepted.xml"
-    _write_evidence_junit(accepted, cases=396)
+    _write_evidence_junit(accepted, cases=397)
     audit.validate_evidence_junit(accepted)
 
     wrong_count = tmp_path / "wrong-count.xml"
-    _write_evidence_junit(wrong_count, cases=395)
-    with pytest.raises(audit.InventoryError, match="expected 396 cases, got 395"):
+    _write_evidence_junit(wrong_count, cases=396)
+    with pytest.raises(audit.InventoryError, match="expected 397 cases, got 396"):
         audit.validate_evidence_junit(wrong_count)
 
     skipped = tmp_path / "skipped.xml"
-    _write_evidence_junit(skipped, cases=396, skipped=1)
+    _write_evidence_junit(skipped, cases=397, skipped=1)
     with pytest.raises(audit.InventoryError, match="skipped=1"):
         audit.validate_evidence_junit(skipped)
 
@@ -1419,8 +1523,8 @@ def test_terminal_cli_can_execute_every_catalog_evidence_selector() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert "396 passed" in result.stdout
-    assert "evidence execution passed: selectors=62, cases=396" in result.stdout
+    assert "397 passed" in result.stdout
+    assert "evidence execution passed: selectors=63, cases=397" in result.stdout
 
 
 @pytest.mark.parametrize(
@@ -1490,10 +1594,12 @@ def test_golden_constructor_set_and_unified_io_counterparts_are_frozen() -> None
     }
     assert constructors == {
         ("gwexpy.fields.scalar.ScalarField", "__new__"),
+        ("gwexpy.frequencyseries.bifrequencymap.BifrequencyMap", "__new__"),
         ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "__new__"),
         ("gwexpy.plot.field.FieldPlot", "__init__"),
         ("gwexpy.plot.plot.Plot", "__init__"),
         ("gwexpy.plot.skymap.SkyMap", "__init__"),
+        ("gwexpy.spectrogram.spectrogram.Spectrogram", "__new__"),
         ("gwexpy.timeseries.timeseries.TimeSeries", "__new__"),
         ("gwexpy.types.array.Array", "__new__"),
         ("gwexpy.types.array2d.Array2D", "__new__"),
@@ -1659,7 +1765,7 @@ def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
     _refresh_summary(audit, manifest)
 
     audit.validate_manifest(manifest)
-    assert manifest["summary"]["no-finding"] == 45
+    assert manifest["summary"]["no-finding"] == 75
     assert manifest["summary"]["differential-required"] == 0
 
 
@@ -1692,7 +1798,7 @@ def test_all_provisional_cases_can_reach_terminal_gate() -> None:
     for case in present_cases:
         _make_present_case_pending(manifest, case)
     _refresh_summary(audit, manifest)
-    assert manifest["summary"]["differential-required"] == len(present_cases) == 268
+    assert manifest["summary"]["differential-required"] == len(present_cases) == 298
 
     for case in present_cases:
         _transition_pending_case(manifest, case=case)

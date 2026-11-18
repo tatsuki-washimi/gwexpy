@@ -16,6 +16,22 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _preserve_cached_dx(source: Any, result: Any, *, step: int = 1) -> Any:
+    """Carry a cached sample interval through a rebuild of the same axis.
+
+    A materialized GPS axis can have rounded first differences. Rebuilding a
+    matrix from that axis must retain its original interval when the operation
+    keeps the sample spacing; a stepped sample slice scales it by ``step``.
+    """
+    cadence = getattr(source, "_dx", None)
+    if cadence is not None:
+        result._dx = deepcopy(cadence * step)
+        synchronize = getattr(result, "_synchronize_exact_cadence", None)
+        if callable(synchronize):
+            synchronize()
+    return result
+
+
 class SeriesMatrixCoreMixin:
     """Core properties and basic conversion methods for SeriesMatrix."""
 
@@ -311,6 +327,16 @@ class SeriesMatrixCoreMixin:
                 results[key] = self[i, j]
 
         return dict_class(results)
+
+    def _series_time_kwargs(self) -> dict[str, Any]:
+        """Extra time-origin keywords for element series built from this matrix.
+
+        Used where an element series is built from the sample axis alone
+        (``trace``, ``diagonal``, ``det``).  The default adds nothing: the
+        sample axis already carries the origin.  `FrequencySeriesMatrix`
+        overrides it because its axis is frequency and ``epoch`` is separate.
+        """
+        return {}
 
     def _get_meta_for_constructor(
         self, data: np.ndarray, xindex: IndexLike | None

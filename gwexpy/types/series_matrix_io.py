@@ -10,6 +10,7 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.interop._optional import require_optional
+from gwexpy.time._reference import get_time_reference, set_time_reference
 
 from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
@@ -286,8 +287,28 @@ class SeriesMatrixIOMixin:
         # must neither drop the entry silently nor destroy an existing file.
         attrs_json = _encode_attrs_json(getattr(self, "attrs", None))
 
+        # Resolve the cadence before opening in truncate mode too.  For a
+        # zero- or one-sample axis there is no inferable interval, so omit the
+        # optional cadence metadata and let readers use the stored xindex.
+        # Other failures (for example, a broken explicit axis) must propagate
+        # before an existing target can be truncated.
+        try:
+            cadence = self.dx
+        except (AttributeError, IndexError):
+            cadence = None
+        if cadence is None:
+            cadence_value = None
+            cadence_unit = None
+        else:
+            cadence_value = float(cadence.value)
+            cadence_unit = str(cadence.unit)
+
         with h5py.File(filepath, "w", **kwargs) as f:
             f.attrs["name"] = str(getattr(self, "name", ""))
+            f.attrs["gwexpy_time_reference"] = get_time_reference(self)
+            if cadence_value is not None:
+                f.attrs["gwexpy_dx"] = cadence_value
+                f.attrs["gwexpy_dx_unit"] = cadence_unit
             try:
                 f.attrs["epoch"] = float(getattr(self, "epoch", 0.0))
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
@@ -474,10 +495,29 @@ class SeriesMatrixIOMixin:
             }
 
             name = f.attrs.get("name", "")
+            time_reference = f.attrs.get("gwexpy_time_reference", "absolute")
             try:
                 epoch = f.attrs.get("epoch", 0.0)
             except (IndexError, KeyError, TypeError, ValueError, AttributeError):
                 epoch = 0.0
+            has_cadence_value = "gwexpy_dx" in f.attrs
+            has_cadence_unit = "gwexpy_dx_unit" in f.attrs
+            if has_cadence_value != has_cadence_unit:
+                missing = "gwexpy_dx_unit" if has_cadence_value else "gwexpy_dx"
+                raise ValueError(
+                    f"Incomplete cadence metadata: missing {missing} attribute"
+                )
+            if not has_cadence_value:
+                cadence = None
+            else:
+                cadence_value = f.attrs["gwexpy_dx"]
+                cadence_unit = f.attrs["gwexpy_dx_unit"]
+                if isinstance(cadence_unit, bytes):
+                    cadence_unit = cadence_unit.decode()
+                cadence = u.Quantity(
+                    float(cadence_value),
+                    u.Unit(cadence_unit) if cadence_unit else u.dimensionless_unscaled,
+                )
 
             attrs_json = f.attrs.get("attrs_json", None)
             if attrs_json:
@@ -565,7 +605,7 @@ class SeriesMatrixIOMixin:
             cols = MetaDataDict(cols, expected_size=len(col_keys), key_prefix="col")
 
         matrix_cls = cast(type[Any], cls)
-        return matrix_cls(
+        result = matrix_cls(
             data,
             xindex=xindex,
             meta=meta_matrix,
@@ -574,5 +614,12 @@ class SeriesMatrixIOMixin:
             name=name,
             epoch=epoch,
             attrs=attrs,
+            dx=cadence,
             **extra_axes,
         )
+        # The xindex setter intentionally invalidates cached values. Restore
+        # the stored cadence after constructing the rounded explicit axis.
+        if cadence is not None:
+            result._dx = cadence
+        set_time_reference(result, time_reference)
+        return result

@@ -367,6 +367,49 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ---
 
+(time-utils-ja-time-reference)=
+## 相対原点 0 と絶対 GPS エポック 0 の区別 (`time_reference`)
+
+GWexpy のコンテナ（`TimeSeries`、`FrequencySeries`、`Spectrogram`、各 `Matrix` クラス、および `ScalarField`）は、時間原点が絶対 GPS 時刻か相対オフセットかを読み取り専用の `time_reference` プロパティで保持します。
+
+| コンストラクタの `t0` / `epoch` / `x0` | `time_reference` | 意味 |
+| --- | --- | --- |
+| 省略 | `"absolute"` | GWpy 互換の既定動作（`t0` は `0 s`、`FrequencySeries.epoch` は GPS 指定がなければ `None` のまま）。 |
+| 明示的な `None`、`NaN` | `"relative"` | 絶対 GPS 時刻が未定であることを明示。GWpy 互換のため公開 `t0` は有限値（例: `0 s`）を保ちます。 |
+| 有限値（`0.0` を含む） | `"absolute"` | 既知の GPS 時刻（`0.0` は GPS エポック `1980-01-06 00:00:00 UTC`）。 |
+| `+Inf` / `-Inf` | `ValueError` | 無限大の時刻原点は拒否されます。 |
+
+`relative` なオブジェクトでも GWpy 互換のため `t0` が `0.0 s` を返す場合があるため、相対原点 `0` と GPS エポック `0` を区別するときは `t0 == 0` ではなく `.time_reference` を参照してください。
+
+### `with_epoch()` による明示的な時刻アンカー
+
+`relative` なデータに明示的な GPS エポックを与えるには `.with_epoch(gps)` を使用します。スライス等で生じた非ゼロの相対オフセットは保持されます（例: 相対軸 `[3, 3.25, ...] s` は `[gps + 3, gps + 3.25, ...] s` になります）。
+
+```python
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+
+rel = TimeSeries(np.arange(20.0), dt=0.25, t0=None)
+assert rel.time_reference == "relative"
+
+sliced = rel[12:]  # 相対オフセット 3.0 s
+anchored = sliced.with_epoch(1_400_000_000.0)
+assert anchored.time_reference == "absolute"
+assert anchored.t0.value == 1_400_000_003.0
+```
+
+`dt` が指定した GPS エポックの 10 float64 ULP 未満である場合、`with_epoch()` は座標丸めに関する `UserWarning` を出力して処理を継続します。
+
+### 絶対時刻専用エクスポータでの制約
+
+GWF、ObsPy（miniSEED / SAC / GSE2）、ndscope HDF5 など絶対 GPS / UTC 時刻のみを扱うエクスポータは、`relative` なデータを暗黙に GPS `0`（`1980-01-06`）として出力せず `ValueError` で拒否します。出力前に `.with_epoch(epoch)` で絶対時刻へアンカーしてください。
+
+### 素の GWpy HDF5 リーダーでの互換性（ダウングレード時の挙動）
+
+GWexpy は `time_reference` を HDF5 の sidecar 属性（`_gwexpy_time_reference_v1`）に保存し、素の GWpy リーダーとの読込互換性を維持しています。sidecar を解釈しない読み手は公開されている有限座標（例: `t0 = 0 s`）のみを参照するため、`relative` なデータを素の GWpy で開いた場合は GPS `0`（`1980-01-06`）として解釈されます。
+
+---
+
 ## 次に読む
 
 - [API リファレンス](../reference/api/time.rst) — `gwexpy.time` の完全な API リファレンス

@@ -340,6 +340,49 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ---
 
+(time-utils-en-time-reference)=
+## Relative Origin 0 vs. Absolute GPS Epoch 0 (`time_reference`)
+
+GWexpy containers (`TimeSeries`, `FrequencySeries`, `Spectrogram`, their `Matrix` counterparts, and `ScalarField`) track whether their time origin is an absolute GPS time or a relative offset via the read-only `time_reference` property:
+
+| Constructor `t0` / `epoch` / `x0` | `time_reference` | Meaning |
+| --- | --- | --- |
+| Omitted | `"absolute"` | GWpy-compatible default (`t0` is `0 s`, `FrequencySeries.epoch` stays `None` if no GPS epoch was supplied). |
+| Explicit `None` or `NaN` | `"relative"` | Explicitly marks the container as having no absolute GPS origin; public `t0` remains finite (e.g. `0 s`) for GWpy compatibility. |
+| Finite value (including `0.0`) | `"absolute"` | Origin is a known GPS time (`0.0` means GPS epoch `1980-01-06 00:00:00 UTC`). |
+| `+Inf` or `-Inf` | Raises `ValueError` | Infinite origins are rejected. |
+
+Because a relative object still reports a finite `t0` (such as `0.0 s`) for GWpy compatibility, check `.time_reference` rather than `t0 == 0` to distinguish relative origin `0` from GPS epoch `0`.
+
+### Anchoring Relative Data with `with_epoch()`
+
+Use `.with_epoch(gps)` to anchor a relative container to an explicit GPS epoch while preserving any nonzero relative offset (for example, a sliced relative axis `[3, 3.25, ...] s` becomes `[gps + 3, gps + 3.25, ...] s`):
+
+```python
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+
+rel = TimeSeries(np.arange(20.0), dt=0.25, t0=None)
+assert rel.time_reference == "relative"
+
+sliced = rel[12:]  # relative offset 3.0 s
+anchored = sliced.with_epoch(1_400_000_000.0)
+assert anchored.time_reference == "absolute"
+assert anchored.t0.value == 1_400_000_003.0
+```
+
+If `dt` is below 10 float64 ULPs of the target GPS epoch, `with_epoch()` emits a `UserWarning` to alert you about potential float64 coordinate rounding.
+
+### Absolute-Time-Only Exporters
+
+Exporters that require an absolute UTC/GPS timestamp (such as GWF, ObsPy / miniSEED / SAC / GSE2, and ndscope HDF5) reject `relative` data with `ValueError` instead of silently writing GPS `0` (`1980-01-06`). Anchor relative data with `.with_epoch(epoch)` before exporting.
+
+### HDF5 Compatibility with Plain GWpy Readers
+
+GWexpy stores `time_reference` in an HDF5 sidecar attribute (`_gwexpy_time_reference_v1`) so files remain readable by plain GWpy readers. Readers that ignore this sidecar only see the public finite coordinates (such as `t0 = 0 s`), so a `relative` dataset opened directly with plain GWpy will appear to start at GPS `0` (`1980-01-06`).
+
+---
+
 ## Next to Read
 
 - [API Reference](../reference/api/time.rst) — Complete API reference for `gwexpy.time`

@@ -11,7 +11,7 @@ import sys
 import tempfile
 import threading
 import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from contextlib import contextmanager
 from inspect import Parameter, Signature, signature
@@ -59,6 +59,33 @@ _GWF_ALIAS_TO_CANONICAL = {
     "framel": "gwf.framel",
     "lalframe": "gwf.lalframe",
 }
+
+
+def _require_absolute_for_gwf_write(
+    target: Any, fmt: Any, items: Iterable[tuple[str, Any]]
+) -> None:
+    """Reject relative-time series before dispatching to a GWF writer."""
+    fmt_lower = str(fmt).lower() if fmt is not None else None
+    is_gwf = (
+        fmt_lower is not None
+        and (fmt_lower.startswith("gwf") or fmt_lower in _GWF_ALIAS_TO_CANONICAL)
+    ) or (
+        fmt_lower is None
+        and isinstance(target, (str, os.PathLike))
+        and str(target).lower().endswith(".gwf")
+    )
+    if not is_gwf:
+        return
+    from gwexpy.time._reference import TIME_REFERENCE_RELATIVE, get_time_reference
+
+    for label, series in items:
+        if get_time_reference(series) == TIME_REFERENCE_RELATIVE:
+            raise ValueError(
+                f"Cannot write relative-time TimeSeries ({label}) to GWF "
+                "without an explicit GPS epoch; anchor it with .with_epoch(epoch) first."
+            )
+
+
 _GWF_REGISTRY_SYNCED = False
 _GWF_STATEVECTOR_HOOK_INSTALLED = False
 _GWF_STATEVECTOR_ORIGINAL_CALLS: dict[type[Any], Callable[..., Any]] = {}

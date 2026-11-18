@@ -986,11 +986,16 @@ class ScalarField(FieldBase):
             else:
                 raise ValueError(f"Unsupported interpolation method '{interp}'")
 
-            ts = TimeSeries(
-                ts_data,
-                times=self._axis0_index,
-                unit=self.unit,
-                name=label,
+            from gwexpy.time._reference import inherit_time_reference
+
+            ts = inherit_time_reference(
+                TimeSeries(
+                    ts_data,
+                    times=self._axis0_index,
+                    unit=self.unit,
+                    name=label,
+                ),
+                self,
             )
             result_list.append(ts)
 

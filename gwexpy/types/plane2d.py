@@ -101,9 +101,12 @@ class Plane2D(FittingMixin, Array2D):
         # Explicit construction for Plane2D logic
         # New y (axis 0) = old x (axis 1)
         # New x (axis 1) = old y (axis 0)
+        from gwexpy.time._reference import inherit_time_reference
+
         obj = Plane2D(
             new_data.value,
             unit=new_data.unit,
+            epoch=self.epoch,
             axis1_name=self.axis2.name,
             axis2_name=self.axis1.name,
             yindex=self.xindex,
@@ -112,4 +115,4 @@ class Plane2D(FittingMixin, Array2D):
         # Safety force set
         obj.xindex = self.yindex
         obj.yindex = self.xindex
-        return obj
+        return inherit_time_reference(obj, self)

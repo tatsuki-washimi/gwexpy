@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 import warnings
 from collections.abc import Mapping
 from pathlib import Path
@@ -20,6 +21,7 @@ from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 import gwexpy
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.io.hdf5_collection import read_hdf5_keymap, read_hdf5_order
+from gwexpy.io.hdf5_time_reference import ATTRIBUTE as TIME_REFERENCE_ATTRIBUTE
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io.hdf5 import (
     SIDECAR_ATTRIBUTE_V1,
@@ -28,7 +30,11 @@ from gwexpy.timeseries.io.hdf5 import (
 
 gwexpy.register_all()
 
-_PRIVATE_EXACT_FILE_ATTRS = {SIDECAR_ATTRIBUTE_V1, SIDECAR_ATTRIBUTE_V2}
+_GWEXPY_PRIVATE_FILE_ATTRS = {
+    SIDECAR_ATTRIBUTE_V1,
+    SIDECAR_ATTRIBUTE_V2,
+    TIME_REFERENCE_ATTRIBUTE,
+}
 
 
 def _channel_text(value: Any) -> str | None:
@@ -76,7 +82,7 @@ def _native_hdf_snapshot(path: Path) -> dict[str, Any]:
             "attrs": {
                 key: _normalise_hdf_value(value)
                 for key, value in h5file.attrs.items()
-                if key not in _PRIVATE_EXACT_FILE_ATTRS
+                if key not in _GWEXPY_PRIVATE_FILE_ATTRS
             },
         }
 
@@ -98,6 +104,12 @@ def _native_hdf_snapshot(path: Path) -> dict[str, Any]:
 
         h5file.visititems(capture)
     return snapshot
+
+
+def _assert_time_reference_sidecar(path: Path, expected: dict[str, str]) -> None:
+    """Check the GWexpy-only root extension independently from GWpy payload."""
+    with h5py.File(path, "r") as h5file:
+        assert json.loads(h5file.attrs[TIME_REFERENCE_ATTRIBUTE]) == expected
 
 
 def _assert_closed_hdf_writer_return(actual: Any, expected: Any) -> None:
@@ -259,6 +271,7 @@ def test_timeseries_write_matches_gwpy(tmp_path: Path) -> None:
     expected_return = expected.write(expected_hdf, format="hdf5", path="series")
     _assert_closed_hdf_writer_return(actual_return, expected_return)
     assert _native_hdf_snapshot(actual_hdf) == _native_hdf_snapshot(expected_hdf)
+    _assert_time_reference_sidecar(actual_hdf, {"/series": "absolute"})
     _assert_series_equal(
         GwpyTimeSeries.read(actual_hdf, format="hdf5", path="series"),
         expected,
@@ -311,7 +324,7 @@ def test_timeseries_write_matches_gwpy(tmp_path: Path) -> None:
         h5py.File(projected_path, "r") as projected_file,
     ):
         assert list(exact_file) == list(projected_file) == ["series"]
-        assert set(exact_file.attrs) - _PRIVATE_EXACT_FILE_ATTRS == set(
+        assert set(exact_file.attrs) - _GWEXPY_PRIVATE_FILE_ATTRS == set(
             projected_file.attrs
         )
         exact_attrs = exact_file["series"].attrs
@@ -545,6 +558,13 @@ def test_timeseriesdict_write_matches_gwpy(tmp_path: Path) -> None:
     assert actual.write(actual_path, format="hdf5", group="science") is None
     assert expected.write(expected_path, format="hdf5", group="science") is None
     assert _native_hdf_snapshot(actual_path) == _native_hdf_snapshot(expected_path)
+    _assert_time_reference_sidecar(
+        actual_path,
+        {
+            "/science/H1:STRAIN": "absolute",
+            "/science/nested/path": "absolute",
+        },
+    )
 
     # A slash is a native logical HDF5 path.  GWpy can select it explicitly,
     # even though its default root scan intentionally omits the containing group.
@@ -584,6 +604,14 @@ def test_timeseriesdict_write_matches_gwpy(tmp_path: Path) -> None:
         is None
     )
     assert _native_hdf_snapshot(actual_path) == _native_hdf_snapshot(expected_path)
+    _assert_time_reference_sidecar(
+        actual_path,
+        {
+            "/science/H1:STRAIN": "absolute",
+            "/science/nested/path": "absolute",
+            "/science/V1": "absolute",
+        },
+    )
 
     replacement_actual, replacement_expected = make_pair(100)
     assert replacement_actual.write(actual_path, format="hdf5", overwrite=True) is None
@@ -591,6 +619,10 @@ def test_timeseriesdict_write_matches_gwpy(tmp_path: Path) -> None:
         replacement_expected.write(expected_path, format="hdf5", overwrite=True) is None
     )
     assert _native_hdf_snapshot(actual_path) == _native_hdf_snapshot(expected_path)
+    _assert_time_reference_sidecar(
+        actual_path,
+        {"/H1:STRAIN": "absolute", "/nested/path": "absolute"},
+    )
 
     original_actual = actual_path.read_bytes()
     original_expected = expected_path.read_bytes()
@@ -944,6 +976,7 @@ def test_frequencyseries_write_matches_gwpy(tmp_path: Path) -> None:
     expected_return = expected.write(expected_hdf, format="hdf5", path="spectrum")
     _assert_closed_hdf_writer_return(actual_return, expected_return)
     assert _native_hdf_snapshot(actual_hdf) == _native_hdf_snapshot(expected_hdf)
+    _assert_time_reference_sidecar(actual_hdf, {"/spectrum": "absolute"})
     _assert_series_equal(
         GwpyFrequencySeries.read(actual_hdf, format="hdf5", path="spectrum"),
         expected,

@@ -6,6 +6,9 @@ import numpy as np
 from astropy import units as u
 from gwpy.types.index import Index
 
+from gwexpy.time._reference import inherits_time_reference
+from gwexpy.types.series_matrix_core import _preserve_cached_dx
+
 if TYPE_CHECKING:
     from .metadata import MetaDataDict, MetaDataMatrix
 
@@ -61,6 +64,7 @@ class SeriesMatrixAnalysisMixin:
             idx += self.ndim
         return idx
 
+    @inherits_time_reference
     def crop(self, start=None, end=None, copy=False):
         """Crop the matrix to a specified range along the sample axis."""
         xindex = cast(Union[np.ndarray, u.Quantity, Index], self.xindex)
@@ -95,8 +99,10 @@ class SeriesMatrixAnalysisMixin:
             new_data = np.array(new_data, copy=True)
         new_xindex = xindex[idx0:idx1]
 
-        return self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+        result = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+        return _preserve_cached_dx(self, result)
 
+    @inherits_time_reference
     def append(self, other, inplace=True, pad=None, gap=None, resize=True):
         """Append another matrix along the sample axis."""
         target = self
@@ -205,6 +211,7 @@ class SeriesMatrixAnalysisMixin:
 
         return out_full
 
+    @inherits_time_reference
     def append_exact(self, other, inplace=False, pad=None, gap=None, tol=1 / 2.0**18):
         """Append another matrix with strict contiguity checking."""
         # Shape check: all dims except x-axis must match
@@ -298,6 +305,7 @@ class SeriesMatrixAnalysisMixin:
 
         return res
 
+    @inherits_time_reference
     def prepend(self, other, inplace=True, pad=None, gap=None, resize=True):
         """Prepend another matrix at the beginning along the sample axis."""
         res = other.append(self, inplace=False, pad=pad, gap=gap, resize=resize)
@@ -305,6 +313,7 @@ class SeriesMatrixAnalysisMixin:
         # If we can't mutate self shape, we return result.
         return res
 
+    @inherits_time_reference
     def prepend_exact(self, other, inplace=False, pad=None, gap=None, tol=1 / 2.0**18):
         """Prepend another matrix with strict contiguity checking."""
         return other.append_exact(self, inplace=inplace, pad=pad, gap=gap, tol=tol)
@@ -313,6 +322,7 @@ class SeriesMatrixAnalysisMixin:
         """Update matrix by appending without resizing (rolling buffer style)."""
         return self.append(other, inplace=inplace, pad=pad, gap=gap, resize=False)
 
+    @inherits_time_reference
     def diff(self, n=1, axis=None):
         """Calculate the n-th discrete difference along the sample axis."""
         target_axis = self._x_axis_norm if axis is None else axis
@@ -331,7 +341,7 @@ class SeriesMatrixAnalysisMixin:
         )
         if self.name:
             new_inst.name = f"diff({self.name}, n={n})"
-        return new_inst
+        return _preserve_cached_dx(self, new_inst)
 
     def value_at(self, x):
         """Get the matrix values at a specific x-axis location."""
@@ -348,6 +358,7 @@ class SeriesMatrixAnalysisMixin:
 
         return self.value[self._get_axis_slice(self._x_axis_norm, idx)]
 
+    @inherits_time_reference
     def pad(self, pad_width, **kwargs):
         """Pad the matrix along the sample axis."""
         axis = self._x_axis_norm
@@ -379,13 +390,15 @@ class SeriesMatrixAnalysisMixin:
             None, dx=dx, x0=new_x0, xunit=self.xunit, length=total_len
         )
 
-        return self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+        result = self.__class__(**self._get_meta_for_constructor(new_data, new_xindex))
+        return _preserve_cached_dx(self, result)
 
     def shift(self, delta):
         """Shift the sample axis by a constant offset."""
         self.xindex = self.xindex + delta
         return self
 
+    @inherits_time_reference
     def interpolate(self, xindex, **kwargs):
         """Interpolate the matrix to a new sample axis."""
         from scipy.interpolate import interp1d
