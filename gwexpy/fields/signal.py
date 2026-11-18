@@ -127,6 +127,26 @@ def _validate_axis_for_spectral(
     }
     ax_name, ax_index, domain = axis_mapping[axis_int]
 
+    # Check domain before spacing so angle/wrong-domain axes fail clearly
+    if axis_int == 0:
+        if domain == "frequency":
+            raise ValueError(
+                "spectral_density requires axis0_domain='time'. "
+                "Use ifft_time first to transform to time domain."
+            )
+    else:
+        if domain == "angle":
+            raise ValueError(
+                f"Axis '{ax_name}' is in 'angle' domain and cannot be "
+                "transformed to k-space directly. Convert to metric coordinates "
+                "first via to_local_cartesian() or to_projected()."
+            )
+        if domain == "k":
+            raise ValueError(
+                f"spectral_density requires axis '{ax_name}' in 'real' domain. "
+                f"Use ifft_space first to transform to real space."
+            )
+
     # Validate regular spacing
     ax_desc = AxisDescriptor(ax_name, ax_index)
     if not ax_desc.regular:
@@ -140,20 +160,6 @@ def _validate_axis_for_spectral(
     delta = ax_desc.delta
     if delta is None:
         raise ValueError(f"Axis '{ax_name}' does not have a defined spacing.")
-
-    # Check domain is appropriate
-    if axis_int == 0:
-        if domain == "frequency":
-            raise ValueError(
-                "spectral_density requires axis0_domain='time'. "
-                "Use ifft_time first to transform to time domain."
-            )
-    else:
-        if domain == "k":
-            raise ValueError(
-                f"spectral_density requires axis '{ax_name}' in 'real' domain. "
-                f"Use ifft_space first to transform to real space."
-            )
 
     delta_value = getattr(delta, "value", delta)
     delta_unit = getattr(delta, "unit", u.dimensionless_unscaled)
@@ -642,9 +648,9 @@ def _extract_region_average(
     slices = [slice(None), slice(None), slice(None), slice(None)]  # t, x, y, z
 
     axes_info = [
-        ("x", 1, field._axis1_index),
-        ("y", 2, field._axis2_index),
-        ("z", 3, field._axis3_index),
+        (field._axis1_name, 1, field._axis1_index),
+        (field._axis2_name, 2, field._axis2_index),
+        (field._axis3_name, 3, field._axis3_index),
     ]
 
     for name, idx, axis_index in axes_info:
@@ -1134,7 +1140,15 @@ def time_delay_map(
         # Determine spatial resolution for the plane axes
         # Use the first axis's resolution as representative
         if len(ax1_index) > 1:
-            dx = abs(ax1_index[1] - ax1_index[0])
+            from ..types.axis import AxisDescriptor
+
+            ax1_desc = AxisDescriptor(ax1_name, ax1_index)
+            if not ax1_desc.regular or ax1_desc.delta is None:
+                raise ValueError(
+                    f"Physical stride Quantity requires regularly spaced spatial "
+                    f"axis '{ax1_name}'; use an integer stride on nonuniform axes."
+                )
+            dx = abs(ax1_desc.delta)
             stride_gridpoints = int(round(stride.to(dx.unit).value / dx.value))
         else:
             stride_gridpoints = 1
@@ -1415,7 +1429,15 @@ def coherence_map(
         # Determine spatial resolution for the plane axes
         # Use the first axis's resolution as representative
         if len(ax1_index) > 1:
-            dx = abs(ax1_index[1] - ax1_index[0])
+            from ..types.axis import AxisDescriptor
+
+            ax1_desc = AxisDescriptor(ax1_name, ax1_index)
+            if not ax1_desc.regular or ax1_desc.delta is None:
+                raise ValueError(
+                    f"Physical stride Quantity requires regularly spaced spatial "
+                    f"axis '{ax1_name}'; use an integer stride on nonuniform axes."
+                )
+            dx = abs(ax1_desc.delta)
             stride_gridpoints = int(round(stride.to(dx.unit).value / dx.value))
         else:
             stride_gridpoints = 1
@@ -1514,7 +1536,7 @@ def coherence_map(
             axis3=ax1_index_out
             if ax1_int == 3
             else (ax2_index_out if ax2_int == 3 else fix_index_out),
-            axis_names=["t", ax1_name, ax2_name, fix_name],
+            axis_names=["t", field._axis1_name, field._axis2_name, field._axis3_name],
             axis0_domain="time",
             space_domain=field._space_domains,
         )
@@ -1542,7 +1564,7 @@ def coherence_map(
             axis3=ax1_index_out
             if ax1_int == 3
             else (ax2_index_out if ax2_int == 3 else fix_index_out),
-            axis_names=["f", ax1_name, ax2_name, fix_name],
+            axis_names=["f", field._axis1_name, field._axis2_name, field._axis3_name],
             axis0_domain="frequency",
             space_domain=field._space_domains,
         )

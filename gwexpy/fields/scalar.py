@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, cast
+from numbers import Real
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
@@ -10,11 +12,162 @@ from scipy import fft as sp_fft
 from gwexpy.interop._registry import ConverterRegistry
 
 from .base import FieldBase
+from .geo import GeoMetadata, geo_bounds
 
 if TYPE_CHECKING:
     from gwexpy.types.typing import IndexLike
 
 __all__ = ["ScalarField"]
+
+_ELLIPSOID_PARAMS: dict[str, tuple[float, float]] = {
+    # (semi-major axis a [m], inverse flattening 1/f; 0.0 means sphere)
+    "grs80": (6378137.0, 298.257222101),
+    "wgs84": (6378137.0, 298.257223563),
+    "sphere": (6371008.7714, 0.0),
+}
+
+
+def _is_uniform_k_axis(k_axis: Any) -> bool:
+    """Return True if *k_axis* is linearly regular or uniform in fftfreq order."""
+    from ..types.axis import AxisDescriptor
+
+    ax_desc = AxisDescriptor("k", k_axis)
+    if ax_desc.regular:
+        return True
+    k_vals = np.asarray(k_axis.to_value(ax_desc.unit))
+    if k_vals.size < 2 or not np.all(np.isfinite(k_vals)):
+        return False
+    n = k_vals.size
+    abs_dk = float(abs(k_vals[1] - k_vals[0]))
+    if abs_dk == 0.0:
+        return False
+    unit_grid = np.fft.fftfreq(n, d=1.0 / n)
+    tol = 1e-12 * float(np.max(np.abs(k_vals)))
+    return bool(
+        np.allclose(k_vals, unit_grid * abs_dk, rtol=1e-12, atol=tol)
+        or np.allclose(k_vals, -unit_grid * abs_dk, rtol=1e-12, atol=tol)
+    )
+
+
+def _resample_2d_grid(
+    src_x_asc: np.ndarray,
+    src_y_asc: np.ndarray,
+    src_2d: np.ndarray,
+    dst_x_src: np.ndarray,
+    dst_y_src: np.ndarray,
+    method: Literal["nearest", "bilinear", "cubic"],
+) -> np.ndarray:
+    """Resample a 2D array defined on ascending ``(src_x_asc, src_y_asc)``."""
+    out = np.full(dst_x_src.shape, np.nan, dtype=np.float64)
+    in_bounds = (
+        np.isfinite(dst_x_src)
+        & np.isfinite(dst_y_src)
+        & (dst_x_src >= src_x_asc[0])
+        & (dst_x_src <= src_x_asc[-1])
+        & (dst_y_src >= src_y_asc[0])
+        & (dst_y_src <= src_y_asc[-1])
+    )
+    if not np.any(in_bounds):
+        return out
+
+    px = dst_x_src[in_bounds]
+    py = dst_y_src[in_bounds]
+    nx, ny = src_x_asc.size, src_y_asc.size
+
+    if method == "nearest":
+        if nx == 1:
+            ix = np.zeros(px.shape, dtype=np.intp)
+        else:
+            ix_hi = np.clip(np.searchsorted(src_x_asc, px, side="left"), 0, nx - 1)
+            ix_lo = np.clip(ix_hi - 1, 0, nx - 1)
+            choose_lo = np.abs(px - src_x_asc[ix_lo]) <= np.abs(src_x_asc[ix_hi] - px)
+            ix = np.where(choose_lo, ix_lo, ix_hi)
+        if ny == 1:
+            iy = np.zeros(py.shape, dtype=np.intp)
+        else:
+            iy_hi = np.clip(np.searchsorted(src_y_asc, py, side="left"), 0, ny - 1)
+            iy_lo = np.clip(iy_hi - 1, 0, ny - 1)
+            choose_lo = np.abs(py - src_y_asc[iy_lo]) <= np.abs(src_y_asc[iy_hi] - py)
+            iy = np.where(choose_lo, iy_lo, iy_hi)
+        out[in_bounds] = src_2d[ix, iy]
+        return out
+
+    if method == "bilinear":
+        if nx == 1:
+            ix0 = ix1 = np.zeros(px.shape, dtype=np.intp)
+            tx = np.zeros(px.shape, dtype=np.float64)
+        else:
+            ix0 = np.clip(np.searchsorted(src_x_asc, px, side="right") - 1, 0, nx - 2)
+            ix1 = ix0 + 1
+            denom_x = src_x_asc[ix1] - src_x_asc[ix0]
+            tx = np.where(denom_x != 0, (px - src_x_asc[ix0]) / denom_x, 0.0)
+        if ny == 1:
+            iy0 = iy1 = np.zeros(py.shape, dtype=np.intp)
+            ty = np.zeros(py.shape, dtype=np.float64)
+        else:
+            iy0 = np.clip(np.searchsorted(src_y_asc, py, side="right") - 1, 0, ny - 2)
+            iy1 = iy0 + 1
+            denom_y = src_y_asc[iy1] - src_y_asc[iy0]
+            ty = np.where(denom_y != 0, (py - src_y_asc[iy0]) / denom_y, 0.0)
+
+        w00 = (1.0 - tx) * (1.0 - ty)
+        w10 = tx * (1.0 - ty)
+        w01 = (1.0 - tx) * ty
+        w11 = tx * ty
+
+        v00 = src_2d[ix0, iy0]
+        v10 = src_2d[ix1, iy0]
+        v01 = src_2d[ix0, iy1]
+        v11 = src_2d[ix1, iy1]
+
+        nan_hit = (
+            ((w00 > 0) & np.isnan(v00))
+            | ((w10 > 0) & np.isnan(v10))
+            | ((w01 > 0) & np.isnan(v01))
+            | ((w11 > 0) & np.isnan(v11))
+        )
+        acc = (
+            np.where(w00 > 0, w00 * np.nan_to_num(v00, nan=0.0), 0.0)
+            + np.where(w10 > 0, w10 * np.nan_to_num(v10, nan=0.0), 0.0)
+            + np.where(w01 > 0, w01 * np.nan_to_num(v01, nan=0.0), 0.0)
+            + np.where(w11 > 0, w11 * np.nan_to_num(v11, nan=0.0), 0.0)
+        )
+        out[in_bounds] = np.where(nan_hit, np.nan, acc)
+        return out
+
+    if method == "cubic":
+        from scipy.interpolate import RegularGridInterpolator
+
+        if nx < 4 or ny < 4:
+            raise ValueError(
+                "Cubic resampling requires at least 4 samples along both spatial axes."
+            )
+        has_nan = bool(np.any(np.isnan(src_2d)))
+        work_src = np.nan_to_num(src_2d, nan=0.0) if has_nan else src_2d
+        interp = RegularGridInterpolator(
+            (src_x_asc, src_y_asc),
+            work_src,
+            method="cubic",
+            bounds_error=False,
+            fill_value=np.nan,
+        )
+        vals = interp(np.column_stack([px, py]))
+        if has_nan:
+            ix0 = np.clip(np.searchsorted(src_x_asc, px, side="right") - 1, 0, nx - 2)
+            iy0 = np.clip(np.searchsorted(src_y_asc, py, side="right") - 1, 0, ny - 2)
+            # Invalidate cubic samples whose 4x4 support contains NaN
+            nan_mask = np.isnan(src_2d)
+            bad = np.zeros(px.shape, dtype=bool)
+            for dx in (-1, 0, 1, 2):
+                sx = np.clip(ix0 + dx, 0, nx - 1)
+                for dy in (-1, 0, 1, 2):
+                    sy = np.clip(iy0 + dy, 0, ny - 1)
+                    bad |= nan_mask[sx, sy]
+            vals = np.where(bad, np.nan, vals)
+        out[in_bounds] = vals
+        return out
+
+    raise ValueError(f"Unsupported resampling method '{method}'.")
 
 
 class ScalarField(FieldBase):
@@ -45,7 +198,7 @@ class ScalarField(FieldBase):
     axis0_domain : {'time', 'frequency'}, optional
         Initial domain of the first axis.
 
-    space_domain : {'real', 'k'} or dict, optional
+    space_domain : {'real', 'k', 'angle'} or dict, optional
         Initial domain of the spatial axes.
 
     **kwargs
@@ -88,6 +241,68 @@ class ScalarField(FieldBase):
             unit_value = 1.0
         shape = ", ".join(str(dim) for dim in self.shape)
         return f"<ScalarField({shape})@{self.axis0_domain}, {unit_value}>"
+
+    @classmethod
+    def read(
+        cls,
+        source: Any,
+        name: str | None = None,
+        *,
+        format: str | None = None,
+        start: Any = None,
+        end: Any = None,
+        **kwargs: Any,
+    ) -> ScalarField:
+        """Read a :class:`ScalarField` from file(s), archive, or dataset.
+
+        Parameters
+        ----------
+        source : str, Path, file-like, or sequence of paths
+            Input file path, archive, or tile sequence.
+        name : str, optional
+            Quantity selector (or output field name for single-quantity formats).
+        format : str, optional
+            Format identifier (e.g. ``'gsi-dem'``, ``'geotiff'``). When
+            ``None``, format is inferred via registered identifiers.
+        start, end : optional
+            Continuous range selection along axis 0 where supported.
+        **kwargs
+            Additional format-specific reader options (and optional read-time
+            aliases ``fill_missing=`` and ``projected=``).
+
+        """
+        from .io.core import read_scalarfield
+
+        return read_scalarfield(
+            source,
+            name=name,
+            format=format,
+            start=start,
+            end=end,
+            **kwargs,
+        )
+
+    def write(
+        self,
+        target: Any,
+        format: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Write this :class:`ScalarField` to *target*.
+
+        Parameters
+        ----------
+        target : str, Path, or file-like
+            Destination file path or stream.
+        format : str, optional
+            Output format identifier (e.g. ``'geotiff'``).
+        **kwargs
+            Format-specific writer options.
+
+        """
+        from .io.core import write_scalarfield
+
+        return write_scalarfield(self, target, format=format, **kwargs)
 
     def __getitem__(self, item: Any) -> ScalarField:
         """Get item, always returning ScalarField (4D maintained).
@@ -244,6 +459,25 @@ class ScalarField(FieldBase):
                 f"FFT requires regularly spaced {domain_name} axis, "
                 f"but axis '{axis_name}' is irregular"
             )
+
+    def _validate_uniform_time_axis(self, op_name: str):
+        """Validate that axis 0 is approximately uniform for resampling/filtering."""
+        axis_index = self._axis0_index
+        axis_name = self._axis0_name
+        if len(axis_index) < 2:
+            raise ValueError(
+                f"{op_name} requires time axis length >= 2, "
+                f"got length {len(axis_index)} for axis '{axis_name}'"
+            )
+        from ..types.axis import AxisDescriptor
+
+        ax_desc = AxisDescriptor(axis_name, axis_index)
+        if not ax_desc.is_regular(max_deviation=1e-9):
+            raise ValueError(
+                f"{op_name} requires regularly spaced time axis, "
+                f"but axis '{axis_name}' is irregular"
+            )
+        return ax_desc.mean_delta()
 
     def fft_time(self, nfft: int | None = None) -> ScalarField:
         """Compute FFT along the time axis (axis 0).
@@ -451,71 +685,93 @@ class ScalarField(FieldBase):
         axes: Iterable[str] | None = None,
         n: Sequence[int] | None = None,
         overwrite: bool = False,
+        spacing_rtol: float | None = None,
     ) -> ScalarField:
-        """Compute FFT along spatial axes.
+        r"""Compute FFT along spatial axes.
 
-        This method uses two-sided FFT (scipy.fft.fftn) and produces
-        angular wavenumber (k = 2π·fftfreq).
+        This method uses the two-sided unnormalized forward DFT
+        (``scipy.fft.fftn``) and produces angular wavenumber coordinates
+        (``k = 2π·fftfreq``).
 
         Parameters
         ----------
         axes : iterable of str, optional
-            Axis names to transform (e.g., ['x', 'y']). If None,
-            transforms all spatial axes in 'real' domain.
+            Axis names to transform (e.g., ``['x', 'y']``). If ``None``,
+            transforms all spatial axes in ``'real'`` domain.
         n : tuple of int, optional
             FFT lengths for each axis.
         overwrite : bool, optional
-            If True, perform FFT in-place on a temporary copy of the data
-            to reduce peak memory usage. Default is False.
+            If ``True``, perform FFT in-place on a temporary copy of the data
+            to reduce peak memory usage. Default is ``False``.
+        spacing_rtol : float, optional
+            Opt-in dimensionless deviation tolerance for approximately uniform
+            axes. When ``None`` (default), strict :attr:`AxisDescriptor.regular`
+            and :attr:`AxisDescriptor.delta` are used. When provided,
+            ``is_regular(max_deviation=spacing_rtol)`` and
+            :meth:`AxisDescriptor.mean_delta` are used, emitting a
+            ``UserWarning`` if the axis does not pass strict regularity.
 
         Returns
         -------
         ScalarField
-            Transformed field with specified axes in 'k' domain.
+            Transformed field with specified axes in ``'k'`` domain.
+            Any attached :class:`GeoMetadata` is deactivated (``active=False``).
 
         Raises
         ------
         ValueError
-            If any specified axis is not in 'real' domain.
-        ValueError
-            If any specified axis is not uniformly spaced.
+            If any specified axis is in ``'angle'`` domain (convert first via
+            :meth:`to_local_cartesian` or :meth:`to_projected`), is not in
+            ``'real'`` domain, or is not uniformly spaced.
 
         Notes
         -----
+        **Fourier Normalization and Parseval Convention**
+
+        Forward coefficients match unnormalized ``scipy.fft.fftn``:
+
+        .. math::
+
+            F[k] = \sum_{n=0}^{N-1} f[n] \, e^{-i 2\pi k n / N},
+
+        with inverse :meth:`ifft_space` applying ``1 / N`` via
+        ``scipy.fft.ifftn``, so Parseval's identity along transformed axes is:
+
+        .. math::
+
+            \sum |f|^2 = \frac{1}{\prod N_j} \sum |F|^2.
+
         **Angular Wavenumber Convention**
 
-        The wavenumber axis is computed as ``k = 2π * fftfreq(n, d=dx)``,
-        satisfying ``k = 2π / λ``. This is the standard **angular wavenumber**
-        definition in physics, with units of [rad/length].
-
-        Note: This is NOT the cycle wavenumber (1/λ) commonly used in some
-        fields. To convert: ``k_cycle = k_angular / (2π)``.
+        The wavenumber axis is computed as ``k = 2π * fftfreq(n, d=|dx|)``,
+        satisfying ``k = 2π / λ`` with units of ``1 / dx_unit``.
 
         **Sign Convention for Descending Axes (dx < 0)**
 
-        If the spatial axis is descending (dx < 0), the k-axis is sign-flipped
-        to preserve physical consistency with the phase factor convention
-        ``e^{+ikx}``. This ensures that positive k corresponds to waves
-        propagating in the positive x direction, regardless of the data
-        storage order.
+        If the spatial axis is descending (``dx < 0``), the ``k``-axis is
+        sign-flipped to preserve physical consistency with ``e^{+ikx}``.
 
-        This convention differs from the standard FFT behavior (which ignores
-        axis direction) but maintains physical consistency for interferometer
-        simulations and wave propagation analysis.
+        **Approximate Grids (``spacing_rtol``)**
 
-        This formula has been validated through unit tests and independent technical review
-        (2026-02-01). The ``2π`` factor is correctly applied, and units are
-        properly set as ``1/dx_unit``.
-
-        References
-        ----------
-        .. [1] Press et al., Numerical Recipes (3rd ed., 2007), §12.3.2
-        .. [2] NumPy fftfreq documentation
-        .. [3] GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
-        .. [4] Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:
-               Fourier transform sign conventions
+        When ``spacing_rtol`` is given and an axis passes the relaxed G3
+        least-squares criterion without passing strict regularity, exact input
+        coordinates are retained privately so :meth:`ifft_space` restores them
+        when axis length and wavenumber spacing remain unchanged.
 
         """
+        if spacing_rtol is not None:
+            if isinstance(spacing_rtol, (bool, np.bool_)) or not isinstance(
+                spacing_rtol, Real
+            ):
+                raise TypeError(
+                    f"spacing_rtol must be a non-negative real number or None, got {type(spacing_rtol).__name__}"
+                )
+            spacing_rtol = float(spacing_rtol)
+            if not np.isfinite(spacing_rtol) or spacing_rtol < 0:
+                raise ValueError(
+                    f"spacing_rtol must be finite and non-negative, got {spacing_rtol!r}"
+                )
+
         # Default: all real-domain spatial axes
         if axes is None:
             axes = [
@@ -523,13 +779,28 @@ class ScalarField(FieldBase):
                 for name in [self._axis1_name, self._axis2_name, self._axis3_name]
                 if self._space_domains.get(name) == "real"
             ]
+            if not axes:
+                angle_axes = [
+                    name
+                    for name in [self._axis1_name, self._axis2_name, self._axis3_name]
+                    if self._space_domains.get(name) == "angle"
+                ]
+                if angle_axes:
+                    raise ValueError(
+                        f"Spatial axes {angle_axes} are in 'angle' domain and cannot be "
+                        "transformed directly with fft_space(). Convert to metric "
+                        "coordinates first via to_local_cartesian() or to_projected()."
+                    )
 
         if not axes:
             raise ValueError("No axes specified for fft_space")
 
+        axes_list = [axes] if isinstance(axes, str) else list(axes)
+
         # Validate axes and get integer indices
         target_axes_int = []
-        for ax_name in axes:
+        axis_spacings: dict[str, tuple[Any, bool, float | None]] = {}
+        for ax_name in axes_list:
             ax_int = self._get_axis_index(ax_name)
             if ax_int == 0:
                 raise ValueError(
@@ -537,6 +808,12 @@ class ScalarField(FieldBase):
                     "Use fft_time instead."
                 )
             domain = self._space_domains.get(ax_name)
+            if domain == "angle":
+                raise ValueError(
+                    f"Axis '{ax_name}' is in 'angle' domain and cannot be "
+                    "transformed directly with fft_space(). Convert to metric "
+                    "coordinates first via to_local_cartesian() or to_projected()."
+                )
             if domain != "real":
                 raise ValueError(
                     f"Axis '{ax_name}' is not in 'real' domain (current: {domain}). "
@@ -549,10 +826,41 @@ class ScalarField(FieldBase):
                     f"FFT requires axis length >= 2, "
                     f"got length {ax_desc.size} for axis '{ax_name}'"
                 )
-            if not ax_desc.regular:
-                raise ValueError(
-                    f"Axis '{ax_name}' is not uniformly spaced. Cannot apply FFT."
-                )
+
+            if spacing_rtol is None:
+                if not ax_desc.regular:
+                    raise ValueError(
+                        f"Axis '{ax_name}' is not uniformly spaced. Cannot apply FFT "
+                        "(pass spacing_rtol= to allow approximately uniform grids)."
+                    )
+                delta = ax_desc.delta
+                axis_spacings[ax_name] = (delta, False, None)
+            else:
+                if ax_desc.regular:
+                    delta = ax_desc.delta
+                    axis_spacings[ax_name] = (delta, False, None)
+                else:
+                    passed, e_ls, floor, slope_val, fit_origin_val = (
+                        ax_desc._regularity_report(max_deviation=spacing_rtol)
+                    )
+                    if not passed:
+                        raise ValueError(
+                            f"Axis '{ax_name}' is not uniformly spaced within "
+                            f"max_deviation={spacing_rtol:g} (E_LS={e_ls:.3e}, "
+                            f"floor={floor:.3e}). Cannot apply FFT."
+                        )
+                    delta = ax_desc.mean_delta()
+                    phase_bound = np.pi * e_ls
+                    warnings.warn(
+                        f"Axis '{ax_name}' is approximately uniform "
+                        f"(E_LS={e_ls:.3e} <= {spacing_rtol:g} + floor={floor:.3e}, "
+                        f"mean_delta={slope_val:g} {ax_desc.unit}); spatial FFT assumes "
+                        f"uniform spacing with Nyquist phase error <= {phase_bound:.3e} rad.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+                    axis_spacings[ax_name] = (delta, True, fit_origin_val)
+
             # Check strict monotonicity
             diffs = np.diff(ax_desc.index.value)
             if not (np.all(diffs > 0) or np.all(diffs < 0)):
@@ -565,9 +873,7 @@ class ScalarField(FieldBase):
         # Perform fftn
         s = None
         if n is not None:
-            s = tuple(n)
-
-        import scipy.fft as sp_fft
+            s = (int(n),) if isinstance(n, (int, np.integer)) else tuple(n)
 
         if overwrite:
             # Create explicit copy to allow overwrite_x optimization
@@ -588,15 +894,14 @@ class ScalarField(FieldBase):
         new_space_domains = dict(self._space_domains)
         new_space_origins = dict(getattr(self, "_space_origins", None) or {})
 
-        for ax_name, ax_int in zip(axes, target_axes_int):
+        for ax_name, ax_int in zip(axes_list, target_axes_int):
             ax_desc = self.axis(ax_name)
-            # Use signed delta to preserve axis direction
-            delta = ax_desc.delta
+            delta, is_approx, fit_origin_val = axis_spacings[ax_name]
             if delta is None:
                 raise ValueError(
                     f"Axis '{ax_name}' does not have a defined spacing (delta)"
                 )
-            dx_value = getattr(delta, "value", delta)  # Already signed from diff
+            dx_value = getattr(delta, "value", delta)  # Already signed
             dx_unit = getattr(delta, "unit", u.dimensionless_unscaled)
 
             npts = dft.shape[ax_int]
@@ -618,12 +923,20 @@ class ScalarField(FieldBase):
             del new_space_domains[ax_name]
             new_space_domains[new_name] = "k"
 
-            # The k bins fix the spacing but not where the real-space axis
-            # started or which way it ran; keep both for ifft_space.
-            new_space_origins[ax_name] = (
-                ax_desc.index[0].copy(),
-                dx_value < 0,
-            )
+            # Keep origin/direction (and exact coordinates for approximate grids)
+            if is_approx and fit_origin_val is not None:
+                new_space_origins[ax_name] = {
+                    "origin": fit_origin_val * ax_desc.unit,
+                    "descending": bool(dx_value < 0),
+                    "coords": ax_desc.index.copy(),
+                    "mean_delta": delta.copy(),
+                    "n": ax_desc.size,
+                }
+            else:
+                new_space_origins[ax_name] = (
+                    ax_desc.index[0].copy(),
+                    dx_value < 0,
+                )
 
         result = ScalarField(
             dft,
@@ -640,6 +953,8 @@ class ScalarField(FieldBase):
         result._validate_domain_units()
         self._propagate_gwex_attrs(result)
         result._space_origins = new_space_origins
+        if result.geo is not None:
+            result.geo = result.geo.deactivated("fft_space")
         return result
 
     def ifft_space(
@@ -648,27 +963,33 @@ class ScalarField(FieldBase):
         n: Sequence[int] | None = None,
         overwrite: bool = False,
     ) -> ScalarField:
-        """Compute inverse FFT along k-space axes.
+        r"""Compute inverse FFT along k-space axes.
+
+        Applies ``scipy.fft.ifftn`` (``1 / N`` scaling per transformed axis,
+        matching the unnormalized forward DFT in :meth:`fft_space` and Parseval
+        identity :math:`\sum |f|^2 = \frac{1}{\prod N_j} \sum |F|^2`).
 
         Parameters
         ----------
         axes : iterable of str, optional
-            Axis names to transform (e.g., ['kx', 'ky']). If None,
-            transforms all spatial axes in 'k' domain.
+            Axis names to transform (e.g., ``['kx', 'ky']``). If ``None``,
+            transforms all spatial axes in ``'k'`` domain.
         n : tuple of int, optional
             Output lengths for each axis.
         overwrite : bool, optional
-            If True, perform IFFT in-place on a temporary copy.
+            If ``True``, perform IFFT in-place on a temporary copy.
 
         Returns
         -------
         ScalarField
-            Transformed field with specified axes in 'real' domain.
+            Transformed field with specified axes in ``'real'`` domain.
+            Any attached :class:`GeoMetadata` remains deactivated (``active=False``).
 
         Raises
         ------
         ValueError
-            If any specified axis is not in 'k' domain.
+            If any specified axis is in ``'angle'`` domain, is not in ``'k'``
+            domain, or has non-uniform k-space coordinates.
 
         """
         # Default: all k-domain spatial axes
@@ -678,32 +999,61 @@ class ScalarField(FieldBase):
                 for name in [self._axis1_name, self._axis2_name, self._axis3_name]
                 if self._space_domains.get(name) == "k"
             ]
+            if not axes:
+                angle_axes = [
+                    name
+                    for name in [self._axis1_name, self._axis2_name, self._axis3_name]
+                    if self._space_domains.get(name) == "angle"
+                ]
+                if angle_axes:
+                    raise ValueError(
+                        f"Spatial axes {angle_axes} are in 'angle' domain (not 'k' "
+                        "domain) and cannot use ifft_space(). Convert to metric "
+                        "coordinates first via to_local_cartesian() or to_projected()."
+                    )
 
         if not axes:
             raise ValueError("No axes specified for ifft_space")
 
+        axes_list = [axes] if isinstance(axes, str) else list(axes)
+
         # Validate axes and get integer indices
         target_axes_int = []
-        for ax_name in axes:
+        for ax_name in axes_list:
             ax_int = self._get_axis_index(ax_name)
             if ax_int == 0:
                 raise ValueError(
                     "Cannot use ifft_space on axis 0. Use ifft_time instead."
                 )
             domain = self._space_domains.get(ax_name)
+            if domain == "angle":
+                raise ValueError(
+                    f"Axis '{ax_name}' is in 'angle' domain (not 'k' domain) "
+                    "and cannot use ifft_space(). Convert to metric coordinates "
+                    "first via to_local_cartesian() or to_projected()."
+                )
             if domain != "k":
                 raise ValueError(
                     f"Axis '{ax_name}' is not in 'k' domain (current: {domain}). "
                     f"Cannot apply ifft_space."
+                )
+            k_axis = self.axis(ax_name).index
+            if len(k_axis) < 2:
+                raise ValueError(
+                    f"ifft_space requires axis length >= 2, "
+                    f"got length {len(k_axis)} for axis '{ax_name}'"
+                )
+            if not _is_uniform_k_axis(k_axis):
+                raise ValueError(
+                    f"Axis '{ax_name}' is not uniformly spaced in k-space. "
+                    "Cannot apply ifft_space."
                 )
             target_axes_int.append(ax_int)
 
         # Perform ifftn
         s = None
         if n is not None:
-            s = tuple(n)
-
-        import scipy.fft as sp_fft
+            s = (int(n),) if isinstance(n, (int, np.integer)) else tuple(n)
 
         if overwrite:
             work_data = self.value.copy()
@@ -722,7 +1072,7 @@ class ScalarField(FieldBase):
         new_space_domains = dict(self._space_domains)
         new_space_origins = dict(getattr(self, "_space_origins", None) or {})
 
-        for ax_name, ax_int in zip(axes, target_axes_int):
+        for ax_name, ax_int in zip(axes_list, target_axes_int):
             # Derive real-space axis name from k-axis name
             if ax_name.startswith("k"):
                 real_name = ax_name[1:]  # kx -> x
@@ -734,12 +1084,6 @@ class ScalarField(FieldBase):
             # Compute real-space coordinates from k-space
             # k = 2π * fftfreq(n, d=dx)  =>  dx = 2π / (n * |dk|)
             k_axis = self.axis(ax_name).index
-            if len(k_axis) < 2:
-                raise ValueError(
-                    f"ifft_space requires axis length >= 2, "
-                    f"got length {len(k_axis)} for axis '{ax_name}'"
-                )
-
             dk_raw = k_axis[1] - k_axis[0]
             dk_value = getattr(dk_raw, "value", dk_raw)
             dk_unit = getattr(dk_raw, "unit", u.dimensionless_unscaled)
@@ -749,8 +1093,36 @@ class ScalarField(FieldBase):
             dx_unit = 1 / dk_unit
 
             recorded = new_space_origins.pop(real_name, None)
-            if recorded is not None:
-                # The axis came from fft_space: restore its start and direction.
+            if isinstance(recorded, dict):
+                orig_coords = recorded["coords"]
+                orig_dx = recorded["mean_delta"]
+                orig_n = recorded["n"]
+                orig_desc = recorded["descending"]
+                orig_abs_dx = abs(float(orig_dx.value))
+                dx_in_orig = float((dx_value * dx_unit).to_value(orig_dx.unit))
+                sign_ok = (len(k_axis) == 2) or ((dk_value < 0) == orig_desc)
+                if (
+                    len(k_axis) == orig_n
+                    and npts == orig_n
+                    and sign_ok
+                    and abs(dx_in_orig - orig_abs_dx) <= 1e-12 * orig_abs_dx
+                ):
+                    x_values = orig_coords.copy()
+                else:
+                    origin = recorded["origin"]
+                    step = -dx_value if orig_desc else dx_value
+                    x_values = origin + (np.arange(npts) * step * dx_unit).to(
+                        getattr(origin, "unit", dx_unit)
+                    )
+                    warnings.warn(
+                        f"Exact real-space coordinates for '{real_name}' cannot be "
+                        f"restored after shape/wavenumber change (n={npts} vs {orig_n}); "
+                        "reconstructing uniform mean_delta grid.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+            elif recorded is not None:
+                # The axis came from strict fft_space: restore its start and direction.
                 origin, descending = recorded
                 step = -dx_value if descending else dx_value
                 x_values = origin + (np.arange(npts) * step * dx_unit).to(
@@ -787,6 +1159,8 @@ class ScalarField(FieldBase):
         self._propagate_gwex_attrs(result)
         # Axes still in k-space keep their recorded origin; restored ones do not.
         result._space_origins = new_space_origins
+        if result.geo is not None:
+            result.geo = result.geo.deactivated("ifft_space")
         return result
 
     def wavelength(self, axis: str | int) -> u.Quantity:
@@ -1332,6 +1706,17 @@ class ScalarField(FieldBase):
                 x_coords, y_coords, data_2d, vmin=vmin, vmax=vmax, cmap=cmap, **kwargs
             )
         elif method == "imshow":
+            from ..types.axis import AxisDescriptor
+
+            if (
+                len(ax2_index) >= 2 and not AxisDescriptor(ax2_name, ax2_index).regular
+            ) or (
+                len(ax1_index) >= 2 and not AxisDescriptor(ax1_name, ax1_index).regular
+            ):
+                raise ValueError(
+                    "method='imshow' requires regularly spaced axes; "
+                    "use method='pcolormesh' for nonuniform rectilinear grids."
+                )
             extent = [x_coords[0], x_coords[-1], y_coords[0], y_coords[-1]]
             im = ax.imshow(
                 data_2d,
@@ -1994,6 +2379,18 @@ class ScalarField(FieldBase):
                 **kwargs,
             )
         elif method == "imshow":
+            from ..types.axis import AxisDescriptor
+
+            if (
+                len(space_axis) >= 2 and not AxisDescriptor(axis, space_axis).regular
+            ) or (
+                len(t_axis) >= 2
+                and not AxisDescriptor(self._axis0_name, t_axis).regular
+            ):
+                raise ValueError(
+                    "method='imshow' requires regularly spaced axes; "
+                    "use method='pcolormesh' for nonuniform rectilinear grids."
+                )
             extent = [
                 space_axis.value[0],
                 space_axis.value[-1],
@@ -2110,6 +2507,7 @@ class ScalarField(FieldBase):
         """
         if self._axis0_domain != "time":
             raise ValueError("resample requires axis0_domain='time'")
+        dt = self._validate_uniform_time_axis("resample")
 
         # Reshape to (time, points)
         orig_shape = self.shape
@@ -2117,7 +2515,6 @@ class ScalarField(FieldBase):
 
         # Use scipy.signal.resample for efficient array resampling
         # We need to compute the new number of samples
-        dt = self._axis0_index[1] - self._axis0_index[0]
         if hasattr(rate, "to"):
             new_fs = rate.to("Hz").value
             new_dt = (1.0 / new_fs) * u.s
@@ -2170,6 +2567,7 @@ class ScalarField(FieldBase):
         """
         if self._axis0_domain != "time":
             raise ValueError("filter requires axis0_domain='time'")
+        dt = self._validate_uniform_time_axis("filter")
 
         # Reshape to (time, points)
         orig_shape = self.shape
@@ -2177,7 +2575,7 @@ class ScalarField(FieldBase):
 
         # Use gwpy to parse the filter
         # We need sample rate
-        fs = (1.0 / (self._axis0_index[1] - self._axis0_index[0])).to("Hz").value
+        fs = (1.0 / dt).to("Hz").value
         from gwpy.signal import filter_design
         from scipy import signal as scipy_signal
 
@@ -2427,3 +2825,649 @@ class ScalarField(FieldBase):
             return compute_psd(self, point_or_region, **kwargs)
 
         return self.spectral_density(axis=0, **kwargs)
+
+    # =========================================================================
+    # Geospatial & Missing-Value Utilities
+    # =========================================================================
+
+    def fill_missing(
+        self,
+        method: Literal["nearest", "linear", "constant"] = "nearest",
+        *,
+        value: float | u.Quantity | None = None,
+        axes: Sequence[str] | None = None,
+        max_distance: float | u.Quantity | None = None,
+    ) -> ScalarField:
+        """Fill missing (NaN) values via spatial interpolation or a constant.
+
+        Parameters
+        ----------
+        method : {'nearest', 'linear', 'constant'}, default 'nearest'
+            Infilling strategy. ``'nearest'`` and ``'linear'`` interpolate from
+            finite samples along the spatial axes; ``'constant'`` replaces NaNs
+            with ``value``.
+        value : float or Quantity, optional
+            Replacement value when ``method='constant'``.
+        axes : sequence of str, optional
+            Spatial axis names to interpolate along. When ``None``, spatial axes
+            with length > 1 are selected automatically.
+        max_distance : float or Quantity, optional
+            Maximum Euclidean distance (in axis units) from valid samples for
+            infilling with ``'nearest'`` or ``'linear'``. Pixels beyond this
+            threshold remain NaN.
+
+        Returns
+        -------
+        ScalarField
+            New field with NaNs filled and untouched valid pixels bit-identical.
+            Active :class:`GeoMetadata` remains active with an appended history
+            entry.
+
+        """
+        if method not in ("nearest", "linear", "constant"):
+            raise ValueError(
+                f"Invalid fill_missing method '{method}'. "
+                "Must be 'nearest', 'linear', or 'constant'."
+            )
+        if method == "constant":
+            if value is None:
+                raise ValueError("method='constant' requires 'value='.")
+            if max_distance is not None:
+                raise ValueError(
+                    "max_distance is not supported with method='constant'."
+                )
+        elif value is not None:
+            raise ValueError(
+                f"'value=' is only valid for method='constant', not {method!r}."
+            )
+
+        data = np.array(self.value, copy=True)
+        if not np.issubdtype(data.dtype, np.floating):
+            data = data.astype(np.float64)
+
+        if np.all(np.isnan(data)):
+            raise ValueError("Cannot fill_missing: all field values are NaN.")
+
+        if method == "constant":
+            assert value is not None
+            if isinstance(value, u.Quantity):
+                target_unit = (
+                    self.unit if self.unit is not None else u.dimensionless_unscaled
+                )
+                fill_val = float(value.to_value(target_unit))
+            else:
+                fill_val = float(value)
+            nan_mask = np.isnan(data)
+            if np.any(nan_mask):
+                data[nan_mask] = fill_val
+            desc = f"fill_missing(method='constant', value={fill_val!r})"
+        else:
+            if axes is None:
+                interp_axis_ints = [i for i in (1, 2, 3) if self.shape[i] > 1]
+            else:
+                interp_axis_ints = []
+                for ax_name in axes:
+                    ax_int = self._get_axis_index(ax_name)
+                    if ax_int == 0:
+                        raise ValueError(
+                            "fill_missing operates on spatial axes (1..3), not axis 0."
+                        )
+                    if ax_int in interp_axis_ints:
+                        raise ValueError(f"Duplicate axis '{ax_name}' in axes.")
+                    interp_axis_ints.append(ax_int)
+
+            if not np.any(np.isnan(data)):
+                desc = f"fill_missing(method={method!r})"
+            else:
+                if not interp_axis_ints:
+                    raise ValueError(
+                        "Cannot interpolate spatially when all spatial axes have length 1."
+                    )
+
+                axis_indices = [
+                    self._axis0_index,
+                    self._axis1_index,
+                    self._axis2_index,
+                    self._axis3_index,
+                ]
+                ref_unit = getattr(
+                    axis_indices[interp_axis_ints[0]], "unit", u.dimensionless_unscaled
+                )
+                coord_arrays: list[np.ndarray] = []
+                for ax_int in interp_axis_ints:
+                    idx_arr = axis_indices[ax_int]
+                    ax_unit = getattr(idx_arr, "unit", u.dimensionless_unscaled)
+                    if not ax_unit.is_equivalent(ref_unit):
+                        raise ValueError(
+                            f"Incompatible spatial axis units for fill_missing: "
+                            f"{ax_unit} vs {ref_unit}."
+                        )
+                    coord_arrays.append(
+                        np.asarray(
+                            u.Quantity(idx_arr, copy=False).to_value(ref_unit),
+                            dtype=np.float64,
+                        )
+                    )
+
+                max_dist_val: float | None = None
+                if max_distance is not None:
+                    if isinstance(max_distance, u.Quantity):
+                        max_dist_val = float(max_distance.to_value(ref_unit))
+                    else:
+                        max_dist_val = float(max_distance)
+                    if not np.isfinite(max_dist_val) or max_dist_val < 0:
+                        raise ValueError(
+                            f"max_distance must be finite and non-negative, got {max_distance!r}"
+                        )
+
+                from scipy.interpolate import LinearNDInterpolator, interp1d
+                from scipy.spatial import QhullError, cKDTree
+
+                mesh = np.meshgrid(*coord_arrays, indexing="ij")
+                flat_coords = np.column_stack([m.ravel() for m in mesh])
+                other_axes = [i for i in range(4) if i not in interp_axis_ints]
+                other_shape = tuple(self.shape[i] for i in other_axes)
+
+                for outer_idx in np.ndindex(*other_shape):
+                    sl: list[Any] = [slice(None)] * 4
+                    for ax_pos, idx_val in zip(other_axes, outer_idx):
+                        sl[ax_pos] = idx_val
+                    sub = data[tuple(sl)]
+                    sub_miss = np.isnan(sub)
+                    if not np.any(sub_miss):
+                        continue
+                    sub_valid = ~sub_miss
+                    if not np.any(sub_valid):
+                        raise ValueError(
+                            f"Cannot interpolate missing values: slice {outer_idx} is all NaN."
+                        )
+                    valid_flat = sub_valid.ravel()
+                    miss_flat = sub_miss.ravel()
+                    valid_pts = flat_coords[valid_flat]
+                    valid_vals = sub.ravel()[valid_flat]
+                    miss_pts = flat_coords[miss_flat]
+
+                    if method == "nearest":
+                        tree = cKDTree(valid_pts)
+                        dists, nn_idx = tree.query(miss_pts)
+                        filled = valid_vals[nn_idx]
+                        if max_dist_val is not None:
+                            filled = np.where(dists <= max_dist_val, filled, np.nan)
+                    else:
+                        if len(interp_axis_ints) == 1:
+                            interp1 = interp1d(
+                                valid_pts[:, 0],
+                                valid_vals,
+                                kind="linear",
+                                bounds_error=False,
+                                fill_value=np.nan,
+                            )
+                            filled = interp1(miss_pts[:, 0])
+                        else:
+                            try:
+                                interp_nd = LinearNDInterpolator(
+                                    valid_pts, valid_vals, fill_value=np.nan
+                                )
+                                filled = interp_nd(miss_pts)
+                            except QhullError as exc:
+                                raise ValueError(
+                                    "Linear interpolation failed (valid samples may be "
+                                    "collinear or degenerate). Use method='nearest'."
+                                ) from exc
+                        if max_dist_val is not None:
+                            dists, _ = cKDTree(valid_pts).query(miss_pts)
+                            filled = np.where(dists <= max_dist_val, filled, np.nan)
+
+                    out_sub = sub.copy()
+                    out_sub[sub_miss] = filled
+                    data[tuple(sl)] = out_sub
+
+                desc = f"fill_missing(method={method!r}, max_distance={max_distance!r})"
+
+        result = ScalarField(
+            data,
+            unit=self.unit,
+            epoch=self.epoch,
+            name=self.name,
+            channel=self.channel,
+            axis0=self._axis0_index.copy(),
+            axis1=self._axis1_index.copy(),
+            axis2=self._axis2_index.copy(),
+            axis3=self._axis3_index.copy(),
+            axis_names=list(self.axis_names),
+            axis0_domain=self._axis0_domain,
+            space_domain=self._space_domains,
+        )
+        self._propagate_gwex_attrs(result)
+        if self.geo is not None:
+            result.geo = self.geo.with_history(desc)
+        return result
+
+    def to_local_cartesian(
+        self,
+        origin: tuple[float | u.Quantity, float | u.Quantity] | None = None,
+        *,
+        names: tuple[str, str] = ("x", "y"),
+        ellipsoid: str = "GRS80",
+    ) -> ScalarField:
+        r"""Convert two ``'angle'`` spatial axes (lon, lat) to local tangent-plane metres.
+
+        Uses the local ellipsoid curvature radii at the origin latitude
+        :math:`\phi_0`:
+
+        .. math::
+
+            x = N(\phi_0) \cos(\phi_0) \, (\lambda - \lambda_0), \qquad
+            y = M(\phi_0) \, (\phi - \phi_0),
+
+        where :math:`N(\phi_0) = a / W(\phi_0)` is the prime-vertical radius of
+        curvature, :math:`M(\phi_0) = a(1 - e^2) / W(\phi_0)^3` is the
+        meridional radius of curvature, and
+        :math:`W(\phi_0) = \sqrt{1 - e^2 \sin^2\phi_0}`.
+
+        For approximately uniform input angle grids, output axes are
+        resynthesized as ``(arange(n) - i0) * d`` to preserve uniform spacing;
+        for genuinely nonuniform angle axes, exact point-by-point mapped
+        coordinates are preserved.
+
+        Notes
+        -----
+        This tangent-plane approximation removes first-order ellipsoid flattening
+        bias at the origin, but parallel convergence still introduces
+        east-west scale distortion of order
+        :math:`|\tan\phi_0| \cdot (|\Delta y| / N(\phi_0)) = O(\mathrm{span}/R)`
+        away from ``origin``, plus :math:`O((\mathrm{span}/R)^2)` curvature
+        effects. For wide areas or strict CRS reprojection, use
+        :meth:`to_projected`.
+
+        Parameters
+        ----------
+        origin : tuple of (lon0, lat0), optional
+            Local tangent-plane origin in degrees (or angular Quantities).
+            Defaults to the midpoint of the two angle axes.
+        names : tuple of (str, str), default ('x', 'y')
+            Output names for the converted spatial axes.
+        ellipsoid : {'GRS80', 'WGS84', 'sphere'}, default 'GRS80'
+            Reference ellipsoid parameters.
+
+        Returns
+        -------
+        ScalarField
+            Field with converted axes in ``'real'`` domain with metre units.
+            Any attached :class:`GeoMetadata` is deactivated with
+            ``local_origin=(lon0, lat0)``.
+
+        """
+        from ..types.axis import AxisDescriptor
+
+        key_ellip = ellipsoid.lower()
+        if key_ellip not in _ELLIPSOID_PARAMS:
+            raise ValueError(
+                f"Unknown ellipsoid '{ellipsoid}'. Supported: {sorted(_ELLIPSOID_PARAMS)}"
+            )
+        if len(names) != 2 or names[0] == names[1]:
+            raise ValueError("'names' must be a 2-tuple of distinct axis names.")
+
+        spatial_specs = [
+            (1, self._axis1_name, self._axis1_index),
+            (2, self._axis2_name, self._axis2_index),
+            (3, self._axis3_name, self._axis3_index),
+        ]
+        angle_specs = [
+            spec
+            for spec in spatial_specs
+            if self._space_domains.get(spec[1]) == "angle"
+        ]
+        if len(angle_specs) != 2:
+            raise ValueError(
+                "to_local_cartesian() requires exactly two spatial axes in 'angle' "
+                f"domain, found {len(angle_specs)} ({[s[1] for s in angle_specs]})."
+            )
+
+        (idx_lon, lon_name, lon_axis), (idx_lat, lat_name, lat_axis) = angle_specs
+        other_names = {self._axis0_name} | {
+            name for i, name, _ in spatial_specs if i not in (idx_lon, idx_lat)
+        }
+        if any(new_n in other_names for new_n in names):
+            raise ValueError(
+                f"Output axis names {names} collide with existing axis names {other_names}."
+            )
+
+        for ax_n, ax_q in ((lon_name, lon_axis), (lat_name, lat_axis)):
+            ax_u = getattr(ax_q, "unit", u.dimensionless_unscaled)
+            if not ax_u.is_equivalent(u.deg):
+                raise ValueError(
+                    f"Angle axis '{ax_n}' must have angular units (e.g. deg, rad), got {ax_u}."
+                )
+
+        lon_deg = np.asarray(
+            u.Quantity(lon_axis, copy=False).to_value(u.deg), dtype=np.float64
+        )
+        lat_deg = np.asarray(
+            u.Quantity(lat_axis, copy=False).to_value(u.deg), dtype=np.float64
+        )
+
+        if origin is None:
+            lon0 = float(0.5 * (lon_deg[0] + lon_deg[-1]))
+            lat0 = float(0.5 * (lat_deg[0] + lat_deg[-1]))
+        else:
+            if len(origin) != 2:
+                raise ValueError("'origin' must be a 2-tuple (lon0, lat0).")
+            o_lon, o_lat = origin
+            lon0 = float(
+                o_lon.to_value(u.deg) if isinstance(o_lon, u.Quantity) else o_lon
+            )
+            lat0 = float(
+                o_lat.to_value(u.deg) if isinstance(o_lat, u.Quantity) else o_lat
+            )
+
+        if not (np.isfinite(lon0) and np.isfinite(lat0)):
+            raise ValueError(
+                f"origin coordinates must be finite, got ({lon0}, {lat0})."
+            )
+        if abs(lat0) >= 90.0:
+            raise ValueError(
+                f"origin latitude must satisfy |lat0| < 90 deg, got {lat0}."
+            )
+
+        a_ellip, inv_f = _ELLIPSOID_PARAMS[key_ellip]
+        if inv_f == 0.0:
+            e2 = 0.0
+        else:
+            f_flat = 1.0 / inv_f
+            e2 = f_flat * (2.0 - f_flat)
+
+        phi0 = np.deg2rad(lat0)
+        sin_phi0 = np.sin(phi0)
+        cos_phi0 = np.cos(phi0)
+        w = np.sqrt(1.0 - e2 * sin_phi0 * sin_phi0)
+        n_phi0 = a_ellip / w
+        m_phi0 = a_ellip * (1.0 - e2) / (w**3)
+
+        deg_to_rad = np.pi / 180.0
+        scale_x = n_phi0 * cos_phi0 * deg_to_rad
+        scale_y = m_phi0 * deg_to_rad
+
+        def _convert_angle_axis(
+            ax_label: str, vals_deg: np.ndarray, ref_deg: float, scale_m: float
+        ) -> u.Quantity:
+            if vals_deg.size >= 2:
+                desc = AxisDescriptor(ax_label, vals_deg * u.deg)
+                passed, _, _, d_deg, fit_0 = desc._regularity_report(max_deviation=1e-4)
+                if passed and d_deg != 0.0:
+                    d_m = d_deg * scale_m
+                    i0 = (ref_deg - fit_0) / d_deg
+                    return (
+                        (np.arange(vals_deg.size, dtype=np.float64) - i0) * d_m
+                    ) * u.m
+            return ((vals_deg - ref_deg) * scale_m) * u.m
+
+        new_axes = [
+            self._axis0_index.copy(),
+            self._axis1_index.copy(),
+            self._axis2_index.copy(),
+            self._axis3_index.copy(),
+        ]
+        new_axes[idx_lon] = _convert_angle_axis(lon_name, lon_deg, lon0, scale_x)
+        new_axes[idx_lat] = _convert_angle_axis(lat_name, lat_deg, lat0, scale_y)
+
+        new_names = list(self.axis_names)
+        new_names[idx_lon] = names[0]
+        new_names[idx_lat] = names[1]
+
+        new_domains = dict(self._space_domains)
+        del new_domains[lon_name]
+        del new_domains[lat_name]
+        new_domains[names[0]] = "real"
+        new_domains[names[1]] = "real"
+
+        result = ScalarField(
+            self.value.copy(),
+            unit=self.unit,
+            epoch=self.epoch,
+            name=self.name,
+            channel=self.channel,
+            axis0=new_axes[0],
+            axis1=new_axes[1],
+            axis2=new_axes[2],
+            axis3=new_axes[3],
+            axis_names=new_names,
+            axis0_domain=self._axis0_domain,
+            space_domain=new_domains,
+        )
+        self._propagate_gwex_attrs(result)
+        if self.geo is not None:
+            result.geo = self.geo.deactivated(
+                f"to_local_cartesian(origin=({lon0:.6f}, {lat0:.6f}), ellipsoid={ellipsoid!r})",
+                local_origin=(lon0, lat0),
+            )
+        else:
+            result.geo = GeoMetadata(
+                vertical_datum="unspecified",
+                active=False,
+                local_origin=(lon0, lat0),
+                history=(
+                    f"to_local_cartesian(origin=({lon0:.6f}, {lat0:.6f}), ellipsoid={ellipsoid!r})",
+                ),
+            )
+        return result
+
+    def to_projected(
+        self,
+        target_crs: str,
+        *,
+        resolution: float | tuple[float, float] | u.Quantity | None = None,
+        method: Literal["nearest", "bilinear", "cubic"] = "bilinear",
+    ) -> ScalarField:
+        """Reproject and resample this georeferenced field to *target_crs*.
+
+        Parameters
+        ----------
+        target_crs : str
+            Target CRS identifier accepted by :class:`pyproj.CRS`
+            (e.g. ``'EPSG:32654'`` or ``'EPSG:6675'``).
+        resolution : float, tuple of (dx, dy), or Quantity, optional
+            Output pixel spacing in target CRS units (or compatible Quantity).
+            When ``None``, inferred from the source center pixel spacing.
+        method : {'nearest', 'bilinear', 'cubic'}, default 'bilinear'
+            Spatial resampling method.
+
+        Returns
+        -------
+        ScalarField
+            Reprojected field with active :class:`GeoMetadata` reflecting the
+            new CRS, transform, and reprojection history.
+
+        """
+        from gwexpy.io.utils import ensure_dependency
+
+        pyproj = ensure_dependency("pyproj", extra="geospatial")
+        if method not in ("nearest", "bilinear", "cubic"):
+            raise ValueError(
+                f"Invalid resampling method '{method}'. "
+                "Must be 'nearest', 'bilinear', or 'cubic'."
+            )
+        if self.geo is None or not self.geo.active or not self.geo.crs:
+            raise ValueError(
+                "to_projected() requires an active GeoMetadata with a source CRS."
+            )
+
+        src_crs = pyproj.CRS.from_user_input(self.geo.crs)
+        dst_crs = pyproj.CRS.from_user_input(target_crs)
+
+        if src_crs.is_geographic:
+            src_unit = u.deg
+        else:
+            src_factor = (
+                src_crs.axis_info[0].unit_conversion_factor
+                if src_crs.axis_info
+                else 1.0
+            )
+            src_unit = u.m if np.isclose(src_factor, 1.0) else u.m * src_factor
+
+        src_x = np.asarray(
+            u.Quantity(self._axis1_index, copy=False).to_value(src_unit),
+            dtype=np.float64,
+        )
+        src_y = np.asarray(
+            u.Quantity(self._axis2_index, copy=False).to_value(src_unit),
+            dtype=np.float64,
+        )
+        if src_x.size < 2 or src_y.size < 2:
+            raise ValueError("to_projected() requires spatial axes of length >= 2.")
+        if not (np.all(np.diff(src_x) > 0) or np.all(np.diff(src_x) < 0)):
+            raise ValueError(
+                "Source axis 1 must be strictly monotonic for to_projected()."
+            )
+        if not (np.all(np.diff(src_y) > 0) or np.all(np.diff(src_y) < 0)):
+            raise ValueError(
+                "Source axis 2 must be strictly monotonic for to_projected()."
+            )
+
+        input_x_desc = bool(src_x[1] < src_x[0])
+        input_y_desc = bool(src_y[1] < src_y[0])
+        src_x_asc = src_x[::-1] if input_x_desc else src_x
+        src_y_asc = src_y[::-1] if input_y_desc else src_y
+
+        fwd = pyproj.Transformer.from_crs(src_crs, dst_crs, always_xy=True)
+        inv = pyproj.Transformer.from_crs(dst_crs, src_crs, always_xy=True)
+
+        bx_min, by_min, bx_max, by_max = geo_bounds(self)
+        gx = np.linspace(bx_min, bx_max, 21)
+        gy = np.linspace(by_min, by_max, 21)
+        gxx, gyy = np.meshgrid(gx, gy, indexing="ij")
+        tx_pts, ty_pts = fwd.transform(gxx, gyy)
+        tx_arr = np.asarray(tx_pts, dtype=np.float64)
+        ty_arr = np.asarray(ty_pts, dtype=np.float64)
+        if not np.any(np.isfinite(tx_arr) & np.isfinite(ty_arr)):
+            raise ValueError(
+                "CRS transformation produced no finite target coordinates."
+            )
+        dst_xmin = float(np.nanmin(tx_arr))
+        dst_xmax = float(np.nanmax(tx_arr))
+        dst_ymin = float(np.nanmin(ty_arr))
+        dst_ymax = float(np.nanmax(ty_arr))
+
+        if dst_crs.is_geographic:
+            dst_unit = u.deg
+            dst_names = ("x_unused", "lon", "lat")
+            dst_dom = "angle"
+        else:
+            dst_factor = (
+                dst_crs.axis_info[0].unit_conversion_factor
+                if dst_crs.axis_info
+                else 1.0
+            )
+            dst_unit = u.m if np.isclose(dst_factor, 1.0) else u.m * dst_factor
+            dst_names = ("x_unused", "x", "y")
+            dst_dom = "real"
+
+        if resolution is None:
+            xc = 0.5 * (bx_min + bx_max)
+            yc = 0.5 * (by_min + by_max)
+            dx_src = float(abs(src_x_asc[1] - src_x_asc[0]))
+            dy_src = float(abs(src_y_asc[1] - src_y_asc[0]))
+            x0p, y0p = fwd.transform(xc, yc)
+            x1p, y1p = fwd.transform(xc + dx_src, yc)
+            x2p, y2p = fwd.transform(xc, yc + dy_src)
+            dx_dst = float(np.hypot(x1p - x0p, y1p - y0p))
+            dy_dst = float(np.hypot(x2p - x0p, y2p - y0p))
+        elif isinstance(resolution, u.Quantity):
+            if resolution.ndim == 0:
+                dx_dst = dy_dst = float(resolution.to_value(dst_unit))
+            elif resolution.size == 2:
+                vals = resolution.to_value(dst_unit)
+                dx_dst, dy_dst = float(vals[0]), float(vals[1])
+            else:
+                raise ValueError("resolution Quantity must be scalar or length-2.")
+        elif isinstance(resolution, (tuple, list, np.ndarray)):
+            if len(resolution) != 2:
+                raise ValueError("resolution sequence must have length 2.")
+            r0, r1 = resolution
+            dx_dst = float(r0.to_value(dst_unit) if isinstance(r0, u.Quantity) else r0)
+            dy_dst = float(r1.to_value(dst_unit) if isinstance(r1, u.Quantity) else r1)
+        else:
+            dx_dst = dy_dst = float(resolution)
+
+        if not (
+            np.isfinite(dx_dst) and np.isfinite(dy_dst) and dx_dst > 0 and dy_dst > 0
+        ):
+            raise ValueError(
+                f"resolution must be positive and finite, got ({dx_dst}, {dy_dst})."
+            )
+
+        nx_dst = max(1, int(np.ceil((dst_xmax - dst_xmin) / dx_dst)))
+        ny_dst = max(1, int(np.ceil((dst_ymax - dst_ymin) / dy_dst)))
+        dst_x = dst_xmin + (np.arange(nx_dst, dtype=np.float64) + 0.5) * dx_dst
+        if input_y_desc:
+            dst_y = dst_ymax - (np.arange(ny_dst, dtype=np.float64) + 0.5) * dy_dst
+        else:
+            dst_y = dst_ymin + (np.arange(ny_dst, dtype=np.float64) + 0.5) * dy_dst
+
+        xx, yy = np.meshgrid(dst_x, dst_y, indexing="ij")
+        sx_pts, sy_pts = inv.transform(xx, yy)
+        sx_grid = np.asarray(sx_pts, dtype=np.float64)
+        sy_grid = np.asarray(sy_pts, dtype=np.float64)
+
+        src_vals = np.asarray(self.value, dtype=np.float64)
+        if input_x_desc:
+            src_vals = src_vals[:, ::-1, :, :]
+        if input_y_desc:
+            src_vals = src_vals[:, :, ::-1, :]
+
+        nt, _, _, nz = src_vals.shape
+        out_data = np.full((nt, nx_dst, ny_dst, nz), np.nan, dtype=np.float64)
+        for it in range(nt):
+            for iz in range(nz):
+                out_data[it, :, :, iz] = _resample_2d_grid(
+                    src_x_asc,
+                    src_y_asc,
+                    src_vals[it, :, :, iz],
+                    sx_grid,
+                    sy_grid,
+                    method,
+                )
+
+        new_names = [self._axis0_name, dst_names[1], dst_names[2], self._axis3_name]
+        new_domains = {
+            dst_names[1]: dst_dom,
+            dst_names[2]: dst_dom,
+            self._axis3_name: self._space_domains.get(self._axis3_name, "real"),
+        }
+        result = ScalarField(
+            out_data,
+            unit=self.unit,
+            epoch=self.epoch,
+            name=self.name,
+            channel=self.channel,
+            axis0=self._axis0_index.copy(),
+            axis1=dst_x * dst_unit,
+            axis2=dst_y * dst_unit,
+            axis3=self._axis3_index.copy(),
+            axis_names=new_names,
+            axis0_domain=self._axis0_domain,
+            space_domain=new_domains,
+        )
+        self._propagate_gwex_attrs(result)
+        dst_crs_str = dst_crs.to_string() or str(target_crs)
+        out_bounds = geo_bounds(result)
+        y_origin = float(dst_ymax if input_y_desc else dst_ymin)
+        y_step = float(-dy_dst if input_y_desc else dy_dst)
+        result.geo = GeoMetadata(
+            crs=dst_crs_str,
+            transform=(float(dst_xmin), float(dx_dst), 0.0, y_origin, 0.0, y_step),
+            vertical_datum=self.geo.vertical_datum,
+            nodata=float("nan"),
+            band=self.geo.band,
+            source=self.geo.source,
+            source_format=self.geo.source_format,
+            active=True,
+            local_origin=None,
+            history=(
+                *self.geo.history,
+                f"to_projected(src_crs={self.geo.crs!r}, target_crs={dst_crs_str!r}, "
+                f"resolution=({dx_dst:g}, {dy_dst:g}), method={method!r}, "
+                f"bounds={out_bounds!r})",
+            ),
+        )
+        return result
