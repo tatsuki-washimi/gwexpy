@@ -54,6 +54,8 @@ class TensorField(FieldDict):
 
     """
 
+    _is_gwexpy_field = True
+
     def __init__(
         self,
         components: dict[tuple[int, ...], ScalarField] | np.ndarray | None = None,
@@ -85,6 +87,52 @@ class TensorField(FieldDict):
                 self.rank = 1  # Fallback for non-tuple keys
         else:
             self.rank = rank
+
+    @staticmethod
+    def _validate_entry(key: Any, value: Any) -> None:
+        if not isinstance(value, ScalarField):
+            raise TypeError(
+                f"Key {key!r}: Expected ScalarField for TensorField component, "
+                f"got {type(value).__name__}."
+            )
+
+    @classmethod
+    def read(  # type: ignore[override]
+        cls,
+        source: Any,
+        name: str | None = None,
+        *,
+        format: str | None = None,
+        start: Any = None,
+        end: Any = None,
+        **kwargs: Any,
+    ) -> TensorField:
+        """Read a :class:`TensorField` from *source*.
+
+        Parameters
+        ----------
+        source : str, Path, file-like, or sequence of paths
+            Input file, archive, or dataset source.
+        name : str, optional
+            Tensor quantity selector.
+        format : str, optional
+            Format identifier.
+        start, end : optional
+            Continuous range selection along axis 0 where supported.
+        **kwargs
+            Format-specific reader options.
+
+        """
+        from .io.core import read_tensorfield
+
+        return read_tensorfield(
+            source,
+            name=name,
+            format=format,
+            start=start,
+            end=end,
+            **kwargs,
+        )
 
     def copy(self) -> TensorField:
         """Return a copy of this TensorField."""
@@ -143,6 +191,7 @@ class TensorField(FieldDict):
         return ScalarField(
             res_val,
             unit=first.unit,
+            epoch=first.epoch,
             axis0=first._axis0_index,
             axis1=first._axis1_index,
             axis2=first._axis2_index,
@@ -295,6 +344,7 @@ class TensorField(FieldDict):
         return ScalarField(
             det_val,
             unit=first.unit**dim,
+            epoch=first.epoch,
             axis0=first._axis0_index,
             axis1=first._axis1_index,
             axis2=first._axis2_index,
@@ -342,6 +392,7 @@ class TensorField(FieldDict):
                     sym_field = ScalarField(
                         avg_val,
                         unit=first.unit,
+                        epoch=first.epoch,
                         axis0=first._axis0_index,
                         axis1=first._axis1_index,
                         axis2=first._axis2_index,
@@ -362,6 +413,7 @@ class TensorField(FieldDict):
                     sym_field = ScalarField(
                         avg_val,
                         unit=first.unit,
+                        epoch=first.epoch,
                         axis0=first._axis0_index,
                         axis1=first._axis1_index,
                         axis2=first._axis2_index,
