@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 from gwpy.io.registry import default_registry as io_registry
@@ -72,6 +72,52 @@ def register_field_format(
         reader_scalar = reader
     if writer is not None and writer_scalar is None:
         writer_scalar = writer
+
+    if reader_dict is None and reader_scalar is not None:
+
+        def _read_scalar_dict(
+            source: Any,
+            names: Iterable[str] | str | None = None,
+            *,
+            start: Any = None,
+            end: Any = None,
+            **kwargs: Any,
+        ) -> FieldDict:
+            """Adapt a scalar-only reader to a selected, ordered FieldDict."""
+            from .core import read_scalarfield
+
+            if names is None:
+                available = list(lister(source, **kwargs)) if lister is not None else []
+                raise ValueError(
+                    "Field names must be specified for FieldDict.read(). "
+                    f"Available fields: {available}"
+                )
+            requested = [names] if isinstance(names, str) else list(names)
+            if not requested or any(not isinstance(n, str) or not n for n in requested):
+                raise ValueError("FieldDict reader requires nonempty field names.")
+            if lister is not None:
+                available = list(lister(source, **kwargs))
+                missing = [name for name in requested if name not in available]
+                if missing:
+                    raise KeyError(
+                        f"Requested field(s) {missing} not found in {source!r} "
+                        f"(available: {available})."
+                    )
+            return FieldDict(
+                {
+                    name: read_scalarfield(
+                        source,
+                        name,
+                        format=format_name,
+                        start=start,
+                        end=end,
+                        **kwargs,
+                    )
+                    for name in requested
+                }
+            )
+
+        reader_dict = _read_scalar_dict
 
     format_names = (format_name, *aliases)
     extensions = _normalize_extensions(extension)

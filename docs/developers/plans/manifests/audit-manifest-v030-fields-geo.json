@@ -1,0 +1,160 @@
+{
+  "date": "2026-11-19",
+  "branch": "work/v030-fields-geo-integration",
+  "base": "origin/main",
+  "issues": [
+    520,
+    521,
+    544,
+    545,
+    546,
+    547,
+    548,
+    549,
+    550,
+    551,
+    552,
+    553,
+    554,
+    555,
+    558,
+    565,
+    902,
+    903
+  ],
+  "skills_used": [
+    "gwexpy_conda_jobs",
+    "manage_field_metadata",
+    "visualize_fields",
+    "make_notebook",
+    "verify_physics"
+  ],
+  "actions": [
+    "Merged existing A1 field/geospatial, A2 plot-layer, and A3 provisional surface branches into a new isolated worktree.",
+    "Declared geospatial optional extra and documented terrain Field I/O in English and Japanese.",
+    "Added English and Japanese offline-capable DEM spatial-spectrum notebooks.",
+    "Rejected complex projection data and incompatible active CRS arithmetic; corrected outer half-cell resampling.",
+    "Audited #553 and recorded a deliberate decision to defer gsi-dem/geotiff JSON contract entries until Field conformance validators and a geospatial CI gate exist.",
+    "Registered FieldDict read adapters for scalar-only terrain formats and fixed explicit GeoTIFF alias dependency guidance (#520)."
+  ],
+  "checks": [
+    {
+      "command": "conda run -n gwexpy python -m pytest tests/fields tests/plot tests/io/test_gsi_dem_reader.py tests/io/test_gsi_dem_public_io.py tests/io/test_geotiff_reader.py tests/io/test_geotiff_public_io.py tests/interop/test_interop_contract.py -q",
+      "result": "1132 passed, 6 skipped"
+    },
+    {
+      "command": "conda run -n gwexpy ruff check ...; ruff format --check ...",
+      "result": "passed; 106 files formatted"
+    },
+    {
+      "command": "conda run -n gwexpy mypy gwexpy/fields gwexpy/plot gwexpy/types/axis.py gwexpy/types/axis_api.py gwexpy/interop/_optional.py",
+      "result": "Success: no issues found in 45 source files"
+    },
+    {
+      "command": "PYTHONPATH=$PWD memcap -- conda run -n gwexpy jupyter nbconvert --to notebook --execute docs/web/en/user_guide/tutorials/field_dem_spatial_spectrum.ipynb ...",
+      "result": "passed"
+    },
+    {
+      "command": "memcap -- conda run -n gwexpy python -m sphinx -b html docs $TMPDIR/gwexpy-fields-docs-html",
+      "result": "build succeeded"
+    },
+    {
+      "command": "git diff --check origin/main...HEAD",
+      "result": "passed"
+    },
+    {
+      "command": "conda run -n gwexpy python -m pytest tests/io/test_field_direct_io_contract_audit.py tests/io/test_gsi_dem_public_io.py tests/io/test_geotiff_public_io.py tests/io/test_io_contract.py tests/io_conformance/test_contract_schema_v3.py -q",
+      "result": "24 passed, 1 skipped"
+    },
+    {
+      "command": "conda run -n gwexpy python -m pytest tests/io_conformance tests/io/test_io_docs_contract_sync.py tests/io/test_field_direct_io_contract_audit.py -q",
+      "result": "88 passed, 7 skipped"
+    },
+    {
+      "command": "conda run -n gwexpy ruff check tests/io/test_field_direct_io_contract_audit.py; ruff format --check tests/io/test_field_direct_io_contract_audit.py",
+      "result": "passed"
+    },
+    {
+      "command": "memcap -- conda run -n gwexpy python -m sphinx -b html docs $TMPDIR/gwexpy-fields-docs-html",
+      "result": "build succeeded after #553 audit"
+    },
+    {
+      "command": "conda run -n gwexpy python -m pytest tests/io/test_gsi_dem_reader.py tests/io/test_gsi_dem_public_io.py tests/io/test_geotiff_reader.py tests/io/test_geotiff_public_io.py tests/io/test_field_direct_io_contract_audit.py tests/io/test_io_contract.py tests/io_conformance/test_contract_schema_v3.py tests/fields/test_fielddict_heterogeneous.py -q",
+      "result": "32 passed, 2 skipped"
+    },
+    {
+      "command": "conda run -n gwexpy ruff check/format --check changed Field I/O files; conda run -n gwexpy mypy gwexpy/fields/io",
+      "result": "passed; 5 formatted files; no issues in 5 source files"
+    }
+  ],
+  "omitted_checks": [
+    "GeoTIFF and pyproj runtime tests skipped because rasterio and pyproj are absent from the gwexpy conda environment.",
+    "No full-repository pytest run; focused Field, plot, I/O, and interop suites cover affected modules.",
+    "No real GSI tiles used; synthetic reader fixtures and offline tutorial fallback were exercised."
+  ],
+  "physics_review": "Numerical unit/axis/FFT tests passed; explicit human sign-off is required before merge for gwexpy/fields changes.",
+  "known_followups": [
+    "Add Field JSON contract entries after four-axis/GeoMetadata conformance validators and an io-geospatial CI job are available (decision recorded by #553 audit).",
+    "#556 coordinate-frame umbrella design",
+    "#902 provisional internal surface API remains private"
+  ],
+  "files_changed": [
+    "docs/developers/contracts/field_direct_io_audit.md",
+    "docs/developers/contracts/public_io_contract.json",
+    "docs/developers/contracts/public_io_contract.md",
+    "docs/developers/plans/manifests/audit-manifest-v030-fields-geo.json",
+    "docs/web/en/user_guide/installation.md",
+    "docs/web/en/user_guide/io_formats.md",
+    "docs/web/en/user_guide/tutorials/field_dem_spatial_spectrum.ipynb",
+    "docs/web/en/user_guide/tutorials/field_layered_visualization.md",
+    "docs/web/en/user_guide/tutorials/index.rst",
+    "docs/web/ja/user_guide/installation.md",
+    "docs/web/ja/user_guide/io_formats.md",
+    "docs/web/ja/user_guide/tutorials/field_dem_spatial_spectrum.ipynb",
+    "docs/web/ja/user_guide/tutorials/field_layered_visualization.md",
+    "docs/web/ja/user_guide/tutorials/index.rst",
+    "gwexpy/fields/__init__.py",
+    "gwexpy/fields/_surface.py",
+    "gwexpy/fields/base.py",
+    "gwexpy/fields/collections.py",
+    "gwexpy/fields/geo.py",
+    "gwexpy/fields/io/__init__.py",
+    "gwexpy/fields/io/_registration.py",
+    "gwexpy/fields/io/core.py",
+    "gwexpy/fields/io/geotiff.py",
+    "gwexpy/fields/io/gsi_dem.py",
+    "gwexpy/fields/scalar.py",
+    "gwexpy/fields/signal.py",
+    "gwexpy/fields/tensor.py",
+    "gwexpy/fields/vector.py",
+    "gwexpy/interop/_optional.py",
+    "gwexpy/plot/_detectors.py",
+    "gwexpy/plot/_geo_utils.py",
+    "gwexpy/plot/_tiles.py",
+    "gwexpy/plot/field.py",
+    "gwexpy/plot/geomap.py",
+    "gwexpy/types/axis.py",
+    "gwexpy/types/axis_api.py",
+    "pyproject.toml",
+    "tests/fields/test_fielddict_heterogeneous.py",
+    "tests/fields/test_nonuniform_rectilinear.py",
+    "tests/fields/test_scalarfield_angle_domain.py",
+    "tests/fields/test_scalarfield_fft_space_regularity.py",
+    "tests/fields/test_scalarfield_fill_missing.py",
+    "tests/fields/test_scalarfield_geo_metadata.py",
+    "tests/fields/test_scalarfield_local_cartesian.py",
+    "tests/fields/test_scalarfield_projected.py",
+    "tests/fields/test_scalarfield_projected_guards.py",
+    "tests/fields/test_surface_field.py",
+    "tests/io/test_field_direct_io_contract_audit.py",
+    "tests/io/test_geotiff_public_io.py",
+    "tests/io/test_geotiff_reader.py",
+    "tests/io/test_gsi_dem_public_io.py",
+    "tests/io/test_gsi_dem_reader.py",
+    "tests/io_conformance/generators/gsi_dem.py",
+    "tests/plot/test_field_layers.py",
+    "tests/plot/test_plot_helper_contracts.py",
+    "tests/test_geomap.py",
+    "tests/types/test_axis_regularity.py"
+  ]
+}

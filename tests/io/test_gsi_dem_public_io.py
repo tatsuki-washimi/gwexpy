@@ -6,6 +6,7 @@ import importlib.util
 
 import numpy as np
 import pytest
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.fields import FieldDict, ScalarField, list_fields
 from tests.io_conformance.generators.gsi_dem import write_gsi_dem_xml, write_gsi_dem_zip
@@ -33,6 +34,17 @@ def test_gsi_dem_auto_identify_and_non_gsi_rejection(tmp_path):
     fd = FieldDict.read(xml_path, ["elevation"])
     assert list(fd.keys()) == ["elevation"]
     assert isinstance(fd["elevation"], ScalarField)
+
+    registry_fd = io_registry.get_reader("gsi-dem", FieldDict)(
+        xml_path, names=["elevation"]
+    )
+    assert isinstance(registry_fd, FieldDict)
+    assert list(registry_fd) == ["elevation"]
+    assert registry_fd["elevation"].value[0, 1, 0, 0] == pytest.approx(2.0)
+    with pytest.raises(ValueError, match="Available fields"):
+        io_registry.get_reader("gsi-dem", FieldDict)(xml_path)
+    with pytest.raises(ValueError, match="No axis-0 samples"):
+        FieldDict.read(xml_path, ["elevation"], start=1.0)
 
     with pytest.raises(KeyError):
         ScalarField.read(xml_path, "bogus_field")

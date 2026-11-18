@@ -24,10 +24,18 @@ def test_geotiff_missing_rasterio_hints_without_side_effect(tmp_path):
         ScalarField.read(dummy)
     with pytest.raises(ImportError, match="geospatial"):
         ScalarField.read(tmp_path / "any.dat", format="geotiff")
+    for alias in ("tif", "tiff"):
+        with pytest.raises(ImportError, match="geospatial"):
+            ScalarField.read(tmp_path / "any.dat", format=alias)
+        with pytest.raises(ImportError, match="geospatial"):
+            FieldDict.read(tmp_path / "any.dat", ["band_1"], format=alias)
 
     sf = ScalarField(np.ones((1, 2, 2, 1)), unit=u.m)
     with pytest.raises(ImportError, match="geospatial"):
         sf.write(tmp_path / "out.tif")
+    for alias in ("tif", "tiff"):
+        with pytest.raises(ImportError, match="geospatial"):
+            sf.write(tmp_path / "out.dat", format=alias)
 
 
 def test_geotiff_public_io_roundtrip_and_aliases(tmp_path):
@@ -65,6 +73,13 @@ def test_geotiff_public_io_roundtrip_and_aliases(tmp_path):
     fd = FieldDict.read(tif_path, ["band_2", "band_1"])
     assert list(fd.keys()) == ["band_2", "band_1"]
     assert fd["band_2"].value[0, 0, 0, 0] == pytest.approx(100.0)
+
+    from gwpy.io.registry import default_registry as io_registry
+
+    registry_fd = io_registry.get_reader("geotiff", FieldDict)(
+        tif_path, names=["band_2", "band_1"]
+    )
+    assert list(registry_fd) == ["band_2", "band_1"]
 
     out_path = tmp_path / "written.tif"
     fd["band_2"].write(out_path)

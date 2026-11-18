@@ -49,6 +49,7 @@ _FORBIDDEN_COMMON_KWARGS = frozenset(
 )
 
 _TIFF_MAGICS = (b"II*\x00", b"MM\x00*", b"II+\x00", b"MM\x00+")
+_GEOTIFF_FORMATS = frozenset({"geotiff", "tif", "tiff"})
 
 
 def _reject_forbidden_kwargs(kwargs: dict[str, Any]) -> None:
@@ -102,7 +103,7 @@ def _looks_like_geotiff(probe: Any, *, allow_file_read: bool = True) -> bool:
 
 
 def _ensure_geotiff_if_requested(format_name: str | None, probe: Any) -> None:
-    if format_name == "geotiff":
+    if format_name in _GEOTIFF_FORMATS:
         ensure_dependency("rasterio", extra="geospatial")
         return
     if format_name is None and _looks_like_geotiff(probe):
@@ -117,7 +118,7 @@ def _resolve_read_format(
 ) -> str:
     probe = _first_probe_source(source)
     if format_name is not None:
-        if format_name == "geotiff":
+        if format_name in _GEOTIFF_FORMATS:
             ensure_dependency("rasterio", extra="geospatial")
         return format_name
 
@@ -172,11 +173,14 @@ def _call_with_accepted_kwargs(
     range_forwarded = False
 
     if has_name_arg and name_arg is not None:
-        if "name" in params or accepts_varkw:
+        if "name" in params:
             call_kwargs["name"] = name_arg
             name_forwarded = True
         elif "names" in params:
             call_kwargs["names"] = name_arg
+            name_forwarded = True
+        elif accepts_varkw:
+            call_kwargs["name"] = name_arg
             name_forwarded = True
 
     if start is not None or end is not None:
@@ -567,7 +571,7 @@ def write_scalarfield(
             raise ValueError(
                 f"Could not identify format for {target!r}. Please specify 'format' argument."
             )
-    elif fmt == "geotiff":
+    elif fmt in _GEOTIFF_FORMATS:
         ensure_dependency("rasterio", extra="geospatial")
 
     writer = io_registry.get_writer(fmt, ScalarField)
