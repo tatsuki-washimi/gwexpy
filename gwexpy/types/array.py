@@ -11,6 +11,7 @@ from gwexpy.time._reference import (
     TimeReferenceMixin,
     check_time_setter_value,
     inherit_time_reference,
+    mask_unset_signature_defaults,
     resolve_time_inputs,
     set_time_reference,
 )
@@ -33,6 +34,7 @@ class Array(
     _metadata_slots = getattr(GwpyArray, "_metadata_slots", ()) + ("_axis_names",)
     _time_reference_axis_attrs = ("_epoch",)
 
+    @mask_unset_signature_defaults
     def __new__(
         cls,
         value,

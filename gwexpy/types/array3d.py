@@ -6,7 +6,10 @@ import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray
 
-from gwexpy.time._reference import TIME_INPUT_UNSET
+from gwexpy.time._reference import (
+    TIME_INPUT_UNSET,
+    mask_unset_signature_defaults,
+)
 
 from .array import Array
 from .axis import AxisDescriptor, coerce_1d_quantity
@@ -27,6 +30,7 @@ class Array3D(Array):
         "_axis2_index",
     )
 
+    @mask_unset_signature_defaults
     def __new__(
         cls,
         value,

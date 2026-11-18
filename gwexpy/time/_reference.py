@@ -36,6 +36,7 @@ The public name is provisional (#725 open question 2).  To rename it, change
 from __future__ import annotations
 
 import functools
+import inspect
 import warnings
 from collections.abc import Callable, Iterable, Mapping
 from decimal import Decimal
@@ -56,6 +57,7 @@ __all__ = [
     "get_time_reference",
     "inherit_time_reference",
     "inherits_time_reference",
+    "mask_unset_signature_defaults",
     "require_uniform_time_reference",
     "rebuild_with_time_reference",
     "resolve_matrix_epoch",
@@ -175,6 +177,22 @@ def resolve_time_inputs(
         return TIME_REFERENCE_ABSOLUTE, ()
     del explicit_axis
     return (None if inherit else TIME_REFERENCE_ABSOLUTE), ()
+
+
+def mask_unset_signature_defaults(func: _F) -> _F:
+    """Expose ``None`` instead of ``TIME_INPUT_UNSET`` in ``inspect.signature``.
+
+    Keeps ``TIME_INPUT_UNSET`` as the Python runtime default so constructors
+    can distinguish omitted arguments from an explicit ``None``, while
+    preserving GWpy-compatible ``epoch=None`` in ``inspect.signature``.
+    """
+    sig = inspect.signature(func)
+    params = [
+        param.replace(default=None) if param.default is TIME_INPUT_UNSET else param
+        for param in sig.parameters.values()
+    ]
+    func.__signature__ = sig.replace(parameters=params)  # type: ignore[attr-defined]
+    return func
 
 
 def resolve_matrix_epoch(

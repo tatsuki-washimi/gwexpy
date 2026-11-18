@@ -51,9 +51,8 @@ class TestTimeSeriesConstructor:
         assert np.all(np.isfinite(ts.times.value))
         assert ts.dt.value == DT
         assert ts.unit == u.m
-        # changed by U-1 (#725): omitted/None is relative, explicit 0 is absolute
-        explicit = value is not OMIT and value is not None
-        assert ts.time_reference == ("absolute" if explicit else "relative")
+        # changed by Plan I (#725): omitted/0 is absolute, explicit None is relative
+        assert ts.time_reference == ("relative" if value is None else "absolute")
 
     @pytest.mark.parametrize("value", [GPS])
     def test_finite_gps(self, kind, value):

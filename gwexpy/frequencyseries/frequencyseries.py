@@ -26,6 +26,7 @@ from gwexpy.time._reference import (
     check_time_setter_value,
     get_time_reference,
     inherits_time_reference,
+    mask_unset_signature_defaults,
     rebuild_with_time_reference,
     resolve_time_inputs,
     set_time_reference,
@@ -225,6 +226,7 @@ class FrequencySeries(
 
         return super().write(target, *args, **kwargs)
 
+    @mask_unset_signature_defaults
     def __new__(
         cls,
         data: ArrayLike1D,

@@ -60,10 +60,9 @@ class TestSpectrogramConstructor:
     @pytest.mark.parametrize("value", [OMIT, None, 0])
     def test_missing_or_zero_is_gps_zero_time(self, kind, value):
         # characterizes the public finite values (#725): they are GPS 0 Time.
-        # changed by U-1 (#725): a missing t0/epoch is now "relative" and an
-        # explicit 0 is "absolute", so the two are distinguishable.
+        # changed by Plan I (#725): omitted/0 is absolute, explicit None is relative.
         sg = _sg(kind, value)
-        assert sg.time_reference == ("absolute" if value == 0 else "relative")
+        assert sg.time_reference == ("relative" if value is None else "absolute")
         assert _epoch_float(sg) == 0.0
         assert sg.t0.value == 0.0
         assert np.all(np.isfinite(sg.times.value))
