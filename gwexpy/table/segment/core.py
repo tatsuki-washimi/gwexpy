@@ -15,7 +15,12 @@ from typing import Any, Optional, Union, cast
 import numpy as np
 import pandas as pd
 
-from gwexpy.table.segment.cell import CellStatus, SegmentCell
+from gwexpy.table.segment.cell import _UNSET, CellStatus, SegmentCell
+from gwexpy.table.segment.status import (
+    _MissingMixin,
+    is_scalar_nan,
+    validate_errors_policy,
+)
 
 __all__ = ["RowProxy", "SegmentTable"]
 
@@ -28,7 +33,17 @@ _META_KINDS = frozenset({"segment", "meta", "object"})
 
 #: Column kinds for payload (heavy) columns.
 _PAYLOAD_KINDS = frozenset(
-    {"timeseries", "timeseriesdict", "frequencyseries", "frequencyseriesdict", "object"}
+    {
+        "timeseries",
+        "timeseriesdict",
+        "frequencyseries",
+        "frequencyseriesdict",
+        "spectrogram",
+        "matrix",
+        "array",
+        "scalar",
+        "object",
+    }
 )
 
 #: All valid kinds.
@@ -138,7 +153,7 @@ class RowProxy:
 # ---------------------------------------------------------------------------
 
 
-class SegmentTable:
+class SegmentTable(_MissingMixin):
     """Segment-keyed analysis table.
 
     Each row holds exactly one ``span`` (:class:`gwpy.segments.Segment`)
@@ -176,6 +191,10 @@ class SegmentTable:
     _meta: pd.DataFrame
     _payload: dict[str, list[SegmentCell]]
     _schema: dict[str, str]
+    _units: dict[str, Any]
+    _segment_index: Any
+    _provenance: list[dict[str, Any]]
+    _external_attrs: dict[str, Any]
 
     # ------------------------------------------------------------------
     # Construction
@@ -201,6 +220,10 @@ class SegmentTable:
 
         self._meta = meta.reset_index(drop=True).copy()
         self._payload: dict[str, list[SegmentCell]] = {}
+        self._units: dict[str, Any] = {}
+        self._segment_index = None
+        self._provenance = []
+        self._external_attrs = {}
 
         # Build initial schema from meta columns
         schema: dict[str, str] = {}
@@ -341,6 +364,7 @@ class SegmentTable:
         name: str,
         data: Sequence[Any],
         kind: str = "meta",
+        unit: Any = None,
     ) -> None:
         """Add a lightweight meta column.
 
@@ -352,6 +376,8 @@ class SegmentTable:
             Sequence of values; length must equal ``len(self)``.
         kind:
             Column kind — ``"meta"`` or ``"object"``.
+        unit:
+            Optional unit metadata for the column.
 
         Raises
         ------
@@ -372,8 +398,12 @@ class SegmentTable:
                 f"Length of data ({len(data)}) does not match "
                 f"table row count ({len(self)})."
             )
+        if unit is None and hasattr(data, "unit"):
+            unit = data.unit
         self._meta[name] = list(data)
         self._schema[name] = kind
+        if unit is not None:
+            self._units[name] = unit
 
     def add_series_column(
         self,
@@ -383,6 +413,7 @@ class SegmentTable:
             Union[Sequence[Callable[[], Any]], Callable[[int], Callable[[], Any]]]
         ] = None,
         kind: str = "timeseries",
+        unit: Any = None,
     ) -> None:
         """Add a payload column (lazy-loadable).
 
@@ -401,7 +432,10 @@ class SegmentTable:
             Payload kind.  Must be one of:
             ``"timeseries"``, ``"timeseriesdict"``,
             ``"frequencyseries"``, ``"frequencyseriesdict"``,
+            ``"spectrogram"``, ``"matrix"``, ``"array"``, ``"scalar"``,
             ``"object"``.
+        unit:
+            Optional unit metadata for the column.
 
         Raises
         ------
@@ -474,6 +508,8 @@ class SegmentTable:
 
         self._payload[name] = cells
         self._schema[name] = kind
+        if unit is not None:
+            self._units[name] = unit
 
     # ------------------------------------------------------------------
     # Basic access
@@ -527,6 +563,151 @@ class SegmentTable:
     # Row-wise processing
     # ------------------------------------------------------------------
 
+    def _slice_rows(
+        self,
+        indices: Sequence[int],
+        *,
+        share_cells: bool = False,
+    ) -> SegmentTable:
+        """Return a new table containing rows at *indices*."""
+        idx_list = list(indices)
+        new_meta = cast(pd.DataFrame, self._meta.iloc[idx_list].reset_index(drop=True))
+        new_table = SegmentTable(new_meta)
+        for col in new_meta.columns:
+            if col != "span":
+                new_table._schema[col] = self._schema.get(col, "meta")
+        for col, cells in self._payload.items():
+            if share_cells:
+                new_table._payload[col] = [cells[i] for i in idx_list]
+            else:
+                new_table._payload[col] = [cells[i].clone() for i in idx_list]
+            new_table._schema[col] = self._schema[col]
+        new_table._units = dict(self._units)
+        new_table._provenance = [dict(p) for p in self._provenance]
+        new_table._external_attrs = dict(self._external_attrs)
+        return new_table
+
+    def _slice_inplace(self, indices: Sequence[int]) -> None:
+        idx_list = list(indices)
+        self._meta = cast(
+            pd.DataFrame, self._meta.iloc[idx_list].reset_index(drop=True)
+        )
+        for col, cells in list(self._payload.items()):
+            self._payload[col] = [cells[i] for i in idx_list]
+        self._segment_index = None
+
+    def _set_meta_column(
+        self, name: str, values: Sequence[Any], kind: str = "meta"
+    ) -> None:
+        self._meta[name] = list(values)
+        self._schema[name] = kind
+
+    def _emit_error_columns(
+        self,
+        col_name: str,
+        statuses: list[str],
+        row_errors: list[Optional[BaseException]],
+    ) -> None:
+        self._set_meta_column(f"{col_name}_status", statuses, kind="meta")
+        self._set_meta_column(
+            f"{col_name}_error_type",
+            [type(e).__name__ if e is not None else "" for e in row_errors],
+            kind="meta",
+        )
+        self._set_meta_column(
+            f"{col_name}_error_message",
+            [str(e) if e is not None else "" for e in row_errors],
+            kind="meta",
+        )
+
+    def _finalize_row_outputs(
+        self,
+        *,
+        col_names: list[str],
+        explicit_kinds: dict[str, str],
+        row_dicts: list[Optional[dict[str, Any]]],
+        row_errors: list[Optional[BaseException]],
+        inplace: bool,
+        errors: str,
+    ) -> SegmentTable:
+        n = len(self)
+        if errors == "skip":
+            kept_indices = [i for i in range(n) if row_errors[i] is None]
+            if inplace:
+                self._slice_inplace(kept_indices)
+                target = self
+            else:
+                target = self._slice_rows(kept_indices)
+            for col_name in col_names:
+                vals = [
+                    cast(dict[str, Any], row_dicts[i])[col_name] for i in kept_indices
+                ]
+                kind = explicit_kinds.get(col_name) or _infer_kind(vals)
+                if kind == "meta":
+                    target._set_meta_column(col_name, vals, kind=kind)
+                else:
+                    target._payload[col_name] = [
+                        v.clone()
+                        if isinstance(v, SegmentCell)
+                        else SegmentCell(value=v)
+                        for v in vals
+                    ]
+                    target._schema[col_name] = kind
+            return target
+
+        target = self if inplace else self.copy()
+        for col_name in col_names:
+            success_vals = [
+                cast(dict[str, Any], row_dicts[i])[col_name]
+                for i in range(n)
+                if row_errors[i] is None
+            ]
+            kind = explicit_kinds.get(col_name) or _infer_kind(success_vals)
+            if kind == "meta":
+                meta_vals: list[Any] = []
+                statuses: list[str] = []
+                for i in range(n):
+                    err = row_errors[i]
+                    if err is not None:
+                        meta_vals.append(np.nan)
+                        statuses.append(CellStatus.FAILED.value)
+                    else:
+                        val = cast(dict[str, Any], row_dicts[i])[col_name]
+                        meta_vals.append(val)
+                        statuses.append(
+                            CellStatus.MISSING.value
+                            if is_scalar_nan(val)
+                            else CellStatus.VALID.value
+                        )
+                target._set_meta_column(col_name, meta_vals, kind=kind)
+                if errors == "record":
+                    target._emit_error_columns(col_name, statuses, row_errors)
+            else:
+                cells: list[SegmentCell] = []
+                statuses = []
+                for i in range(n):
+                    err = row_errors[i]
+                    if err is not None:
+                        cell = (
+                            SegmentCell.failed(err)
+                            if errors == "record"
+                            else SegmentCell.missing()
+                        )
+                    else:
+                        val = cast(dict[str, Any], row_dicts[i])[col_name]
+                        cell = (
+                            val.clone()
+                            if isinstance(val, SegmentCell)
+                            else SegmentCell(value=val)
+                        )
+                    cells.append(cell)
+                    statuses.append(cell.status.value)
+                target._payload[col_name] = cells
+                target._schema[col_name] = kind
+                if errors == "record":
+                    target._emit_error_columns(col_name, statuses, row_errors)
+        return target
+
     def apply(
         self,
         func: Callable[[RowProxy], dict[str, Any]],
@@ -534,6 +715,7 @@ class SegmentTable:
         out_cols: Optional[list[str]] = None,
         parallel: bool = False,
         inplace: bool = False,
+        errors: str = "raise",
     ) -> SegmentTable:
         """Apply *func* to each row and collect the results as new columns.
 
@@ -552,6 +734,11 @@ class SegmentTable:
         inplace:
             If ``True``, add columns to *self*; otherwise return a new
             :class:`SegmentTable`.
+        errors:
+            Failure policy across rows: ``"raise"`` (default), ``"record"``
+            (mark failed cells ``FAILED`` and emit status/error columns),
+            ``"coerce"`` (mark failed cells ``MISSING``), or ``"skip"`` (drop
+            failing rows).
 
         Returns
         -------
@@ -563,47 +750,86 @@ class SegmentTable:
         TypeError
             If *func* does not return a ``dict``.
         ValueError
-            If ``out_cols`` is given and the actual keys do not match.
+            If ``out_cols`` is given and the actual keys do not match, or
+            *errors* is invalid.
 
         """
+        validate_errors_policy(errors)
         # parallel is intentionally ignored (v0.1: sequential fallback)
-        results: list[dict[str, Any]] = []
-        for i in range(len(self)):
+        n = len(self)
+        if n == 0:
+            return self if inplace else self.copy()
+
+        row_dicts: list[Optional[dict[str, Any]]] = []
+        row_errors: list[Optional[BaseException]] = []
+
+        for i in range(n):
             row = self.row(i)
-            ret = func(row)
-            if not isinstance(ret, dict):
-                raise TypeError(
-                    f"apply() expects func to return a dict, "
-                    f"got {type(ret).__name__!r}."
-                )
-            if out_cols is not None:
-                expected = set(out_cols)
-                actual = set(ret.keys())
-                if expected != actual:
-                    raise ValueError(
-                        f"out_cols {sorted(expected)} does not match "
-                        f"func return keys {sorted(actual)} at row {i}."
+            if errors == "raise":
+                ret = func(row)
+                if not isinstance(ret, dict):
+                    raise TypeError(
+                        f"apply() expects func to return a dict, "
+                        f"got {type(ret).__name__!r}."
                     )
-            results.append(ret)
-
-        # Collect per-column lists
-        if not results:
-            return self.copy() if not inplace else self
-
-        all_keys = list(results[0].keys())
-        new_data: dict[str, list[Any]] = {k: [r[k] for r in results] for k in all_keys}
-
-        target = self if inplace else self.copy()
-        for col_name, values in new_data.items():
-            # Infer kind: if values are payload-like wrap in cells, else meta
-            kind = _infer_kind(values)
-            if kind in _META_KINDS - {"segment"}:
-                target.add_column(col_name, values, kind=kind)
+                if out_cols is not None:
+                    expected = set(out_cols)
+                    actual = set(ret.keys())
+                    if expected != actual:
+                        raise ValueError(
+                            f"out_cols {sorted(expected)} does not match "
+                            f"func return keys {sorted(actual)} at row {i}."
+                        )
+                row_dicts.append(ret)
+                row_errors.append(None)
             else:
-                cells = [SegmentCell(value=v) for v in values]
-                target._payload[col_name] = cells
-                target._schema[col_name] = kind
-        return target
+                try:
+                    ret = func(row)
+                    if not isinstance(ret, dict):
+                        raise TypeError(
+                            f"apply() expects func to return a dict, "
+                            f"got {type(ret).__name__!r}."
+                        )
+                    if out_cols is not None:
+                        expected = set(out_cols)
+                        actual = set(ret.keys())
+                        if expected != actual:
+                            raise ValueError(
+                                f"out_cols {sorted(expected)} does not match "
+                                f"func return keys {sorted(actual)} at row {i}."
+                            )
+                except Exception as exc:
+                    row_dicts.append(None)
+                    row_errors.append(exc)
+                else:
+                    row_dicts.append(ret)
+                    row_errors.append(None)
+
+        first_ok = next((d for d in row_dicts if d is not None), None)
+        if first_ok is not None:
+            all_keys = list(out_cols) if out_cols is not None else list(first_ok.keys())
+        elif out_cols is not None:
+            all_keys = list(out_cols)
+        elif errors == "skip":
+            if inplace:
+                self._slice_inplace([])
+                return self
+            return self._slice_rows([])
+        else:
+            first_err = next(e for e in row_errors if e is not None)
+            raise ValueError(
+                "All rows failed in apply() and 'out_cols' was not provided to "
+                "determine output column names."
+            ) from first_err
+
+        return self._finalize_row_outputs(
+            col_names=all_keys,
+            explicit_kinds={},
+            row_dicts=row_dicts,
+            row_errors=row_errors,
+            inplace=inplace,
+            errors=errors,
+        )
 
     def map(
         self,
@@ -611,6 +837,7 @@ class SegmentTable:
         func: Callable[[Any], Any],
         out_col: Optional[str] = None,
         inplace: bool = False,
+        errors: str = "raise",
     ) -> SegmentTable:
         """Apply *func* to each value in *column*.
 
@@ -624,12 +851,16 @@ class SegmentTable:
             Output column name.  Defaults to ``column + "_mapped"``.
         inplace:
             Whether to modify *self* in place.
+        errors:
+            Failure policy across rows (``"raise"``, ``"record"``,
+            ``"coerce"``, ``"skip"``).
 
         Returns
         -------
         SegmentTable
 
         """
+        validate_errors_policy(errors)
         if column not in self._schema:
             raise KeyError(f"Column {column!r} not found.")
         if out_col is None:
@@ -638,7 +869,7 @@ class SegmentTable:
         def _func(row: RowProxy) -> dict[str, Any]:
             return {out_col: func(row[column])}
 
-        return self.apply(_func, inplace=inplace)
+        return self.apply(_func, out_cols=[out_col], inplace=inplace, errors=errors)
 
     # Sugar APIs ----------------------------------------------------------
 
@@ -648,6 +879,7 @@ class SegmentTable:
         out_col: Optional[str] = None,
         span_col: str = "span",
         inplace: bool = False,
+        errors: str = "raise",
     ) -> SegmentTable:
         """Crop each row's payload to its :class:`~gwpy.segments.Segment`.
 
@@ -661,6 +893,9 @@ class SegmentTable:
             Column name for the span (default ``"span"``).
         inplace:
             Whether to modify *self* in place.
+        errors:
+            Failure policy across rows (``"raise"``, ``"record"``,
+            ``"coerce"``, ``"skip"``).
 
         Raises
         ------
@@ -668,6 +903,7 @@ class SegmentTable:
             If the payload is not ``TimeSeries`` or ``TimeSeriesDict``.
 
         """
+        validate_errors_policy(errors)
         try:
             from gwpy.timeseries import TimeSeries, TimeSeriesDict
         except ImportError as exc:
@@ -683,33 +919,73 @@ class SegmentTable:
         if out_col is None:
             out_col = column + "_cropped"
 
-        def _crop(row: RowProxy) -> dict[str, Any]:
-            payload = row[column]
-            span = row[span_col]
-            if not isinstance(payload, (TimeSeries, TimeSeriesDict)):
-                raise TypeError(
-                    f"crop() expected TimeSeries or TimeSeriesDict, "
-                    f"got {type(payload).__name__!r}."
-                )
-            return {out_col: payload.crop(span[0], span[1])}
-
         out_kind = kind  # preserve timeseries/timeseriesdict kind
-        target = self if inplace else self.copy()
+        n = len(self)
+        if n == 0:
+            target = self if inplace else self.copy()
+            target._payload[out_col] = []
+            target._schema[out_col] = out_kind
+            return target
 
-        results = []
-        for i in range(len(self)):
-            row = self.row(i)
-            results.append(_crop(row)[out_col])
+        row_dicts: list[Optional[dict[str, Any]]] = []
+        row_errors: list[Optional[BaseException]] = []
 
-        cells = [SegmentCell(value=v) for v in results]
-        target._payload[out_col] = cells
-        target._schema[out_col] = out_kind
-        return target
+        for i in range(n):
+            cell = self._payload[column][i]
+            if cell.status in (
+                CellStatus.MISSING,
+                CellStatus.MASKED,
+                CellStatus.NOT_APPLICABLE,
+            ):
+                row_dicts.append(
+                    {out_col: SegmentCell(value=_UNSET, status=cell.status)}
+                )
+                row_errors.append(None)
+                continue
+
+            if errors == "raise":
+                payload = self.row(i)[column]
+                span = self.row(i)[span_col]
+                if not isinstance(payload, (TimeSeries, TimeSeriesDict)):
+                    raise TypeError(
+                        f"crop() expected TimeSeries or TimeSeriesDict, "
+                        f"got {type(payload).__name__!r}."
+                    )
+                row_dicts.append({out_col: payload.crop(span[0], span[1])})
+                row_errors.append(None)
+            else:
+                try:
+                    payload = self.row(i)[column]
+                    span = self.row(i)[span_col]
+                    if not isinstance(payload, (TimeSeries, TimeSeriesDict)):
+                        raise TypeError(
+                            f"crop() expected TimeSeries or TimeSeriesDict, "
+                            f"got {type(payload).__name__!r}."
+                        )
+                    cropped = payload.crop(span[0], span[1])
+                except Exception as exc:
+                    row_dicts.append(None)
+                    row_errors.append(exc)
+                else:
+                    row_dicts.append({out_col: cropped})
+                    row_errors.append(None)
+
+        return self._finalize_row_outputs(
+            col_names=[out_col],
+            explicit_kinds={out_col: out_kind},
+            row_dicts=row_dicts,
+            row_errors=row_errors,
+            inplace=inplace,
+            errors=errors,
+        )
 
     def asd(
         self,
         column: str,
         out_col: Optional[str] = None,
+        *,
+        errors: str = "raise",
+        inplace: bool = False,
         **kwargs: Any,
     ) -> SegmentTable:
         """Apply ASD to each row's ``TimeSeries`` or ``TimeSeriesDict``.
@@ -720,6 +996,11 @@ class SegmentTable:
             Payload column.
         out_col:
             Output column name; defaults to ``column + "_asd"``.
+        errors:
+            Failure policy across rows (``"raise"``, ``"record"``,
+            ``"coerce"``, ``"skip"``).
+        inplace:
+            Whether to modify *self* in place.
         **kwargs:
             Forwarded to :meth:`~gwpy.timeseries.TimeSeries.asd`.
 
@@ -728,28 +1009,64 @@ class SegmentTable:
         SegmentTable
 
         """
+        validate_errors_policy(errors)
+        if column not in self._schema:
+            raise KeyError(f"Column {column!r} not found.")
         if out_col is None:
             out_col = column + "_asd"
-
-        def _asd(row: RowProxy) -> dict[str, Any]:
-            payload = row[column]
-            return {out_col: payload.asd(**kwargs)}
-
-        target = self.copy()
-        results = []
-        for i in range(len(self)):
-            row = self.row(i)
-            results.append(_asd(row)[out_col])
 
         out_kind = "frequencyseries"
         kind = self._schema.get(column, "timeseries")
         if kind == "timeseriesdict":
             out_kind = "frequencyseriesdict"
 
-        cells = [SegmentCell(value=v) for v in results]
-        target._payload[out_col] = cells
-        target._schema[out_col] = out_kind
-        return target
+        n = len(self)
+        if n == 0:
+            target = self if inplace else self.copy()
+            target._payload[out_col] = []
+            target._schema[out_col] = out_kind
+            return target
+
+        row_dicts: list[Optional[dict[str, Any]]] = []
+        row_errors: list[Optional[BaseException]] = []
+
+        for i in range(n):
+            if column in self._payload:
+                cell = self._payload[column][i]
+                if cell.status in (
+                    CellStatus.MISSING,
+                    CellStatus.MASKED,
+                    CellStatus.NOT_APPLICABLE,
+                ):
+                    row_dicts.append(
+                        {out_col: SegmentCell(value=_UNSET, status=cell.status)}
+                    )
+                    row_errors.append(None)
+                    continue
+
+            if errors == "raise":
+                payload = self.row(i)[column]
+                row_dicts.append({out_col: payload.asd(**kwargs)})
+                row_errors.append(None)
+            else:
+                try:
+                    payload = self.row(i)[column]
+                    res = payload.asd(**kwargs)
+                except Exception as exc:
+                    row_dicts.append(None)
+                    row_errors.append(exc)
+                else:
+                    row_dicts.append({out_col: res})
+                    row_errors.append(None)
+
+        return self._finalize_row_outputs(
+            col_names=[out_col],
+            explicit_kinds={out_col: out_kind},
+            row_dicts=row_dicts,
+            row_errors=row_errors,
+            inplace=inplace,
+            errors=errors,
+        )
 
     # ------------------------------------------------------------------
     # Selection and conversion
@@ -808,41 +1125,80 @@ class SegmentTable:
             bool_mask = bool_mask & (self._meta[col] == val)
 
         indices = [i for i, keep in enumerate(bool_mask.tolist()) if keep]
-        new_meta = cast(pd.DataFrame, self._meta.loc[indices].reset_index(drop=True))
-        new_table = SegmentTable(new_meta)
+        return self._slice_rows(indices, share_cells=True)
 
-        # Carry over non-span schema kinds
-        for col in new_meta.columns:
-            if col != "span":
-                new_table._schema[col] = self._schema.get(col, "meta")
-
-        # Slice payload columns
-        for col, cells in self._payload.items():
-            new_table._payload[col] = [cells[i] for i in indices]
-            new_table._schema[col] = self._schema[col]
-
-        return new_table
-
-    def fetch(self, columns: Optional[list[str]] = None) -> None:
+    def fetch(
+        self,
+        columns: Optional[list[str]] = None,
+        errors: str = "raise",
+    ) -> None:
         """Eagerly load all payload cells in *columns* (default: all).
 
         Parameters
         ----------
         columns:
             List of payload column names to load.  ``None`` loads all.
+        errors:
+            Failure policy across cells: ``"raise"`` (default), ``"record"``,
+            ``"coerce"``, or ``"skip"``.
 
         """
-        cols = columns if columns is not None else list(self._payload.keys())
+        validate_errors_policy(errors)
+        cols = list(columns) if columns is not None else list(self._payload.keys())
+        n = len(self)
+        failed_rows: set[int] = set()
+
         for col in cols:
             if col not in self._payload:
                 continue
-            for cell in self._payload[col]:
-                cell.get()
+            cells = self._payload[col]
+            col_errors: list[Optional[BaseException]] = [None] * n
+            statuses: list[str] = []
+            for i, cell in enumerate(cells):
+                if cell.status in (
+                    CellStatus.VALID,
+                    CellStatus.MISSING,
+                    CellStatus.MASKED,
+                    CellStatus.NOT_APPLICABLE,
+                ):
+                    statuses.append(cell.status.value)
+                    continue
+
+                if errors == "raise":
+                    cell.get()
+                    statuses.append(cell.status.value)
+                else:
+                    try:
+                        cell.get()
+                    except Exception as exc:
+                        failed_rows.add(i)
+                        if errors == "record":
+                            if cell.status != CellStatus.FAILED:
+                                cell.status = CellStatus.FAILED
+                                cell.error = exc
+                            col_errors[i] = exc
+                            statuses.append(CellStatus.FAILED.value)
+                        elif errors == "coerce":
+                            cells[i] = SegmentCell.missing()
+                            statuses.append(CellStatus.MISSING.value)
+                        else:
+                            # skip
+                            statuses.append(CellStatus.FAILED.value)
+                    else:
+                        statuses.append(cell.status.value)
+
+            if errors == "record":
+                self._emit_error_columns(col, statuses, col_errors)
+
+        if errors == "skip" and failed_rows:
+            kept = [i for i in range(n) if i not in failed_rows]
+            self._slice_inplace(kept)
 
     def materialize(
         self,
         columns: Optional[list[str]] = None,
         inplace: bool = True,
+        errors: str = "raise",
     ) -> Optional[SegmentTable]:
         """Materialize lazy payload cells (equivalent to :meth:`fetch` in v0.1).
 
@@ -853,6 +1209,9 @@ class SegmentTable:
         inplace:
             If ``True`` (default), mutate *self*.  If ``False``, return a
             copy with the payload loaded.
+        errors:
+            Failure policy across cells: ``"raise"`` (default), ``"record"``,
+            ``"coerce"``, or ``"skip"``.
 
         Returns
         -------
@@ -860,8 +1219,9 @@ class SegmentTable:
             *None* if ``inplace=True``; new table if ``inplace=False``.
 
         """
+        validate_errors_policy(errors)
         target = self if inplace else self.copy(deep=True)
-        target.fetch(columns=columns)
+        target.fetch(columns=columns, errors=errors)
         if not inplace:
             return target
         return None
@@ -936,6 +1296,9 @@ class SegmentTable:
             new_table._payload[col] = [c.clone(deep=deep) for c in cells]
             new_table._schema[col] = self._schema[col]
 
+        new_table._units = dict(self._units)
+        new_table._provenance = [dict(p) for p in self._provenance]
+        new_table._external_attrs = dict(self._external_attrs)
         return new_table
 
     def clear_cache(self) -> None:
@@ -1169,23 +1532,63 @@ def _is_sequence(obj: Any) -> bool:
 
 def _infer_kind(values: list[Any]) -> str:
     """Infer column kind from a list of values."""
-    try:
-        from gwpy.frequencyseries import FrequencySeries
-        from gwpy.timeseries import TimeSeries, TimeSeriesDict
-    except ImportError:
-        return "object"
+    import numbers
 
-    sample = next((v for v in values if v is not None), None)
+    sample: Any = None
+    for v in values:
+        if isinstance(v, SegmentCell):
+            if v.status == CellStatus.VALID:
+                v = v.get()
+            else:
+                continue
+        if v is None or is_scalar_nan(v):
+            continue
+        sample = v
+        break
+
     if sample is None:
         return "object"
-    if isinstance(sample, TimeSeriesDict):
-        return "timeseriesdict"
-    if isinstance(sample, TimeSeries):
-        return "timeseries"
-    if isinstance(sample, FrequencySeries):
-        return "frequencyseries"
-    import numbers
 
     if isinstance(sample, (str, bool, numbers.Number)):
         return "meta"
+
+    try:
+        from gwpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+        from gwpy.spectrogram import Spectrogram
+        from gwpy.timeseries import TimeSeries, TimeSeriesDict
+
+        if isinstance(sample, TimeSeriesDict):
+            return "timeseriesdict"
+        if isinstance(sample, TimeSeries):
+            return "timeseries"
+        if isinstance(sample, FrequencySeriesDict):
+            return "frequencyseriesdict"
+        if isinstance(sample, FrequencySeries):
+            return "frequencyseries"
+        if isinstance(sample, Spectrogram):
+            return "spectrogram"
+    except ImportError:
+        pass
+
+    try:
+        from gwexpy.types import SeriesMatrix
+
+        if isinstance(sample, SeriesMatrix):
+            return "matrix"
+    except ImportError:
+        pass
+
+    try:
+        from gwpy.types import Array
+
+        if isinstance(sample, Array):
+            return "array"
+    except ImportError:
+        pass
+
+    from astropy import units as u
+
+    if isinstance(sample, (np.ndarray, u.Quantity)):
+        return "array"
+
     return "object"
