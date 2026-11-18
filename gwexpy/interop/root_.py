@@ -48,6 +48,17 @@ def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     return str(name)
 
 
+def _is_regular_spacing(diffs: np.ndarray, *, rtol: float = 1e-5) -> bool:
+    """Return whether adjacent positive intervals are uniform at any scale."""
+    if len(diffs) == 0:
+        return True
+    return bool(
+        np.all(np.isfinite(diffs))
+        and diffs[0] > 0
+        and np.allclose(diffs, diffs[0], rtol=rtol, atol=0.0)
+    )
+
+
 def _root_axis_unit(axis: Any) -> str | None:
     """Extract the bracketed unit from a ROOT axis title, if present."""
     import re
@@ -215,7 +226,7 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
     # We assume regular if possible, or use variable bins.
 
     dx_vals = np.diff(x)
-    is_regular = np.allclose(dx_vals, dx_vals[0])
+    is_regular = _is_regular_spacing(dx_vals)
 
     name = str(series.name or "hist")
     title = name
@@ -273,7 +284,7 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
         if len(arr) < 2:
             return np.array([arr[0] - 0.5, arr[0] + 0.5])
         dx = np.diff(arr)
-        if np.allclose(dx, dx[0]):
+        if _is_regular_spacing(dx):
             step = dx[0]
             return np.linspace(arr[0] - step / 2, arr[-1] + step / 2, len(arr) + 1)
         else:
@@ -515,7 +526,7 @@ def from_root(
             "unit": unit,
             "name": name,
         }
-        if n > 0 and np.allclose(bin_widths, bin_widths[0]):
+        if n > 0 and _is_regular_spacing(bin_widths):
             origin_name = "f0" if is_frequencyseries_cls else "x0"
             interval_name = "df" if is_frequencyseries_cls else "dt"
             series_kwargs[origin_name] = x[0]
@@ -569,7 +580,7 @@ def from_root(
             )
         if n > 1:
             dx_vals = np.diff(x)
-            if np.allclose(dx_vals, dx_vals[0]):
+            if _is_regular_spacing(dx_vals):
                 res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
             else:
                 if is_frequencyseries_cls:

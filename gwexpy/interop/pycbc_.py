@@ -15,6 +15,7 @@ from typing import Any
 import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
+from gwexpy.types.axis import AxisDescriptor
 
 from ._optional import require_optional
 
@@ -178,6 +179,13 @@ def to_pycbc_frequencyseries(
 
     data = np.asarray(fs.value)
     freqs = np.asarray(fs.frequencies.value)
+    if len(freqs) > 1 and (
+        not AxisDescriptor("frequency", fs.frequencies).regular or freqs[1] <= freqs[0]
+    ):
+        raise ValueError(
+            "Cannot convert FrequencySeries with an irregular or non-increasing "
+            "frequency axis to PyCBC FrequencySeries (uniform delta_f required)."
+        )
     df = float(freqs[1] - freqs[0]) if len(freqs) > 1 else 1.0
     epoch_val = getattr(fs, "epoch", None)
     epoch = float(epoch_val.value) if epoch_val is not None else 0.0

@@ -225,6 +225,22 @@ class TestToPycbcFrequencySeries:
 
         assert captured["fs"]["delta_f"] == pytest.approx(2.0)
 
+    @pytest.mark.parametrize(
+        "freqs",
+        [
+            np.geomspace(1.0, 10.0, 16),
+            np.array([0.0, 1e-20, 3e-20, 6e-20]),
+            np.array([3.0, 2.0, 1.0]),
+        ],
+    )
+    def test_irregular_or_non_increasing_frequency_axis_raises(
+        self, pycbc_modules_mock, freqs
+    ):
+        fs = FrequencySeries(np.zeros(len(freqs), dtype=complex), frequencies=freqs)
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular|non-increasing"):
+                to_pycbc_frequencyseries(fs)
+
 
 # ---------------------------------------------------------------------------
 # Missing PyCBC (import error)

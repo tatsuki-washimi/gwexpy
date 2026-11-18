@@ -240,6 +240,22 @@ class TestToLalFrequencySeries:
 
         np.testing.assert_allclose(result.data.data, data)
 
+    @pytest.mark.parametrize(
+        "freqs",
+        [
+            np.geomspace(1.0, 10.0, 16),
+            np.array([0.0, 1e-20, 3e-20, 6e-20]),
+            np.array([3.0, 2.0, 1.0]),
+        ],
+    )
+    def test_irregular_or_non_increasing_frequency_axis_raises(
+        self, lal_utils_mock, freqs
+    ):
+        fs = FrequencySeries(np.zeros(len(freqs)), frequencies=freqs)
+        with patch("gwexpy.interop.lal_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular|non-increasing"):
+                to_lal_frequencyseries(fs)
+
 
 # ---------------------------------------------------------------------------
 # Missing LAL (import error)

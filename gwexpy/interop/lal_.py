@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
+from gwexpy.types.axis import AxisDescriptor
 
 from ._optional import require_optional
 
@@ -212,6 +213,13 @@ def to_lal_frequencyseries(
 
     create_fn = find_typed_function(lal_type, "Create", "FrequencySeries")
     freqs = np.asarray(fs.frequencies.value)
+    if len(freqs) > 1 and (
+        not AxisDescriptor("frequency", fs.frequencies).regular or freqs[1] <= freqs[0]
+    ):
+        raise ValueError(
+            "Cannot convert FrequencySeries with an irregular or non-increasing "
+            "frequency axis to LAL FrequencySeries (uniform deltaF required)."
+        )
     f0 = float(freqs[0]) if len(freqs) > 0 else 0.0
     df = float(freqs[1] - freqs[0]) if len(freqs) > 1 else 1.0
     epoch_val = getattr(fs, "epoch", None)

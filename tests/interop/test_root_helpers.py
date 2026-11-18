@@ -183,3 +183,61 @@ class TestExtractErrorArray:
         ts_error = TimeSeries(np.ones(10) * 0.05, t0=0, dt=0.01)
         result = _extract_error_array(ts_series, ts_error)
         assert result.shape == (10,)
+
+
+class TestRootScaleInvariance:
+    def test_is_regular_spacing_handles_1e_20_scale(self):
+        from gwexpy.interop.root_ import _is_regular_spacing
+
+        assert _is_regular_spacing(np.diff(np.array([1e-20, 2e-20, 3e-20, 4e-20])))
+        assert not _is_regular_spacing(np.diff(np.array([1e-20, 2e-20, 4e-20, 8e-20])))
+        assert not _is_regular_spacing(np.array([0.0, 0.0]))
+        assert not _is_regular_spacing(np.array([1.0, np.nan]))
+
+    def test_root_roundtrip_1e_20_irregular_and_regular_axes(self):
+        ROOT = pytest.importorskip("ROOT")
+        from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.spectrogram import Spectrogram
+
+        ROOT.gROOT.SetBatch(True)
+
+        # Irregular 1e-20 spacing must produce variable-width TH1D, not uniform
+        irr_x = np.array([1e-20, 2e-20, 4e-20, 8e-20])
+        fs_irr = FrequencySeries(np.arange(1.0, 5.0), frequencies=irr_x, name="fs_irr")
+        h_irr = fs_irr.to_th1d()
+        widths = np.array(
+            [h_irr.GetXaxis().GetBinWidth(i + 1) for i in range(h_irr.GetNbinsX())]
+        )
+        assert not np.allclose(widths, widths[0], rtol=1e-5, atol=0.0)
+        fs_back = FrequencySeries.from_root(h_irr)
+        expected_centers = np.array([1.0, 2.25, 4.5, 8.0]) * 1e-20
+        np.testing.assert_allclose(
+            fs_back.frequencies.value, expected_centers, rtol=1e-12, atol=0.0
+        )
+
+        # TGraph preserves exact irregular 1e-20 coordinates without linearization
+        g_irr = fs_irr.to_tgraph()
+        fs_g_back = FrequencySeries.from_root(g_irr)
+        np.testing.assert_allclose(
+            fs_g_back.frequencies.value, irr_x, rtol=1e-12, atol=0.0
+        )
+
+        # Regular 1e-20 spacing stays uniform in TH1D / TH2D
+        reg_x = np.array([1e-20, 2e-20, 3e-20, 4e-20])
+        fs_reg = FrequencySeries(np.arange(1.0, 5.0), frequencies=reg_x, name="fs_reg")
+        h_reg = fs_reg.to_th1d()
+        fs_reg_back = FrequencySeries.from_root(h_reg)
+        assert fs_reg_back.df.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
+
+        # Spectrogram to_th2d with 1e-20 irregular frequency axis
+        sg = Spectrogram(
+            np.ones((3, 4)),
+            times=np.array([0.0, 1e-20, 3e-20]),
+            frequencies=irr_x,
+            name="sg_tiny",
+        )
+        h2 = sg.to_th2d()
+        x_widths = [h2.GetXaxis().GetBinWidth(i + 1) for i in range(3)]
+        y_widths = [h2.GetYaxis().GetBinWidth(i + 1) for i in range(4)]
+        assert x_widths[1] > x_widths[0] * 1.5
+        assert y_widths[2] > y_widths[0] * 1.5
