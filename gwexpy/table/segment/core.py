@@ -10,7 +10,7 @@ instances that support lazy loading and optional caching.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -21,6 +21,9 @@ from gwexpy.table.segment.status import (
     is_scalar_nan,
     validate_errors_policy,
 )
+
+if TYPE_CHECKING:
+    from gwexpy.table.segment.expr import SegmentColumn
 
 __all__ = ["RowProxy", "SegmentTable"]
 
@@ -558,6 +561,20 @@ class SegmentTable(_MissingMixin):
         if i < 0:
             i = n + i
         return RowProxy(self, i)
+
+    def column(self, name: str) -> SegmentColumn:
+        """Return a typed :class:`~gwexpy.table.segment.expr.SegmentColumn` view."""
+        from gwexpy.table.segment.expr import SegmentColumn
+
+        return SegmentColumn(self, name)
+
+    def __getitem__(self, key: str) -> SegmentColumn:
+        if not isinstance(key, str):
+            raise TypeError(
+                f"SegmentTable column access requires a str key, got {type(key).__name__!r}. "
+                "Use table.filter(...) for row selection."
+            )
+        return self.column(key)
 
     # ------------------------------------------------------------------
     # Row-wise processing
