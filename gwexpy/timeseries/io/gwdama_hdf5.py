@@ -197,6 +197,11 @@ def _sample_rate_from_attrs(attrs: Any, *, dataset_name: str) -> float:
                 "expected a positive finite time step in seconds"
             )
         dt_rate = 1.0 / dt
+        if not np.isfinite(dt_rate) or dt_rate <= 0:
+            raise ValueError(
+                f"GWDama dataset {dataset_name!r} has invalid dt={dt!r}; "
+                "reciprocal sampling rate is not finite and positive"
+            )
 
     if sr is None and dt_rate is None:
         raise ValueError(
@@ -215,6 +220,11 @@ def _sample_rate_from_attrs(attrs: Any, *, dataset_name: str) -> float:
         )
 
     if sr is not None:
+        if not np.isfinite(1.0 / sr):
+            raise ValueError(
+                f"GWDama dataset {dataset_name!r} has invalid sample_rate={sr!r}; "
+                "reciprocal time step is not finite"
+            )
         return sr
     assert dt_rate is not None
     return float(dt_rate)
@@ -302,8 +312,13 @@ def _has_gwdama_structure(root: h5py.File | h5py.Group) -> bool:
         return True
 
     stack: list[h5py.Group] = [root]
+    visited: set[int] = set()
     while stack:
         current = stack.pop()
+        object_addr = h5py.h5o.get_info(current.id).addr
+        if object_addr in visited:
+            continue
+        visited.add(object_addr)
         if current is not root and _is_ndscope_group(current):
             continue
         for key in current:
@@ -369,16 +384,22 @@ def _iter_gwdama_datasets(
         grp: h5py.File | h5py.Group,
         prefix: str,
         ancestors: dict[str, dict[str, Any]],
+        ancestor_addrs: frozenset[int],
     ) -> None:
         for key in grp:
             item = grp[key]
             rel_path = f"{prefix}/{key}" if prefix else str(key)
             if isinstance(item, h5py.Group):
+                object_addr = h5py.h5o.get_info(item.id).addr
+                if object_addr in ancestor_addrs:
+                    raise ValueError(
+                        f"GWDama HDF5 group hard-link cycle at {rel_path!r}"
+                    )
                 grp_attrs = _extract_unknown_attrs(item.attrs)
                 next_ancestors = dict(ancestors)
                 if grp_attrs:
                     next_ancestors[rel_path] = grp_attrs
-                _walk(item, rel_path, next_ancestors)
+                _walk(item, rel_path, next_ancestors, ancestor_addrs | {object_addr})
             elif isinstance(item, h5py.Dataset):
                 collected.append((rel_path, item, ancestors))
 
@@ -386,7 +407,8 @@ def _iter_gwdama_datasets(
         _extract_unknown_attrs(scan_root.attrs) if prefix_needed(scan_root) else {}
     )
     initial_ancestors = {"": root_group_attrs} if root_group_attrs else {}
-    _walk(scan_root, "", initial_ancestors)
+    root_addr = h5py.h5o.get_info(scan_root.id).addr
+    _walk(scan_root, "", initial_ancestors, frozenset({root_addr}))
     return collected
 
 
@@ -483,6 +505,7 @@ def read_timeseriesdict_gwdama_hdf5(
 
         entries = _iter_gwdama_datasets(scan_root)
         group_attrs_map: dict[str, dict[str, Any]] = {}
+        root_unknown = _extract_unknown_attrs(f.attrs)
 
         for rel_path, ds, ancestor_attrs in entries:
             if wanted is not None and rel_path not in wanted:
@@ -530,6 +553,7 @@ def read_timeseriesdict_gwdama_hdf5(
             prov_info: dict[str, Any] = {
                 "format": "hdf.gwdama",
                 "attrs": ds_unknown,
+                "gwdama_root_attrs": root_unknown,
             }
             if ancestor_attrs:
                 prov_info["group_attrs"] = {
@@ -541,7 +565,6 @@ def read_timeseriesdict_gwdama_hdf5(
 
             out[rel_path] = ts
 
-        root_unknown = _extract_unknown_attrs(f.attrs)
         dict_prov: dict[str, Any] = {
             "format": "hdf.gwdama",
             "channels": list(out.keys()),
@@ -634,6 +657,16 @@ def write_timeseriesdict_gwdama_hdf5(
         seen_paths.add(rel_path)
         normalized_entries.append((rel_path, ts))
 
+    for rel_path in seen_paths:
+        parts = rel_path.split("/")
+        for depth in range(1, len(parts)):
+            parent_path = "/".join(parts[:depth])
+            if parent_path in seen_paths:
+                raise ValueError(
+                    f"GWDama HDF5 dataset path {parent_path!r} conflicts "
+                    f"with nested path {rel_path!r}"
+                )
+
     group_norm = (
         _normalize_hdf5_subpath(group, allow_empty=True) if group is not None else ""
     )
@@ -668,6 +701,23 @@ def _write_gwdama_to_container(
     overwrite: bool,
 ) -> None:
     """Write normalized GWDama datasets and preserved attrs into *handle*."""
+    if not overwrite:
+        for rel_path, _ in normalized_entries:
+            full_path = f"{group_norm}/{rel_path}" if group_norm else rel_path
+            current: h5py.File | h5py.Group = handle
+            for part in full_path.split("/")[:-1]:
+                if part not in current:
+                    break
+                child = current[part]
+                if not isinstance(child, h5py.Group):
+                    raise OSError(
+                        f"GWDama HDF5 parent for {full_path!r} is not a group"
+                    )
+                current = child
+            else:
+                if full_path.split("/")[-1] in current:
+                    raise OSError(f"GWDama HDF5 dataset {full_path!r} already exists")
+
     root_file = handle.file
     root_file.attrs["gwexpy_schema"] = _SCHEMA_NAME
     root_file.attrs["gwexpy_schema_version"] = _SCHEMA_VERSION
@@ -691,10 +741,9 @@ def _write_gwdama_to_container(
         if isinstance(grp_map, dict):
             for grp_rel, grp_attrs in grp_map.items():
                 if not grp_rel:
-                    if group_norm:
-                        _write_attrs_preserving(
-                            base_group.attrs, grp_attrs, reserved=frozenset()
-                        )
+                    _write_attrs_preserving(
+                        base_group.attrs, grp_attrs, reserved=frozenset()
+                    )
                 else:
                     sub = base_group.require_group(_normalize_hdf5_subpath(grp_rel))
                     _write_attrs_preserving(sub.attrs, grp_attrs, reserved=frozenset())
@@ -727,12 +776,11 @@ def _write_gwdama_to_container(
             if isinstance(ts_grp_attrs, dict):
                 for grp_rel, grp_attrs in ts_grp_attrs.items():
                     if not grp_rel:
-                        if group_norm:
-                            _write_attrs_preserving(
-                                base_group.attrs,
-                                grp_attrs,
-                                reserved=frozenset(),
-                            )
+                        _write_attrs_preserving(
+                            base_group.attrs,
+                            grp_attrs,
+                            reserved=frozenset(),
+                        )
                     else:
                         sub = base_group.require_group(_normalize_hdf5_subpath(grp_rel))
                         _write_attrs_preserving(
@@ -758,8 +806,14 @@ def write_timeseries_gwdama_hdf5(
 ) -> None:
     """Write a single :class:`TimeSeries` in GWDama-compatible HDF5 format."""
     key = ts.name or (str(ts.channel) if ts.channel else "channel_0")
+    tsdict = TimeSeriesDict({key: ts})
+    ts_prov = getattr(ts, "_gwexpy_io", None)
+    if isinstance(ts_prov, dict):
+        root_attrs = ts_prov.get("gwdama_root_attrs")
+        if isinstance(root_attrs, dict):
+            set_provenance(tsdict, {"gwdama_root_attrs": root_attrs})
     write_timeseriesdict_gwdama_hdf5(
-        TimeSeriesDict({key: ts}),
+        tsdict,
         target,
         group=group,
         overwrite=overwrite,

@@ -174,7 +174,7 @@ class TestIdentifyGwdama:
         with p.open("rb") as fh:
             res_fh = family.read(fh)
             assert not fh.closed
-            expected_tell = 0 if family is TimeSeriesMatrix else 6
+            expected_tell = 6 if family is TimeSeries else 0
             assert fh.tell() == expected_tell
 
         with h5py.File(p, "r") as h5f:
@@ -186,6 +186,11 @@ class TestIdentifyGwdama:
                 np.testing.assert_array_equal(res.value, values)
             elif family is TimeSeriesDict:
                 np.testing.assert_array_equal(res["H1:AUTO"].value, values)
+                assert res._gwexpy_io["gwdama_root_attrs"]["dama_name"] == "owned"
+                assert (
+                    res["H1:AUTO"]._gwexpy_io["gwdama_root_attrs"]["dama_name"]
+                    == "owned"
+                )
             else:
                 np.testing.assert_array_equal(res.value[0, 0], values)
 
@@ -294,6 +299,8 @@ class TestTimingRules:
             {"sample_rate": True, "t0": 100.0},
             {"sample_rate": "bad", "t0": 100.0},
             {"dt": -0.5, "t0": 100.0},
+            {"dt": 5e-324, "t0": 100.0},
+            {"sample_rate": 5e-324, "t0": 100.0},
             {"sample_rate": 4.0, "dt": 0.5, "t0": 100.0},
         ],
     )
@@ -384,7 +391,10 @@ class TestTimingRules:
 # ---------------------------------------------------------------------------
 
 
-def test_unknown_attrs_preserved_across_dict_roundtrip(tmp_path: Path) -> None:
+@pytest.mark.parametrize("public_format", ("hdf.gwdama", None))
+def test_unknown_attrs_preserved_across_dict_roundtrip(
+    tmp_path: Path, public_format: str | None
+) -> None:
     src = tmp_path / "external.h5"
     dst = tmp_path / "roundtrip.h5"
     _write_external_gwdama(
@@ -407,8 +417,8 @@ def test_unknown_attrs_preserved_across_dict_roundtrip(tmp_path: Path) -> None:
         group_attrs={"H1": {"observatory": "Hanford", "lat": 46.45}},
     )
 
-    tsd = read_timeseriesdict_gwdama_hdf5(src)
-    write_timeseriesdict_gwdama_hdf5(tsd, dst)
+    tsd = TimeSeriesDict.read(src, format=public_format)
+    tsd.write(dst, format="hdf.gwdama")
 
     with h5py.File(dst, "r") as f:
         assert f.attrs["gwexpy_schema"] == "gwexpy.hdf.gwdama"
@@ -443,6 +453,7 @@ def test_unknown_attrs_preserved_across_single_timeseries_roundtrip(
                 },
             )
         },
+        root_attrs={"dama_name": "single_test", "operator": "Alice"},
         group_attrs={"grp": {"group_tag": "g1"}},
     )
 
@@ -450,8 +461,45 @@ def test_unknown_attrs_preserved_across_single_timeseries_roundtrip(
     ts.write(dst, format="hdf.gwdama")
 
     with h5py.File(dst, "r") as f:
+        assert f.attrs["dama_name"] == "single_test"
+        assert f.attrs["operator"] == "Alice"
         assert f["grp"].attrs["group_tag"] == "g1"
         assert f["grp/ch0"].attrs["custom_note"] == "kept"
+
+
+def test_selected_group_attrs_survive_standalone_roundtrip(tmp_path: Path) -> None:
+    src = tmp_path / "selected_src.h5"
+    dst = tmp_path / "selected_dst.h5"
+    _write_external_gwdama(
+        src,
+        datasets={
+            "run1/H1:STRAIN": (
+                np.arange(4.0),
+                {"sample_rate": 2.0, "t0": 50.0, "unit": "m"},
+            )
+        },
+        group_attrs={"run1": {"scientist": "Alice"}},
+    )
+
+    selected = TimeSeriesDict.read(src, format="hdf.gwdama", group="run1")
+    selected.write(dst, format="hdf.gwdama")
+    with h5py.File(dst, "r") as f:
+        assert f.attrs["scientist"] == "Alice"
+        assert "H1:STRAIN" in f
+
+
+def test_hard_link_group_cycle_raises_explicit_error(tmp_path: Path) -> None:
+    path = tmp_path / "cycle.h5"
+    with h5py.File(path, "w") as f:
+        group = f.create_group("run1")
+        group["again"] = group
+        ds = group.create_dataset("H1:STRAIN", data=np.arange(4.0))
+        ds.attrs["sample_rate"] = 2.0
+        ds.attrs["t0"] = 50.0
+
+    assert identify_gwdama_hdf5(TimeSeriesDict, path, None)
+    with pytest.raises(ValueError, match="hard-link cycle"):
+        TimeSeriesDict.read(path, format="hdf.gwdama")
 
 
 def test_root_schema_version_validation(tmp_path: Path) -> None:
@@ -524,6 +572,30 @@ def test_writer_respects_overwrite_and_group(tmp_path: Path) -> None:
     tsd.write(p, format="hdf.gwdama", group="run2", overwrite=True)
     back = TimeSeriesDict.read(p, format="hdf.gwdama", group="run2")
     assert list(back.keys()) == ["A"]
+
+
+def test_open_file_collision_leaves_schema_and_attrs_unchanged(tmp_path: Path) -> None:
+    path = tmp_path / "existing.h5"
+    tsd = TimeSeriesDict({"run1/A": TimeSeries([1.0, 2.0], sample_rate=1.0, t0=10.0)})
+    with h5py.File(path, "w") as f:
+        f.attrs["owner"] = "original"
+        f.create_group("run1").create_dataset("A", data=[3.0])
+        with pytest.raises(OSError, match="already exists"):
+            write_timeseriesdict_gwdama_hdf5(tsd, f, overwrite=False)
+        assert dict(f.attrs) == {"owner": "original"}
+        np.testing.assert_array_equal(f["run1/A"][()], [3.0])
+
+
+def test_nested_key_conflict_is_rejected_before_opening_target(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "conflict.h5"
+    ts = TimeSeries([1.0, 2.0], sample_rate=1.0, t0=10.0)
+    tsd = TimeSeriesDict({"A": ts, "A/B": ts})
+
+    with pytest.raises(ValueError, match="conflicts with nested path"):
+        write_timeseriesdict_gwdama_hdf5(tsd, path)
+    assert not path.exists()
 
 
 def test_gwdama_package_crosscheck(tmp_path: Path) -> None:
