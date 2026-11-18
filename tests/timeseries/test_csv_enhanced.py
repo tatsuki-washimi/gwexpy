@@ -215,7 +215,8 @@ class TestReadCSVWithConfig:
             columns=[
                 ColumnSpec(name="time", column_index=0, role="time"),
                 ColumnSpec(name="acc_x", column_index=1, unit="m/s^2", role="data"),
-            ]
+            ],
+            time_scale="gps",
         )
         tsd = read_timeseriesdict_csv(p, config=cfg)
         assert "acc_x" in tsd
@@ -227,7 +228,8 @@ class TestReadCSVWithConfig:
             columns=[
                 ColumnSpec(name="time", column_index=0, role="time"),
                 ColumnSpec(name="pressure", column_index=1, unit="Pa", role="data"),
-            ]
+            ],
+            time_scale="gps",
         )
         tsd = read_timeseriesdict_csv(p, config=cfg)
         assert tsd["pressure"].unit == u.Pa
@@ -238,7 +240,8 @@ class TestReadCSVWithConfig:
             columns=[
                 ColumnSpec(name="time", column_index=0, role="time"),
                 ColumnSpec(name="val", column_index=1, scale_factor=0.001, role="data"),
-            ]
+            ],
+            time_scale="gps",
         )
         tsd = read_timeseriesdict_csv(p, config=cfg)
         np.testing.assert_allclose(tsd["val"].value, [1.0, 2.0])
@@ -250,7 +253,8 @@ class TestReadCSVWithConfig:
                 ColumnSpec(name="time", column_index=0, role="time"),
                 ColumnSpec(name="ch_a", column_index=1, role="data"),
                 ColumnSpec(name="ch_b", column_index=2, role="data"),
-            ]
+            ],
+            time_scale="gps",
         )
         tsd = read_timeseriesdict_csv(p, config=cfg, channels=["ch_a"])
         assert "ch_a" in tsd
@@ -263,7 +267,8 @@ class TestReadCSVWithConfig:
                 ColumnSpec(name="time", column_index=0, role="time"),
                 ColumnSpec(name="ignored", column_index=1, role="skip"),
                 ColumnSpec(name="val", column_index=2, role="data"),
-            ]
+            ],
+            time_scale="gps",
         )
         tsd = read_timeseriesdict_csv(p, config=cfg)
         assert "val" in tsd
@@ -272,10 +277,11 @@ class TestReadCSVWithConfig:
     def test_config_from_dict(self, tmp_path):
         p = write_csv(tmp_path, "0.0,42.0\n1.0,43.0\n")
         d = {
+            "format": {"time_scale": "gps"},
             "columns": [
                 {"name": "time", "index": 0, "role": "time"},
                 {"name": "temp", "index": 1, "unit": "K", "role": "data"},
-            ]
+            ],
         }
         tsd = read_timeseriesdict_csv(p, config=d)
         assert "temp" in tsd
@@ -284,6 +290,8 @@ class TestReadCSVWithConfig:
         import textwrap
 
         yaml_content = textwrap.dedent("""\
+            format:
+              time_scale: "gps"
             columns:
               - name: time
                 index: 0
@@ -309,6 +317,7 @@ class TestReadCSVWithConfig:
             ],
             sample_rate=10.0,
             resample_method="interpolate",
+            time_scale="gps",
         )
         with pytest.raises(ValueError, match="CSV timestamp"):
             read_timeseriesdict_csv(p, config=cfg)
@@ -401,3 +410,155 @@ class TestReadCSVTimestampReconstruction:
         )
         with pytest.raises(ValueError, match="timezone is required"):
             read_timeseriesdict_csv(p, config=cfg)
+
+
+class TestCSVNumericTimeScaleAndUnit:
+    """Tests for #634: explicit time_scale= and time_unit= on numeric CSV."""
+
+    def _numeric_cfg(self, **fmt_kwargs) -> CSVFormatConfig:
+        return CSVFormatConfig(
+            columns=[
+                ColumnSpec(name="time", column_index=0, role="time"),
+                ColumnSpec(name="val", column_index=1, role="data"),
+            ],
+            **fmt_kwargs,
+        )
+
+    def test_configured_numeric_time_missing_scale_fails_closed(self, tmp_path):
+        p = write_csv(tmp_path, "0.0,1.0\n1.0,2.0\n")
+        cfg = self._numeric_cfg()
+        with pytest.raises(ValueError, match="time_scale is required"):
+            read_timeseriesdict_csv(p, config=cfg)
+
+    def test_autodetect_missing_time_scale_warns_and_assumes_gps(self, tmp_path):
+        p = write_csv(tmp_path, "1400000000.0,1.0\n1400000001.0,2.0\n")
+        with pytest.warns(DeprecationWarning, match="time_scale="):
+            tsd = read_timeseriesdict_csv(p)
+        assert float(tsd["ch1"].t0.value) == pytest.approx(1400000000.0)
+        assert tsd._gwexpy_io["time_scale"] == "gps"
+        assert tsd._gwexpy_io["epoch_source"] == "csv_gps_assumed"
+
+    def test_gps_scale_with_millisecond_time_unit(self, tmp_path):
+        p = write_csv(
+            tmp_path,
+            "1400000000000,1.0\n1400000000100,2.0\n1400000000200,3.0\n",
+        )
+        cfg = self._numeric_cfg(time_scale="gps", time_unit="ms")
+        tsd = read_timeseriesdict_csv(p, config=cfg)
+        ts = tsd["val"]
+        assert float(ts.t0.value) == pytest.approx(1400000000.0)
+        assert float(ts.dt.value) == pytest.approx(0.1)
+        assert ts.time_reference == "absolute"
+        assert tsd._gwexpy_io["time_scale"] == "gps"
+        assert tsd._gwexpy_io["time_unit"] == "ms"
+        assert tsd._gwexpy_io["epoch_source"] == "csv_gps"
+
+    def test_unix_scale_converts_with_leap_seconds_and_unit(self, tmp_path):
+        from astropy.time import Time
+
+        # 2023-11-14T22:13:20 UTC = Unix 1700000000.0 -> GPS = 1384035218.0 (18 leap s)
+        # 2016-12-30T00:00:00 UTC = Unix 1483056000.0 -> 17 leap s
+        p_2023 = write_csv(
+            tmp_path,
+            "1700000000000,1.0\n1700000001000,2.0\n",
+            name="u2023.csv",
+        )
+        tsd_2023 = read_timeseriesdict_csv(
+            p_2023, config=self._numeric_cfg(time_scale="unix", time_unit="ms")
+        )
+        expected_2023 = float(Time(1700000000, format="unix").to_value("gps"))
+        assert float(tsd_2023["val"].t0.value) == pytest.approx(expected_2023)
+        assert float(tsd_2023["val"].dt.value) == pytest.approx(1.0)
+        assert tsd_2023._gwexpy_io["time_scale"] == "unix"
+        assert tsd_2023._gwexpy_io["time_unit"] == "ms"
+        assert tsd_2023._gwexpy_io["epoch_source"] == "csv_unix"
+
+        p_2016 = write_csv(
+            tmp_path,
+            "1483056000.0,1.0\n1483056001.0,2.0\n",
+            name="u2016.csv",
+        )
+        tsd_2016 = read_timeseriesdict_csv(
+            p_2016, config=self._numeric_cfg(time_scale="unix")
+        )
+        expected_2016 = float(Time(1483056000, format="unix").to_value("gps"))
+        assert float(tsd_2016["val"].t0.value) == pytest.approx(expected_2016)
+        assert (expected_2023 - 1700000000.0) - (
+            expected_2016 - 1483056000.0
+        ) == pytest.approx(1.0)
+
+    def test_relative_scale_with_and_without_epoch(self, tmp_path):
+        import datetime as dt
+
+        p = write_csv(tmp_path, "0,1.0\n100,2.0\n200,3.0\n")
+
+        # Without epoch -> Plan I relative TimeSeries
+        tsd_rel = read_timeseriesdict_csv(
+            p, config=self._numeric_cfg(time_scale="relative", time_unit="ms")
+        )
+        assert tsd_rel["val"].time_reference == "relative"
+        assert float(tsd_rel["val"].t0.value) == pytest.approx(0.0)
+        assert float(tsd_rel["val"].dt.value) == pytest.approx(0.1)
+        assert tsd_rel._gwexpy_io["time_scale"] == "relative"
+        assert tsd_rel._gwexpy_io["time_unit"] == "ms"
+        assert tsd_rel._gwexpy_io["epoch_source"] == "relative"
+
+        # With numeric epoch -> absolute GPS TimeSeries
+        tsd_abs = read_timeseriesdict_csv(
+            p,
+            config=self._numeric_cfg(time_scale="relative", time_unit="ms"),
+            epoch=1400000000.0,
+        )
+        assert tsd_abs["val"].time_reference == "absolute"
+        assert float(tsd_abs["val"].t0.value) == pytest.approx(1400000000.0)
+        assert float(tsd_abs["val"].dt.value) == pytest.approx(0.1)
+        assert tsd_abs._gwexpy_io["epoch_source"] == "user"
+
+        # With naive datetime epoch + timezone
+        tsd_dt = read_timeseriesdict_csv(
+            p,
+            config=self._numeric_cfg(time_scale="relative", time_unit="ms"),
+            epoch=dt.datetime(2024, 1, 1, 9, 0, 0),
+            timezone="Asia/Tokyo",
+        )
+        assert tsd_dt["val"].time_reference == "absolute"
+        assert float(tsd_dt["val"].t0.value) == pytest.approx(1388102418.0)
+
+    def test_kwargs_override_config_and_public_dict_read(self, tmp_path):
+        from gwexpy.timeseries import TimeSeriesDict
+
+        p = write_csv(tmp_path, "1700000000,1.0\n1700000001,2.0\n")
+        cfg = self._numeric_cfg(time_scale="gps", time_unit="ms")
+        tsd = TimeSeriesDict.read(
+            p,
+            format="csv",
+            config=cfg,
+            time_scale="unix",
+            time_unit="s",
+        )
+        assert tsd._gwexpy_io["time_scale"] == "unix"
+        assert tsd._gwexpy_io["time_unit"] == "s"
+        assert float(tsd["val"].dt.value) == pytest.approx(1.0)
+
+    def test_invalid_scale_unit_and_epoch_combinations_fail_closed(self, tmp_path):
+        p = write_csv(tmp_path, "0,1.0\n1,2.0\n")
+        with pytest.raises(ValueError, match="Unsupported CSV time_scale"):
+            read_timeseriesdict_csv(p, time_scale="tai")
+        with pytest.raises(ValueError, match="CSV time_unit"):
+            read_timeseriesdict_csv(p, time_scale="gps", time_unit="m")
+        with pytest.raises(ValueError, match="epoch cannot be combined"):
+            read_timeseriesdict_csv(p, time_scale="gps", epoch=100.0)
+
+    def test_multi_source_forwards_time_scale_and_unit(self, tmp_path):
+        p1 = write_csv(tmp_path, "0,1.0\n100,2.0\n", name="p1.csv")
+        p2 = write_csv(tmp_path, "200,3.0\n300,4.0\n", name="p2.csv")
+        cfg = self._numeric_cfg(time_scale="relative", time_unit="ms")
+        tsd = read_timeseriesdict_csv([p1, p2], config=cfg, epoch=1000.0)
+        ts = tsd["val"]
+        assert len(ts) == 4
+        assert float(ts.t0.value) == pytest.approx(1000.0)
+        assert float(ts.dt.value) == pytest.approx(0.1)
+        assert tsd._gwexpy_io["n_sources"] == 2
+        assert tsd._gwexpy_io["time_scale"] == "relative"
+        assert tsd._gwexpy_io["time_unit"] == "ms"
+        assert tsd._gwexpy_io["epoch_source"] == "user"

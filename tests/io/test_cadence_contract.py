@@ -402,7 +402,7 @@ def test_csv_rejects_row_missing_configured_column_with_physical_line_number(
     path = tmp_path / "configured-short-row.csv"
     path.write_text("# generated\ntime,value,required\n0,1\n")
     config = {
-        "format": {"skip_rows": 2},
+        "format": {"skip_rows": 2, "time_scale": "gps"},
         "columns": [
             {"name": "time", "index": 0, "role": "time"},
             {"name": "required", "index": 2, "role": "data"},
@@ -656,11 +656,12 @@ def test_csv_resample_budget_counts_only_requested_channels(tmp_path, monkeypatc
     path = tmp_path / "selected-channel.csv"
     path.write_text("0,0,10\n1,1,11\n2,2,12\n")
     config = {
+        "format": {"time_scale": "gps"},
         "columns": [
             {"name": "time", "index": 0, "role": "time"},
             {"name": "a", "index": 1, "role": "data"},
             {"name": "b", "index": 2, "role": "data"},
-        ]
+        ],
     }
     monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 4)
 

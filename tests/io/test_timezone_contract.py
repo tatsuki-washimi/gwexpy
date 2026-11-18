@@ -622,7 +622,9 @@ def test_csv_numeric_timezone_warning_once_across_multi_source(tmp_path) -> None
     _write_numeric_csv(second, 2.0)
 
     with pytest.warns(UserWarning, match="timezone.*ignored.*CSV") as caught:
-        result = read_timeseriesdict_csv([first, second], timezone="Asia/Tokyo")
+        result = read_timeseriesdict_csv(
+            [first, second], timezone="Asia/Tokyo", time_scale="gps"
+        )
 
     assert len(caught) == 1
     assert len(result["ch1"]) == 4
@@ -806,6 +808,7 @@ def test_forged_csv_warning_marker_cannot_suppress_warning(tmp_path) -> None:
         read_timeseriesdict_csv(
             path,
             timezone="UTC",
+            time_scale="gps",
             _timezone_warning_marker=[True],
         )
 

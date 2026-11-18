@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 
 @dataclass(frozen=True)
@@ -70,6 +70,15 @@ class CSVFormatConfig:
         ``"interpolate"`` or ``"asfreq"``. ``None`` = no resampling.
     comment_char : str
         Character(s) marking comment lines. Default ``"#"``.
+    time_scale : {'gps', 'unix', 'relative'} or None
+        Time scale for numeric time columns. Required when a column has
+        ``role="time"``.
+    time_unit : str
+        Unit of numeric timestamps (convertible to seconds, e.g. ``"s"``,
+        ``"ms"``, ``"us"``). Default ``"s"``.
+    epoch : Any
+        Optional GPS/datetime reference epoch for ``time_scale="relative"``
+        or index-only CSVs.
 
     """
 
@@ -82,6 +91,9 @@ class CSVFormatConfig:
     sample_rate: float | None = None
     resample_method: str | None = None
     comment_char: str = "#"
+    time_scale: Literal["gps", "unix", "relative"] | None = None
+    time_unit: str = "s"
+    epoch: Any = None
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> CSVFormatConfig:
@@ -121,6 +133,7 @@ class CSVFormatConfig:
             for c in cols_raw
         ]
 
+        raw_time_unit = fmt.get("time_unit", "s")
         return cls(
             columns=columns,
             delimiter=fmt.get("delimiter", ","),
@@ -131,4 +144,7 @@ class CSVFormatConfig:
             sample_rate=fmt.get("sample_rate"),
             resample_method=fmt.get("resample_method"),
             comment_char=fmt.get("comment_char", "#"),
+            time_scale=fmt.get("time_scale"),
+            time_unit="s" if raw_time_unit is None else raw_time_unit,
+            epoch=fmt.get("epoch"),
         )

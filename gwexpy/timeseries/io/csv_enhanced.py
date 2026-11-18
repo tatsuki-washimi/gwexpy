@@ -18,7 +18,7 @@ from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import partial
 from itertools import chain, islice
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
@@ -28,13 +28,22 @@ from gwpy.io.registry import identify_factory
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
     _consume_warning_state,
+    _is_numeric_epoch,
     _localize_naive_datetime,
     _make_warning_state,
     _parse_timezone_for_format,
     _validate_float_time_axis,
     _validate_regular_timestamps,
+    ensure_datetime,
     filter_by_channels,
+    set_provenance,
+)
+from gwexpy.time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    set_time_reference,
 )
 
 from .csv_config import CSVFormatConfig
@@ -103,6 +112,88 @@ def _parse_decimal_time_column(
             raise ValueError(f"CSV line {line_number}: timestamp is non-finite")
         times.append(value)
     return times
+
+
+_TIME_SCALES = frozenset({"gps", "unix", "relative"})
+
+
+def _validate_time_scale(value: Any) -> Literal["gps", "unix", "relative"] | None:
+    """Validate optional CSV ``time_scale``."""
+    if value is None:
+        return None
+    if not isinstance(value, str) or value not in _TIME_SCALES:
+        raise ValueError(
+            f"Unsupported CSV time_scale={value!r}; "
+            "expected 'gps', 'unix', or 'relative'."
+        )
+    return cast(Literal["gps", "unix", "relative"], value)
+
+
+def _resolve_time_unit_scale(time_unit: Any) -> tuple[str, Decimal]:
+    """Return canonical unit string and exact Decimal conversion factor to seconds."""
+    if time_unit is None:
+        return "s", Decimal("1")
+    try:
+        parsed_unit = u.Unit(time_unit)
+        factor = parsed_unit.to(u.s)
+    except (TypeError, ValueError, u.UnitConversionError) as exc:
+        raise ValueError(
+            f"CSV time_unit={time_unit!r} must be a valid time unit convertible to 's'"
+        ) from exc
+    return str(parsed_unit), Decimal(str(factor))
+
+
+def _convert_unix_decimals_to_gps(unix_times: list[Decimal]) -> list[Decimal]:
+    """Convert Unix timestamps in Decimal seconds to GPS Decimal seconds."""
+    if not unix_times:
+        return []
+    wholes = [
+        int(value.to_integral_value(rounding=ROUND_FLOOR)) for value in unix_times
+    ]
+    unique_wholes = sorted(set(wholes))
+    gps_wholes = np.atleast_1d(
+        Time(
+            np.asarray(unique_wholes, dtype=np.int64),
+            np.zeros(len(unique_wholes), dtype=np.int64),
+            format="unix",
+        ).to_value("gps", "decimal")
+    )
+    gps_by_whole = {
+        whole: Decimal(gps_val).quantize(_GPS_NANOSECOND, rounding=ROUND_HALF_EVEN)
+        for whole, gps_val in zip(unique_wholes, gps_wholes, strict=True)
+    }
+    return [
+        gps_by_whole[whole] + (unix_val - whole)
+        for unix_val, whole in zip(unix_times, wholes, strict=True)
+    ]
+
+
+def _epoch_needs_timezone(epoch: Any) -> bool:
+    """Return True if *epoch* is a naive datetime or naive date-string."""
+    if _is_numeric_epoch(epoch):
+        return False
+    if isinstance(epoch, _dt.datetime):
+        return epoch.tzinfo is None
+    if isinstance(epoch, str):
+        try:
+            parsed = _dt.datetime.fromisoformat(epoch.strip().replace("Z", "+00:00"))
+        except ValueError:
+            return True
+        return parsed.tzinfo is None
+    return False
+
+
+def _resolve_epoch_to_gps_decimal(epoch: Any, tz: _dt.tzinfo | None) -> Decimal:
+    """Convert an explicit ``epoch=`` argument to GPS Decimal seconds."""
+    if _is_numeric_epoch(epoch):
+        return Decimal(str(_coerce_numeric_epoch(epoch)))
+    dt_val = ensure_datetime(epoch, tzinfo=tz)
+    utc_val = dt_val.astimezone(_dt.UTC)
+    return (
+        Time(utc_val)
+        .to_value("gps", "decimal")
+        .quantize(_GPS_NANOSECOND, rounding=ROUND_HALF_EVEN)
+    )
 
 
 def _validate_sample_rate(value: Any, *, role: str) -> float | None:
@@ -879,6 +970,9 @@ def read_timeseriesdict_csv(
     timezone: str | None = None,
     resample: float | None = None,
     resample_method: str = "interpolate",
+    time_scale: Literal["gps", "unix", "relative"] | None = None,
+    time_unit: str | None = None,
+    epoch: Any = None,
     **kwargs: Any,
 ) -> Any:
     """Read CSV/ASCII data with flexible column mapping.
@@ -908,6 +1002,15 @@ def read_timeseriesdict_csv(
         separate target cadence applied only after source-grid validation.
     resample_method : str
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
+    time_scale : {'gps', 'unix', 'relative'}, optional
+        Explicit time scale for numeric time columns. Required when a
+        configured column has ``role="time"``.
+    time_unit : str, optional
+        Unit of numeric timestamps (convertible to seconds, default ``"s"``).
+        Overrides ``config.time_unit`` when provided.
+    epoch : float, datetime, or str, optional
+        Reference epoch for ``time_scale="relative"`` or index-only CSVs.
+        Overrides ``config.epoch`` when provided.
     **kwargs
         Additional keyword arguments reserved for compatibility with I/O dispatch.
         ``start`` and ``end`` are honoured by cropping the result rather than
@@ -951,6 +1054,9 @@ def read_timeseriesdict_csv(
             timezone=timezone,
             resample=resample,
             resample_method=resample_method,
+            time_scale=time_scale,
+            time_unit=time_unit,
+            epoch=epoch,
             **kwargs,
         )
         if top_level_marker[0]:
@@ -973,8 +1079,15 @@ def read_timeseriesdict_csv(
     else:
         raise TypeError(f"Unsupported config type: {type(config)}")
 
-    # Override timezone/resample from function args
+    # Override timezone/resample/time-scale from function args
     tz_str = timezone if timezone is not None else cfg.timezone
+    eff_time_scale = _validate_time_scale(
+        time_scale if time_scale is not None else cfg.time_scale
+    )
+    eff_time_unit_name, time_unit_factor = _resolve_time_unit_scale(
+        time_unit if time_unit is not None else cfg.time_unit
+    )
+    eff_epoch = epoch if epoch is not None else cfg.epoch
     source_rate = _validate_source_sample_rate(cfg.sample_rate)
     target_rate = _validate_target_sample_rate(resample)
     resample_meth = resample_method or cfg.resample_method or "interpolate"
@@ -984,8 +1097,25 @@ def read_timeseriesdict_csv(
         # Validate before any source-dependent early return. Route-specific
         # warning/localization still happens only after the route is known.
         _parse_timezone_for_format("csv", tz_str)
-    if tz_str is None and any(col.role == "time_component" for col in cfg.columns):
-        raise ValueError("timezone is required when using time_component columns")
+    has_time_component = any(col.role == "time_component" for col in cfg.columns)
+    has_numeric_time = any(col.role == "time" for col in cfg.columns)
+    if has_time_component:
+        if tz_str is None:
+            raise ValueError("timezone is required when using time_component columns")
+        if eff_time_scale is not None:
+            raise ValueError(
+                "time_scale cannot be used with time_component CSV columns"
+            )
+    if has_numeric_time and eff_time_scale is None:
+        raise ValueError(
+            "time_scale is required for configured numeric CSV time columns "
+            "('gps', 'unix', or 'relative')"
+        )
+    if eff_time_scale in ("gps", "unix") and eff_epoch is not None:
+        raise ValueError(
+            f"epoch cannot be combined with time_scale={eff_time_scale!r}; "
+            "use time_scale='relative'"
+        )
 
     metadata, raw, selected_values, raw_tokens, row_line_numbers, width = (
         _read_numeric_rows(
@@ -1003,6 +1133,98 @@ def read_timeseriesdict_csv(
     # --- Column mapping ---
     exact_time_origin = Decimal("0")
     has_serialized_time_axis = False
+    time_reference = TIME_REFERENCE_ABSOLUTE
+    epoch_source = "csv_gps"
+    provenance_time_scale: str | None = eff_time_scale
+
+    def _apply_numeric_time_column(
+        raw_time_tokens: list[str],
+        scale: Literal["gps", "unix", "relative"] | None,
+    ) -> tuple[Decimal, np.ndarray, float, str, str, str]:
+        nonlocal tz_str
+        if scale is None:
+            warnings.warn(
+                "Reading numeric CSV without explicit time_scale= is deprecated "
+                "and assumes time_scale='gps'. Pass time_scale='gps'|'unix'|"
+                "'relative' explicitly (#634).",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            resolved: Literal["gps", "unix", "relative"] = "gps"
+            src_label = "csv_gps_assumed"
+        else:
+            resolved = scale
+            src_label = f"csv_{scale}"
+
+        parsed_times = _parse_decimal_time_column(raw_time_tokens, row_line_numbers)
+        if time_unit_factor != Decimal("1"):
+            parsed_times = [val * time_unit_factor for val in parsed_times]
+
+        validated_dt = _validate_regular_timestamps(
+            parsed_times,
+            source="CSV",
+            expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+            if source_rate is not None
+            else None,
+        )
+
+        if resolved == "unix":
+            if tz_str is not None:
+                _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
+            gps_decimal_times = _convert_unix_decimals_to_gps(parsed_times)
+            origin = gps_decimal_times[0]
+            rel = np.asarray(
+                [float(v - origin) for v in gps_decimal_times], dtype=float
+            )
+            return (
+                origin,
+                rel,
+                validated_dt,
+                TIME_REFERENCE_ABSOLUTE,
+                src_label,
+                resolved,
+            )
+
+        if resolved == "gps":
+            if tz_str is not None:
+                _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
+            origin = parsed_times[0]
+            rel = np.asarray([float(v - origin) for v in parsed_times], dtype=float)
+            return (
+                origin,
+                rel,
+                validated_dt,
+                TIME_REFERENCE_ABSOLUTE,
+                src_label,
+                resolved,
+            )
+
+        # resolved == "relative"
+        rel = np.asarray(
+            [float(v - parsed_times[0]) for v in parsed_times], dtype=float
+        )
+        if eff_epoch is not None:
+            if tz_str is not None and not _epoch_needs_timezone(eff_epoch):
+                _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
+                tz_obj = None
+            elif tz_str is not None:
+                tz_obj = _parse_timezone_for_format("csv", tz_str)
+            else:
+                tz_obj = None
+            gps_epoch = _resolve_epoch_to_gps_decimal(eff_epoch, tz_obj)
+            origin = gps_epoch + parsed_times[0]
+            return origin, rel, validated_dt, TIME_REFERENCE_ABSOLUTE, "user", resolved
+        if tz_str is not None:
+            _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
+        return (
+            parsed_times[0],
+            rel,
+            validated_dt,
+            TIME_REFERENCE_RELATIVE,
+            "relative",
+            resolved,
+        )
+
     if cfg.columns:
         # Use explicit config
         time_columns: dict[str, int] = {}
@@ -1040,35 +1262,40 @@ def read_timeseriesdict_csv(
                 if source_rate is not None
                 else None,
             )
+            epoch_source = "time_component"
+            time_reference = TIME_REFERENCE_ABSOLUTE
+            provenance_time_scale = None
         elif time_col_index is not None:
-            if tz_str is not None:
-                _validate_and_warn_timezone_ignored(
-                    tz_str,
-                    timezone_warning_marker,
-                )
-            exact_times = _parse_decimal_time_column(
-                raw_tokens[time_col_index],
-                row_line_numbers,
-            )
-            source_dt = _validate_regular_timestamps(
-                exact_times,
-                source="CSV",
-                expected_dt=(Decimal("1") / Decimal(str(source_rate)))
-                if source_rate is not None
-                else None,
-            )
-            exact_time_origin = exact_times[0]
+            (
+                exact_time_origin,
+                gps_times,
+                source_dt,
+                time_reference,
+                epoch_source,
+                provenance_time_scale,
+            ) = _apply_numeric_time_column(raw_tokens[time_col_index], eff_time_scale)
             has_serialized_time_axis = True
-            gps_times = np.asarray(
-                [float(value - exact_times[0]) for value in exact_times], dtype=float
-            )
         else:
             # No time info — use sample indices
-            if tz_str is not None:
-                _validate_and_warn_timezone_ignored(
-                    tz_str,
-                    timezone_warning_marker,
-                )
+            if eff_epoch is not None:
+                if tz_str is not None and not _epoch_needs_timezone(eff_epoch):
+                    _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
+                    tz_obj = None
+                elif tz_str is not None:
+                    tz_obj = _parse_timezone_for_format("csv", tz_str)
+                else:
+                    tz_obj = None
+                exact_time_origin = _resolve_epoch_to_gps_decimal(eff_epoch, tz_obj)
+                epoch_source = "user"
+                time_reference = TIME_REFERENCE_ABSOLUTE
+            else:
+                if tz_str is not None:
+                    _validate_and_warn_timezone_ignored(
+                        tz_str,
+                        timezone_warning_marker,
+                    )
+                epoch_source = "relative"
+                time_reference = TIME_REFERENCE_RELATIVE
             if source_rate:
                 source_dt = 1.0 / source_rate
                 gps_times = np.arange(row_count) / source_rate
@@ -1076,24 +1303,15 @@ def read_timeseriesdict_csv(
                 gps_times = np.arange(row_count, dtype=float)
     else:
         # Auto-detect: first column = time, rest = data
-        if tz_str is not None:
-            _validate_and_warn_timezone_ignored(
-                tz_str,
-                timezone_warning_marker,
-            )
-        exact_times = _parse_decimal_time_column(raw_tokens[0], row_line_numbers)
-        source_dt = _validate_regular_timestamps(
-            exact_times,
-            source="CSV",
-            expected_dt=(Decimal("1") / Decimal(str(source_rate)))
-            if source_rate is not None
-            else None,
-        )
-        exact_time_origin = exact_times[0]
+        (
+            exact_time_origin,
+            gps_times,
+            source_dt,
+            time_reference,
+            epoch_source,
+            provenance_time_scale,
+        ) = _apply_numeric_time_column(raw_tokens[0], eff_time_scale)
         has_serialized_time_axis = True
-        gps_times = np.asarray(
-            [float(value - exact_times[0]) for value in exact_times], dtype=float
-        )
         if width == 2:
             data_columns = [
                 (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
@@ -1201,6 +1419,7 @@ def read_timeseriesdict_csv(
             unit=u.Unit(unit_str) if unit_str else u.dimensionless_unscaled,
             name=name,
         )
+        set_time_reference(ts, time_reference)
         result[name] = ts
 
     if target_rate is not None and resample_budget_state is not None:
@@ -1210,6 +1429,15 @@ def read_timeseriesdict_csv(
         resample_budget_state[0] -= produced_values
 
     tsd = TimeSeriesDict(filter_by_channels(result, channels))
+    provenance: dict[str, Any] = {
+        "format": "csv",
+        "time_scale": provenance_time_scale,
+        "time_unit": eff_time_unit_name,
+        "epoch_source": epoch_source,
+    }
+    if has_time_component and tz_str is not None:
+        provenance["timezone"] = str(tz_str)
+    set_provenance(tsd, provenance)
     return apply_time_selection(tsd, start, end)
 
 
