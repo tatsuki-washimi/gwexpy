@@ -211,7 +211,7 @@ def _statistic_for_payload(payload: Any, statistic: str) -> Any:
 
 
 def _parallel_workers(parallel: bool | int) -> int:
-    """Resolve #406 parallel policy to a worker count."""
+    """Resolve the eager #406/#407 parallel policy to a worker count."""
     if parallel is False:
         return 1
     if parallel is True:

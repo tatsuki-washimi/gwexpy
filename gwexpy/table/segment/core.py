@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import numbers
 from collections.abc import Callable, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import numpy as np
@@ -21,7 +22,7 @@ from gwexpy.table.segment.cell import _UNSET, CellStatus, SegmentCell
 from gwexpy.table.segment.combine import _CombineMixin
 from gwexpy.table.segment.io import _IOMixin
 from gwexpy.table.segment.ops import _OpsMixin
-from gwexpy.table.segment.stats import _StatMixin
+from gwexpy.table.segment.stats import _parallel_workers, _StatMixin
 from gwexpy.table.segment.status import (
     _MissingMixin,
     is_scalar_nan,
@@ -54,6 +55,27 @@ _PAYLOAD_KINDS = frozenset(
         "object",
     }
 )
+
+
+def _run_sugar_rows(
+    count: int,
+    compute: Callable[[int], tuple[Optional[dict[str, Any]], Optional[BaseException]]],
+    workers: int,
+) -> list[tuple[Optional[dict[str, Any]], Optional[BaseException]]]:
+    """Run independent eager row jobs and retain source order."""
+    if workers == 1:
+        return [compute(index) for index in range(count)]
+    results: list[tuple[Optional[dict[str, Any]], Optional[BaseException]]] = []
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        # Python 3.9-3.11 Executor.map eagerly submits its entire iterable.
+        # Bound queued row jobs while preserving ordered map results.
+        window = workers * 4
+        for start in range(0, count, window):
+            results.extend(
+                executor.map(compute, range(start, min(start + window, count)))
+            )
+    return results
+
 
 #: All valid kinds.
 _ALL_KINDS = _META_KINDS | _PAYLOAD_KINDS
@@ -889,6 +911,8 @@ class SegmentTable(
         span_col: str = "span",
         inplace: bool = False,
         errors: str = "raise",
+        *,
+        parallel: bool | int = False,
     ) -> SegmentTable:
         """Crop each row's payload to its :class:`~gwpy.segments.Segment`.
 
@@ -905,6 +929,9 @@ class SegmentTable(
         errors:
             Failure policy across rows (``"raise"``, ``"record"``,
             ``"coerce"``, ``"skip"``).
+        parallel:
+            ``False`` runs sequentially, ``True`` uses available CPU threads,
+            and a positive integer sets the worker count.
 
         Raises
         ------
@@ -913,6 +940,7 @@ class SegmentTable(
 
         """
         validate_errors_policy(errors)
+        workers = _parallel_workers(parallel)
         try:
             from gwpy.timeseries import TimeSeries, TimeSeriesDict
         except ImportError as exc:
@@ -936,21 +964,14 @@ class SegmentTable(
             target._schema[out_col] = out_kind
             return target
 
-        row_dicts: list[Optional[dict[str, Any]]] = []
-        row_errors: list[Optional[BaseException]] = []
-
-        for i in range(n):
+        def compute(i: int) -> tuple[Optional[dict[str, Any]], Optional[BaseException]]:
             cell = self._payload[column][i]
             if cell.status in (
                 CellStatus.MISSING,
                 CellStatus.MASKED,
                 CellStatus.NOT_APPLICABLE,
             ):
-                row_dicts.append(
-                    {out_col: SegmentCell(value=_UNSET, status=cell.status)}
-                )
-                row_errors.append(None)
-                continue
+                return {out_col: SegmentCell(value=_UNSET, status=cell.status)}, None
 
             if errors == "raise":
                 payload = self.row(i)[column]
@@ -960,24 +981,23 @@ class SegmentTable(
                         f"crop() expected TimeSeries or TimeSeriesDict, "
                         f"got {type(payload).__name__!r}."
                     )
-                row_dicts.append({out_col: payload.crop(span[0], span[1])})
-                row_errors.append(None)
-            else:
-                try:
-                    payload = self.row(i)[column]
-                    span = self.row(i)[span_col]
-                    if not isinstance(payload, (TimeSeries, TimeSeriesDict)):
-                        raise TypeError(
-                            f"crop() expected TimeSeries or TimeSeriesDict, "
-                            f"got {type(payload).__name__!r}."
-                        )
-                    cropped = payload.crop(span[0], span[1])
-                except Exception as exc:
-                    row_dicts.append(None)
-                    row_errors.append(exc)
-                else:
-                    row_dicts.append({out_col: cropped})
-                    row_errors.append(None)
+                return {out_col: payload.crop(span[0], span[1])}, None
+            try:
+                payload = self.row(i)[column]
+                span = self.row(i)[span_col]
+                if not isinstance(payload, (TimeSeries, TimeSeriesDict)):
+                    raise TypeError(
+                        f"crop() expected TimeSeries or TimeSeriesDict, "
+                        f"got {type(payload).__name__!r}."
+                    )
+                cropped = payload.crop(span[0], span[1])
+            except Exception as exc:
+                return None, exc
+            return {out_col: cropped}, None
+
+        results = _run_sugar_rows(n, compute, workers)
+        row_dicts = [row for row, _ in results]
+        row_errors = [error for _, error in results]
 
         return self._finalize_row_outputs(
             col_names=[out_col],
@@ -995,6 +1015,7 @@ class SegmentTable(
         *,
         errors: str = "raise",
         inplace: bool = False,
+        parallel: bool | int = False,
         **kwargs: Any,
     ) -> SegmentTable:
         """Apply ASD to each row's ``TimeSeries`` or ``TimeSeriesDict``.
@@ -1010,6 +1031,9 @@ class SegmentTable(
             ``"coerce"``, ``"skip"``).
         inplace:
             Whether to modify *self* in place.
+        parallel:
+            ``False`` runs sequentially, ``True`` uses available CPU threads,
+            and a positive integer sets the worker count.
         **kwargs:
             Forwarded to :meth:`~gwpy.timeseries.TimeSeries.asd`.
 
@@ -1019,6 +1043,7 @@ class SegmentTable(
 
         """
         validate_errors_policy(errors)
+        workers = _parallel_workers(parallel)
         if column not in self._schema:
             raise KeyError(f"Column {column!r} not found.")
         if out_col is None:
@@ -1036,10 +1061,7 @@ class SegmentTable(
             target._schema[out_col] = out_kind
             return target
 
-        row_dicts: list[Optional[dict[str, Any]]] = []
-        row_errors: list[Optional[BaseException]] = []
-
-        for i in range(n):
+        def compute(i: int) -> tuple[Optional[dict[str, Any]], Optional[BaseException]]:
             if column in self._payload:
                 cell = self._payload[column][i]
                 if cell.status in (
@@ -1047,26 +1069,23 @@ class SegmentTable(
                     CellStatus.MASKED,
                     CellStatus.NOT_APPLICABLE,
                 ):
-                    row_dicts.append(
-                        {out_col: SegmentCell(value=_UNSET, status=cell.status)}
-                    )
-                    row_errors.append(None)
-                    continue
+                    return {
+                        out_col: SegmentCell(value=_UNSET, status=cell.status)
+                    }, None
 
             if errors == "raise":
                 payload = self.row(i)[column]
-                row_dicts.append({out_col: payload.asd(**kwargs)})
-                row_errors.append(None)
-            else:
-                try:
-                    payload = self.row(i)[column]
-                    res = payload.asd(**kwargs)
-                except Exception as exc:
-                    row_dicts.append(None)
-                    row_errors.append(exc)
-                else:
-                    row_dicts.append({out_col: res})
-                    row_errors.append(None)
+                return {out_col: payload.asd(**kwargs)}, None
+            try:
+                payload = self.row(i)[column]
+                res = payload.asd(**kwargs)
+            except Exception as exc:
+                return None, exc
+            return {out_col: res}, None
+
+        results = _run_sugar_rows(n, compute, workers)
+        row_dicts = [row for row, _ in results]
+        row_errors = [error for _, error in results]
 
         return self._finalize_row_outputs(
             col_names=[out_col],
