@@ -111,16 +111,20 @@ class _ScalarAggregateReducer:
 
 
 def _integer_fraction_result(exact: Fraction, method: str) -> int | float:
-    """Keep integral results exact and reject rounded large integer fractions."""
+    """Keep integral results exact and bound fractional conversion error."""
     if exact.denominator == 1:
         return exact.numerator
     approximate = float(exact)
     if not np.isfinite(approximate):
         raise ValueError(f"Integer {method} cannot be represented as float64")
-    # Binary64 spacing reaches one at 2**52, so fractional results in this
-    # range may silently become a different integer or half-integer.
-    if abs(exact) >= 2**52 and Fraction.from_float(approximate) != exact:
-        raise ValueError(f"Integer {method} is not exactly representable as float64")
+    # Compare every conversion with the exact rational. Small decimal
+    # quantiles (e.g. 0.1) have unavoidable binary64 rounding; allow at most
+    # 1e-12 absolute error while rejecting lost large-integer fractions.
+    error = abs(Fraction.from_float(approximate) - exact)
+    if error > Fraction(1, 10**12):
+        raise ValueError(
+            f"Integer {method} cannot be represented within 1e-12 absolute error as float64"
+        )
     return approximate
 
 

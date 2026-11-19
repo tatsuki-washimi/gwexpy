@@ -173,7 +173,7 @@ def test_float_quantile_interpolates_without_overflow() -> None:
 def test_large_fractional_integer_mean_fails_instead_of_rounding() -> None:
     table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
     table.add_column("value", [np.uint64(2**64 - 1), 0])
-    with pytest.raises(ValueError, match="not exactly representable"):
+    with pytest.raises(ValueError, match="1e-12 absolute error"):
         table.groupby("group").aggregate(mean=("value", "mean"))
 
 
@@ -181,5 +181,19 @@ def test_large_fractional_integer_mean_fails_instead_of_rounding() -> None:
 def test_boundary_fractional_integer_results_fail_instead_of_rounding(method) -> None:
     table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
     table.add_column("value", [2**53 - 1, 2**53])
-    with pytest.raises(ValueError, match="not exactly representable"):
+    with pytest.raises(ValueError, match="1e-12 absolute error"):
         table.groupby("group").aggregate(result=("value", method))
+
+
+def test_lower_boundary_integer_quantile_fails_instead_of_rounding() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
+    table.add_column("value", [2**52 - 1, 2**52])
+    with pytest.raises(ValueError, match="1e-12 absolute error"):
+        table.groupby("group").aggregate(q25=("value", quantile(0.25)))
+
+
+def test_small_integer_decimal_quantile_allows_bounded_rounding() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
+    table.add_column("value", [0, 1])
+    result = table.groupby("group").aggregate(q10=("value", quantile(0.1)))
+    assert result.to_pandas().loc[0, "q10"] == pytest.approx(0.1)
