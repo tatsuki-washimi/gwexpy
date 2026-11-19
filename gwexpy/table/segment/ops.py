@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 import numpy as np
 
 from gwexpy.table.filter import parse_column_filters
-from gwexpy.table.segment.cell import SegmentCell
+from gwexpy.table.segment.cell import CellStatus, SegmentCell
 from gwexpy.table.segment.expr import ColumnRef, Expr, _safe_elementwise_compare
 from gwexpy.table.segment.status import is_scalar_nan
 
@@ -472,6 +472,114 @@ class _OpsMixin:
                 target._schema[col_name] = kind
 
         return target
+
+    def explode_channels(
+        self,
+        column: str,
+        *,
+        channel_col: str = "channel",
+        load: bool = False,
+    ) -> SegmentTable:
+        """Expand a series-dictionary payload into one row per channel.
+
+        Unloaded dictionaries require ``load=True``; their source cells remain
+        unchanged. Missing, masked, and not-applicable cells produce one row
+        with a missing channel and the original cell status. Empty dictionaries
+        produce one row with a missing channel and a missing payload.
+        """
+        kinds = {
+            "timeseriesdict": "timeseries",
+            "frequencyseriesdict": "frequencyseries",
+        }
+        kind = self._schema.get(column)
+        if kind not in kinds or column not in self._payload:
+            raise TypeError(
+                "explode_channels requires a series-dictionary payload column"
+            )
+        if channel_col in self._schema:
+            raise ValueError(f"Column {channel_col!r} already exists")
+        indices: list[int] = []
+        channels: list[Any] = []
+        cells: list[SegmentCell] = []
+        for index, original in enumerate(self._payload[column]):
+            cell = original.clone()
+            if cell.status in (
+                CellStatus.MISSING,
+                CellStatus.MASKED,
+                CellStatus.NOT_APPLICABLE,
+            ):
+                indices.append(index)
+                channels.append(None)
+                cells.append(cell)
+                continue
+            if cell.status == CellStatus.UNLOADED and not load:
+                raise ValueError("Unloaded channel dictionaries require load=True")
+            values = cell.get()
+            if not isinstance(values, Mapping):
+                raise TypeError("Channel payload must be a mapping")
+            if not values:
+                indices.append(index)
+                channels.append(None)
+                cells.append(SegmentCell.missing())
+            for name, value in values.items():
+                indices.append(index)
+                channels.append(name)
+                cells.append(SegmentCell.valid(value))
+        result = self._slice_rows(indices)  # type: ignore[attr-defined]
+        result._payload[column] = cells
+        result._schema[column] = kinds[kind]
+        result._set_meta_column(channel_col, channels)  # type: ignore[attr-defined]
+        return result
+
+    def expand_bands(
+        self,
+        column: str,
+        bands: Mapping[str, tuple[Any, Any]],
+        *,
+        band_col: str = "band",
+        load: bool = False,
+    ) -> SegmentTable:
+        """Expand frequency-series rows into named GWpy-cropped bands.
+
+        Bounds and their endpoint semantics follow ``FrequencySeries.crop``.
+        Unloaded payloads require ``load=True`` and source cells are unchanged.
+        """
+        from gwpy.frequencyseries import FrequencySeries
+
+        if self._schema.get(column) != "frequencyseries" or column not in self._payload:
+            raise TypeError("expand_bands requires a frequencyseries payload column")
+        if band_col in self._schema:
+            raise ValueError(f"Column {band_col!r} already exists")
+        indices: list[int] = []
+        labels: list[str] = []
+        cells: list[SegmentCell] = []
+        for index, original in enumerate(self._payload[column]):
+            cell = original.clone()
+            if cell.status == CellStatus.UNLOADED and not load and bands:
+                raise ValueError("Unloaded frequency series require load=True")
+            if cell.status in (
+                CellStatus.MISSING,
+                CellStatus.MASKED,
+                CellStatus.NOT_APPLICABLE,
+            ):
+                for label in bands:
+                    indices.append(index)
+                    labels.append(label)
+                    cells.append(cell.clone())
+                continue
+            if not bands:
+                continue
+            spectrum = cell.get()
+            if not isinstance(spectrum, FrequencySeries):
+                raise TypeError("Band payload must be a FrequencySeries")
+            for label, (low, high) in bands.items():
+                indices.append(index)
+                labels.append(label)
+                cells.append(SegmentCell.valid(spectrum.crop(low, high)))
+        result = self._slice_rows(indices)  # type: ignore[attr-defined]
+        result._payload[column] = cells
+        result._set_meta_column(band_col, labels)  # type: ignore[attr-defined]
+        return result
 
     # ------------------------------------------------------------------
     # Segment-aware lookups (binary search on start-time-sorted index)
