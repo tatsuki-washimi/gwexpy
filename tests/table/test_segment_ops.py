@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from astropy import units as u
 from gwpy.segments import Segment
 from gwpy.timeseries import TimeSeries
 
@@ -29,6 +30,21 @@ def _make_ops_table():
 
 
 class TestFilterAndRowOps:
+    def test_assign_replaces_and_copies_column_units(self):
+        table = _make_ops_table()
+        table.add_column("distance", [1, 2, 3, 4, 5], unit=u.m)
+        table.add_series_column(
+            "signal", data=[TimeSeries(np.ones(4), unit="V")] * 5, unit=u.V
+        )
+        table.add_series_column("unitless", data=[TimeSeries(np.ones(4))] * 5)
+
+        result = table.assign(distance_copy=col("distance"), signal=col("unitless"))
+        assert result["distance_copy"].unit == u.m
+        assert result["signal"].unit == u.dimensionless_unscaled
+        assert table["signal"].unit == u.V
+        assert table.assign(distance=0)["distance"].unit is None
+        assert table.assign(distance=col("distance"))["distance"].unit == u.m
+
     def test_filter_expr_string_and_mask(self):
         st = _make_ops_table()
         # col() expr with name= provenance

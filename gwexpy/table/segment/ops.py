@@ -418,13 +418,18 @@ class _OpsMixin:
                     "Cannot overwrite required 'span' column via assign()."
                 )
 
+            source_unit = (
+                target._units.get(spec.name) if isinstance(spec, ColumnRef) else None
+            )
             if isinstance(spec, ColumnRef) and spec.name in target._payload:
                 target._payload[col_name] = [
                     c.clone() for c in target._payload[spec.name]
                 ]
                 target._schema[col_name] = target._schema[spec.name]
-                if spec.name in target._units:
-                    target._units[col_name] = target._units[spec.name]
+                if source_unit is None:
+                    target._units.pop(col_name, None)
+                else:
+                    target._units[col_name] = source_unit
                 if col_name in target._meta.columns:
                     target._meta = target._meta.drop(columns=[col_name])
                 continue
@@ -448,6 +453,10 @@ class _OpsMixin:
                     f"expected {n}."
                 )
 
+            if source_unit is None:
+                target._units.pop(col_name, None)
+            else:
+                target._units[col_name] = source_unit
             kind = _infer_kind(vals)
             if kind == "meta":
                 if col_name in target._payload:
