@@ -12,12 +12,14 @@ import numbers
 import os
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor
+from fractions import Fraction
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 import numpy as np
 from astropy import units as u
 
 from gwexpy.table.segment.cell import CellStatus
+from gwexpy.table.segment.exceptions import CellLoadError
 
 if TYPE_CHECKING:
     from gwexpy.table.segment.core import SegmentTable
@@ -137,7 +139,30 @@ class _ArrayStatisticReducer:
         if self.statistic == "median":
             if np.iscomplexobj(values):
                 raise TypeError("median is undefined for complex payloads.")
-            return np.median(values)
+            middle = values.size // 2
+            ordered = np.partition(values, middle)
+            if values.size % 2:
+                # NumPy median converts even singleton int64/uint64 inputs
+                # to float64, losing integers above 2**53.
+                return ordered[middle].item()
+            lower = ordered[:middle].max()
+            upper = ordered[middle]
+            if values.dtype.kind in "biu":
+                exact = Fraction(int(lower) + int(upper), 2)
+                if exact.denominator == 1:
+                    return exact.numerator
+                approximate = float(exact)
+                if Fraction.from_float(approximate) != exact:
+                    raise ValueError(
+                        "Integer median is not exactly representable as float64; "
+                        "use a custom statistic for exact half-integer output."
+                    )
+                return approximate
+            with np.errstate(over="ignore"):
+                midpoint = (lower + upper) / 2
+            if np.isfinite(midpoint):
+                return midpoint
+            return lower / 2 + upper / 2
         if self.statistic == "mean":
             numeric = (
                 values.astype(np.float64) if values.dtype.kind in "biu" else values
@@ -201,6 +226,7 @@ class _StatMixin:
     _schema: dict[str, str]
     _payload: dict[str, Any]
     _meta: Any
+    _units: dict[str, Any]
     _provenance: list[dict[str, Any]]
 
     def extract_stat(
@@ -232,6 +258,11 @@ class _StatMixin:
                 f"{sorted(_BUILTIN_STATISTICS)}."
             )
         workers = _parallel_workers(parallel)
+        source_unit = (
+            u.Unit(self._units[column])
+            if isinstance(stat_fn, str) and column in self._units
+            else None
+        )
         output = (
             out_column or f"{column}_{stat_fn if isinstance(stat_fn, str) else 'stat'}"
         )
@@ -254,6 +285,10 @@ class _StatMixin:
                     return np.nan, cell.status
             else:
                 status = target._meta_row_status(column, index)
+                if status == CellStatus.FAILED:
+                    raise CellLoadError(
+                        f"Column {column!r} row {index} is in FAILED state."
+                    )
                 if status != CellStatus.VALID:
                     return np.nan, status
             payload = target.row(index)[column]
@@ -262,6 +297,12 @@ class _StatMixin:
                 if isinstance(stat_fn, str)
                 else stat_fn(payload)
             )
+            if source_unit is not None:
+                result = (
+                    result.to(source_unit)
+                    if isinstance(result, u.Quantity)
+                    else u.Quantity(result, unit=source_unit)
+                )
             if np.ndim(result) != 0:
                 raise ValueError("extract_stat() requires one scalar result per row")
             scalar = result.value if isinstance(result, u.Quantity) else result
@@ -294,7 +335,7 @@ class _StatMixin:
             raise ValueError(
                 "extract_stat() results mix physical quantities and unitless scalars"
             )
-        common_unit = units[0] if units else None
+        common_unit = units[0] if units else source_unit
         if common_unit is not None:
             values = [
                 value.to_value(common_unit) if isinstance(value, u.Quantity) else value

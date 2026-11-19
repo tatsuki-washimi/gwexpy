@@ -9,6 +9,7 @@ from gwpy.segments import Segment
 
 from gwexpy.table import SegmentTable
 from gwexpy.table.segment import SegmentCell
+from gwexpy.table.segment.exceptions import CellLoadError
 from gwexpy.timeseries import TimeSeries
 
 
@@ -140,3 +141,76 @@ def test_compatible_row_units_are_converted_to_one_output_unit() -> None:
     result = table.extract_stat("mean", "signal")
     assert result._units["signal_mean"] == u.V
     assert result._meta["signal_mean"].tolist() == pytest.approx([2.0, 2.0])
+
+
+def test_declared_array_unit_is_used_without_a_payload_unit(tmp_path) -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "signal",
+        data=[np.array([2.0, 4.0]), np.array([4.0, 8.0])],
+        kind="array",
+        unit=u.V,
+    )
+    result = table.extract_stat("mean", "signal")
+    assert result._meta["signal_mean"].tolist() == [3.0, 6.0]
+    assert result._units["signal_mean"] == u.V
+
+    path = tmp_path / "array_stat.h5"
+    result.write(path)
+    assert SegmentTable.read(path)._units["signal_mean"] == u.V
+
+
+def test_all_missing_result_retains_declared_source_unit() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "signal",
+        data=[SegmentCell.missing(), SegmentCell.masked()],
+        kind="array",
+        unit=u.V,
+    )
+    result = table.extract_stat("mean", "signal")
+    assert result._units["signal_mean"] == u.V
+    assert result._meta["signal_mean_status"].tolist() == ["missing", "masked"]
+    assert np.isnan(result.row(0)["signal_mean"])
+
+
+def test_failed_meta_status_raises_consistently_with_failed_payload() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1)])
+    table.add_column("score", [np.nan])
+    table.add_column("score_status", ["failed"])
+    with pytest.raises(CellLoadError, match="FAILED"):
+        table.extract_stat("mean", "score")
+
+
+def test_integer_median_preserves_large_odd_and_even_exact_values() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "signal",
+        data=[
+            np.array([2**63 - 1], dtype=np.int64),
+            np.array([2**63 - 3, 2**63 - 1], dtype=np.int64),
+        ],
+        kind="array",
+    )
+    result = table.extract_stat("median", "signal")
+    assert result.row(0)["signal_median"] == 2**63 - 1
+    assert result.row(1)["signal_median"] == 2**63 - 2
+    assert isinstance(result.row(0)["signal_median"], (int, np.integer))
+
+
+def test_integer_half_median_that_float_cannot_represent_fails_closed() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1)])
+    table.add_series_column(
+        "signal",
+        data=[np.array([2**63 - 2, 2**63 - 1], dtype=np.int64)],
+        kind="array",
+    )
+    with pytest.raises(ValueError, match="not exactly representable"):
+        table.extract_stat("median", "signal")
+
+
+def test_large_float_median_avoids_pair_sum_overflow() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1)])
+    table.add_series_column("signal", data=[np.array([1e308, 1e308])], kind="array")
+    result = table.extract_stat("median", "signal")
+    assert result.row(0)["signal_median"] == 1e308
