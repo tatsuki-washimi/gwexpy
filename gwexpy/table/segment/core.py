@@ -31,6 +31,7 @@ from gwexpy.table.segment.status import (
 
 if TYPE_CHECKING:
     from gwexpy.table.segment.expr import SegmentColumn
+    from gwexpy.table.segment.frame import SegmentFrame
 
 __all__ = ["RowProxy", "SegmentTable"]
 
@@ -578,6 +579,12 @@ class SegmentTable(
         from gwexpy.table.segment.expr import SegmentColumn
 
         return SegmentColumn(self, name)
+
+    def frame(self) -> SegmentFrame:
+        """Create a deferred, sequential pipeline from a shallow table snapshot."""
+        from gwexpy.table.segment.frame import SegmentFrame
+
+        return SegmentFrame(self)
 
     def __getitem__(self, key: str) -> SegmentColumn:
         if not isinstance(key, str):

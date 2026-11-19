@@ -16,6 +16,7 @@ from gwexpy.table.segment.expr import (
     UnaryOp,
     col,
 )
+from gwexpy.table.segment.frame import SegmentFrame
 from gwexpy.table.segment.io import (
     get_payload_serializer,
     register_payload_serializer,
@@ -38,6 +39,7 @@ __all__ = [
     "SummaryTable",
     "SegmentCell",
     "SegmentColumn",
+    "SegmentFrame",
     "SegmentTable",
     "UnaryOp",
     "col",
