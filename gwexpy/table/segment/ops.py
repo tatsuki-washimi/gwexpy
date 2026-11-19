@@ -483,7 +483,7 @@ class _OpsMixin:
         """Expand a series-dictionary payload into one row per channel.
 
         Unloaded dictionaries require ``load=True``; their source cells remain
-        unchanged. Missing, masked, and not-applicable cells produce one row
+        unchanged. Missing, failed, masked, and not-applicable cells produce one row
         with a missing channel and the original cell status. Empty dictionaries
         produce one row with a missing channel and a missing payload.
         """
@@ -505,6 +505,7 @@ class _OpsMixin:
             cell = original.clone()
             if cell.status in (
                 CellStatus.MISSING,
+                CellStatus.FAILED,
                 CellStatus.MASKED,
                 CellStatus.NOT_APPLICABLE,
             ):
@@ -559,6 +560,7 @@ class _OpsMixin:
                 raise ValueError("Unloaded frequency series require load=True")
             if cell.status in (
                 CellStatus.MISSING,
+                CellStatus.FAILED,
                 CellStatus.MASKED,
                 CellStatus.NOT_APPLICABLE,
             ):

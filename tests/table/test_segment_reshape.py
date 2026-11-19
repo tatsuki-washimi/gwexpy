@@ -82,3 +82,20 @@ def test_expand_bands_does_not_implicitly_load_or_erase_status():
     assert calls == [1]
     assert result._payload["spectrum"][1].status == CellStatus.MASKED
     assert table._payload["spectrum"][0].status == CellStatus.UNLOADED
+
+
+def test_reshape_preserves_failed_cells_and_errors():
+    error = ValueError("failed payload")
+    table = SegmentTable.from_segments([Segment(0, 1)])
+    table.add_series_column(
+        "signals", kind="timeseriesdict", data=[SegmentCell.failed(error)]
+    )
+    table.add_series_column(
+        "spectrum", kind="frequencyseries", data=[SegmentCell.failed(error)]
+    )
+    channels = table.explode_channels("signals")
+    bands = table.expand_bands("spectrum", {"a": (0, 1), "b": (1, 2)})
+    assert channels["channel"].to_list() == [None]
+    for cell in [channels._payload["signals"][0], *bands._payload["spectrum"]]:
+        assert cell.status == CellStatus.FAILED
+        assert cell.error is error
