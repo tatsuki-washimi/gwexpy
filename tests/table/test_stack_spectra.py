@@ -40,6 +40,10 @@ def test_alignment_values_units_and_counts(align, frequencies, values, counts):
     np.testing.assert_array_equal(frame.frequency, frequencies)
     np.testing.assert_allclose(frame.value, values)
     np.testing.assert_array_equal(frame.n_bin, counts)
+    np.testing.assert_array_equal(
+        frame.n_interpolated,
+        [0, 0, 1] if align == "interpolate" else np.zeros(len(frame)),
+    )
     assert (frame.n_missing == 1).all()
     assert result.units["frequency"] == u.Hz
     assert result.units["value"] == u.V
@@ -95,3 +99,50 @@ def test_invalid_units_and_nonfinite_spectrum_are_rejected():
     )
     with pytest.raises(ValueError, match="finite"):
         table.stack_spectra("asd")
+
+
+def test_exact_frequency_matching_does_not_merge_nearby_bins():
+    close = np.nextafter(1.0, 2.0)
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "asd",
+        kind="frequencyseries",
+        data=[
+            FrequencySeries([1, 2], frequencies=[0, 1] * u.Hz, unit="V"),
+            FrequencySeries([3, 4], frequencies=[0, close] * u.Hz, unit="V"),
+        ],
+    )
+    with pytest.raises(ValueError, match="identical"):
+        table.stack_spectra("asd")
+    intersection = table.stack_spectra("asd", align="intersection").to_pandas()
+    assert intersection.frequency.tolist() == [0.0]
+    union = table.stack_spectra("asd", align="union").to_pandas()
+    assert union.frequency.tolist() == [0.0, 1.0, close]
+    assert union.n_bin.tolist() == [2, 1, 1]
+
+
+def test_interpolation_per_group_grid_and_no_extrapolation():
+    table = SegmentTable.from_segments(
+        [Segment(i, i + 1) for i in range(4)], group=["a", "a", "b", "b"]
+    )
+    table.add_series_column(
+        "asd",
+        kind="frequencyseries",
+        data=[
+            FrequencySeries(
+                [10, 10, 10, 10, 10], frequencies=[0, 1, 2, 3, 4] * u.Hz, unit="V"
+            ),
+            FrequencySeries([2000, 6000], frequencies=[1, 3] * u.Hz, unit="mV"),
+            FrequencySeries([8, 8], frequencies=[10, 20] * u.Hz, unit="V"),
+            FrequencySeries([0, 40], frequencies=[0, 40] * u.Hz, unit="V"),
+        ],
+    )
+    result = table.stack_spectra(
+        "asd", groupby="group", align="interpolate", statistic="mean"
+    )
+    frame = result.to_pandas()
+    np.testing.assert_allclose(frame.frequency, [0, 1, 2, 3, 4, 10, 20])
+    np.testing.assert_allclose(frame.value, [10, 6, 7, 8, 10, 9, 14])
+    assert frame.n_bin.tolist() == [1, 2, 2, 2, 1, 2, 2]
+    assert frame.n_interpolated.tolist() == [0, 0, 1, 0, 0, 1, 1]
+    assert result.units["value"] == u.V

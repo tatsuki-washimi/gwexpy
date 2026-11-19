@@ -37,6 +37,9 @@ class _SpectraMixin:
         the contributing spectrum count at each frequency as ``n_bin``.
         Interpolation uses the first valid spectrum's grid within each group,
         with linear interpolation and no extrapolation.
+        ``n_interpolated`` counts interpolated contributions within ``n_bin``;
+        their difference counts values at original frequency coordinates.
+        Coordinate matching is exact after conversion to float64 Hz.
         Frequency coordinates are returned in Hz; values are converted to the
         unit of the first valid spectrum. Interval bounds are quantiles in [0, 1].
         ``statistic='percentile'`` requires ``percentile`` in [0, 100].
@@ -76,6 +79,7 @@ class _SpectraMixin:
             "lower",
             "upper",
             "n_bin",
+            "n_interpolated",
             "n_total",
             "n_valid",
             "n_missing",
@@ -151,17 +155,20 @@ class _SpectraMixin:
                 raise ValueError("spectra have no common frequency coordinates")
             for frequency in grid:
                 samples = []
+                n_interpolated = 0
                 for freq, values in spectra:
                     pos = np.searchsorted(freq, frequency)
                     if pos < len(freq) and freq[pos] == frequency:
                         samples.append(values[pos].item())
                     elif align == "interpolate" and 0 < pos < len(freq):
                         samples.append(float(np.interp(frequency, freq, values)))
+                        n_interpolated += 1
                 row: dict[str, Any] = dict(zip(keys, group_key, strict=True))
                 row.update(
                     frequency=frequency,
                     value=_run_reducer(_ScalarAggregateReducer(method), samples),
                     n_bin=len(samples),
+                    n_interpolated=n_interpolated,
                     n_total=len(indices),
                     n_valid=counts[CellStatus.VALID],
                     n_missing=counts[CellStatus.MISSING]
@@ -181,6 +188,7 @@ class _SpectraMixin:
             "value",
             *(["lower", "upper"] if interval is not None else []),
             "n_bin",
+            "n_interpolated",
             "n_total",
             "n_valid",
             "n_missing",
