@@ -1096,6 +1096,124 @@ class SegmentTable(
             errors=errors,
         )
 
+    def _series_transform(
+        self,
+        column: str,
+        out_col: Optional[str],
+        method: str,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+        errors: str,
+        inplace: bool,
+        parallel: bool | int,
+    ) -> SegmentTable:
+        """Apply a TimeSeries operation to each row, preserving row policy."""
+        from gwpy.timeseries import TimeSeries, TimeSeriesDict
+
+        validate_errors_policy(errors)
+        workers = _parallel_workers(parallel)
+        kind = self._schema.get(column)
+        if kind not in ("timeseries", "timeseriesdict"):
+            raise TypeError(
+                f"{method}() requires a timeseries or timeseriesdict column"
+            )
+        if out_col is None:
+            out_col = f"{column}_{method}"
+        if len(self) == 0:
+            target = self if inplace else self.copy()
+            target._payload[out_col] = []
+            target._schema[out_col] = kind
+            return target
+
+        def compute(i: int) -> tuple[Optional[dict[str, Any]], Optional[BaseException]]:
+            cell = self._payload[column][i]
+            if cell.status in (
+                CellStatus.MISSING,
+                CellStatus.MASKED,
+                CellStatus.NOT_APPLICABLE,
+            ):
+                return {out_col: SegmentCell(value=_UNSET, status=cell.status)}, None
+
+            def transform() -> dict[str, Any]:
+                payload = self.row(i)[column]
+                if isinstance(payload, TimeSeriesDict):
+                    result = type(payload)(
+                        {
+                            key: getattr(value, method)(*args, **kwargs)
+                            for key, value in payload.items()
+                        }
+                    )
+                elif isinstance(payload, TimeSeries):
+                    result = getattr(payload, method)(*args, **kwargs)
+                else:
+                    raise TypeError(f"{method}() expected TimeSeries or TimeSeriesDict")
+                return {out_col: result}
+
+            if errors == "raise":
+                return transform(), None
+            try:
+                return transform(), None
+            except Exception as exc:
+                return None, exc
+
+        results = _run_sugar_rows(len(self), compute, workers)
+        return self._finalize_row_outputs(
+            col_names=[out_col],
+            explicit_kinds={out_col: kind},
+            row_dicts=[row for row, _ in results],
+            row_errors=[error for _, error in results],
+            inplace=inplace,
+            errors=errors,
+        )
+
+    def bandpass(
+        self,
+        column: str,
+        flow: float,
+        fhigh: float,
+        out_col: Optional[str] = None,
+        *,
+        errors: str = "raise",
+        inplace: bool = False,
+        parallel: bool | int = False,
+        **kwargs: Any,
+    ) -> SegmentTable:
+        """Apply GWpy bandpass to each series, optionally in parallel.
+
+        Extra keyword arguments are forwarded to ``TimeSeries.bandpass``.
+        Missing cells and ``errors`` follow the same policy as :meth:`asd`.
+        """
+        return self._series_transform(
+            column,
+            out_col,
+            "bandpass",
+            (flow, fhigh),
+            kwargs,
+            errors,
+            inplace,
+            parallel,
+        )
+
+    def resample(
+        self,
+        column: str,
+        rate: float,
+        out_col: Optional[str] = None,
+        *,
+        errors: str = "raise",
+        inplace: bool = False,
+        parallel: bool | int = False,
+        **kwargs: Any,
+    ) -> SegmentTable:
+        """Apply GWpy resampling to each series, optionally in parallel.
+
+        Extra keyword arguments are forwarded to ``TimeSeries.resample``.
+        Missing cells and ``errors`` follow the same policy as :meth:`asd`.
+        """
+        return self._series_transform(
+            column, out_col, "resample", (rate,), kwargs, errors, inplace, parallel
+        )
+
     # ------------------------------------------------------------------
     # Selection and conversion
     # ------------------------------------------------------------------
