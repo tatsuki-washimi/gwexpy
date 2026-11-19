@@ -65,6 +65,19 @@ class _ScalarAggregateReducer:
             return len(state)
         if not state:
             return np.nan
+        if all(isinstance(item, numbers.Integral) for item in state):
+            integers = [int(item) for item in state]
+            if self.method == "min":
+                return min(integers)
+            if self.method == "max":
+                return max(integers)
+            if self.method == "mean":
+                exact = Fraction(sum(integers), len(integers))
+                return _integer_fraction_result(exact, "mean")
+            if self.method == "median":
+                return _integer_quantile(integers, 0.5)
+            if isinstance(self.method, Quantile):
+                return _integer_quantile(integers, self.method.q)
         if (
             any(isinstance(item, numbers.Integral) for item in state)
             and any(not isinstance(item, numbers.Integral) for item in state)
@@ -81,30 +94,45 @@ class _ScalarAggregateReducer:
         if values.dtype.kind not in "iuf":
             raise TypeError("Aggregate values must be real numeric scalars")
         if isinstance(self.method, Quantile):
-            if values.dtype.kind in "iu":
-                ordered = sorted(int(item) for item in state)
-                rank = Fraction(str(self.method.q)) * (len(ordered) - 1)
-                lower = rank.numerator // rank.denominator
-                fraction = rank - lower
-                exact = (
-                    ordered[lower] * (1 - fraction)
-                    + ordered[min(lower + 1, len(ordered) - 1)] * fraction
-                )
-                if exact.denominator == 1:
-                    return exact.numerator
-                approximate = float(exact)
-                if Fraction.from_float(approximate) != exact:
-                    raise ValueError(
-                        "Integer quantile is not exactly representable as float64"
-                    )
-                return approximate
             if self.method.q == 0.5:
                 return _ArrayStatisticReducer("median").finalize([values])
-            result = np.quantile(values, self.method.q)
+            ordered = sorted(float(item) for item in state)
+            rank = Fraction(str(self.method.q)) * (len(ordered) - 1)
+            lower = rank.numerator // rank.denominator
+            weight = float(rank - lower)
+            result = (
+                ordered[lower] * (1 - weight)
+                + ordered[min(lower + 1, len(ordered) - 1)] * weight
+            )
             if not np.isfinite(result):
                 raise ValueError("Quantile aggregate produced a non-finite result")
-            return result.item()
+            return result
         return _ArrayStatisticReducer(self.method).finalize([values])
+
+
+def _integer_fraction_result(exact: Fraction, method: str) -> int | float:
+    """Keep integral results exact and reject rounded large integer fractions."""
+    if exact.denominator == 1:
+        return exact.numerator
+    approximate = float(exact)
+    if not np.isfinite(approximate):
+        raise ValueError(f"Integer {method} cannot be represented as float64")
+    if abs(exact) > 2**53 and Fraction.from_float(approximate) != exact:
+        raise ValueError(f"Integer {method} is not exactly representable as float64")
+    return approximate
+
+
+def _integer_quantile(values: list[int], q: float) -> int | float:
+    """Interpolate integer quantiles without NumPy dtype coercion."""
+    ordered = sorted(values)
+    rank = Fraction(str(q)) * (len(ordered) - 1)
+    lower = rank.numerator // rank.denominator
+    fraction = rank - lower
+    exact = (
+        ordered[lower] * (1 - fraction)
+        + ordered[min(lower + 1, len(ordered) - 1)] * fraction
+    )
+    return _integer_fraction_result(exact, "quantile")
 
 
 class SegmentTableGroupBy:

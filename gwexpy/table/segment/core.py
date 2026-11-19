@@ -375,15 +375,21 @@ class SegmentTable(
         if unit is None and hasattr(data, "unit"):
             unit = data.unit
         values = list(data)
-        if any(
-            isinstance(value, numbers.Integral) and not isinstance(value, bool)
+        integers = [
+            int(value)
             for value in values
-        ) and any(
-            isinstance(value, numbers.Real) and not isinstance(value, numbers.Integral)
-            for value in values
+            if isinstance(value, numbers.Integral) and not isinstance(value, bool)
+        ]
+        if integers and (
+            any(abs(value) > 2**53 for value in integers)
+            or any(
+                isinstance(value, numbers.Real)
+                and not isinstance(value, numbers.Integral)
+                for value in values
+            )
         ):
-            # Pandas otherwise coerces mixed integer/float columns to float64,
-            # silently rounding integers above 2**53 (including missing rows).
+            # Pandas can coerce large or mixed integer columns to float64,
+            # silently rounding signed/unsigned mixtures or missing rows.
             self._meta[name] = pd.Series(values, dtype=object)
         else:
             self._meta[name] = values

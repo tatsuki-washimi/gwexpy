@@ -136,3 +136,42 @@ def test_group_key_with_failed_status_is_rejected() -> None:
     table.add_column("detector_status", ["failed", *["valid"] * 7])
     with pytest.raises(ValueError, match="valid status"):
         table.groupby("detector").aggregate(mean=("rt60", "mean"))
+
+
+def test_mixed_signed_unsigned_integers_keep_exact_extrema_quantiles_and_mean() -> None:
+    maximum = 2**64 - 1
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
+    table.add_column("value", [-1, np.uint64(maximum)])
+    result = table.groupby("group").aggregate(
+        minimum=("value", "min"),
+        maximum=("value", "max"),
+        median=("value", "median"),
+        q100=("value", quantile(1)),
+        mean=("value", "mean"),
+    )
+    row = result.to_pandas().iloc[0]
+    assert row["minimum"] == -1
+    assert row["maximum"] == maximum
+    assert row["q100"] == maximum
+    assert row["median"] == 2**63 - 1
+    assert row["mean"] == 2**63 - 1
+    assert isinstance(row["maximum"], numbers.Integral)
+    assert isinstance(row["q100"], numbers.Integral)
+
+
+def test_float_quantile_interpolates_without_overflow() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
+    table.add_column("value", [-1e308, 1e308])
+    result = table.groupby("group").aggregate(
+        q25=("value", quantile(0.25)), q75=("value", quantile(0.75))
+    )
+    row = result.to_pandas().iloc[0]
+    assert row["q25"] == pytest.approx(-5e307)
+    assert row["q75"] == pytest.approx(5e307)
+
+
+def test_large_fractional_integer_mean_fails_instead_of_rounding() -> None:
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], group=["a", "a"])
+    table.add_column("value", [np.uint64(2**64 - 1), 0])
+    with pytest.raises(ValueError, match="not exactly representable"):
+        table.groupby("group").aggregate(mean=("value", "mean"))
