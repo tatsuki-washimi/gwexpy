@@ -9,12 +9,14 @@ instances that support lazy loading and optional caching.
 
 from __future__ import annotations
 
+import numbers
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import numpy as np
 import pandas as pd
 
+from gwexpy.table.segment.aggregate import _GroupByMixin
 from gwexpy.table.segment.cell import _UNSET, CellStatus, SegmentCell
 from gwexpy.table.segment.combine import _CombineMixin
 from gwexpy.table.segment.io import _IOMixin
@@ -160,7 +162,9 @@ class RowProxy:
 # ---------------------------------------------------------------------------
 
 
-class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin, _IOMixin, _StatMixin):
+class SegmentTable(
+    _MissingMixin, _OpsMixin, _CombineMixin, _IOMixin, _StatMixin, _GroupByMixin
+):
     """Segment-keyed analysis table.
 
     Each row holds exactly one ``span`` (:class:`gwpy.segments.Segment`)
@@ -370,7 +374,19 @@ class SegmentTable(_MissingMixin, _OpsMixin, _CombineMixin, _IOMixin, _StatMixin
             )
         if unit is None and hasattr(data, "unit"):
             unit = data.unit
-        self._meta[name] = list(data)
+        values = list(data)
+        if any(
+            isinstance(value, numbers.Integral) and not isinstance(value, bool)
+            for value in values
+        ) and any(
+            isinstance(value, numbers.Real) and not isinstance(value, numbers.Integral)
+            for value in values
+        ):
+            # Pandas otherwise coerces mixed integer/float columns to float64,
+            # silently rounding integers above 2**53 (including missing rows).
+            self._meta[name] = pd.Series(values, dtype=object)
+        else:
+            self._meta[name] = values
         self._schema[name] = kind
         if unit is not None:
             self._units[name] = unit

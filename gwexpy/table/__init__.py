@@ -13,6 +13,7 @@ from gwexpy.table.segment.core import SegmentTable as SegmentTable
 from gwexpy.table.segment.exceptions import CellLoadError as CellLoadError
 from gwexpy.table.segment.expr import SegmentColumn as SegmentColumn
 from gwexpy.table.segment.expr import col as col
+from gwexpy.table.segment.summary import SummaryTable as SummaryTable
 
 _gwpy_all = [name for name in dir(gwpy.table) if not name.startswith("_")]
 _CURATED_PROXY_MODULES = {"filter", "table"}
@@ -26,6 +27,7 @@ __all__ = sorted(
         "SegmentCell",
         "SegmentColumn",
         "SegmentTable",
+        "SummaryTable",
         "col",
     }
 )
