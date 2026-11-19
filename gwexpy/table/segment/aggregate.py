@@ -117,7 +117,9 @@ def _integer_fraction_result(exact: Fraction, method: str) -> int | float:
     approximate = float(exact)
     if not np.isfinite(approximate):
         raise ValueError(f"Integer {method} cannot be represented as float64")
-    if abs(exact) > 2**53 and Fraction.from_float(approximate) != exact:
+    # Binary64 spacing reaches one at 2**52, so fractional results in this
+    # range may silently become a different integer or half-integer.
+    if abs(exact) >= 2**52 and Fraction.from_float(approximate) != exact:
         raise ValueError(f"Integer {method} is not exactly representable as float64")
     return approximate
 
