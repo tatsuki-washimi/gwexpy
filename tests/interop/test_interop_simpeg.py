@@ -135,3 +135,12 @@ class TestSimpegScaleInvarianceMocked:
         ts = simpeg_mod.from_simpeg(TimeSeries, data_obj)
         assert ts.dt.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
         assert ts.t0.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
+
+    def test_near_uniform_tdem_keeps_explicit_times(self, monkeypatch):
+        from gwexpy.interop import simpeg_ as simpeg_mod
+
+        times = np.array([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7])
+        fake_simpeg, data_obj = self._mock_tdem_data(times)
+        monkeypatch.setattr(simpeg_mod, "require_optional", lambda name: fake_simpeg)
+        ts = simpeg_mod.from_simpeg(TimeSeries, data_obj)
+        np.testing.assert_array_equal(ts.times.value, times)

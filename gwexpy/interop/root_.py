@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 import numpy as np
 
+from ._axis import exactly_affine_axis
 from ._optional import require_optional
 from .base import to_plain_array
 
@@ -57,6 +58,28 @@ def _is_regular_spacing(diffs: np.ndarray, *, rtol: float = 1e-5) -> bool:
         and diffs[0] > 0
         and np.allclose(diffs, diffs[0], rtol=rtol, atol=0.0)
     )
+
+
+def _edges_for_exact_centers(centers: np.ndarray) -> np.ndarray:
+    """Build increasing bin edges whose represented centers equal *centers*."""
+    values = np.asarray(centers, dtype=float)
+    edges = np.empty(values.size + 1, dtype=float)
+    if values.size == 1:
+        edges[:] = (values[0] - 0.5, values[0] + 0.5)
+    else:
+        edges[0] = values[0] - (values[1] - values[0]) / 2.0
+        for index, center in enumerate(values):
+            edges[index + 1] = 2.0 * center - edges[index]
+    if (
+        not np.all(np.isfinite(edges))
+        or not np.all(np.diff(edges) > 0)
+        or not np.array_equal((edges[:-1] + edges[1:]) / 2.0, values)
+    ):
+        raise ValueError(
+            "ROOT histogram bin edges cannot preserve the exact sample coordinates; "
+            "use a TGraph for one-dimensional data"
+        )
+    return edges
 
 
 def _root_axis_unit(axis: Any) -> str | None:
@@ -226,7 +249,7 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
     # We assume regular if possible, or use variable bins.
 
     dx_vals = np.diff(x)
-    is_regular = _is_regular_spacing(dx_vals)
+    is_regular = _is_regular_spacing(dx_vals) and exactly_affine_axis(x)
 
     name = str(series.name or "hist")
     title = name
@@ -235,16 +258,20 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
         dx = dx_vals[0]
         xlow = x[0] - dx / 2.0
         xup = x[-1] + dx / 2.0
-        hist = ROOT.TH1D(name, title, n, xlow, xup)
+        root_centers = xlow + (np.arange(n) + 0.5) * ((xup - xlow) / n)
+        if np.array_equal(root_centers, x):
+            hist = ROOT.TH1D(name, title, n, xlow, xup)
+        else:
+            hist = ROOT.TH1D(name, title, n, _edges_for_exact_centers(x))
     else:
-        # Variable bin widths
-        # We construct edges halfway between centers
-        edges = np.zeros(n + 1)
-        edges[1:-1] = (x[:-1] + x[1:]) / 2.0
-        # Extrapolate edges for first and last
-        edges[0] = x[0] - (edges[1] - x[0])
-        edges[-1] = x[-1] + (x[-1] - edges[-2])
+        edges = _edges_for_exact_centers(x)
         hist = ROOT.TH1D(name, title, n, edges)
+
+    actual_centers = np.array([hist.GetXaxis().GetBinCenter(i + 1) for i in range(n)])
+    if not np.array_equal(actual_centers, x):
+        raise ValueError(
+            "ROOT TH1D cannot preserve the exact sample coordinates; use to_tgraph()"
+        )
 
     # Fill bins (vectorized)
     # TH1 has n+2 bins (0=underflow, n+1=overflow)
@@ -282,23 +309,26 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
     # helper for edges
     def _get_edges(arr):
         if len(arr) < 2:
-            return np.array([arr[0] - 0.5, arr[0] + 0.5])
+            return _edges_for_exact_centers(arr)
         dx = np.diff(arr)
-        if _is_regular_spacing(dx):
+        if _is_regular_spacing(dx) and exactly_affine_axis(arr):
             step = dx[0]
-            return np.linspace(arr[0] - step / 2, arr[-1] + step / 2, len(arr) + 1)
-        else:
-            edges = np.zeros(len(arr) + 1)
-            edges[1:-1] = (arr[:-1] + arr[1:]) / 2.0
-            edges[0] = arr[0] - (edges[1] - arr[0])
-            edges[-1] = arr[-1] + (arr[-1] - edges[-2])
-            return edges
+            edges = np.linspace(arr[0] - step / 2, arr[-1] + step / 2, len(arr) + 1)
+            if np.array_equal((edges[:-1] + edges[1:]) / 2.0, arr):
+                return edges
+        return _edges_for_exact_centers(arr)
 
     t_edges = _get_edges(times)
     f_edges = _get_edges(freqs)
 
     name = str(spec.name or "spectrogram")
     hist = ROOT.TH2D(name, name, nt, t_edges, nf, f_edges)
+    actual_times = np.array([hist.GetXaxis().GetBinCenter(i + 1) for i in range(nt)])
+    actual_freqs = np.array([hist.GetYaxis().GetBinCenter(i + 1) for i in range(nf)])
+    if not np.array_equal(actual_times, times) or not np.array_equal(
+        actual_freqs, freqs
+    ):
+        raise ValueError("ROOT TH2D cannot preserve the exact sample coordinates")
 
     # Fill (vectorized)
     # ROOT stores data as linearized array with index = x + (nx+2)*y
@@ -526,7 +556,11 @@ def from_root(
             "unit": unit,
             "name": name,
         }
-        if n > 0 and _is_regular_spacing(bin_widths):
+        if (
+            n > 0
+            and _is_regular_spacing(bin_widths)
+            and exactly_affine_axis(x, step=float(bin_widths[0]))
+        ):
             origin_name = "f0" if is_frequencyseries_cls else "x0"
             interval_name = "df" if is_frequencyseries_cls else "dt"
             series_kwargs[origin_name] = x[0]
@@ -580,7 +614,7 @@ def from_root(
             )
         if n > 1:
             dx_vals = np.diff(x)
-            if _is_regular_spacing(dx_vals):
+            if _is_regular_spacing(dx_vals) and exactly_affine_axis(x):
                 res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
             else:
                 if is_frequencyseries_cls:

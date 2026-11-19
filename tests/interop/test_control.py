@@ -161,6 +161,15 @@ class TestFromControlFrd:
         np.testing.assert_allclose(fs.frequencies.value, freqs, rtol=1e-14, atol=0.0)
         assert fs.df.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
 
+    def test_near_regular_frequencies_keep_explicit_samples(self):
+        freqs = np.array([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7])
+        frd = SimpleNamespace(
+            omega=freqs * 2 * np.pi,
+            frdata=np.ones((1, 1, freqs.size), dtype=complex),
+        )
+        fs = from_control_frd(FrequencySeries, frd)
+        np.testing.assert_array_equal(fs.frequencies.value, frd.omega / (2 * np.pi))
+
 
 class TestFromControlResponse:
     def _make_siso_response(self, n=10, dt=0.1, t0=0.0, label=None):

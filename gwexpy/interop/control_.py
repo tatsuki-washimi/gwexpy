@@ -128,14 +128,12 @@ def from_control_frd(
             f"frequency_unit must be 'Hz' or 'rad/s', got '{frequency_unit}'"
         )
 
-    # Check for regular spacing with scale-invariant tolerance (atol=0.0)
+    # Affine metadata is safe only if it rebuilds every input coordinate.
     if len(freqs) > 1:
         diffs = np.diff(freqs)
-        is_regular = bool(
-            np.all(np.isfinite(freqs))
-            and diffs[0] > 0
-            and np.allclose(diffs, diffs[0], rtol=1e-6, atol=0.0)
-        )
+        from ._axis import exactly_affine_axis
+
+        is_regular = exactly_affine_axis(freqs)
     else:
         is_regular = True
         diffs = np.array([1.0])

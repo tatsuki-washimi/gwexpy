@@ -178,18 +178,22 @@ def from_simpeg(cls, data_obj, **kwargs):
         # Reconstruct TimeSeries
         times = survey.source_list[0].receiver_list[0].times
 
-        # dt is diff(times). Check scale-invariant uniformity (atol=0.0).
+        # The target carries only t0/dt; reject coordinates it cannot rebuild.
+        from ._axis import exactly_affine_axis
+
         times_arr = np.asarray(times, dtype=float)
         dt = np.diff(times_arr)
+        if len(dt) > 0 and exactly_affine_axis(times_arr):
+            val_dt = float(dt[0])
+            t0 = float(times_arr[0])
+            return cls(dobs, t0=t0, dt=val_dt)
         if (
             len(dt) > 0
             and np.all(np.isfinite(times_arr))
             and dt[0] > 0
             and np.allclose(dt, dt[0], rtol=1e-5, atol=0.0)
         ):
-            val_dt = float(dt[0])
-            t0 = float(times_arr[0])
-            return cls(dobs, t0=t0, dt=val_dt)
+            return cls(dobs, times=times_arr)
         else:
             raise ValueError(
                 "SimPEG time channels are non-uniform, cannot map directly to uniform TimeSeries."

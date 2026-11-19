@@ -24,6 +24,17 @@
 
 - GWpy reads the stored numeric datasets independently. Its `TimeSeries.read` requires an explicit `path` for a multi-dataset file; GWpy does not restore GWexpy's uncertainty metadata.
 
+### Changed
+
+- **Interop coordinate preservation**: Control FRD and Polars imports retain
+  explicit coordinates when origin/cadence would change any sample. SimPEG
+  time imports retain explicit near-uniform samples. LAL and PyCBC frequency
+  exports reject axes their affine-only formats cannot represent; PyCBC also
+  rejects a nonzero initial frequency. ROOT histogram exports use bin edges
+  that retain exact sample centers where possible and raise `ValueError` when
+  ROOT cannot represent them; use `to_tgraph()` for such 1-D data. This
+  replaces earlier tolerant regularity checks that could silently move samples.
+
 ## [0.2.10] - 2026-11-14
 
 ### Changed

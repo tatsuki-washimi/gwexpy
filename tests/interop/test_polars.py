@@ -250,6 +250,7 @@ class TestFromPolarsDataframeWithMock:
         [
             ([0.0, 1e-20, 3e-20, 6e-20], False),
             ([0.0, 1e-20, 2e-20, 3e-20], True),
+            ([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7], False),
         ],
     )
     def test_small_scale_axis_classification(self, coords, expected_regular):
@@ -280,8 +281,6 @@ class TestFromPolarsDataframeWithMock:
 
             importlib.reload(polars_mod)
             ts = polars_mod.from_polars_dataframe(TimeSeries, MockDF())
-        np.testing.assert_allclose(ts.times.value, coords, rtol=1e-14, atol=0.0)
+        np.testing.assert_array_equal(ts.times.value, coords)
         if expected_regular:
             assert ts.dt.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
-        else:
-            assert not ts._xindex.regular or ts.times.value[2] == pytest.approx(3e-20)

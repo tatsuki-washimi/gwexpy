@@ -241,6 +241,19 @@ class TestToPycbcFrequencySeries:
             with pytest.raises(ValueError, match="irregular|non-increasing"):
                 to_pycbc_frequencyseries(fs)
 
+    def test_near_regular_frequency_axis_rejects_lossy_export(self, pycbc_modules_mock):
+        freqs = np.array([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7])
+        fs = FrequencySeries(np.zeros(freqs.size), frequencies=freqs)
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular"):
+                to_pycbc_frequencyseries(fs)
+
+    def test_nonzero_f0_rejects_lossy_export(self, pycbc_modules_mock):
+        fs = FrequencySeries(np.zeros(4), f0=1.0, df=1.0)
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="nonzero initial frequency"):
+                to_pycbc_frequencyseries(fs)
+
 
 # ---------------------------------------------------------------------------
 # Missing PyCBC (import error)

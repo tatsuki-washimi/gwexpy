@@ -201,19 +201,11 @@ class TestRootScaleInvariance:
 
         ROOT.gROOT.SetBatch(True)
 
-        # Irregular 1e-20 spacing must produce variable-width TH1D, not uniform
+        # Some tiny axes cannot be represented by ROOT bin centers exactly.
         irr_x = np.array([1e-20, 2e-20, 4e-20, 8e-20])
         fs_irr = FrequencySeries(np.arange(1.0, 5.0), frequencies=irr_x, name="fs_irr")
-        h_irr = fs_irr.to_th1d()
-        widths = np.array(
-            [h_irr.GetXaxis().GetBinWidth(i + 1) for i in range(h_irr.GetNbinsX())]
-        )
-        assert not np.allclose(widths, widths[0], rtol=1e-5, atol=0.0)
-        fs_back = FrequencySeries.from_root(h_irr)
-        expected_centers = np.array([1.0, 2.25, 4.5, 8.0]) * 1e-20
-        np.testing.assert_allclose(
-            fs_back.frequencies.value, expected_centers, rtol=1e-12, atol=0.0
-        )
+        with pytest.raises(ValueError, match="exact sample coordinates"):
+            fs_irr.to_th1d()
 
         # TGraph preserves exact irregular 1e-20 coordinates without linearization
         g_irr = fs_irr.to_tgraph()
@@ -222,12 +214,11 @@ class TestRootScaleInvariance:
             fs_g_back.frequencies.value, irr_x, rtol=1e-12, atol=0.0
         )
 
-        # Regular 1e-20 spacing stays uniform in TH1D / TH2D
+        # Even apparently regular 1e-20 spacing can lose an ULP in ROOT bins.
         reg_x = np.array([1e-20, 2e-20, 3e-20, 4e-20])
         fs_reg = FrequencySeries(np.arange(1.0, 5.0), frequencies=reg_x, name="fs_reg")
-        h_reg = fs_reg.to_th1d()
-        fs_reg_back = FrequencySeries.from_root(h_reg)
-        assert fs_reg_back.df.value == pytest.approx(1e-20, rel=1e-12, abs=0.0)
+        with pytest.raises(ValueError, match="exact sample coordinates"):
+            fs_reg.to_th1d()
 
         # Spectrogram to_th2d with 1e-20 irregular frequency axis
         sg = Spectrogram(
@@ -236,8 +227,29 @@ class TestRootScaleInvariance:
             frequencies=irr_x,
             name="sg_tiny",
         )
-        h2 = sg.to_th2d()
-        x_widths = [h2.GetXaxis().GetBinWidth(i + 1) for i in range(3)]
-        y_widths = [h2.GetYaxis().GetBinWidth(i + 1) for i in range(4)]
-        assert x_widths[1] > x_widths[0] * 1.5
-        assert y_widths[2] > y_widths[0] * 1.5
+        with pytest.raises(ValueError, match="exact sample coordinates"):
+            sg.to_th2d()
+
+    def test_near_regular_root_bins_preserve_exact_centers(self):
+        ROOT = pytest.importorskip("ROOT")
+        from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.spectrogram import Spectrogram
+
+        ROOT.gROOT.SetBatch(True)
+        x = np.array([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7])
+        fs = FrequencySeries(np.arange(4.0), frequencies=x, name="near_regular")
+        hist = fs.to_th1d()
+        centers = np.array([hist.GetXaxis().GetBinCenter(i + 1) for i in range(4)])
+        np.testing.assert_array_equal(centers, x)
+        np.testing.assert_array_equal(
+            FrequencySeries.from_root(hist).frequencies.value, x
+        )
+
+        spec = Spectrogram(
+            np.ones((4, 4)), times=x, frequencies=x, name="near_regular_spec"
+        )
+        hist2 = spec.to_th2d()
+        times = np.array([hist2.GetXaxis().GetBinCenter(i + 1) for i in range(4)])
+        freqs = np.array([hist2.GetYaxis().GetBinCenter(i + 1) for i in range(4)])
+        np.testing.assert_array_equal(times, x)
+        np.testing.assert_array_equal(freqs, x)
