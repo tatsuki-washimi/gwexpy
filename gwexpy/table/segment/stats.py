@@ -16,6 +16,7 @@ from fractions import Fraction
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 import numpy as np
+import pandas as pd
 from astropy import units as u
 
 from gwexpy.table.segment.cell import CellStatus
@@ -342,6 +343,16 @@ class _StatMixin:
                 for value in values
             ]
         target.add_column(output, values, unit=common_unit)
+        # DataFrame assignment otherwise upcasts [int64_max, NaN] or
+        # [int64_max, 1.5] to float64 before the value reaches HDF5.
+        if any(
+            isinstance(value, (int, np.integer))
+            and not isinstance(value, (bool, np.bool_))
+            for value in values
+        ):
+            target._meta[output] = pd.Series(
+                values, index=target._meta.index, dtype=object
+            )
         target.add_column(status_column, statuses)
         target._provenance.append(
             {

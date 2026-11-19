@@ -459,11 +459,29 @@ def _encode_meta_column(
     if not any(na_flags) and all(isinstance(v, (bool, np.bool_)) for v in non_na):
         return "bool", np.array([bool(v) for v in values], dtype=bool), None
 
-    if not any(na_flags) and all(
+    all_integer = all(
+        isinstance(v, (int, np.integer)) and not isinstance(v, (bool, np.bool_))
+        for v in non_na
+    )
+    fits_int64 = (
+        all(-(2**63) <= int(v) < 2**63 for v in non_na) if all_integer else False
+    )
+    if not any(na_flags) and all_integer and fits_int64:
+        return "int", np.array([int(v) for v in values], dtype=np.int64), None
+
+    # Keep exact integers through missing values, mixed numeric types, and
+    # unsigned values above int64. A float64 column would silently round them.
+    if any(
         isinstance(v, (int, np.integer)) and not isinstance(v, (bool, np.bool_))
         for v in non_na
     ):
-        return "int", np.array([int(v) for v in values], dtype=np.int64), None
+        encoded = [
+            "null"
+            if is_na
+            else json.dumps(v.item() if isinstance(v, np.generic) else v)
+            for v, is_na in zip(values, na_flags)
+        ]
+        return "json", np.array(encoded, dtype=object), None
 
     if all(
         isinstance(v, (int, float, np.integer, np.floating))
@@ -563,7 +581,7 @@ def _read_meta_group(
             for item in raw:
                 text = item.decode("utf-8") if isinstance(item, bytes) else str(item)
                 vals.append(np.nan if text == "null" else json.loads(text))
-            data[col_name] = vals
+            data[col_name] = pd.Series(vals, dtype=object)
         else:
             data[col_name] = raw.tolist()
 

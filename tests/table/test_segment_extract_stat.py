@@ -214,3 +214,47 @@ def test_large_float_median_avoids_pair_sum_overflow() -> None:
     table.add_series_column("signal", data=[np.array([1e308, 1e308])], kind="array")
     result = table.extract_stat("median", "signal")
     assert result.row(0)["signal_median"] == 1e308
+
+
+def test_large_integer_stat_with_missing_row_stays_exact_and_roundtrips(
+    tmp_path,
+) -> None:
+    exact = 2**63 - 1
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "signal",
+        data=[np.array([exact], dtype=np.int64), SegmentCell.missing()],
+        kind="array",
+    )
+    result = table.extract_stat("median", "signal")
+    assert result._meta["signal_median"].dtype == object
+    assert result.row(0)["signal_median"] == exact
+    assert np.isnan(result.row(1)["signal_median"])
+
+    path = tmp_path / "missing_large_int.h5"
+    result.write(path)
+    loaded = SegmentTable.read(path)
+    assert loaded.row(0)["signal_median"] == exact
+    assert np.isnan(loaded.row(1)["signal_median"])
+
+
+def test_large_integer_stat_mixed_with_float_stays_exact_and_roundtrips(
+    tmp_path,
+) -> None:
+    exact = 2**63 - 1
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)])
+    table.add_series_column(
+        "signal",
+        data=[np.array([exact], dtype=np.int64), np.array([1.5])],
+        kind="array",
+    )
+    result = table.extract_stat(lambda value: value[0], "signal")
+    assert result._meta["signal_stat"].dtype == object
+    assert result.row(0)["signal_stat"] == exact
+    assert result.row(1)["signal_stat"] == 1.5
+
+    path = tmp_path / "mixed_large_int.h5"
+    result.write(path)
+    loaded = SegmentTable.read(path)
+    assert loaded.row(0)["signal_stat"] == exact
+    assert loaded.row(1)["signal_stat"] == 1.5
