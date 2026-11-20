@@ -138,7 +138,7 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 
 `ScalarField.read(source, name, format="gsi-dem")` は国土地理院 FGD DEM の GML タイルまたは ZIP を読みます。パスの列を渡すとモザイク化します。欠損標高は `NaN` のまま保持します。結果は `(1, nx, ny, 1)` 形状で、経緯度軸にはピクセル中心を度単位で格納し、緯度の北から南への順序を保持します。`axis_order="ascending"` は値と軸を同時に反転します。
 
-`ScalarField.read(source, name, format="geotiff", unit="m")` は GeoTIFF の標高バンドを読みます。先に `gwexpy[geospatial]` を導入してください。複数バンドでは `band=` を指定します。単位が不明な場合は `unit=` が必要です。`ScalarField.write(path, format="geotiff")` は有効な地理参照を持つ 2 次元 Field を書き出します。非単一点の時間軸や鉛直軸は保存できません。
+`ScalarField.read(source, name, format="geotiff", unit="m")` は GeoTIFF の標高バンドを読みます。先に `gwexpy[geospatial]` を導入してください。複数バンドのファイルでは、バンド名か `band=` を指定します。読み取れない単位タグには `unit=` で単位を指定します。単位タグのないバンドの値は、既定で無次元として扱います。`ScalarField.write(path, format="geotiff")` は、有効な地理参照があり、時間軸と鉛直軸がともに単一点の 2 次元 Field を書き出します。
 
 欠損ピクセルを埋める場合は明示的に `field.fill_missing()` を呼び、距離に基づく空間処理の前に `field.to_local_cartesian()` または `field.to_projected("EPSG:...")` を使います。元の CRS と処理履歴は `field.geo` で確認できます。
 

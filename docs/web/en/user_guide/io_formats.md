@@ -139,7 +139,7 @@ on optional packages or optional metadata helpers.
 
 `ScalarField.read(source, name, format="gsi-dem")` reads GSI FGD DEM GML tiles or a ZIP archive. Pass a sequence of tile paths to mosaic them. Missing elevations remain `NaN`. The result has shape `(1, nx, ny, 1)` with longitude and latitude pixel centers in degrees; native north-to-south latitude order is preserved. Use `axis_order="ascending"` to reverse the latitude axis and values together.
 
-`ScalarField.read(source, name, format="geotiff", unit="m")` reads a GeoTIFF elevation band. Install `gwexpy[geospatial]` first. For a multiband file, specify `band=`. A missing or unknown unit requires `unit=`. `ScalarField.write(path, format="geotiff")` writes a two-dimensional field with active georeferencing; it does not preserve a non-singleton time or vertical axis.
+`ScalarField.read(source, name, format="geotiff", unit="m")` reads a GeoTIFF elevation band. Install `gwexpy[geospatial]` first. For a multiband file, pass a band name or `band=`. An unrecognized unit tag requires `unit=`. A band without a unit tag defaults to a dimensionless value unit. `ScalarField.write(path, format="geotiff")` writes a two-dimensional field with active georeferencing and singleton time and vertical axes.
 
 Use `field.fill_missing()` to fill missing pixels explicitly, then `field.to_local_cartesian()` or `field.to_projected("EPSG:...")` before distance-based spatial operations. The source CRS and processing history are available in `field.geo`.
 

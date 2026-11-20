@@ -63,7 +63,7 @@ def test_geotiff_public_io_roundtrip_and_aliases(tmp_path):
 
     assert list_fields(tif_path) == ["band_1", "band_2"]
 
-    sf = ScalarField.read(tif_path)
+    sf = ScalarField.read(tif_path, "band_1")
     assert sf.name == "band_1"
     assert np.isnan(sf.value[0, 1, 0, 0])
 
@@ -89,10 +89,12 @@ def test_geotiff_public_io_roundtrip_and_aliases(tmp_path):
     if importlib.util.find_spec("pyproj") is not None:
         proj_unfilled = ScalarField.read(
             tif_path,
+            "band_1",
             projected={"target_crs": "EPSG:32654", "resolution": 500.0},
         )
         proj_filled = ScalarField.read(
             tif_path,
+            "band_1",
             fill_missing="nearest",
             projected={"target_crs": "EPSG:32654", "resolution": 500.0},
         )

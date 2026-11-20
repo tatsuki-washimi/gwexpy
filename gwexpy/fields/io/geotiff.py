@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib.util
 import math
 import os
-import warnings
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -67,18 +66,10 @@ def _parse_geotiff_unit(unit_tag: str | None) -> u.UnitBase:
     text = aliases.get(text.lower(), text)
     try:
         return u.Unit(text)
-    except ValueError:
-        if text.lower().endswith("s") and len(text) > 1:
-            try:
-                return u.Unit(text[:-1])
-            except ValueError:
-                pass
-        warnings.warn(
-            f"Unrecognized GeoTIFF band unit {unit_tag!r}; falling back to dimensionless.",
-            UserWarning,
-            stacklevel=3,
-        )
-        return u.dimensionless_unscaled
+    except ValueError as exc:
+        raise ValueError(
+            f"Unrecognized GeoTIFF band unit {unit_tag!r}. Specify 'unit=' explicitly."
+        ) from exc
 
 
 def _validate_bounds(bounds: tuple[float, float, float, float] | None) -> None:
@@ -125,9 +116,10 @@ def read_scalarfield_geotiff(
     source : str, Path, or file-like
         Path or file object readable by ``rasterio.open``.
     name : str, optional
-        Band selector (e.g. ``'band_1'`` or a band description). Defaults to ``band_1``.
+        Band selector (e.g. ``'band_1'`` or a band description). Required for
+        a multiband raster when ``band`` is omitted.
     band : int, optional
-        1-based band index. Overrides default band 1 when ``name`` is omitted.
+        1-based band index. A single-band raster can omit both selectors.
     bounds : tuple of (xmin, ymin, xmax, ymax), optional
         Spatial window in source CRS coordinates.
     axis_order : {'native', 'ascending'}, default 'native'
@@ -185,6 +177,11 @@ def read_scalarfield_geotiff(
                 )
             field_name = name
         else:
+            if src.count != 1:
+                raise ValueError(
+                    "A multiband GeoTIFF requires a band selector. "
+                    f"Pass a name or 'band='. Available bands: {available}."
+                )
             band_idx = 1
             field_name = "band_1"
 

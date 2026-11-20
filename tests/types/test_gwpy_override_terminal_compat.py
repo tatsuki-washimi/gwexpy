@@ -175,6 +175,27 @@ def _scalar_pair() -> tuple[ScalarField, GWpyArray]:
     return actual, expected
 
 
+def test_scalarfield_copy_matches_gwpy() -> None:
+    actual_input, expected_input = _scalar_pair()
+    for kwargs in ({}, {"order": "F"}):
+        actual = actual_input.copy(**kwargs)
+        expected = expected_input.copy(**kwargs)
+        np.testing.assert_array_equal(actual.value, expected.value)
+        assert actual.shape == expected.shape
+        assert actual.unit == expected.unit
+        assert actual.name == expected.name
+        assert actual.flags.f_contiguous == expected.flags.f_contiguous
+        assert not np.shares_memory(actual.value, actual_input.value)
+        assert actual.axis_names == actual_input.axis_names
+        assert actual.space_domains == actual_input.space_domains
+        for label in ("_axis0_index", "_axis1_index", "_axis2_index", "_axis3_index"):
+            copied = getattr(actual, label)
+            original = getattr(actual_input, label)
+            assert copied.unit == original.unit
+            np.testing.assert_array_equal(copied.value, original.value)
+            assert not np.shares_memory(copied.value, original.value)
+
+
 def test_scalarfield_diff_signature_preserves_gwpy_layout() -> None:
     actual = inspect.signature(ScalarField.diff).parameters
     expected = inspect.signature(GWpyArray.diff).parameters
