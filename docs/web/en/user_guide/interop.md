@@ -40,6 +40,26 @@ Legacy aliases remain supported during the transition, but new examples should p
 | `hdf.ndscope` | `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope HDF5 schema |
 | `xml.diaggui` | `dttxml` | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT XML |
 
+### Selecting physical quantities from a file
+
+```python
+from gwexpy.fields import FieldDict, ScalarField, list_fields
+
+available = list_fields("results.exo", format="exo.flow3d")
+pressure = ScalarField.read("results.exo", "pressure", format="exo.flow3d")
+fields = FieldDict.read("results.exo", ["velocity", "pressure"], format="exo.flow3d")
+```
+
+Use the second positional argument to select quantities.
+`FieldDict.read()` preserves the requested order, including explicit block-qualified names such as `fluid/pressure`.
+An unqualified name that expands to several keys uses the backend's block order.
+`start` and `end` select an inclusive axis-0 range for supported fields.
+
+For an in-memory xarray Dataset, including a Dataset with MetPy axis attributes, use
+`from_xarray_field(FieldDict, dataset)` from `gwexpy.interop`.
+Each variable retains its own shape and physical unit.
+Batch operations raise an error if a contained field type does not support the operation.
+
 ## At a Glance
 
 | Item | Details |

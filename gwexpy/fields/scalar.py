@@ -420,6 +420,12 @@ class ScalarField(FieldBase):
             **meta,
         )
         self._propagate_gwex_attrs(result)
+        # Format provenance may carry arrays aligned with the four field axes.
+        # Let opt-in metadata update those arrays for this normalized slice.
+        for name, provenance in self.__dict__.items():
+            slicer = getattr(provenance, "_slice_for_field", None)
+            if name.startswith("_gwex_") and callable(slicer):
+                setattr(result, name, slicer(item, self.shape, new_axes[0][1]))
         return result
 
     def _isel_tuple(self, item_tuple: tuple[Any, ...]) -> ScalarField:
