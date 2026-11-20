@@ -128,6 +128,7 @@ pip install -e ".[dev,all]"
 | `zarr` | `zarr` | Zarr array store の読み書き。 |
 | `plotting` | `pygmt` | 高精度な地図投影（GeoMap）。 |
 | `audio` | `pydub`, `tinytag` | 音声書き出し、オーディオ解析、任意のメタデータ抽出。 |
+| `geospatial` | `rasterio`, `pyproj` | GeoTIFF の Field 入出力と座標投影。`all` とは別に導入します。 |
 | `seismic` | `obspy`, `mth5>=0.6.8`, `mtpy` | 地震・地磁気データ解析と限定 `ats.mth5` reader。 |
 | `control` | `control` (python-control) | 制御系モデル・伝達関数解析。 |
 

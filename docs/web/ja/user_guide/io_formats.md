@@ -42,7 +42,7 @@ gwexpy の利用者向け I/O ガイドです。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
 - **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
-- Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / `EventTable` を基準に考えてください。Field 系の direct `.read()` / `.write()` はまだ監査中で、このページでは安定契約として公開していません。
+- Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / `EventTable` を基準に考えてください。地形 Field は[地形 Field の入出力](#地形-field-の入出力)を参照してください。Field 全体の入出力契約は監査中です。
 
 ## セクション移動
 
@@ -132,6 +132,15 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **ATS.MTH5** | `mth5` (>=0.6.8) | `seismic` | reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
 | **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | reader / writer は必要な `netcdf4` extra の案内付きで `ImportError` を送出します。 |
 | **Zarr** | `zarr` | `zarr` | reader / writer は必要な `zarr` extra の案内付きで `ImportError` を送出します。 |
+| **GeoTIFF** | `rasterio`（投影には `pyproj`） | `geospatial` | `ScalarField.read()` と `.write()` には geospatial extra が必要です。 |
+
+## 地形 Field の入出力
+
+`ScalarField.read(source, name, format="gsi-dem")` は国土地理院 FGD DEM の GML タイルまたは ZIP を読みます。パスの列を渡すとモザイク化します。欠損標高は `NaN` のまま保持します。結果は `(1, nx, ny, 1)` 形状で、経緯度軸にはピクセル中心を度単位で格納し、緯度の北から南への順序を保持します。`axis_order="ascending"` は値と軸を同時に反転します。
+
+`ScalarField.read(source, name, format="geotiff", unit="m")` は GeoTIFF の標高バンドを読みます。先に `gwexpy[geospatial]` を導入してください。複数バンドでは `band=` を指定します。単位が不明な場合は `unit=` が必要です。`ScalarField.write(path, format="geotiff")` は有効な地理参照を持つ 2 次元 Field を書き出します。非単一点の時間軸や鉛直軸は保存できません。
+
+欠損ピクセルを埋める場合は明示的に `field.fill_missing()` を呼び、距離に基づく空間処理の前に `field.to_local_cartesian()` または `field.to_projected("EPSG:...")` を使います。元の CRS と処理履歴は `field.geo` で確認できます。
 
 <a id="io-formats-ja-a"></a>
 
