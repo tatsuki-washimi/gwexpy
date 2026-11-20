@@ -207,7 +207,7 @@ def from_xarray_field(
     axis0_domain: Literal["time", "frequency"] = "time",
     space_domain: Literal["real", "k"] = "real",
 ) -> Any:
-    """Convert an ``xarray.DataArray`` or ``Dataset`` to a ScalarField / VectorField.
+    """Convert an xarray array or dataset to a GWexpy field or collection.
 
     Dimension auto-detection priority:
 
@@ -218,10 +218,10 @@ def from_xarray_field(
     Parameters
     ----------
     cls : type
-        ``ScalarField`` or ``VectorField``.
+        ``ScalarField``, ``VectorField``, or ``FieldDict``.
     da : xarray.DataArray or xarray.Dataset
-        Input array.  A ``Dataset`` is treated as a VectorField where each
-        data variable becomes one component.
+        A Dataset becomes independent quantities when ``cls`` is
+        ``FieldDict``. The VectorField conversion treats variables as components.
     axis0_dim : str, optional
         Dimension name to use as axis0.  Auto-detected when ``None``.
     spatial_dims : tuple of str, optional
@@ -236,20 +236,21 @@ def from_xarray_field(
     Returns
     -------
     ScalarField
-        When *da* is a DataArray or *cls* is ScalarField.
+        When *da* is a DataArray.
     VectorField
-        When *da* is a Dataset or *cls* is VectorField with a DataArray.
+        When *da* is a Dataset and *cls* is not FieldDict.
+    FieldDict
+        When *da* is a Dataset and *cls* is FieldDict.
 
     """
     xr = require_optional("xarray")
-    from gwexpy.fields import ScalarField, VectorField  # noqa: PLC0415
+    from gwexpy.fields import FieldDict, ScalarField, VectorField  # noqa: PLC0415
 
-    # Dataset → VectorField by converting each variable
     if isinstance(da, xr.Dataset):
         components: dict[str, Any] = {}
         for var_name in da.data_vars:
             sf = from_xarray_field(
-                ScalarField,
+                FieldDict if cls is FieldDict else ScalarField,
                 da[var_name],
                 axis0_dim=axis0_dim,
                 spatial_dims=spatial_dims,
@@ -257,6 +258,8 @@ def from_xarray_field(
                 space_domain=space_domain,
             )
             components[var_name] = sf
+        if cls is FieldDict:
+            return FieldDict(components)
         return VectorField(components)
 
     # ----- DataArray path -----
@@ -292,14 +295,12 @@ def from_xarray_field(
     # Build the 4-D data array
     # Order: move axis0_dim → position 0, then spatial dims → 1,2,3
     ordered_spatial = [role_to_dim.get(r) for r in (1, 2, 3)]
-    spatial_present = [d for d in ordered_spatial if d is not None]
+    spatial_present = [d for d in ordered_spatial if d is not None and d in dims]
     # Transpose: axis0 first, then spatial, then any extras
     new_order = []
     if ax0_dim and ax0_dim in dims:
         new_order.append(ax0_dim)
-    for d in spatial_present:
-        if d in dims:
-            new_order.append(d)
+    new_order.extend(spatial_present)
     for d in dims:
         if d not in new_order:
             new_order.append(d)
@@ -312,6 +313,11 @@ def from_xarray_field(
 
     if not ax0_present:
         data = data[np.newaxis, ...]
+
+    if cls is FieldDict and len(new_order) == len(spatial_present) + bool(ax0_present):
+        for index, dim in enumerate(ordered_spatial, start=1):
+            if dim not in dims:
+                data = np.expand_dims(data, axis=index)
 
     # Pad to exactly 4D by appending singleton axes
     while data.ndim < 4:

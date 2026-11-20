@@ -183,3 +183,36 @@ def test_standardized_field_io_dispatch_contract():
     for forbidden in ("field", "fields", "profile", "times", "grid_mode", "selectors"):
         with pytest.raises(TypeError, match="Unsupported Field I/O"):
             ScalarField.read("mem://x", format=fmt, **{forbidden: "x"})
+
+
+def test_mixed_field_read_crops_each_component_and_preserves_metadata():
+    scalar, vector, tensor = _make_heterogeneous_fields()
+    scalar._gwex_example = "source metadata"
+    mixed = FieldDict({"scalar": scalar, "vector": vector, "tensor": tensor})
+
+    def read(source, names):
+        return mixed.copy()
+
+    fmt = "_test_mixed_field_io"
+    register_field_format(fmt, reader_dict=read)
+    requested = ["tensor", "vector", "scalar"]
+    result = FieldDict.read("fixture", requested, format=fmt, end=500 * u.ms)
+    assert list(result) == requested
+    assert result["tensor"].rank == tensor.rank
+    assert result["vector"].basis == vector.basis
+    assert result["scalar"]._gwex_example == "source metadata"
+    for cropped, original, count in (
+        (result["scalar"], scalar, 2),
+        (result["vector"]["x"], vector["x"], 3),
+        (result["tensor"]["xx"], tensor["xx"], 2),
+    ):
+        assert cropped.unit == original.unit
+        np.testing.assert_array_equal(
+            cropped._axis0_index, original._axis0_index[:count]
+        )
+        np.testing.assert_array_equal(cropped._axis1_index, original._axis1_index)
+        np.testing.assert_array_equal(cropped.value, original.value[:count])
+
+    with pytest.raises(KeyError, match="absent"):
+        FieldDict.read("fixture", ["absent"], format=fmt)
+    assert list(FieldDict.read("fixture", "vector", format=fmt)) == ["vector"]

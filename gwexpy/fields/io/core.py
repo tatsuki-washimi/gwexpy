@@ -217,6 +217,45 @@ def _apply_axis0_range(field: Any, start: Any, end: Any) -> Any:
     raise ValueError("Axis-0 range selection requires contiguous samples.")
 
 
+def _crop_field(field: Any, start: Any, end: Any) -> Any:
+    from ..scalar import ScalarField
+    from ..tensor import TensorField
+    from ..vector import VectorField
+
+    if isinstance(field, ScalarField):
+        return _apply_axis0_range(field, start, end)
+    if isinstance(field, (VectorField, TensorField)):
+        components = {
+            key: _apply_axis0_range(component, start, end)
+            for key, component in field.items()
+        }
+        if isinstance(field, VectorField):
+            return VectorField(components, basis=field.basis, validate=False)
+        return TensorField(components, rank=field.rank, validate=False)
+    raise TypeError(
+        f"Axis-0 range selection is unsupported for {type(field).__name__}."
+    )
+
+
+def _order_fields(result: FieldDict, requested: list[str], fmt: str) -> FieldDict:
+    from ..collections import FieldDict
+
+    unqualified: dict[str, list[str]] = {}
+    if fmt in {"exo", "exo.flow3d"}:
+        for key in result:
+            if "/" in key:
+                unqualified.setdefault(key.rsplit("/", 1)[1], []).append(key)
+
+    ordered = FieldDict()
+    for name in requested:
+        keys = [name] if name in result else unqualified.get(name, [])
+        if not keys:
+            raise KeyError(f"Requested field {name!r} missing from reader result.")
+        for key in keys:
+            ordered[key] = result[key]
+    return ordered
+
+
 def _apply_read_aliases(
     field: ScalarField,
     *,
@@ -263,9 +302,13 @@ def list_fields(
     from .. import io as _io  # noqa: F401
     from ..collections import FieldDict
     from ..scalar import ScalarField
+    from ..tensor import TensorField
+    from ..vector import VectorField
 
     _reject_forbidden_kwargs(kwargs)
-    fmt = _resolve_read_format(source, (ScalarField, FieldDict), format, kwargs)
+    fmt = _resolve_read_format(
+        source, (ScalarField, VectorField, TensorField, FieldDict), format, kwargs
+    )
     lister = get_field_lister(fmt)
     if lister is None:
         raise ValueError(
@@ -351,11 +394,7 @@ def read_vectorfield(
             "expected VectorField."
         )
     if not range_forwarded and (start is not None or end is not None):
-        result = VectorField(
-            {k: _apply_axis0_range(v, start, end) for k, v in result.items()},
-            basis=result.basis,
-            validate=False,
-        )
+        result = _crop_field(result, start, end)
     return result
 
 
@@ -390,11 +429,7 @@ def read_tensorfield(
             "expected TensorField."
         )
     if not range_forwarded and (start is not None or end is not None):
-        result = TensorField(
-            {k: _apply_axis0_range(v, start, end) for k, v in result.items()},
-            rank=result.rank,
-            validate=False,
-        )
+        result = _crop_field(result, start, end)
     return result
 
 
@@ -434,6 +469,8 @@ def read_fielddict(
             f"names must be a str or iterable of str, got {type(names).__name__}"
         )
 
+    if any(not isinstance(name, str) or not name for name in req_names):
+        raise TypeError("Requested field names must be nonempty strings.")
     if not req_names:
         raise ValueError("FieldDict.read() requires at least one requested field name.")
 
@@ -457,20 +494,10 @@ def read_fielddict(
                 f"Reader for format {fmt!r} returned {type(result).__name__}, "
                 "expected FieldDict."
             )
-        ordered = FieldDict({k: result[k] for k in req_names if k in result})
-        for k, v in result.items():
-            if k not in ordered:
-                ordered[k] = v
+        ordered = _order_fields(result, req_names, fmt)
         if not range_forwarded and (start is not None or end is not None):
             ordered = FieldDict(
-                {
-                    k: (
-                        _apply_axis0_range(v, start, end)
-                        if hasattr(v, "_axis0_index")
-                        else v
-                    )
-                    for k, v in ordered.items()
-                }
+                (key, _crop_field(field, start, end)) for key, field in ordered.items()
             )
         return ordered
 
@@ -497,6 +524,8 @@ def read_fielddict(
             end=end,
             kwargs=kwargs,
         )
+        if not isinstance(sf, ScalarField):
+            raise TypeError(f"Reader for format {fmt!r} must return ScalarField.")
         if not name_forwarded:
             sf.name = req
         if not range_forwarded and (start is not None or end is not None):
