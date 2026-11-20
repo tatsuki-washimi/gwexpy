@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 
@@ -48,6 +48,8 @@ class VectorField(FieldDict):
 
     """
 
+    _is_gwexpy_field = True
+
     def __init__(
         self,
         components=None,
@@ -80,6 +82,52 @@ class VectorField(FieldDict):
 
         super().__init__(components, validate=validate)
         self.basis = basis
+
+    @staticmethod
+    def _validate_entry(key: Any, value: Any) -> None:
+        if not isinstance(value, ScalarField):
+            raise TypeError(
+                f"Key {key!r}: Expected ScalarField for VectorField component, "
+                f"got {type(value).__name__}."
+            )
+
+    @classmethod
+    def read(  # type: ignore[override]
+        cls,
+        source: Any,
+        name: str | None = None,
+        *,
+        format: str | None = None,
+        start: Any = None,
+        end: Any = None,
+        **kwargs: Any,
+    ) -> VectorField:
+        """Read a :class:`VectorField` from *source*.
+
+        Parameters
+        ----------
+        source : str, Path, file-like, or sequence of paths
+            Input file, archive, or dataset source.
+        name : str, optional
+            Vector quantity selector.
+        format : str, optional
+            Format identifier.
+        start, end : optional
+            Continuous range selection along axis 0 where supported.
+        **kwargs
+            Format-specific reader options.
+
+        """
+        from .io.core import read_vectorfield
+
+        return read_vectorfield(
+            source,
+            name=name,
+            format=format,
+            start=start,
+            end=end,
+            **kwargs,
+        )
 
     def copy(self) -> VectorField:
         """Return a copy of this VectorField."""
@@ -145,6 +193,7 @@ class VectorField(FieldDict):
         return ScalarField(
             np.sqrt(sq_sum),
             unit=first.unit,
+            epoch=first.epoch,
             axis0=first._axis0_index,
             axis1=first._axis1_index,
             axis2=first._axis2_index,

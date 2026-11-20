@@ -1021,16 +1021,16 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1224,
+        "cases": 1262,
         "constructors": 13,
-        "counterpart_absent_per_version": 463,
-        "counterpart_implementation_groups": 81,
-        "counterpart_present_per_version": 149,
+        "counterpart_absent_per_version": 481,
+        "counterpart_implementation_groups": 82,
+        "counterpart_present_per_version": 150,
         "differential-required": 0,
         "fixed": 224,
-        "GWexpy-only": 926,
-        "logical_members": 612,
-        "no-finding": 74,
+        "GWexpy-only": 962,
+        "logical_members": 631,
+        "no-finding": 76,
         "public_roots": 16,
         "GWpy-fails": 0,
         "unreviewed": 0,
@@ -1057,8 +1057,8 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 612
-    assert len(manifest["cases"]) == 1224
+    assert len(current["members"]) == 631
+    assert len(manifest["cases"]) == 1262
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
@@ -1355,7 +1355,7 @@ def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
 
     selectors = audit.manifest_evidence_selectors(_load_manifest())
 
-    assert len(selectors) == 63
+    assert len(selectors) == 64
     assert list(selectors) == sorted(selectors, key=lambda item: item.encode("utf-8"))
     assert {
         selector
@@ -1466,16 +1466,16 @@ def test_evidence_junit_requires_exact_reviewed_count_and_no_skips(
 ) -> None:
     audit = _load_audit_module()
     accepted = tmp_path / "accepted.xml"
-    _write_evidence_junit(accepted, cases=397)
+    _write_evidence_junit(accepted, cases=398)
     audit.validate_evidence_junit(accepted)
 
     wrong_count = tmp_path / "wrong-count.xml"
-    _write_evidence_junit(wrong_count, cases=396)
-    with pytest.raises(audit.InventoryError, match="expected 397 cases, got 396"):
+    _write_evidence_junit(wrong_count, cases=397)
+    with pytest.raises(audit.InventoryError, match="expected 398 cases, got 397"):
         audit.validate_evidence_junit(wrong_count)
 
     skipped = tmp_path / "skipped.xml"
-    _write_evidence_junit(skipped, cases=397, skipped=1)
+    _write_evidence_junit(skipped, cases=398, skipped=1)
     with pytest.raises(audit.InventoryError, match="skipped=1"):
         audit.validate_evidence_junit(skipped)
 
@@ -1523,8 +1523,8 @@ def test_terminal_cli_can_execute_every_catalog_evidence_selector() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert "397 passed" in result.stdout
-    assert "evidence execution passed: selectors=63, cases=397" in result.stdout
+    assert "398 passed" in result.stdout
+    assert "evidence execution passed: selectors=64, cases=398" in result.stdout
 
 
 @pytest.mark.parametrize(
@@ -1760,12 +1760,13 @@ def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
     case = _make_present_case_pending(manifest)
     _refresh_summary(audit, manifest)
     assert manifest["summary"]["differential-required"] == 1
+    no_finding_before = manifest["summary"]["no-finding"]
 
     _transition_pending_case(manifest, case=case)
     _refresh_summary(audit, manifest)
 
     audit.validate_manifest(manifest)
-    assert manifest["summary"]["no-finding"] == 75
+    assert manifest["summary"]["no-finding"] == no_finding_before + 1
     assert manifest["summary"]["differential-required"] == 0
 
 
@@ -1798,7 +1799,7 @@ def test_all_provisional_cases_can_reach_terminal_gate() -> None:
     for case in present_cases:
         _make_present_case_pending(manifest, case)
     _refresh_summary(audit, manifest)
-    assert manifest["summary"]["differential-required"] == len(present_cases) == 298
+    assert manifest["summary"]["differential-required"] == len(present_cases)
 
     for case in present_cases:
         _transition_pending_case(manifest, case=case)

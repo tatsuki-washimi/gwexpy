@@ -73,6 +73,7 @@ III. 高次元フィールド（フィールドAPI）
 - :doc:`フィールドAPI: ScalarField の信号処理 <field_scalar_signal>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`フィールドAPI: 高度解析ワークフロー <field_advanced_workflow>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`フィールドAPI: 高度解析の統合 <field_advanced_integration>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
+- :doc:`フィールドAPI: 国土地理院 DEM の空間スペクトル <field_dem_spatial_spectrum>` :bdg-primary:`中級` :bdg-secondary:`20分` :bdg-info:`解析実務者`
 
 IV. 高度な信号処理
 ------------------

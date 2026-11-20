@@ -50,6 +50,8 @@ _OPTIONAL_DEPENDENCIES = {
     "exudyn": "exudyn",
     "multitaper": "multitaper",
     "mtspec": "mtspec",
+    "rasterio": "rasterio",
+    "pyproj": "pyproj",
 }
 
 _INSTALL_PACKAGE_NAMES = {
@@ -103,6 +105,9 @@ _EXTRA_MAP: dict[str, str | None] = {
     # audio: Audio processing
     "pydub": "audio",
     "tinytag": "audio",
+    # geospatial: raster I/O and coordinate projection
+    "rasterio": "geospatial",
+    "pyproj": "geospatial",
     # No declared extra — install these packages directly
     # GUI dependencies are source/development-only for the first PyPI release.
     "PyQt5": None,

@@ -15,6 +15,7 @@ from ..time._reference import (
     set_time_reference,
 )
 from ..types.array4d import Array4D
+from .geo import GeoMetadata
 
 __all__ = ["FieldBase"]
 
@@ -87,6 +88,7 @@ class FieldBase(Array4D):
 
     # Field axis coordinates use `_axis0_index`, not GWpy Series' `_x0`.
     _time_reference_axis_attrs = ("_axis0_index",)
+    _is_gwexpy_field = True
 
     _axis0_index: Any
     _axis1_index: Any
@@ -172,10 +174,11 @@ class FieldBase(Array4D):
         obj._axis0_domain = axis0_domain
 
         # Handle space_domain: str -> all same, dict -> per-axis
+        valid_space_domains = ("real", "k", "angle")
         if isinstance(space_domain, str):
-            if space_domain not in ("real", "k"):
+            if space_domain not in valid_space_domains:
                 raise ValueError(
-                    f"space_domain must be 'real' or 'k', got '{space_domain}'"
+                    f"space_domain must be 'real', 'k', or 'angle', got '{space_domain}'"
                 )
             obj._space_domains = {
                 obj._axis1_name: space_domain,
@@ -184,9 +187,9 @@ class FieldBase(Array4D):
             }
         elif isinstance(space_domain, dict):
             for name, dom in space_domain.items():
-                if dom not in ("real", "k"):
+                if dom not in valid_space_domains:
                     raise ValueError(
-                        f"space_domain values must be 'real' or 'k', "
+                        f"space_domain values must be 'real', 'k', or 'angle', "
                         f"got '{dom}' for '{name}'"
                     )
             obj._space_domains = dict(space_domain)
@@ -356,6 +359,23 @@ class FieldBase(Array4D):
 
     def _validate_field_alignment(self, other: FieldBase) -> None:
         """Reject arithmetic between fields on different physical grids."""
+        left_geo = self.geo
+        right_geo = other.geo
+        left_active = left_geo is not None and left_geo.active
+        right_active = right_geo is not None and right_geo.active
+        if left_active != right_active or (
+            left_geo is not None
+            and right_geo is not None
+            and left_active
+            and right_active
+            and (left_geo.crs or "").strip().upper()
+            != (right_geo.crs or "").strip().upper()
+        ):
+            raise ValueError(
+                "Field CRS mismatch: active georeferencing must agree before "
+                "arithmetic. Reproject operands to a common CRS first."
+            )
+
         if self.time_reference != other.time_reference:
             raise ValueError(
                 "Field time-reference mismatch: "
@@ -395,6 +415,44 @@ class FieldBase(Array4D):
     def space_domains(self):
         """Mapping of spatial axis names to domains."""
         return dict(self._space_domains)
+
+    @property
+    def geo(self) -> GeoMetadata | None:
+        """Georeferencing metadata (``None`` when not georeferenced)."""
+        return getattr(self, "_gwex_geo", None)
+
+    @geo.setter
+    def geo(self, value: GeoMetadata | None) -> None:
+        if value is not None and not isinstance(value, GeoMetadata):
+            raise TypeError(
+                f"geo must be a GeoMetadata instance or None, got {type(value).__name__}"
+            )
+        self._gwex_geo = value
+
+    def _set_axis_name(self, index: int, name: str) -> None:
+        old_name = self.axis_names[index] if index < 4 else None
+        super()._set_axis_name(index, name)
+        if index in (1, 2, 3) and old_name is not None and old_name != name:
+            domains = getattr(self, "_space_domains", None)
+            if isinstance(domains, dict) and old_name in domains:
+                domains[name] = domains.pop(old_name)
+
+    def copy(self, order: str = "C") -> FieldBase:
+        """Return a copy of the field with independent coordinate and domain metadata."""
+        result = super().copy(order=order)
+        for attr in ("_axis0_index", "_axis1_index", "_axis2_index", "_axis3_index"):
+            idx = getattr(self, attr, None)
+            if idx is not None and hasattr(idx, "copy"):
+                setattr(result, attr, idx.copy())
+        result._space_domains = dict(self._space_domains)
+        space_origins = getattr(self, "_space_origins", None)
+        if space_origins is not None:
+            result._space_origins = dict(space_origins)
+        for attr in ("_axis0_offset", "_axis0_dt"):
+            val = getattr(self, attr, None)
+            if val is not None and hasattr(val, "copy"):
+                setattr(result, attr, val.copy())
+        return result
 
     # ------------------------------------------------------------------
     # Visualization Helpers
@@ -699,12 +757,17 @@ class FieldBase(Array4D):
                         f"equivalent to {expected}, got {axis0_unit}"
                     )
 
-        # Spatial axes: position or wavenumber
+        # Spatial axes: position, wavenumber, or angle
         spatial_axes = [
             (self._axis1_name, getattr(self, "_axis1_index", None)),
             (self._axis2_name, getattr(self, "_axis2_index", None)),
             (self._axis3_name, getattr(self, "_axis3_index", None)),
         ]
+        domain_expected_units = {
+            "real": u.m,
+            "k": 1 / u.m,
+            "angle": u.rad,
+        }
         for name, axis in spatial_axes:
             domain = self._space_domains.get(name)
             if domain is None or not isinstance(axis, u.Quantity):
@@ -712,7 +775,9 @@ class FieldBase(Array4D):
             axis_unit = axis.unit
             if axis_unit == u.dimensionless_unscaled:
                 continue
-            expected = u.m if domain == "real" else 1 / u.m
+            if domain not in domain_expected_units:
+                raise ValueError(f"Unknown space_domain '{domain}' for axis '{name}'.")
+            expected = domain_expected_units[domain]
             if not axis_unit.is_equivalent(expected):
                 raise ValueError(
                     f"Spatial axis '{name}' domain '{domain}' expects units "

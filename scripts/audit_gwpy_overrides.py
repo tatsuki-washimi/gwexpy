@@ -131,7 +131,7 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
 SUBPROCESS_OUTPUT_LIMIT = 2_000_000
-EXPECTED_EVIDENCE_CASES = 397
+EXPECTED_EVIDENCE_CASES = 398
 EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
 SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
 SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
@@ -403,6 +403,16 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
                 "of preserving the installed GWpy result."
             ),
             comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        "gwexpy.fields.scalar.ScalarField",
+        "copy",
+        _terminal_closure(
+            "no-finding",
+            "field-copy-values-order-and-metadata",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_copy_matches_gwpy",
+            issues=("#639", "#546"),
         ),
     )
     register(

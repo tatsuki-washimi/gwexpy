@@ -7,6 +7,7 @@ These tests do NOT require MetPy or wrf-python; only xarray is needed.
 
 import numpy as np
 import pytest
+from astropy import units as u
 
 xr = pytest.importorskip("xarray")
 
@@ -260,6 +261,36 @@ class TestFromXarrayDataset:
 # ---------------------------------------------------------------------------
 # to_xarray_field
 # ---------------------------------------------------------------------------
+
+
+def test_dataset_to_fielddict_preserves_independent_quantities():
+    from gwexpy.fields import FieldDict
+
+    pressure = xr.DataArray(
+        [1.0, 2.0],
+        dims=("east",),
+        attrs={"units": "Pa"},
+        coords={
+            "east": xr.DataArray([10.0, 20.0], dims="east", attrs={"_metpy_axis": "x"})
+        },
+    )
+    density = xr.DataArray(
+        [3.0, 4.0, 5.0],
+        dims=("z",),
+        coords={"z": [2.0, 4.0, 6.0]},
+        attrs={"units": "kg/m3"},
+    )
+    fields = from_xarray_field(
+        FieldDict, xr.Dataset({"pressure": pressure, "density": density})
+    )
+    assert isinstance(fields, FieldDict)
+    assert list(fields) == ["pressure", "density"]
+    assert fields["pressure"].unit == u.Pa
+    assert fields["density"].unit == u.kg / u.m**3
+    assert fields["pressure"].shape == (1, 2, 1, 1)
+    assert fields["density"].shape == (1, 1, 1, 3)
+    np.testing.assert_array_equal(fields["pressure"]._axis1_index.value, [10.0, 20.0])
+    np.testing.assert_array_equal(fields["density"]._axis3_index.value, [2.0, 4.0, 6.0])
 
 
 class TestToXarrayField:

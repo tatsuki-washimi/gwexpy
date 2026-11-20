@@ -42,7 +42,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
-- For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. Field-class direct `.read()` / `.write()` is still under audit and is not published as a stable contract on this page.
+- For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. For terrain fields, see [Terrain Field I/O](#terrain-field-io); the broader Field I/O contract remains under audit.
 
 ## Jump Links
 
@@ -133,6 +133,15 @@ on optional packages or optional metadata helpers.
 | **ATS.MTH5** | `mth5` (>=0.6.8) | `seismic` | Reader raises `ImportError` with the required `seismic` extra in its install guidance. |
 | **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | Reader/writer raises `ImportError` with the required `netcdf4` extra in its install guidance. |
 | **Zarr** | `zarr` | `zarr` | Reader/writer raises `ImportError` with the required `zarr` extra in its install guidance. |
+| **GeoTIFF** | `rasterio` (`pyproj` for projection) | `geospatial` | `ScalarField.read()` and `.write()` require the geospatial extra. |
+
+## Terrain Field I/O
+
+`ScalarField.read(source, name, format="gsi-dem")` reads GSI FGD DEM GML tiles or a ZIP archive. Pass a sequence of tile paths to mosaic them. Missing elevations remain `NaN`. The result has shape `(1, nx, ny, 1)` with longitude and latitude pixel centers in degrees; native north-to-south latitude order is preserved. Use `axis_order="ascending"` to reverse the latitude axis and values together.
+
+`ScalarField.read(source, name, format="geotiff", unit="m")` reads a GeoTIFF elevation band. Install `gwexpy[geospatial]` first. For a multiband file, pass a band name or `band=`. An unrecognized unit tag requires `unit=`. A band without a unit tag defaults to a dimensionless value unit. `ScalarField.write(path, format="geotiff")` writes a two-dimensional field with active georeferencing and singleton time and vertical axes.
+
+Use `field.fill_missing()` to fill missing pixels explicitly, then `field.to_local_cartesian()` or `field.to_projected("EPSG:...")` before distance-based spatial operations. The source CRS and processing history are available in `field.geo`.
 
 <a id="io-formats-en-a"></a>
 

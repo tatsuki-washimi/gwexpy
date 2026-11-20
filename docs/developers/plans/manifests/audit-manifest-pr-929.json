@@ -1,0 +1,78 @@
+{
+  "pull_request": 929,
+  "base": "a31268ad44adc1c201ce298e48e31868dd10de61",
+  "scope": "Geospatial Field foundations, DEM I/O, and common T01 dispatch. The separate audit-manifest-v030-fields-geo.json records the historical integration branch, including its plot and surface work.",
+  "skills_used": [
+    "triage_ci",
+    "gwexpy_conda_jobs",
+    "github-mcp-secret-filter"
+  ],
+  "checks": [
+    {
+      "command": "pytest -q tests/fields tests/types/test_axis_regularity.py tests/io/test_field_direct_io_contract_audit.py tests/io/test_gsi_dem_public_io.py tests/io/test_gsi_dem_reader.py tests/io/test_geotiff_public_io.py tests/io/test_geotiff_reader.py tests/interop/test_interop_xarray_field.py",
+      "result": "548 passed, 3 skipped with rasterio available"
+    },
+    {
+      "command": "python scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence (GWpy 4.0.1 and 4.0.2)",
+      "result": "631 members, 64 evidence selectors, 398 passed per GWpy version"
+    },
+    {
+      "command": "ruff check and ruff format --check (six changed Python files); mypy gwexpy/fields/io/geotiff.py; git diff --check",
+      "result": "passed"
+    }
+  ],
+  "physics_check": "Field physics regressions ran with the Field tests. GeoTIFF rejects ambiguous band selection and unrecognized nonempty unit tags. The copy oracle checks values, shape, unit, storage order and independence, with explicit checks for Field axis preservation.",
+  "approval": "Prerequisite Field changes require human sign-off. Previously granted T01 sign-off applies to its original diff.",
+  "files_changed": [
+    "docs/developers/contracts/field_direct_io_audit.md",
+    "docs/developers/plans/manifests/audit-manifest-pr-929.json",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+    "docs/developers/plans/manifests/audit-manifest-v030-fields-geo.json",
+    "docs/web/en/user_guide/installation.md",
+    "docs/web/en/user_guide/io_formats.md",
+    "docs/web/en/user_guide/tutorials/field_dem_spatial_spectrum.ipynb",
+    "docs/web/en/user_guide/tutorials/index.rst",
+    "docs/web/ja/user_guide/installation.md",
+    "docs/web/ja/user_guide/io_formats.md",
+    "docs/web/ja/user_guide/tutorials/field_dem_spatial_spectrum.ipynb",
+    "docs/web/ja/user_guide/tutorials/index.rst",
+    "gwexpy/fields/__init__.py",
+    "gwexpy/fields/base.py",
+    "gwexpy/fields/collections.py",
+    "gwexpy/fields/geo.py",
+    "gwexpy/fields/io/__init__.py",
+    "gwexpy/fields/io/_registration.py",
+    "gwexpy/fields/io/core.py",
+    "gwexpy/fields/io/geotiff.py",
+    "gwexpy/fields/io/gsi_dem.py",
+    "gwexpy/fields/scalar.py",
+    "gwexpy/fields/signal.py",
+    "gwexpy/fields/tensor.py",
+    "gwexpy/fields/vector.py",
+    "gwexpy/interop/_optional.py",
+    "gwexpy/interop/xarray_.py",
+    "gwexpy/types/axis.py",
+    "gwexpy/types/axis_api.py",
+    "pyproject.toml",
+    "scripts/audit_gwpy_overrides.py",
+    "tests/fields/test_fielddict_heterogeneous.py",
+    "tests/fields/test_nonuniform_rectilinear.py",
+    "tests/fields/test_scalarfield_angle_domain.py",
+    "tests/fields/test_scalarfield_fft_space_regularity.py",
+    "tests/fields/test_scalarfield_fill_missing.py",
+    "tests/fields/test_scalarfield_geo_metadata.py",
+    "tests/fields/test_scalarfield_local_cartesian.py",
+    "tests/fields/test_scalarfield_projected.py",
+    "tests/fields/test_scalarfield_projected_guards.py",
+    "tests/interop/test_interop_xarray_field.py",
+    "tests/io/test_field_direct_io_contract_audit.py",
+    "tests/io/test_geotiff_public_io.py",
+    "tests/io/test_geotiff_reader.py",
+    "tests/io/test_gsi_dem_public_io.py",
+    "tests/io/test_gsi_dem_reader.py",
+    "tests/io_conformance/generators/gsi_dem.py",
+    "tests/test_gwpy_override_inventory.py",
+    "tests/types/test_axis_regularity.py",
+    "tests/types/test_gwpy_override_terminal_compat.py"
+  ]
+}
