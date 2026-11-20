@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from .vector import VectorField
 
 import numpy as np
+from astropy import units as u
 
 from .collections import FieldDict
 from .scalar import ScalarField
@@ -536,3 +537,82 @@ class TensorField(FieldDict):
                     ax.axis("off")
 
         return fp
+
+    # ------------------------------------------------------------------
+    # Coordinate Frames and Rotation (#556)
+    # ------------------------------------------------------------------
+
+    @property
+    def frame(self) -> Any:
+        """Coordinate frame / grid orientation geometry (:class:`~gwexpy.fields.GridGeometry`)."""
+        own = getattr(self, "_gwex_frame", None)
+        if own is not None:
+            return own
+        if self:
+            return getattr(next(iter(self.values())), "_gwex_frame", None)
+        return None
+
+    def assume_frame(self, frame: Any) -> TensorField:
+        """Return a copy with *frame* assigned to all components without rotation."""
+        from .frames import tensor_assume_frame
+
+        return tensor_assume_frame(self, frame)
+
+    def to_frame(
+        self,
+        frame: Any,
+        *,
+        require_orthogonal: bool = True,
+        strict_datum: bool = True,
+    ) -> TensorField:
+        r"""Passive basis and component transformation (:math:`T' = R T R^{\mathsf T}`) without spatial interpolation."""
+        from .frames import tensor_to_frame
+
+        return tensor_to_frame(
+            self,
+            frame,
+            require_orthogonal=require_orthogonal,
+            strict_datum=strict_datum,
+        )
+
+    def regrid_to_frame(
+        self,
+        frame: Any,
+        *,
+        resolution: float | tuple[float, float] | u.Quantity | None = None,
+        method: Literal["nearest", "bilinear", "cubic"] = "bilinear",
+        axis_names: tuple[str, str] | None = None,
+        strict_datum: bool = True,
+    ) -> TensorField:
+        r"""Explicitly resample onto *frame*'s grid and rotate components (:math:`T' = R T R^{\mathsf T}`)."""
+        from .frames import tensor_regrid_to_frame
+
+        return tensor_regrid_to_frame(
+            self,
+            frame,
+            resolution=resolution,
+            method=method,
+            axis_names=axis_names,
+            strict_datum=strict_datum,
+        )
+
+    def rotate_horizontal(
+        self,
+        angle: float | u.Quantity,
+        *,
+        center: tuple[float | u.Quantity, float | u.Quantity] | None = None,
+        resample: bool = False,
+        resolution: float | tuple[float, float] | u.Quantity | None = None,
+        method: Literal["nearest", "bilinear", "cubic"] = "bilinear",
+    ) -> TensorField:
+        r"""Rotate horizontally around the vertical (+z) axis by *angle* (:math:`T' = R T R^{\mathsf T}`)."""
+        from .frames import tensor_rotate_horizontal
+
+        return tensor_rotate_horizontal(
+            self,
+            angle,
+            center=center,
+            resample=resample,
+            resolution=resolution,
+            method=method,
+        )
