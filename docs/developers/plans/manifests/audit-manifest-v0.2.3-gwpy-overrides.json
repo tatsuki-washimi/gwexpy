@@ -44073,7 +44073,7 @@
               }
             },
             "source": {
-              "line": 651,
+              "line": 710,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -44102,7 +44102,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::animate::function",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 651,
+        "line": 710,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -47076,6 +47076,62 @@
                   },
                   "kind": "POSITIONAL_OR_KEYWORD",
                   "name": "slices"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "terrain"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": "hillshade"
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "terrain_style"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "basemap"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "vector"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "detectors"
                 },
                 {
                   "annotation": {
@@ -58382,7 +58438,7 @@
               }
             },
             "source": {
-              "line": 25,
+              "line": 142,
               "path": "gwexpy/plot/field.py"
             }
           }
@@ -58403,7 +58459,367 @@
       "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::__init__::function",
       "resolution": "direct",
       "source": {
-        "line": 25,
+        "line": 142,
+        "path": "gwexpy/plot/field.py"
+      }
+    },
+    {
+      "alias_group": null,
+      "constructor": false,
+      "counterpart_class": "gwpy.plot.plot.Plot",
+      "descriptor": {
+        "accessors": [],
+        "details": {
+          "call": {
+            "signature": {
+              "available": true,
+              "parameters": [
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "self"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": "gsi-std"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "source"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "int | None"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "zoom"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "tuple[float, float, float, float] | None"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "extent"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 1.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "alpha"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "bool"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "attribution"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "cache_dir"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 10.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "timeout"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "VAR_KEYWORD",
+                  "name": "kwargs"
+                }
+              ],
+              "return_annotation": {
+                "kind": "literal",
+                "value": "list[Any]"
+              }
+            },
+            "source": {
+              "line": 754,
+              "path": "gwexpy/plot/field.py"
+            }
+          }
+        }
+      },
+      "effective_owner": "gwexpy.plot.field.FieldPlot",
+      "exports": [
+        "gwexpy.plot.field:FieldPlot"
+      ],
+      "kind": "function",
+      "member": "add_basemap",
+      "member_id": "gwexpy.plot.field.FieldPlot/add_basemap",
+      "mro_prefix": [
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot"
+      ],
+      "public_class": "gwexpy.plot.field.FieldPlot",
+      "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_basemap::function",
+      "resolution": "direct",
+      "source": {
+        "line": 754,
+        "path": "gwexpy/plot/field.py"
+      }
+    },
+    {
+      "alias_group": null,
+      "constructor": false,
+      "counterpart_class": "gwpy.plot.plot.Plot",
+      "descriptor": {
+        "accessors": [],
+        "details": {
+          "call": {
+            "signature": {
+              "available": true,
+              "parameters": [
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "self"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "name"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "bool | str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "label"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 4.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "zorder"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "VAR_KEYWORD",
+                  "name": "kwargs"
+                }
+              ],
+              "return_annotation": {
+                "kind": "empty"
+              }
+            },
+            "source": {
+              "line": 647,
+              "path": "gwexpy/plot/field.py"
+            }
+          }
+        }
+      },
+      "effective_owner": "gwexpy.plot.field.FieldPlot",
+      "exports": [
+        "gwexpy.plot.field:FieldPlot"
+      ],
+      "kind": "function",
+      "member": "add_detector",
+      "member_id": "gwexpy.plot.field.FieldPlot/add_detector",
+      "mro_prefix": [
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot"
+      ],
+      "public_class": "gwexpy.plot.field.FieldPlot",
+      "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_detector::function",
+      "resolution": "direct",
+      "source": {
+        "line": 647,
+        "path": "gwexpy/plot/field.py"
+      }
+    },
+    {
+      "alias_group": null,
+      "constructor": false,
+      "counterpart_class": "gwpy.plot.plot.Plot",
+      "descriptor": {
+        "accessors": [],
+        "details": {
+          "call": {
+            "signature": {
+              "available": true,
+              "parameters": [
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "self"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "x"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "y"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "labels"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": "o"
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "marker"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 4.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "zorder"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "VAR_KEYWORD",
+                  "name": "kwargs"
+                }
+              ],
+              "return_annotation": {
+                "kind": "empty"
+              }
+            },
+            "source": {
+              "line": 581,
+              "path": "gwexpy/plot/field.py"
+            }
+          }
+        }
+      },
+      "effective_owner": "gwexpy.plot.field.FieldPlot",
+      "exports": [
+        "gwexpy.plot.field:FieldPlot"
+      ],
+      "kind": "function",
+      "member": "add_markers",
+      "member_id": "gwexpy.plot.field.FieldPlot/add_markers",
+      "mro_prefix": [
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot"
+      ],
+      "public_class": "gwexpy.plot.field.FieldPlot",
+      "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_markers::function",
+      "resolution": "direct",
+      "source": {
+        "line": 581,
         "path": "gwexpy/plot/field.py"
       }
     },
@@ -58473,6 +58889,18 @@
                 },
                 {
                   "annotation": {
+                    "kind": "literal",
+                    "value": "bool"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "colorbar"
+                },
+                {
+                  "annotation": {
                     "kind": "empty"
                   },
                   "default": {
@@ -58487,7 +58915,7 @@
               }
             },
             "source": {
-              "line": 45,
+              "line": 158,
               "path": "gwexpy/plot/field.py"
             }
           }
@@ -58508,7 +58936,194 @@
       "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_scalar::function",
       "resolution": "direct",
       "source": {
-        "line": 45,
+        "line": 158,
+        "path": "gwexpy/plot/field.py"
+      }
+    },
+    {
+      "alias_group": null,
+      "constructor": false,
+      "counterpart_class": "gwpy.plot.plot.Plot",
+      "descriptor": {
+        "accessors": [],
+        "details": {
+          "call": {
+            "signature": {
+              "available": true,
+              "parameters": [
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "self"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "dem"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "x"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "y"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": "hillshade"
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "style"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 315.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "azdeg"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 45.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "altdeg"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "float"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 1.0
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "vert_exag"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "levels"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "cmap"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "bool"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "colorbar"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "slice_kwargs"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "VAR_KEYWORD",
+                  "name": "kwargs"
+                }
+              ],
+              "return_annotation": {
+                "kind": "empty"
+              }
+            },
+            "source": {
+              "line": 335,
+              "path": "gwexpy/plot/field.py"
+            }
+          }
+        }
+      },
+      "effective_owner": "gwexpy.plot.field.FieldPlot",
+      "exports": [
+        "gwexpy.plot.field:FieldPlot"
+      ],
+      "kind": "function",
+      "member": "add_terrain",
+      "member_id": "gwexpy.plot.field.FieldPlot/add_terrain",
+      "mro_prefix": [
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot"
+      ],
+      "public_class": "gwexpy.plot.field.FieldPlot",
+      "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_terrain::function",
+      "resolution": "direct",
+      "source": {
+        "line": 335,
         "path": "gwexpy/plot/field.py"
       }
     },
@@ -58603,7 +59218,7 @@
               }
             },
             "source": {
-              "line": 112,
+              "line": 241,
               "path": "gwexpy/plot/field.py"
             }
           }
@@ -58624,7 +59239,149 @@
       "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::add_vector::function",
       "resolution": "direct",
       "source": {
-        "line": 112,
+        "line": 241,
+        "path": "gwexpy/plot/field.py"
+      }
+    },
+    {
+      "alias_group": null,
+      "constructor": false,
+      "counterpart_class": "gwpy.plot.plot.Plot",
+      "descriptor": {
+        "accessors": [],
+        "details": {
+          "call": {
+            "signature": {
+              "available": true,
+              "parameters": [
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "self"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "field"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "x"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "y"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "str"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": "t"
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "axis"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "int"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "interval"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  "kind": "POSITIONAL_OR_KEYWORD",
+                  "name": "slice_kwargs"
+                },
+                {
+                  "annotation": {
+                    "kind": "literal",
+                    "value": "bool"
+                  },
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "kind": "KEYWORD_ONLY",
+                  "name": "colorbar"
+                },
+                {
+                  "annotation": {
+                    "kind": "empty"
+                  },
+                  "default": {
+                    "kind": "empty"
+                  },
+                  "kind": "VAR_KEYWORD",
+                  "name": "kwargs"
+                }
+              ],
+              "return_annotation": {
+                "kind": "literal",
+                "value": "FuncAnimation"
+              }
+            },
+            "source": {
+              "line": 1055,
+              "path": "gwexpy/plot/field.py"
+            }
+          }
+        }
+      },
+      "effective_owner": "gwexpy.plot.field.FieldPlot",
+      "exports": [
+        "gwexpy.plot.field:FieldPlot"
+      ],
+      "kind": "function",
+      "member": "animate_scalar",
+      "member_id": "gwexpy.plot.field.FieldPlot/animate_scalar",
+      "mro_prefix": [
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot"
+      ],
+      "public_class": "gwexpy.plot.field.FieldPlot",
+      "raw_descriptor_identity": "gwexpy.plot.field.FieldPlot::animate_scalar::function",
+      "resolution": "direct",
+      "source": {
+        "line": 1055,
         "path": "gwexpy/plot/field.py"
       }
     },
@@ -145170,7 +145927,7 @@
       ],
       "public_class": "gwexpy.plot.field.FieldPlot",
       "source": {
-        "line": 11,
+        "line": 118,
         "path": "gwexpy/plot/field.py"
       }
     },
