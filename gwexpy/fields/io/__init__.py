@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from . import _simulation as _simulation  # noqa: F401
 from . import geotiff as _geotiff  # noqa: F401
 from . import gsi_dem as _gsi_dem  # noqa: F401
 from ._registration import (

@@ -446,6 +446,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             "tdms",
             "xml.diaggui",
             "dttxml",
+            "semd.specfem3d",
+            "semv.specfem3d",
+            "sema.specfem3d",
+            "specfem3d",
+            "sac.specfem3d",
         }:
             direct_readers = {
                 "mseed": (
@@ -469,6 +474,26 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     "read_timeseriesdict_dttxml",
                 ),
                 "dttxml": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
+                "semd.specfem3d": (
+                    "gwexpy.timeseries.io.specfem3d",
+                    "read_specfem3d_semd_dict",
+                ),
+                "semv.specfem3d": (
+                    "gwexpy.timeseries.io.specfem3d",
+                    "read_specfem3d_semv_dict",
+                ),
+                "sema.specfem3d": (
+                    "gwexpy.timeseries.io.specfem3d",
+                    "read_specfem3d_sema_dict",
+                ),
+                "specfem3d": (
+                    "gwexpy.timeseries.io.specfem3d",
+                    "read_specfem3d_seismogram_dict",
+                ),
+                "sac.specfem3d": (
+                    "gwexpy.timeseries.io.specfem3d",
+                    "read_specfem3d_sac_dict",
+                ),
             }
             module_name, func_name = direct_readers[fmt]
             module = __import__(module_name, fromlist=[func_name])

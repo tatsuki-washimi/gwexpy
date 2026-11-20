@@ -40,6 +40,25 @@ myst:
 | `hdf.ndscope` | `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope HDF5 schema |
 | `xml.diaggui` | `dttxml` | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT XML |
 
+### ファイルからの物理量の選択
+
+```python
+from gwexpy.fields import FieldDict, ScalarField, list_fields
+
+available = list_fields("results.exo", format="exo.flow3d")
+pressure = ScalarField.read("results.exo", "pressure", format="exo.flow3d")
+fields = FieldDict.read("results.exo", ["velocity", "pressure"], format="exo.flow3d")
+```
+
+第2位置引数に読み込む物理量名を指定します。
+`FieldDict.read()` は `fluid/pressure` のようなブロック修飾名も指定順に返します。
+ブロック名を省略した物理量が複数のブロックに対応する場合は、バックエンド内のブロック順で返します。
+軸0の範囲指定に対応するFieldでは、`start` と `end` を指定すると両端を含む範囲を選択できます。
+
+メモリ上のxarray Datasetは、`gwexpy.interop` の `from_xarray_field(FieldDict, dataset)` で変換します。
+MetPyの軸属性を持つDatasetも変換でき、変数ごとの形状と物理単位を保持します。
+一括演算に対応しないFieldが含まれる場合、その演算はエラーを返します。
+
 ## このページでわかること
 
 | 項目 | 内容 |

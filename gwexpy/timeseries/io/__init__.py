@@ -21,6 +21,7 @@ from . import (
     netcdf4_,  # noqa: F401
     sdb,  # noqa: F401
     seismic,  # noqa: F401
+    specfem3d,  # noqa: F401
     stubs,  # noqa: F401
     tdms,  # noqa: F401
     wav,  # noqa: F401
