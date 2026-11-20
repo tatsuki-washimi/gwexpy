@@ -7,10 +7,11 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-import netCDF4
 import numpy as np
 import pytest
 from astropy import units as u
+
+netCDF4 = pytest.importorskip("netCDF4")
 
 from gwexpy.fields import FieldDict, ScalarField, VectorField
 from gwexpy.interop.exodus_ import (

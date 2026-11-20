@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import netCDF4
 import numpy as np
 import pytest
 from astropy import units as u
@@ -74,6 +73,8 @@ def _make_minimal_openfoam_case(case_dir: Path) -> Path:
 
 
 def _make_minimal_exodus(path: Path, block_names: tuple[str, ...] = ("fluid",)) -> Path:
+    netCDF4 = pytest.importorskip("netCDF4")
+
     def write_char(var, items: list[str]) -> None:
         arr = np.zeros(var.shape, dtype="S1")
         for i, text in enumerate(items):
