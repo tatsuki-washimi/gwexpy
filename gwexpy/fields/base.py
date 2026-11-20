@@ -581,10 +581,22 @@ class FieldBase(Array4D):
 
         return data_slice * self.unit, x_index, y_index, x_axis, y_axis
 
-    def plot(self, x=None, y=None, slices=None, **kwargs):
-        """Plot the field as a 2D slice.
+    def plot(
+        self,
+        x=None,
+        y=None,
+        slices=None,
+        *,
+        terrain=None,
+        terrain_style: str = "hillshade",
+        basemap=None,
+        vector=None,
+        detectors=None,
+        **kwargs,
+    ):
+        """Plot the field as a 2D slice with optional layered overlays.
 
-        Wrapper around FieldPlot.
+        Wrapper around :class:`~gwexpy.plot.field.FieldPlot`.
 
         Parameters
         ----------
@@ -595,21 +607,31 @@ class FieldBase(Array4D):
         slices : dict, optional
             Dictionary of axis names to coordinate values for slicing.
             Useful to resolve conflicts when an axis name matches a parameter name.
+        terrain : ScalarField, optional
+            Optional DEM field rendered as a background terrain layer via
+            :meth:`~gwexpy.plot.field.FieldPlot.add_terrain` (``zorder=1.0``).
+        terrain_style : str, optional
+            Style passed to ``add_terrain`` (default ``'hillshade'``).
+        basemap : bool, str, or dict, optional
+            Optional XYZ tile basemap layer (``zorder=0.0``). Pass ``True`` for
+            the default provider (``'gsi-std'``), a provider name/template string,
+            or a dict of keyword arguments for ``add_basemap``.
+        vector : VectorField, optional
+            Optional vector field overlaid as quiver arrows (``zorder=3.0``).
+        detectors : str or sequence of str, optional
+            Optional gravitational-wave detector names plotted via
+            :meth:`~gwexpy.plot.field.FieldPlot.add_detector` (``zorder=4.0``).
         **kwargs
-            Fixed coordinates (e.g. z=0) and plotting keyword arguments.
+            Fixed coordinates (e.g. ``z=0``) and plotting keyword arguments
+            forwarded to :meth:`~gwexpy.plot.field.FieldPlot.add_scalar`.
 
         """
         from gwexpy.interop._registry import ConverterRegistry
 
         FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
 
-        # Initialize empty FieldPlot, then add scalar
+        # Initialize empty FieldPlot
         fp = FieldPlot()
-
-        # Separate slice kwargs from plot kwargs
-        # Slice kwargs: axis names and coordinate values
-        # Plot kwargs: cmap, vmin, vmax, etc.
-        # Heuristic: if arg is an axis name, it's a fixed coord.
 
         slice_kwargs = {}
         if slices is not None:
@@ -630,11 +652,50 @@ class FieldBase(Array4D):
             else:
                 plot_kwargs[k] = v
 
+        if terrain is not None:
+            fp.add_terrain(
+                terrain,
+                x=x,
+                y=y,
+                style=terrain_style,
+                slice_kwargs=slice_kwargs,
+            )
+
         fp.add_scalar(self, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
+
+        if basemap is not None and basemap is not False:
+            if basemap is True:
+                fp.add_basemap()
+            elif isinstance(basemap, str):
+                fp.add_basemap(source=basemap)
+            elif isinstance(basemap, dict):
+                fp.add_basemap(**basemap)
+            else:
+                raise TypeError(
+                    "basemap must be bool, str, or dict of add_basemap kwargs, "
+                    f"got {type(basemap).__name__}."
+                )
+
+        if vector is not None:
+            fp.add_vector(
+                vector,
+                x=x,
+                y=y,
+                mode="quiver",
+                slice_kwargs=slice_kwargs,
+            )
+
+        if detectors is not None:
+            det_list = [detectors] if isinstance(detectors, str) else list(detectors)
+            for det_name in det_list:
+                fp.add_detector(det_name)
+
         return fp
 
     def animate(self, x=None, y=None, axis="t", interval=100, **kwargs):
         """Create an animation along a specified axis.
+
+        Delegates to :meth:`~gwexpy.plot.field.FieldPlot.animate_scalar`.
 
         Parameters
         ----------
@@ -643,7 +704,7 @@ class FieldBase(Array4D):
         y : str, optional
             Y-axis name.
         axis : str
-            Name of the axis to iterate over (default 't').
+            Name of the axis to iterate over (default ``'t'``).
         interval : int
             Delay between frames in milliseconds.
         **kwargs
@@ -655,27 +716,16 @@ class FieldBase(Array4D):
             The animation object.
 
         """
-        from matplotlib.animation import FuncAnimation
-
         from gwexpy.interop._registry import ConverterRegistry
 
         FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
 
-        # Identify axis to loop
         all_axes = [
             self._axis0_name,
             self._axis1_name,
             self._axis2_name,
             self._axis3_name,
         ]
-        try:
-            loop_idx_pos = all_axes.index(axis)
-        except ValueError:
-            raise ValueError(f"Animation axis '{axis}' not found in {all_axes}")
-
-        loop_axis_index = getattr(self, f"_axis{loop_idx_pos}_index")
-
-        # Determine fixed params for other axes
         slice_kwargs = {}
         plot_kwargs = {}
 
@@ -685,60 +735,16 @@ class FieldBase(Array4D):
             else:
                 plot_kwargs[k] = v
 
-        # Initialize Plot
         fp = FieldPlot()
-        ax = fp.gca()
-
-        # Pre-calculate common arguments to avoid overhead
-        # We need to decide proper vmin/vmax if not provided, to keep scale steady
-        if "vmin" not in plot_kwargs or "vmax" not in plot_kwargs:
-            # Calculate global min/max for the whole field (or sampled?)
-            # This might be heavy for huge data.
-            # Use 2% and 98% percentile of the whole data? Or just min/max?
-            # Safe default fallback: let matplotlib decide per frame (flickering!)
-            # Better: use min/max of the field.
-            if "vmin" not in plot_kwargs:
-                plot_kwargs["vmin"] = np.nanmin(self.value)
-            if "vmax" not in plot_kwargs:
-                plot_kwargs["vmax"] = np.nanmax(self.value)
-
-        def update(frame_val):
-            ax.clear()
-            # Update slice kwargs with current frame value
-            current_slice_kwargs = slice_kwargs.copy()
-            current_slice_kwargs[axis] = frame_val
-
-            # Add scalar plot
-            fp.add_scalar(
-                self, x=x, y=y, slice_kwargs=current_slice_kwargs, **plot_kwargs
-            )
-
-            # Set title
-            if isinstance(frame_val, u.Quantity):
-                title = f"{axis} = {frame_val:.3g}"
-            else:
-                title = f"{axis} = {frame_val}"
-            ax.set_title(title)
-
-        # Create animation
-        # frames should be values from the loop axis
-        # To avoid too many frames, maybe downsample?
-        # User can slice the field before calling animate if needed.
-        frames = loop_axis_index
-        if len(frames) > 200:
-            # Heuristic: limit frames for default smoothness
-            # User should pre-slice if they want specific range
-            pass  # Use all for correctness
-
-        ani = FuncAnimation(fp.figure, update, frames=frames, interval=interval)
-
-        # Attach figure to ani to prevent gc?
-        ani._fig = fp.figure  # type: ignore[attr-defined]
-
-        # Close static plot to prevent display of empty frame 0 if using inline?
-        # plt.close(fp.figure) # No, we need it open for animation display depending on backend
-
-        return ani
+        return fp.animate_scalar(
+            self,
+            x=x,
+            y=y,
+            axis=axis,
+            interval=interval,
+            slice_kwargs=slice_kwargs,
+            **plot_kwargs,
+        )
 
     # ------------------------------------------------------------------
     # Domain/unit validation

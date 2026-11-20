@@ -7,6 +7,11 @@ from typing import Any
 
 import numpy as np
 
+from gwexpy.interop._optional import require_optional
+
+from ._detectors import DETECTORS
+from ._geo_utils import get_axis_unit, get_space_domains
+
 _SKIP_PYGMT = os.getenv("GWEXPY_SKIP_PYGMT", "").lower() in {"1", "true", "yes", "on"}
 _PYGMT_IMPORT_ERROR: Exception | None = None
 pygmt: Any | None = None
@@ -22,15 +27,6 @@ if not _SKIP_PYGMT:
 else:
     HAS_PYGMT = False
     _PYGMT_IMPORT_ERROR = RuntimeError("pygmt import skipped via GWEXPY_SKIP_PYGMT")
-
-# Detector coordinate database (simplified version)
-DETECTORS = {
-    "K1": {"lon": 137.31, "lat": 36.41, "name": "KAGRA", "color": "darkgreen"},
-    "H1": {"lon": -119.41, "lat": 46.45, "name": "LIGO Hanford", "color": "darkred"},
-    "L1": {"lon": -90.77, "lat": 30.56, "name": "LIGO Livingston", "color": "darkblue"},
-    "V1": {"lon": 10.5, "lat": 43.63, "name": "Virgo", "color": "darkorange"},
-    "G1": {"lon": 9.80, "lat": 52.24, "name": "GEO600", "color": "darkmagenta"},
-}
 
 # Projection mapping (Friendly Name -> GMT Code)
 PROJECTIONS = {
@@ -53,8 +49,90 @@ MARKERS = {
 }
 
 
+__all__ = ["DETECTORS", "GeoMap", "MARKERS", "PROJECTIONS"]
+
+
+def _field_to_grid(field: Any) -> Any:
+    """Convert an angle-domain 2D ScalarField into a PyGMT-ready xarray.DataArray."""
+    from astropy import units as u
+
+    domains = get_space_domains(field)
+    names = list(getattr(field, "axis_names", ()))
+    if not names:
+        names = [
+            str(getattr(field, f"_axis{i}_name"))
+            for i in range(4)
+            if hasattr(field, f"_axis{i}_name")
+        ]
+
+    shape = tuple(getattr(field, "shape", ()))
+    non_singleton = [
+        names[i] for i in range(min(len(names), len(shape))) if shape[i] > 1
+    ]
+    display_axes = (
+        non_singleton[:2]
+        if len(non_singleton) >= 2
+        else (names[1:3] if len(names) >= 3 else names[:2])
+    )
+    if len(display_axes) < 2 or not all(
+        domains.get(ax_name) == "angle" for ax_name in display_axes
+    ):
+        raise ValueError(
+            "GeoMap is for geographic coordinates (angle domain); "
+            "use FieldPlot for local Cartesian fields."
+        )
+
+    require_optional("xarray")
+    from gwexpy.interop.xarray_ import to_xarray_field
+
+    da = to_xarray_field(field)
+    da2 = da.squeeze(drop=True)
+    if da2.ndim != 2:
+        raise ValueError(
+            f"GeoMap.add_field requires a 2D field after squeezing singleton "
+            f"axes, got shape {da2.shape}."
+        )
+
+    dims = list(da2.dims)
+    if "lat" in dims and "lon" in dims:
+        lat_dim, lon_dim = "lat", "lon"
+    else:
+        lon_dim, lat_dim = str(dims[0]), str(dims[1])
+
+    # Ensure coordinates are in degrees when radians were supplied
+    for dim_name in (lon_dim, lat_dim):
+        unit = get_axis_unit(field, dim_name)
+        if (
+            unit != u.dimensionless_unscaled
+            and unit != u.deg
+            and unit.is_equivalent(u.deg)
+            and dim_name in da2.coords
+        ):
+            deg_vals = (np.asarray(da2.coords[dim_name].values) * unit).to_value(u.deg)
+            da2 = da2.assign_coords({dim_name: deg_vals})
+
+    if tuple(da2.dims) != (lat_dim, lon_dim):
+        da2 = da2.transpose(lat_dim, lon_dim)
+
+    if lat_dim in da2.coords and da2.coords[lat_dim].size >= 2:
+        lat_vals = np.asarray(da2.coords[lat_dim].values)
+        if lat_vals[0] > lat_vals[-1]:
+            da2 = da2.sortby(lat_dim, ascending=True)
+    if lon_dim in da2.coords and da2.coords[lon_dim].size >= 2:
+        lon_vals = np.asarray(da2.coords[lon_dim].values)
+        if lon_vals[0] > lon_vals[-1]:
+            da2 = da2.sortby(lon_dim, ascending=True)
+
+    return da2
+
+
 class GeoMap:
-    """A PyGMT wrapper that provides a Cartopy-like interface."""
+    """A PyGMT wrapper that provides a Cartopy-like interface.
+
+    Note: GeoMap targets wide-area and geodetic-projection figures. Static
+    overlay plotting is supported; animation is out of scope (use
+    :class:`~gwexpy.plot.FieldPlot` for animations).
+    """
 
     def __init__(self, projection="Robinson", center_lon=0, width="15c", **kwargs):
         """Initialize a new GeoMap.
@@ -208,6 +286,92 @@ class GeoMap:
         if fancy:
             spec += "+f"
         self.fig.basemap(map_scale=spec)
+
+    def add_relief(
+        self,
+        resolution: str = "01s",
+        *,
+        shading: bool | str = True,
+        cmap: str = "geo",
+        **kwargs,
+    ):
+        """Render GMT remote ``earth_relief`` topography via ``grdimage``.
+
+        Parameters
+        ----------
+        resolution : str, optional
+            GMT earth_relief resolution code (e.g., ``'01s'``, ``'03s'``,
+            ``'15s'``, ``'01m'``). Requires network access for remote download.
+        shading : bool or str, optional
+            Illumination shading passed to ``fig.grdimage`` (default ``True``).
+        cmap : str, optional
+            GMT colormap name (default ``'geo'``).
+        **kwargs
+            Additional arguments forwarded to ``fig.grdimage``.
+
+        """
+        grid = f"@earth_relief_{resolution}"
+        grd_kwargs = dict(kwargs)
+        grd_kwargs.setdefault("region", self.region)
+        if shading is not None:
+            grd_kwargs.setdefault("shading", shading)
+        if cmap is not None:
+            grd_kwargs.setdefault("cmap", cmap)
+        self.fig.grdimage(grid=grid, **grd_kwargs)
+
+    def add_field(
+        self,
+        field,
+        *,
+        cmap: str | None = None,
+        alpha: float | None = None,
+        shading: bool | str | None = None,
+        **kwargs,
+    ):
+        """Render an angle-domain :class:`~gwexpy.fields.ScalarField` via ``grdimage``.
+
+        Parameters
+        ----------
+        field : ScalarField
+            2D (or singleton-padded) geographic field with ``angle`` spatial domain.
+        cmap : str, optional
+            GMT colormap name.
+        alpha : float, optional
+            Opacity in ``[0, 1]`` (mapped to PyGMT ``transparency``).
+        shading : bool or str, optional
+            Optional shading parameter passed to ``fig.grdimage``.
+        **kwargs
+            Additional arguments forwarded to ``fig.grdimage``.
+
+        """
+        grid = _field_to_grid(field)
+        grd_kwargs = dict(kwargs)
+        if cmap is not None:
+            grd_kwargs.setdefault("cmap", cmap)
+        if shading is not None:
+            grd_kwargs.setdefault("shading", shading)
+        if alpha is not None:
+            alpha_val = float(alpha)
+            if not (0.0 <= alpha_val <= 1.0):
+                raise ValueError(f"alpha must be in [0, 1], got {alpha}")
+            grd_kwargs.setdefault("transparency", (1.0 - alpha_val) * 100.0)
+        self.fig.grdimage(grid=grid, **grd_kwargs)
+
+    def add_colorbar(self, label: str | None = None, **kwargs):
+        """Add a GMT colorbar to the figure.
+
+        Parameters
+        ----------
+        label : str, optional
+            Colorbar axis label.
+        **kwargs
+            Additional arguments forwarded to ``fig.colorbar``.
+
+        """
+        cb_kwargs = dict(kwargs)
+        if label is not None and "frame" not in cb_kwargs:
+            cb_kwargs["frame"] = f"af+l{label}"
+        self.fig.colorbar(**cb_kwargs)
 
     def show(self):
         """Display the plot."""
