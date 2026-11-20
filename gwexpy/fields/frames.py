@@ -256,6 +256,15 @@ class GridGeometry:
     raw_arms: tuple[tuple[float, float, float], tuple[float, float, float]] | None = (
         None
     )
+    grid_origin: tuple[float, float, float] | None = None
+    grid_basis: (
+        tuple[
+            tuple[float, float, float],
+            tuple[float, float, float],
+            tuple[float, float, float],
+        ]
+        | None
+    ) = None
     history: tuple[str, ...] = ()
 
     @classmethod
@@ -282,13 +291,79 @@ class GridGeometry:
 
     @property
     def basis_matrix(self) -> np.ndarray:
-        """Return the 3x3 basis matrix whose rows are the frame basis vectors."""
+        """Return the 3x3 basis matrix whose rows are the component/target frame basis vectors."""
         return np.asarray(self.basis, dtype=np.float64)
 
     @property
     def origin_vector(self) -> np.ndarray:
         """Return the 3-element origin vector in parent-frame metres."""
         return np.asarray(self.origin, dtype=np.float64)
+
+    @property
+    def lattice_origin(self) -> tuple[float, float, float]:
+        """Return the parent-frame origin of the physical 1D coordinate lattice."""
+        return self.grid_origin if self.grid_origin is not None else self.origin
+
+    @property
+    def lattice_basis(
+        self,
+    ) -> tuple[
+        tuple[float, float, float],
+        tuple[float, float, float],
+        tuple[float, float, float],
+    ]:
+        """Return the 3x3 basis tuple of the physical 1D coordinate lattice."""
+        return self.grid_basis if self.grid_basis is not None else self.basis
+
+    @property
+    def lattice_origin_vector(self) -> np.ndarray:
+        """Return the 3-element parent-frame origin of the physical sample lattice."""
+        return np.asarray(self.lattice_origin, dtype=np.float64)
+
+    @property
+    def lattice_basis_matrix(self) -> np.ndarray:
+        """Return the 3x3 basis matrix whose rows are the physical 1D grid axis directions."""
+        return np.asarray(self.lattice_basis, dtype=np.float64)
+
+    def parent_position(self, local_coords: Any) -> np.ndarray:
+        r"""Map local 1D grid coordinate(s) :math:`\mathbf{x}` to parent-frame position(s) :math:`\mathbf{r}`.
+
+        Uses the physical lattice geometry
+        :math:`\mathbf{r}_{\mathrm{parent}} = \mathbf{o}_{\mathrm{grid}} + B_{\mathrm{grid}}^{\mathsf T} \mathbf{x}`
+        so passive basis changes (:meth:`to_frame`) preserve exact physical
+        sample positions.
+        """
+        arr = np.asarray(
+            u.Quantity(local_coords, copy=False).to_value(u.m)
+            if isinstance(local_coords, u.Quantity)
+            else local_coords,
+            dtype=np.float64,
+        )
+        if arr.shape[-1] != 3:
+            raise ValueError(
+                f"local_coords must have trailing dimension 3, got shape {arr.shape}."
+            )
+        return self.lattice_origin_vector + np.einsum(
+            "ij,...i->...j", self.lattice_basis_matrix, arr
+        )
+
+    def frame_position(self, local_coords: Any) -> np.ndarray:
+        r"""Return coordinates of lattice point(s) :math:`\mathbf{x}` in the active frame ``(origin, basis)``.
+
+        Maps :math:`\mathbf{x}` to parent-frame position
+        :math:`\mathbf{r}_{\mathrm{parent}}` via :meth:`parent_position` and
+        projects into the active frame via
+        :math:`\mathbf{x}_{\mathrm{frame}} = B (\mathbf{r}_{\mathrm{parent}} - \mathbf{o})`
+        (or :math:`B^{-\mathsf T} (\mathbf{r}_{\mathrm{parent}} - \mathbf{o})`
+        when ``basis`` is non-orthonormal).
+        """
+        r_parent = self.parent_position(local_coords)
+        rel = r_parent - self.origin_vector
+        b_mat = self.basis_matrix
+        if self.is_orthonormal:
+            return np.einsum("ij,...j->...i", b_mat, rel)
+        b_inv_t = np.linalg.inv(b_mat.T)
+        return np.einsum("ij,...j->...i", b_inv_t, rel)
 
     def with_history(self, entry: str) -> GridGeometry:
         """Return a new :class:`GridGeometry` with *entry* appended to history."""
@@ -790,7 +865,7 @@ def transform_Matrix_between_frames(
     if source_frame.is_orthonormal and target_frame.is_orthonormal:
         rot = b_dst @ b_src.T
     else:
-        rot = b_dst @ np.linalg.inv(b_src.T)
+        rot = b_dst @ np.linalg.inv(b_src)
 
     delta_parent = target_frame.origin_vector - source_frame.origin_vector
     if (
@@ -833,25 +908,57 @@ def scalar_to_frame(
     r"""Passive basis change for a :class:`ScalarField` (no spatial interpolation).
 
     For a scalar field :math:`\phi' = \phi`: physical sample values and the
-    underlying sample points in space are unchanged. When the target frame is a
-    pure translation of the source frame (same basis vectors), the 1D axis
-    coordinates are shifted by :math:`-\Delta \mathbf{o}`; when the basis is
-    rotated, the 1D grid axes remain aligned with the physical sample lattice
-    and the updated :class:`GridGeometry` records the target frame orientation
-    and origin offset.
+    underlying sample points in space are unchanged.
+
+    - When the physical 1D coordinate lattice is aligned with the target
+      frame's basis vectors (:math:`B_{\mathrm{grid}} = B_{\mathrm{dst}}`),
+      the 1D axis coordinates are shifted directly to the target frame's origin
+      without interpolation and ``grid_origin`` / ``grid_basis`` match the
+      target frame (`None`).
+    - When the target basis is rotated relative to the physical 1D lattice,
+      the 1D coordinate arrays remain untouched (no resampling) while
+      ``grid_origin`` and ``grid_basis`` on the returned :class:`GridGeometry`
+      record the physical sample lattice geometry so that
+      :math:`\mathbf{r}_{\mathrm{parent}} = \mathbf{o}_{\mathrm{grid}} +
+      B_{\mathrm{grid}}^{\mathsf T} \mathbf{x}` is strictly invariant.
     """
     _validate_real_metric_axes(field, "to_frame")
     src_frame = _resolve_source_frame(field)
     dst_frame = _coerce_target_frame(frame, source_field=field)
     _check_vertical_datum_compatibility(src_frame, dst_frame, strict_datum=strict_datum)
-    rot, delta_parent = transform_Matrix_between_frames(
+    transform_Matrix_between_frames(
         src_frame, dst_frame, require_orthogonal=require_orthogonal
     )
 
     out = field.copy()
-    # If basis orientation is identical (R == I), shift 1D axis coordinates directly
-    if np.allclose(rot, np.eye(3), rtol=0.0, atol=_ORTHOGONALITY_ATOL):
-        delta_local = src_frame.basis_matrix @ delta_parent
+    lat_basis_tuple = src_frame.lattice_basis
+    lat_basis_mat = src_frame.lattice_basis_matrix
+    lat_origin_vec = src_frame.lattice_origin_vector.copy()
+
+    # Account for local_origin_lonlat shift if the two frames have different tangent-plane anchors
+    if (
+        src_frame.local_origin_lonlat is not None
+        and dst_frame.local_origin_lonlat is not None
+        and src_frame.local_origin_lonlat != dst_frame.local_origin_lonlat
+    ):
+        lon_s, lat_s = src_frame.local_origin_lonlat
+        lon_t, lat_t = dst_frame.local_origin_lonlat
+        dx_m, dy_m = _tangent_offset_metres(lon_t, lat_t, lon_s, lat_s)
+        lat_origin_vec = lat_origin_vec + np.array([dx_m, dy_m, 0.0], dtype=np.float64)
+
+    dst_basis_mat = dst_frame.basis_matrix
+    dst_origin_vec = dst_frame.origin_vector
+    lattice_aligned_with_dst = bool(
+        np.allclose(lat_basis_mat, dst_basis_mat, rtol=0.0, atol=_ORTHOGONALITY_ATOL)
+    )
+
+    if lattice_aligned_with_dst:
+        # 1D grid axes are parallel to dst_frame basis: shift 1D coordinates directly
+        delta_parent = dst_origin_vec - lat_origin_vec
+        if dst_frame.is_orthonormal:
+            delta_local = dst_basis_mat @ delta_parent
+        else:
+            delta_local = np.linalg.inv(dst_basis_mat.T) @ delta_parent
         for ax_idx, shift_m in (
             (1, delta_local[0]),
             (2, delta_local[1]),
@@ -862,9 +969,22 @@ def scalar_to_frame(
                 setattr(
                     out, f"_axis{ax_idx}_index", ax_q - (shift_m * u.m).to(ax_q.unit)
                 )
+        new_grid_origin = None
+        new_grid_basis = None
+    else:
+        # Rotated basis without resampling: preserve exact lattice geometry so physical
+        # sample positions r_parent = o_grid + B_grid^T x remain invariant.
+        new_grid_origin = (
+            float(lat_origin_vec[0]),
+            float(lat_origin_vec[1]),
+            float(lat_origin_vec[2]),
+        )
+        new_grid_basis = lat_basis_tuple
 
     new_geom = replace(
         dst_frame,
+        grid_origin=new_grid_origin,
+        grid_basis=new_grid_basis,
         history=(
             *src_frame.history,
             f"to_frame(from={src_frame.name!r}, to={dst_frame.name!r})",
@@ -907,8 +1027,17 @@ def scalar_regrid_to_frame(
     src_frame = _resolve_source_frame(field)
     dst_frame = _coerce_target_frame(frame, source_field=field)
     _check_vertical_datum_compatibility(src_frame, dst_frame, strict_datum=strict_datum)
+
+    # Spatial regridding maps from the physical 1D coordinate lattice of field to dst_frame
+    lattice_geom = replace(
+        src_frame,
+        origin=src_frame.lattice_origin,
+        basis=src_frame.lattice_basis,
+        grid_origin=None,
+        grid_basis=None,
+    )
     rot, delta_parent = transform_Matrix_between_frames(
-        src_frame, dst_frame, require_orthogonal=True
+        lattice_geom, dst_frame, require_orthogonal=True
     )
 
     # Verify horizontal rotation (z axis parallel) for 2D horizontal grid resampling
@@ -933,8 +1062,8 @@ def scalar_regrid_to_frame(
     if x_m.size < 2 or y_m.size < 2:
         raise ValueError("regrid_to_frame() requires axes 1 and 2 to have length >= 2.")
 
-    # Shift in source-frame coordinates from source origin to target origin
-    delta_src = src_frame.basis_matrix @ delta_parent
+    # Shift in source-lattice coordinates from lattice origin to target origin
+    delta_src = lattice_geom.basis_matrix @ delta_parent
     rot_2d = rot[:2, :2]  # maps (x_src - delta_x, y_src - delta_y) -> (x_dst, y_dst)
 
     # Compute bounding box of source cell centers in target frame
@@ -1035,6 +1164,8 @@ def scalar_regrid_to_frame(
     )
     result._gwex_frame = replace(
         dst_frame,
+        grid_origin=None,
+        grid_basis=None,
         history=(*src_frame.history, hist_msg),
     )
     if result.geo is not None:

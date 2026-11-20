@@ -146,11 +146,13 @@ def test_scalar_to_frame_passive_vs_regrid_to_frame():
     sf = _make_metric_scalar_field()
     k1_frame = DetectorFrame.from_detector("K1")
 
-    # 1. to_frame() performs NO spatial interpolation: values & sample array are identical
+    # 1. to_frame() performs NO spatial interpolation: values & physical sample positions are identical
     sf_passive = sf.to_frame(k1_frame)
     np.testing.assert_array_equal(sf_passive.value, sf.value)
     assert sf_passive.unit == sf.unit
-    assert sf_passive.frame == replace_history(k1_frame, sf_passive.frame.history)
+    assert sf_passive.frame.name == k1_frame.name
+    assert sf_passive.frame.basis == k1_frame.basis
+    assert sf_passive.frame.grid_basis == GridGeometry.standard_enu().basis
     assert "to_frame" in sf_passive.frame.history[-1]
 
     # Non-orthonormal target frame rejected by default when require_orthogonal=True
@@ -181,6 +183,26 @@ def test_scalar_to_frame_passive_vs_regrid_to_frame():
         sf_shifted._axis3_index.to_value(u.m),
         sf._axis3_index.to_value(u.m) - 5.0,
     )
+    # Physical parent-frame position of every translated sample point is unchanged
+    orig_pt = np.array(
+        [
+            sf._axis1_index[3].to_value(u.m),
+            sf._axis2_index[7].to_value(u.m),
+            sf._axis3_index[0].to_value(u.m),
+        ]
+    )
+    shifted_pt = np.array(
+        [
+            sf_shifted._axis1_index[3].to_value(u.m),
+            sf_shifted._axis2_index[7].to_value(u.m),
+            sf_shifted._axis3_index[0].to_value(u.m),
+        ]
+    )
+    np.testing.assert_allclose(
+        sf_shifted.frame.parent_position(shifted_pt),
+        GridGeometry.standard_enu().parent_position(orig_pt),
+        atol=1e-12,
+    )
 
     # 3. regrid_to_frame() explicitly resamples onto the rotated frame axes
     rot_90 = sf.rotate_horizontal(90.0 * u.deg, resample=True, resolution=10.0 * u.m)
@@ -198,10 +220,199 @@ def test_scalar_to_frame_passive_vs_regrid_to_frame():
     ] == pytest.approx(-2.0 * 10.0, abs=1e-6)
 
 
-def replace_history(frame: GridGeometry, history: tuple[str, ...]) -> GridGeometry:
-    from dataclasses import replace
+def test_to_frame_preserves_physical_lattice_positions_under_rotation():
+    """Regression test for Issue 1: passive to_frame() must not move physical sample positions."""
+    sf = _make_metric_scalar_field()
+    src_geom = GridGeometry.standard_enu(
+        local_origin_lonlat=sf.geo.local_origin,
+        vertical_datum=sf.geo.vertical_datum,
+    )
 
-    return replace(frame, history=history)
+    # 90-degree horizontal counter-clockwise rotation: e_x' = e_y, e_y' = -e_x
+    sf_rot90 = sf.rotate_horizontal(90.0 * u.deg, resample=False)
+    sample_x = np.array([1.0, 0.0, 0.0])
+
+    # Before and after passive rotation, physical position in parent frame is (1, 0, 0)
+    r_before = src_geom.parent_position(sample_x)
+    r_after = sf_rot90.frame.parent_position(sample_x)
+    np.testing.assert_allclose(r_before, [1.0, 0.0, 0.0], atol=1e-12)
+    np.testing.assert_allclose(r_after, r_before, atol=1e-12)
+
+    # In the rotated 90-deg target frame basis, the point at parent (1, 0, 0)
+    # has target-frame coordinates x_frame = B_dst @ (1, 0, 0) = (0, -1, 0)
+    np.testing.assert_allclose(
+        sf_rot90.frame.frame_position(sample_x),
+        [0.0, -1.0, 0.0],
+        atol=1e-12,
+    )
+
+    # Verify across arbitrary detector frame (K1) and full 3D grid mesh
+    k1 = DetectorFrame.from_detector("K1")
+    sf_k1 = sf.to_frame(k1)
+    pts = np.array(
+        [
+            [
+                sf._axis1_index[i].to_value(u.m),
+                sf._axis2_index[j].to_value(u.m),
+                sf._axis3_index[0].to_value(u.m),
+            ]
+            for i in (0, 5, 10, 20)
+            for j in (0, 7, 15, 20)
+        ]
+    )
+    np.testing.assert_allclose(
+        sf_k1.frame.parent_position(pts),
+        src_geom.parent_position(pts),
+        atol=1e-12,
+    )
+    np.testing.assert_allclose(
+        sf_k1.frame.frame_position(pts),
+        (k1.basis_matrix @ pts.T).T,
+        atol=1e-12,
+    )
+
+    # Round-trip back to local_enu restores grid_origin=None, grid_basis=None
+    sf_back = sf_k1.to_frame("local_enu")
+    assert sf_back.frame.grid_origin is None
+    assert sf_back.frame.grid_basis is None
+    np.testing.assert_allclose(
+        sf_back.frame.parent_position(pts),
+        src_geom.parent_position(pts),
+        atol=1e-12,
+    )
+
+    # VectorField and TensorField also preserve physical lattice positions under to_frame
+    ones = ScalarField(
+        np.ones_like(sf.value),
+        unit=u.m / u.s,
+        axis0=sf._axis0_index,
+        axis1=sf._axis1_index,
+        axis2=sf._axis2_index,
+        axis3=sf._axis3_index,
+        space_domain="real",
+    )
+    ones.geo = sf.geo
+    vf = VectorField({"x": ones * 1.0, "y": ones * 2.0, "z": ones * 3.0})
+    vf_k1 = vf.to_frame(k1)
+    np.testing.assert_allclose(
+        vf_k1.frame.parent_position(sample_x),
+        [1.0, 0.0, 0.0],
+        atol=1e-12,
+    )
+    tf = TensorField(
+        {(i, j): ones * float(i == j) for i in range(3) for j in range(3)},
+        rank=2,
+    )
+    tf_k1 = tf.to_frame(k1)
+    np.testing.assert_allclose(
+        tf_k1.frame.parent_position(sample_x),
+        [1.0, 0.0, 0.0],
+        atol=1e-12,
+    )
+
+
+def test_non_orthogonal_basis_transformation_matrix_and_roundtrip():
+    """Regression test for Issue 2: non-orthogonal row-basis transforms as B_dst @ inv(B_src)."""
+    from gwexpy.fields.frames import transform_Matrix_between_frames
+
+    sf = _make_metric_scalar_field()
+    ones = ScalarField(
+        np.ones_like(sf.value),
+        unit=u.m / u.s,
+        axis0=sf._axis0_index,
+        axis1=sf._axis1_index,
+        axis2=sf._axis2_index,
+        axis3=sf._axis3_index,
+        space_domain="real",
+    )
+    ones.geo = sf.geo
+
+    # Construct two non-orthogonal frames with known row-basis matrices B_src, B_dst
+    # Under row-basis convention v_frame = B @ v_parent,
+    # v_dst = B_dst @ v_parent = B_dst @ inv(B_src) @ v_src.
+    g1_raw = DetectorFrame.from_detector("G1", orthogonalize=False)
+    skew_frame = DetectorFrame.from_arms(
+        [1.0, 0.25, 0.0],
+        [0.1, 1.0, 0.0],
+        orthogonalize=False,
+        name="skew_arms",
+        local_origin_lonlat=sf.geo.local_origin,
+        vertical_datum=sf.geo.vertical_datum,
+    )
+    assert not g1_raw.is_orthonormal
+    assert not skew_frame.is_orthonormal
+
+    b_src = g1_raw.basis_matrix
+    b_dst = skew_frame.basis_matrix
+    # Ensure b_src is genuinely asymmetric so inv(b_src) != inv(b_src.T)
+    assert not np.allclose(np.linalg.inv(b_src), np.linalg.inv(b_src.T))
+
+    rot, _ = transform_Matrix_between_frames(
+        g1_raw, skew_frame, require_orthogonal=False
+    )
+    expected_rot = b_dst @ np.linalg.inv(b_src)
+    np.testing.assert_allclose(rot, expected_rot, rtol=1e-12, atol=1e-12)
+
+    # Verify with an explicit parent-frame vector v_parent:
+    # v_src = B_src @ v_parent  =>  v_dst = rot @ v_src == B_dst @ v_parent
+    v_parent = np.array([2.5, -1.75, 0.8], dtype=np.float64)
+    v_src = b_src @ v_parent
+    v_dst_expected = b_dst @ v_parent
+
+    vf_src = VectorField(
+        {
+            "x": (ones * v_src[0]).assume_frame(g1_raw),
+            "y": (ones * v_src[1]).assume_frame(g1_raw),
+            "z": (ones * v_src[2]).assume_frame(g1_raw),
+        }
+    )
+    vf_dst = vf_src.to_frame(skew_frame, require_orthogonal=False)
+    for idx, key in enumerate(("x", "y", "z")):
+        np.testing.assert_allclose(
+            vf_dst[key].to_value(u.m / u.s),
+            v_dst_expected[idx],
+            rtol=1e-12,
+            atol=1e-12,
+        )
+
+    # Round-trip skew_frame -> g1_raw with require_orthogonal=False restores exact v_src
+    vf_back = vf_dst.to_frame(g1_raw, require_orthogonal=False)
+    for idx, key in enumerate(("x", "y", "z")):
+        np.testing.assert_allclose(
+            vf_back[key].to_value(u.m / u.s),
+            v_src[idx],
+            rtol=1e-12,
+            atol=1e-12,
+        )
+
+
+def test_frame_persistence_compatibility_with_registered_dataclass_contract():
+    """Verify GridGeometry and DetectorFrame (including grid_origin/grid_basis) serialize cleanly."""
+    from dataclasses import asdict
+
+    sf = _make_metric_scalar_field()
+    k1 = DetectorFrame.from_detector("K1")
+    sf_k1 = sf.to_frame(k1)
+
+    frame = sf_k1.frame
+    assert isinstance(frame, DetectorFrame)
+    assert frame.grid_origin == (0.0, 0.0, 0.0)
+    assert frame.grid_basis == GridGeometry.standard_enu().basis
+
+    # Reconstruct from dataclass fields (matching Field HDF5 dataclass round-trip contract)
+    reconstructed = DetectorFrame(**asdict(frame))
+    assert reconstructed == frame
+    sample_x = np.array([1.0, 0.0, 0.0])
+    np.testing.assert_allclose(
+        reconstructed.parent_position(sample_x),
+        [1.0, 0.0, 0.0],
+        atol=1e-12,
+    )
+    np.testing.assert_allclose(
+        reconstructed.frame_position(sample_x),
+        frame.frame_position(sample_x),
+        atol=1e-12,
+    )
 
 
 def test_vectorfield_component_rotation_v_prime_equals_R_v():
