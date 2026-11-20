@@ -129,6 +129,28 @@ class VectorField(FieldDict):
             **kwargs,
         )
 
+    def write(
+        self,
+        target: Any,
+        format: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Write this :class:`VectorField` to *target*.
+
+        Parameters
+        ----------
+        target : str, Path, file-like, or h5py.Group
+            Destination file path, stream, or HDF5 group.
+        format : str, optional
+            Output format identifier (e.g. ``'hdf5'``).
+        **kwargs
+            Format-specific writer options.
+
+        """
+        from .io.core import write_vectorfield
+
+        return write_vectorfield(self, target, format=format, **kwargs)
+
     def copy(self) -> VectorField:
         """Return a copy of this VectorField."""
         new_components = {k: v.copy() for k, v in self.items()}

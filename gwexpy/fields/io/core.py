@@ -30,6 +30,9 @@ __all__ = [
     "read_tensorfield",
     "read_fielddict",
     "write_scalarfield",
+    "write_vectorfield",
+    "write_tensorfield",
+    "write_fielddict",
 ]
 
 _FORBIDDEN_COMMON_KWARGS = frozenset(
@@ -75,6 +78,13 @@ def _first_probe_source(source: Any) -> Any:
 def _split_path_and_fileobj(probe: Any) -> tuple[str | None, Any]:
     if isinstance(probe, (str, os.PathLike)):
         return os.fspath(probe), None
+    if hasattr(probe, "attrs") and hasattr(probe, "file"):
+        # h5py.File or h5py.Group
+        filename = getattr(probe.file, "filename", None)
+        path_str = (
+            os.fspath(filename) if isinstance(filename, (str, os.PathLike)) else None
+        )
+        return path_str, probe
     if hasattr(probe, "read"):
         name = getattr(probe, "name", None)
         path_str = os.fspath(name) if isinstance(name, (str, os.PathLike)) else None
@@ -538,16 +548,15 @@ def read_fielddict(
     return FieldDict(collected)
 
 
-def write_scalarfield(
-    field: ScalarField,
+def _write_field_object(
+    field: Any,
+    cls: type[Any],
     target: Any,
     *,
     format: str | None = None,
     **kwargs: Any,
 ) -> None:
-    """Write a :class:`~gwexpy.fields.ScalarField` to *target*."""
     from .. import io as _io  # noqa: F401
-    from ..scalar import ScalarField
 
     probe = target
     path_str, fileobj = _split_path_and_fileobj(probe)
@@ -555,7 +564,7 @@ def write_scalarfield(
     if fmt is None:
         try:
             candidates = io_registry.identify_format(
-                "write", ScalarField, path_str, fileobj, (), kwargs
+                "write", cls, path_str, fileobj, (), kwargs
             )
         except Exception:
             candidates = []
@@ -574,5 +583,57 @@ def write_scalarfield(
     elif fmt in _GEOTIFF_FORMATS:
         ensure_dependency("rasterio", extra="geospatial")
 
-    writer = io_registry.get_writer(fmt, ScalarField)
+    writer = io_registry.get_writer(fmt, cls)
     writer(field, target, **kwargs)
+
+
+def write_scalarfield(
+    field: ScalarField,
+    target: Any,
+    *,
+    format: str | None = None,
+    **kwargs: Any,
+) -> None:
+    """Write a :class:`~gwexpy.fields.ScalarField` to *target*."""
+    from ..scalar import ScalarField
+
+    _write_field_object(field, ScalarField, target, format=format, **kwargs)
+
+
+def write_vectorfield(
+    field: VectorField,
+    target: Any,
+    *,
+    format: str | None = None,
+    **kwargs: Any,
+) -> None:
+    """Write a :class:`~gwexpy.fields.VectorField` to *target*."""
+    from ..vector import VectorField
+
+    _write_field_object(field, VectorField, target, format=format, **kwargs)
+
+
+def write_tensorfield(
+    field: TensorField,
+    target: Any,
+    *,
+    format: str | None = None,
+    **kwargs: Any,
+) -> None:
+    """Write a :class:`~gwexpy.fields.TensorField` to *target*."""
+    from ..tensor import TensorField
+
+    _write_field_object(field, TensorField, target, format=format, **kwargs)
+
+
+def write_fielddict(
+    field_dict: FieldDict,
+    target: Any,
+    *,
+    format: str | None = None,
+    **kwargs: Any,
+) -> None:
+    """Write a :class:`~gwexpy.fields.FieldDict` to *target*."""
+    from ..collections import FieldDict
+
+    _write_field_object(field_dict, FieldDict, target, format=format, **kwargs)
