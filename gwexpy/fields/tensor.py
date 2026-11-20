@@ -134,6 +134,28 @@ class TensorField(FieldDict):
             **kwargs,
         )
 
+    def write(
+        self,
+        target: Any,
+        format: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Write this :class:`TensorField` to *target*.
+
+        Parameters
+        ----------
+        target : str, Path, file-like, or h5py.Group
+            Destination file path, stream, or HDF5 group.
+        format : str, optional
+            Output format identifier (e.g. ``'hdf5'``).
+        **kwargs
+            Format-specific writer options.
+
+        """
+        from .io.core import write_tensorfield
+
+        return write_tensorfield(self, target, format=format, **kwargs)
+
     def copy(self) -> TensorField:
         """Return a copy of this TensorField."""
         new_components = {k: v.copy() for k, v in self.items()}
