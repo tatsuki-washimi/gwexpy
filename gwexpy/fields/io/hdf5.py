@@ -137,6 +137,8 @@ _KNOWN_COMPOUND_GROUP_ATTRS = SCHEMA_ATTRS | frozenset(
 
 _KNOWN_DATACLASS_REGISTRY: dict[str, tuple[str, str]] = {
     "GeoMetadata": ("gwexpy.fields.geo", "GeoMetadata"),
+    "GridGeometry": ("gwexpy.fields.frames", "GridGeometry"),
+    "DetectorFrame": ("gwexpy.fields.frames", "DetectorFrame"),
     "OpenFOAMProvenance": ("gwexpy.interop._openfoam.model", "OpenFOAMProvenance"),
     "ExodusProvenance": ("gwexpy.interop._exodus.model", "ExodusProvenance"),
     "Flow3DProvenance": ("gwexpy.interop._exodus.model", "Flow3DProvenance"),
@@ -782,6 +784,10 @@ def _read_vector_group(
         components[comp_key] = comp_sf
 
     vf = VectorField(components, basis=basis_str, validate=False)  # type: ignore[arg-type]
+    if components:
+        first_frame = getattr(next(iter(components.values())), "_gwex_frame", None)
+        if first_frame is not None:
+            setattr(vf, "_gwex_frame", first_frame)
     if merged_ext:
         setattr(vf, _EXTERNAL_ATTRS_SLOT, merged_ext)
     return vf
@@ -874,6 +880,10 @@ def _read_tensor_group(
         components[comp_key] = comp_sf
 
     tf = TensorField(components, rank=rank, validate=False)
+    if components:
+        first_frame = getattr(next(iter(components.values())), "_gwex_frame", None)
+        if first_frame is not None:
+            setattr(tf, "_gwex_frame", first_frame)
     if merged_ext:
         setattr(tf, _EXTERNAL_ATTRS_SLOT, merged_ext)
     return tf

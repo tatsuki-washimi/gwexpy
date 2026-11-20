@@ -441,3 +441,124 @@ def test_simulation_provenance_dataclasses_roundtrip_and_slice_hook(tmp_path):
     assert sliced._gwex_exodus.time_steps == (0.5,)
     assert sliced._gwex_flow3d.open_mask.shape == sliced.shape
     assert sliced._gwex_specfem3d.valid_mask.shape == sliced.shape
+
+
+def test_frame_provenance_registration_and_roundtrip(tmp_path, monkeypatch):
+    """Verify GridGeometry and DetectorFrame (_gwex_frame) are registered for lossless HDF5 round-trip."""
+    import sys
+    import types
+
+    from gwexpy.fields.io.hdf5 import _KNOWN_DATACLASS_REGISTRY
+
+    assert _KNOWN_DATACLASS_REGISTRY["GridGeometry"] == (
+        "gwexpy.fields.frames",
+        "GridGeometry",
+    )
+    assert _KNOWN_DATACLASS_REGISTRY["DetectorFrame"] == (
+        "gwexpy.fields.frames",
+        "DetectorFrame",
+    )
+
+    @dataclass(frozen=True)
+    class GridGeometry:
+        name: str = "local_enu"
+        origin: tuple[float, float, float] = (0.0, 0.0, 0.0)
+        basis: tuple[
+            tuple[float, float, float],
+            tuple[float, float, float],
+            tuple[float, float, float],
+        ] = (
+            (1.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0),
+            (0.0, 0.0, 1.0),
+        )
+        parent_frame: str = "local_enu"
+        local_origin_lonlat: tuple[float, float] | None = None
+        vertical_datum: str = "geoid"
+        is_orthonormal: bool = True
+        raw_arms: (
+            tuple[tuple[float, float, float], tuple[float, float, float]] | None
+        ) = None
+        grid_origin: tuple[float, float, float] | None = None
+        grid_basis: (
+            tuple[
+                tuple[float, float, float],
+                tuple[float, float, float],
+                tuple[float, float, float],
+            ]
+            | None
+        ) = None
+        history: tuple[str, ...] = ()
+
+    @dataclass(frozen=True)
+    class DetectorFrame(GridGeometry):
+        detector: str | None = None
+        frame_kind: str = "arms"
+        arm_source: str | None = None
+
+    if "gwexpy.fields.frames" not in sys.modules:
+        fake_mod = types.ModuleType("gwexpy.fields.frames")
+        fake_mod.GridGeometry = GridGeometry  # type: ignore[attr-defined]
+        fake_mod.DetectorFrame = DetectorFrame  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "gwexpy.fields.frames", fake_mod)
+    else:
+        import gwexpy.fields.frames as real_mod
+
+        GridGeometry = real_mod.GridGeometry  # type: ignore[misc]
+        DetectorFrame = real_mod.DetectorFrame  # type: ignore[misc]
+
+    sf = _make_sample_scalarfield(with_epoch=True)
+    det_frame = DetectorFrame(
+        name="K1",
+        detector="K1",
+        frame_kind="arms",
+        arm_source="DETECTOR_ARM_AZIMUTHS_DEG",
+        origin=(0.0, 0.0, 0.0),
+        basis=(
+            (0.880395, 0.474241, 0.0),
+            (0.474241, -0.880395, 0.0),
+            (0.0, 0.0, 1.0),
+        ),
+        local_origin_lonlat=(137.305889, 36.411944),
+        vertical_datum="T.P. (JGD2011 vertical)",
+        is_orthonormal=True,
+        raw_arms=(
+            (0.880395, 0.474241, 0.0),
+            (0.474241, -0.880395, 0.0),
+        ),
+        grid_origin=(0.0, 0.0, 0.0),
+        grid_basis=(
+            (1.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0),
+            (0.0, 0.0, 1.0),
+        ),
+        history=("to_frame(from='local_enu', to='K1')",),
+    )
+    sf._gwex_frame = det_frame
+
+    path = tmp_path / "frame_roundtrip.h5"
+    sf.write(path, format="hdf5")
+    loaded = ScalarField.read(path)
+    assert isinstance(loaded._gwex_frame, DetectorFrame)
+    assert loaded._gwex_frame == det_frame
+    assert loaded._gwex_frame.grid_origin == (0.0, 0.0, 0.0)
+    assert loaded._gwex_frame.grid_basis == (
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (0.0, 0.0, 1.0),
+    )
+
+    # Also verify VectorField and TensorField propagate _gwex_frame from components on read
+    vf = VectorField({"x": sf, "y": sf.copy()})
+    v_path = tmp_path / "vec_frame.h5"
+    vf.write(v_path, format="hdf5")
+    vf_loaded = VectorField.read(v_path)
+    assert getattr(vf_loaded, "_gwex_frame", None) == det_frame
+    assert vf_loaded["x"]._gwex_frame == det_frame
+
+    tf = TensorField({(0, 0): sf, (1, 1): sf.copy()}, rank=2)
+    t_path = tmp_path / "ten_frame.h5"
+    tf.write(t_path, format="hdf5")
+    tf_loaded = TensorField.read(t_path)
+    assert getattr(tf_loaded, "_gwex_frame", None) == det_frame
+    assert tf_loaded[(0, 0)]._gwex_frame == det_frame
