@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -42,7 +43,7 @@ from gwexpy.interop.specfem3d import (
 
 HAS_PYVISTA = importlib.util.find_spec("pyvista") is not None
 REAL_RUN_DIR = Path(
-    "/home/washimi/HDD8TB/gragra-research/2026-09-12-wave4-6/S/runs/L12000-regenerated-attempt4"
+    os.environ.get("GWEXPY_SPECFEM3D_REAL_RUN_DIR", "__nonexistent_specfem3d_run_dir__")
 )
 
 _GLL5 = np.array(
