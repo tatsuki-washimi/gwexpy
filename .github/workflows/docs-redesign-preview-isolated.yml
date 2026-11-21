@@ -128,7 +128,7 @@ jobs:
 
       - name: Upload exact preview site
         id: upload-site
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v4
         with:
           name: docs-preview-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ steps.package-site.outputs.artifact_root }}/
@@ -138,7 +138,7 @@ jobs:
 
       - name: Retain preview build diagnostics
         if: failure() && steps.prepare_docs_redesign.outcome == 'success'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v4
         with:
           name: docs-preview-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -166,7 +166,7 @@ jobs:
           persist-credentials: false
 
       - name: Download exact same-run preview artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v4
         with:
           artifact-ids: ${{ needs.build-preview.outputs.artifact_id }}
           path: ${{ runner.temp }}/gwexpy-docs-preview-artifact
