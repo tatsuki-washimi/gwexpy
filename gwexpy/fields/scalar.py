@@ -3495,3 +3495,72 @@ class ScalarField(FieldBase):
             ),
         )
         return result
+
+    # =========================================================================
+    # Coordinate Frames and Rotation (#556)
+    # =========================================================================
+
+    def assume_frame(self, frame: Any) -> ScalarField:
+        """Return a copy with *frame* (:class:`GridGeometry` or :class:`DetectorFrame`) assigned."""
+        from .frames import scalar_assume_frame
+
+        return scalar_assume_frame(self, frame)
+
+    def to_frame(
+        self,
+        frame: Any,
+        *,
+        require_orthogonal: bool = True,
+        strict_datum: bool = True,
+    ) -> ScalarField:
+        r"""Passive basis transformation to *frame* without spatial interpolation (:math:`\phi' = \phi`)."""
+        from .frames import scalar_to_frame
+
+        return scalar_to_frame(
+            self,
+            frame,
+            require_orthogonal=require_orthogonal,
+            strict_datum=strict_datum,
+        )
+
+    def regrid_to_frame(
+        self,
+        frame: Any,
+        *,
+        resolution: float | tuple[float, float] | u.Quantity | None = None,
+        method: Literal["nearest", "bilinear", "cubic"] = "bilinear",
+        axis_names: tuple[str, str] | None = None,
+        strict_datum: bool = True,
+    ) -> ScalarField:
+        """Explicitly resample this field onto a rectilinear grid aligned with *frame*."""
+        from .frames import scalar_regrid_to_frame
+
+        return scalar_regrid_to_frame(
+            self,
+            frame,
+            resolution=resolution,
+            method=method,
+            axis_names=axis_names,
+            strict_datum=strict_datum,
+        )
+
+    def rotate_horizontal(
+        self,
+        angle: float | u.Quantity,
+        *,
+        center: tuple[float | u.Quantity, float | u.Quantity] | None = None,
+        resample: bool = False,
+        resolution: float | tuple[float, float] | u.Quantity | None = None,
+        method: Literal["nearest", "bilinear", "cubic"] = "bilinear",
+    ) -> ScalarField:
+        """Rotate horizontally around the vertical (+z) axis by *angle*."""
+        from .frames import scalar_rotate_horizontal
+
+        return scalar_rotate_horizontal(
+            self,
+            angle,
+            center=center,
+            resample=resample,
+            resolution=resolution,
+            method=method,
+        )

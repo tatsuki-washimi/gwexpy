@@ -429,6 +429,21 @@ class FieldBase(Array4D):
             )
         self._gwex_geo = value
 
+    @property
+    def frame(self) -> Any:
+        """Coordinate frame / grid orientation geometry (:class:`~gwexpy.fields.GridGeometry`)."""
+        return getattr(self, "_gwex_frame", None)
+
+    @frame.setter
+    def frame(self, value: Any) -> None:
+        from .frames import GridGeometry
+
+        if value is not None and not isinstance(value, GridGeometry):
+            raise TypeError(
+                f"frame must be a GridGeometry instance or None, got {type(value).__name__}"
+            )
+        self._gwex_frame = value
+
     def _set_axis_name(self, index: int, name: str) -> None:
         old_name = self.axis_names[index] if index < 4 else None
         super()._set_axis_name(index, name)
