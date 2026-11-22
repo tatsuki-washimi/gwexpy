@@ -35,6 +35,12 @@ from gwexpy.time._reference import (
     rebuild_with_time_reference,
     set_time_reference,
 )
+from gwexpy.types._uncertainty import (
+    UNCERTAINTY_STATE_KEYS,
+    UncertaintyMixin,
+    suppress_uncertainty_drop_warning,
+    warn_uncertainty_dropped,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -119,6 +125,7 @@ class TimeSeries(
     StatisticsMixin,  # Statistical analysis & correlation
     FittingMixin,  # Fitting functionality
     PhaseMethodsMixin,  # Phase/Angle methods (radian, degree, phase, angle)
+    UncertaintyMixin,  # Optional uncertainty metadata & propagation hooks (#758)
     TimeReferenceMixin,  # time_reference state (#725); before the GWpy base
     TimeSeriesCore,  # Core operations (tail, crop, append, find_peaks, RegularityMixin)
 ):
@@ -671,34 +678,49 @@ class TimeSeries(
         """Copy this series without reconstructing its exact epoch from ``t0``."""
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-        result = BaseTimeSeries.copy(self, order=order)
+        with suppress_uncertainty_drop_warning():
+            result = BaseTimeSeries.copy(self, order=order)
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
         if exact_t0_ns is not None:
             result._gwex_t0_gps_ns = exact_t0_ns
         exact_dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
         if exact_dt_ns is not None:
             result._gwex_dt_gps_ns = exact_dt_ns
+        if self._has_uncertainty() and isinstance(result, UncertaintyMixin):
+            self._copy_uncertainty_to(result, order=order)
         return result
 
     def __getitem__(self, item: Any) -> Any:
         """Preserve an exact epoch authority when a regular slice advances it."""
         exact = getattr(self, "_gwex_t0_gps_ns", None)
         exact_dt = getattr(self, "_gwex_dt_gps_ns", None)
+        has_uncertainty = self._has_uncertainty()
         slice_item = item[0] if isinstance(item, tuple) and len(item) == 1 else item
-        if exact is not None and isinstance(slice_item, slice):
+        is_slice = isinstance(slice_item, slice)
+        if (exact is not None or has_uncertainty) and is_slice:
             suppressed = _SUPPRESS_EXACT_FINALIZE_FROM.get()
-            token = _SUPPRESS_EXACT_FINALIZE_FROM.set(suppressed | {id(self)})
+            token = (
+                _SUPPRESS_EXACT_FINALIZE_FROM.set(suppressed | {id(self)})
+                if exact is not None
+                else None
+            )
             try:
-                result = super().__getitem__(item)
+                with suppress_uncertainty_drop_warning():
+                    result = super().__getitem__(item)
             finally:
-                _SUPPRESS_EXACT_FINALIZE_FROM.reset(token)
+                if token is not None:
+                    _SUPPRESS_EXACT_FINALIZE_FROM.reset(token)
         else:
             result = super().__getitem__(item)
-        if (
-            exact is None
-            or not isinstance(slice_item, slice)
-            or not isinstance(result, type(self))
-        ):
+
+        if has_uncertainty:
+            if is_slice and isinstance(result, type(self)) and result.ndim == 1:
+                self._slice_uncertainty_to(result, item)
+            elif not is_slice and isinstance(result, UncertaintyMixin):
+                result._clear_uncertainty()
+                warn_uncertainty_dropped("non-slice indexing", stacklevel=2)
+
+        if exact is None or not is_slice or not isinstance(result, type(self)):
             return result
 
         try:
@@ -717,15 +739,19 @@ class TimeSeries(
         """Finalize the array after creation (slicing, view casting).
 
         Ensures that attributes starting with `_gwex_` are propagated
-        from the parent object to the new view/instance.
+        from the parent object to the new view/instance, while excluding
+        uncertainty metadata keys that are governed by explicit propagation
+        and warn-and-drop hooks.
         """
         super().__array_finalize__(obj)
         if obj is None:
             return
 
-        # Propagate custom _gwex_ attributes.
+        # Propagate custom _gwex_ attributes (excluding uncertainty metadata).
         suppress_exact = id(obj) in _SUPPRESS_EXACT_FINALIZE_FROM.get()
         for key, val in getattr(obj, "__dict__", {}).items():
+            if key in UNCERTAINTY_STATE_KEYS:
+                continue
             if suppress_exact and key in _EXACT_STATE_KEYS:
                 continue
             if key.startswith("_gwex_") and key not in self.__dict__:
@@ -833,14 +859,37 @@ class TimeSeries(
         self,
         backend: str = "chronos",
         *,
-        horizon: int,
+        horizon: float | int | u.Quantity,
         quantiles: tuple[float, ...] | list[float] | None = None,
-    ) -> ForecastResult:
+    ) -> TimeSeries:
         """Forecast future samples with an optional pretrained backend.
 
         Chronos is loaded only when this method is called; it is not imported
-        by importing :mod:`gwexpy`. The returned ``ForecastResult`` stores the
-        median in ``point`` and each requested level in ``quantiles``.
+        by importing :mod:`gwexpy`.
+
+        Parameters
+        ----------
+        backend : str, default="chronos"
+            Pretrained forecasting backend name.
+        horizon : float, int, or Quantity
+            Forecast time span from the last observed sample in seconds (or an
+            Astropy time ``Quantity``). The number of predicted samples is
+            ``N_pred = floor(horizon / dt)`` (guarded against floating-point
+            undercounting). Currently raises ``ValueError`` when
+            ``0 < horizon < dt`` (``N_pred == 0``).
+        quantiles : sequence of float, optional
+            Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
+            Defaults to ``(0.1, 0.5, 0.9)``.
+
+        Returns
+        -------
+        TimeSeries
+            Forecast series whose values are the 0.5 quantile (median), with
+            uncertainty metadata (``.lower``, ``.upper``, ``.quantiles``,
+            ``.center_kind``, ``.uncertainty_kind``, ``.interval_levels``)
+            attached directly. For Chronos-2, ``.estimate_mean`` is ``None``
+            because the backend does not supply an independent predicted mean.
+
         """
         if backend != "chronos":
             raise ValueError(f"Unsupported forecast backend: {backend!r}")
@@ -937,6 +986,3 @@ _timeseries_read.__signature__ = _gwf_parallel_read_signature(_timeseries_read)
 _timeseries_read.__doc__ = f"{_timeseries_read.__doc__}{_GWF_PARALLEL_HELP}"
 
 __all__ = ["TimeSeries"]
-
-
-from ._forecast import ForecastResult  # noqa: E402

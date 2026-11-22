@@ -32,6 +32,7 @@ from gwexpy.time._reference import (
     set_time_reference,
 )
 from gwexpy.types._stats import StatisticalMethodsMixin
+from gwexpy.types._uncertainty import UNCERTAINTY_STATE_KEYS, UncertaintyMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -73,6 +74,7 @@ class FrequencySeries(
     RegularityMixin,
     FittingMixin,
     StatisticalMethodsMixin,
+    UncertaintyMixin,  # Optional uncertainty metadata & propagation hooks (#758)
     TimeReferenceMixin,  # time_reference state of ``epoch`` (#725); before GWpy
     BaseFrequencySeries,
 ):
@@ -319,8 +321,10 @@ class FrequencySeries(
         if obj is None:
             return
 
-        # Propagate custom _gwex_ attributes
+        # Propagate custom _gwex_ attributes (excluding uncertainty metadata).
         for key, val in getattr(obj, "__dict__", {}).items():
+            if key in UNCERTAINTY_STATE_KEYS:
+                continue
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
 
