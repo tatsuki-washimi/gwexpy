@@ -582,15 +582,54 @@ def test_timesfm_constant_series_prescaling_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     install_mock_timesfm(monkeypatch)
-    series = TimeSeries([5.0, 5.0, 5.0, 5.0], dt=1.0 * u.s, unit="V")
+    # Non-zero constant at strain scale (~1e-21): restored interval must stay
+    # proportional to abs(mu) instead of inflating to O(1).
+    tiny_const = 1e-21
+    tiny_series = TimeSeries([tiny_const] * 8, dt=1.0 * u.s, unit="m")
+    tiny_result = tiny_series.forecast(backend="timesfm", horizon=2.0)
 
-    result = series.forecast(backend="timesfm", horizon=2.0)
+    passed_tiny = MockTimesFMModel.calls[0]["inputs"][0]
+    np.testing.assert_array_equal(passed_tiny, np.zeros(8))
+    assert tiny_result.unit == u.m
+    assert np.all(np.isfinite(tiny_result.value))
+    assert np.all(tiny_result.lower.value <= tiny_result.value)
+    assert np.all(tiny_result.value <= tiny_result.upper.value)
+    assert np.all(np.abs(tiny_result.value - tiny_const) < 1e-20)
+    assert np.all((tiny_result.upper.value - tiny_result.lower.value) < 1e-20)
 
-    passed = MockTimesFMModel.calls[0]["inputs"][0]
-    np.testing.assert_array_equal(passed, np.zeros(4))
-    assert np.all(np.isfinite(result.value))
-    assert np.all(result.lower.value <= result.value)
-    assert np.all(result.value <= result.upper.value)
+    # All-zero constant series falls back to scale=1.0 without division by zero.
+    zero_series = TimeSeries([0.0] * 8, dt=1.0 * u.s, unit="V")
+    zero_result = zero_series.forecast(backend="timesfm", horizon=2.0)
+    assert np.all(np.isfinite(zero_result.value))
+    assert np.all(zero_result.lower.value <= zero_result.value)
+    assert np.all(zero_result.value <= zero_result.upper.value)
+
+
+def test_timesfm_prescales_after_context_truncation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    # For len=16000 and N_pred=1024, max_context=15360; the leading 640 samples
+    # are outside TimesFM's context window and must NOT affect scaling.
+    tail = np.sin(np.linspace(0.0, 40.0, 15360, dtype=np.float64))
+    clean_prefix = np.ones(640, dtype=np.float64)
+    huge_prefix = np.full(640, 1e12, dtype=np.float64)
+
+    ts_clean = TimeSeries(np.concatenate([clean_prefix, tail]), dt=1.0 * u.s, unit="m")
+    ts_huge = TimeSeries(np.concatenate([huge_prefix, tail]), dt=1.0 * u.s, unit="m")
+
+    res_clean = ts_clean.forecast(backend="timesfm", horizon=1024.0)
+    res_huge = ts_huge.forecast(backend="timesfm", horizon=1024.0)
+
+    passed_clean = MockTimesFMModel.calls[0]["inputs"][0]
+    passed_huge = MockTimesFMModel.calls[1]["inputs"][0]
+    assert len(passed_clean) == 15360
+    assert len(passed_huge) == 15360
+    assert np.std(passed_huge) == pytest.approx(1.0, rel=1e-12)
+    np.testing.assert_array_equal(passed_clean, passed_huge)
+    np.testing.assert_array_equal(res_clean.value, res_huge.value)
+    np.testing.assert_array_equal(res_clean.lower.value, res_huge.lower.value)
+    np.testing.assert_array_equal(res_clean.upper.value, res_huge.upper.value)
 
 
 def test_timesfm_custom_quantiles_and_unsupported_quantiles_rejected(

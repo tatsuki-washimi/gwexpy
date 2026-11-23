@@ -279,18 +279,26 @@ def _prescale_series_float64(values: np.ndarray) -> tuple[np.ndarray, float, flo
     """Center and scale a 1-D series in float64 to avoid float32 underflow/overflow.
 
     TimesFM 2.5 converts inputs to ``float32`` before its internal RevIN layer,
-    and treats standard deviations below ``1e-7`` as unscaled. Pre-scaling in
-    ``float64`` preserves physical strain-scale signals (e.g. ``~1e-21``).
+    and treats standard deviations below ``1e-6`` (``_TOLERANCE``) as unscaled.
+    Pre-scaling in ``float64`` preserves physical strain-scale signals
+    (e.g. ``~1e-21``).
 
     Returns ``(scaled, mu, scale)`` satisfying ``values = mu + scale * scaled``
-    with ``scale > 0``. Constant series fall back to ``scale = 1.0``.
+    with ``scale > 0``. For constant series (zero variance):
+
+    - If ``mu != 0`` (non-zero constant), falls back to ``scale = abs(mu)`` so
+      inverse scaling stays proportional to the physical magnitude of the
+      observed signal rather than inflating to ``O(1)``.
+    - If ``mu == 0`` (all-zero series), falls back explicitly to ``scale = 1.0``
+      because no positive physical scale can be inferred from the input.
     """
     arr = np.asarray(values, dtype=np.float64)
     mu = float(np.mean(arr))
     centered = arr - mu
     max_abs = float(np.max(np.abs(centered)))
     if max_abs == 0.0 or not np.isfinite(max_abs):
-        return np.zeros_like(arr, dtype=np.float64), mu, 1.0
+        fallback_scale = abs(mu) if (np.isfinite(mu) and abs(mu) > 0.0) else 1.0
+        return np.zeros_like(arr, dtype=np.float64), mu, fallback_scale
     # Compute std in normalized coordinates to prevent float64 squaring
     # underflow/overflow for extreme physical scales.
     std = float(np.std(centered / max_abs)) * max_abs
@@ -394,16 +402,20 @@ def _run_timesfm_batch(
     levels: tuple[float, ...],
 ) -> np.ndarray:
     """Run one equal-horizon TimesFM 2.5 batch with float64 pre/post scaling."""
+    max_context, max_horizon = _compute_timesfm_compile_dims(
+        [len(arr) for arr in batch_values], n_pred
+    )
     scaled_inputs: list[np.ndarray] = []
     stats: list[tuple[float, float]] = []
     for arr in batch_values:
-        scaled, mu, scale = _prescale_series_float64(arr)
+        # Truncate to the exact tail window TimesFM will actually observe
+        # before computing scaling statistics, so discarded history cannot
+        # distort the visible window's scale.
+        visible = arr[-max_context:]
+        scaled, mu, scale = _prescale_series_float64(visible)
         scaled_inputs.append(scaled)
         stats.append((mu, scale))
 
-    max_context, max_horizon = _compute_timesfm_compile_dims(
-        [len(arr) for arr in scaled_inputs], n_pred
-    )
     forecast_config = config_cls(  # type: ignore[operator]
         max_context=max_context,
         max_horizon=max_horizon,
