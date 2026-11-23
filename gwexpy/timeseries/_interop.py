@@ -20,7 +20,7 @@ from gwexpy.types.mixin import InteropMixin
 from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
-    pass
+    from .collections import TimeSeriesDict
 
 
 class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
@@ -1327,3 +1327,58 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         from gwexpy.interop import to_pyroomacoustics_source
 
         return to_pyroomacoustics_source(self)
+
+    def to_timeseriesdict(self, include_quantiles: bool = True) -> TimeSeriesDict:
+        """Expand this series and its uncertainty metadata into a ``TimeSeriesDict``.
+
+        Each returned entry is an independent ``TimeSeries`` copy without
+        attached uncertainty metadata, preserving time-axis metadata (``t0``,
+        ``dt``, ``time_reference``, ``_gwex_t0_gps_ns``), physical units, and
+        channel/name metadata so callers can perform arbitrary manual error
+        propagation or pass individual components to GWpy APIs.
+
+        Parameters
+        ----------
+        include_quantiles : bool, optional
+            If ``True`` (default), include each stored quantile series under
+            keys formatted as ``f"q{level:g}"`` (e.g. ``"q0.1"``, ``"q0.5"``,
+            ``"q0.9"``).
+
+        Returns
+        -------
+        TimeSeriesDict
+            Dictionary containing ``"value"`` and, when present, ``"lower"``,
+            ``"upper"``, ``"estimate_mean"``, and quantile entries.
+
+        """
+        from gwexpy.types._uncertainty import (
+            UncertaintyMixin,
+            suppress_uncertainty_drop_warning,
+        )
+
+        from .collections import TimeSeriesDict
+
+        def _plain_copy(series: Any) -> Any:
+            with suppress_uncertainty_drop_warning():
+                copied = series.copy()
+            if isinstance(copied, UncertaintyMixin):
+                copied._clear_uncertainty()
+            return copied
+
+        result = TimeSeriesDict()
+        result["value"] = _plain_copy(self)
+        lower = getattr(self, "lower", None)
+        if lower is not None:
+            result["lower"] = _plain_copy(lower)
+        upper = getattr(self, "upper", None)
+        if upper is not None:
+            result["upper"] = _plain_copy(upper)
+        estimate_mean = getattr(self, "estimate_mean", None)
+        if estimate_mean is not None:
+            result["estimate_mean"] = _plain_copy(estimate_mean)
+        if include_quantiles:
+            quantiles = getattr(self, "quantiles", None)
+            if quantiles is not None:
+                for level, qseries in sorted(quantiles.items()):
+                    result[f"q{level:g}"] = _plain_copy(qseries)
+        return result

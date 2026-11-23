@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from contextlib import nullcontext
 from fractions import Fraction
 from numbers import Integral, Real
@@ -348,15 +349,42 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         self,
         backend: str = "chronos",
         *,
-        horizon: int,
+        horizon: float | int | u.Quantity,
         quantiles: tuple[float, ...] | list[float] | None = None,
-    ) -> ForecastResult:
-        """Forecast each member as an independent univariate task batch."""
+        targets: Sequence[str] | None = None,
+    ) -> TimeSeriesDict:
+        """Forecast each member as an independent univariate task batch.
+
+        Parameters
+        ----------
+        backend : str, default="chronos"
+            Pretrained forecasting backend name.
+        horizon : float, int, or Quantity
+            Forecast time span from each series' last observed sample in
+            seconds (or an Astropy time ``Quantity``), with
+            ``N_pred = floor(horizon / dt)``.
+        quantiles : sequence of float, optional
+            Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
+            Defaults to ``(0.1, 0.5, 0.9)``.
+        targets : sequence of str, optional
+            Reserved for joint MISO/MIMO forecasting. Passing ``targets=None``
+            (default) runs independent SISO batch forecasting; non-``None``
+            raises ``NotImplementedError`` on backends lacking joint support.
+
+        Returns
+        -------
+        TimeSeriesDict
+            Dictionary mapping each input key to its uncertainty-bearing
+            forecast ``TimeSeries``.
+
+        """
         if backend != "chronos":
             raise ValueError(f"Unsupported forecast backend: {backend!r}")
         from ._forecast import forecast_collection
 
-        return forecast_collection(self, horizon=horizon, quantiles=quantiles)
+        return forecast_collection(
+            self, horizon=horizon, quantiles=quantiles, targets=targets
+        )
 
     def plot(
         self,
@@ -2650,6 +2678,3 @@ def _select_hdf5_window(series: Any, start: Any, end: Any) -> Any:
     if needs_explicit_axis(series):
         return _crop_explicit_axis(series, start, end)
     return apply_time_selection(series, start, end)
-
-
-from ._forecast import ForecastResult  # noqa: E402

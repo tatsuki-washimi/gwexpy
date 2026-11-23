@@ -131,7 +131,7 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
 SUBPROCESS_OUTPUT_LIMIT = 2_000_000
-EXPECTED_EVIDENCE_CASES = 398
+EXPECTED_EVIDENCE_CASES = 399
 EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
 SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
 SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
@@ -1005,6 +1005,27 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
             comparator="exact-spectral-values-nonfinite-masks-and-metadata",
         ),
     )
+
+    # UncertaintyMixin hooks (#758): pass through to GWpy unchanged when no
+    # uncertainty metadata is attached.
+    for cls_name, method_name in (
+        ("gwexpy.timeseries.timeseries.TimeSeries", "to"),
+        ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "copy"),
+        ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "to"),
+        ("gwexpy.types.series.Series", "copy"),
+        ("gwexpy.types.series.Series", "to"),
+    ):
+        register(
+            cls_name,
+            method_name,
+            _terminal_closure(
+                "no-finding",
+                f"uncertainty-absent-{method_name}",
+                "tests/timeseries/test_series_uncertainty.py::test_uncertainty_mixin_copy_and_to_match_gwpy",
+                issues=("#639", "#758"),
+                comparator="exact-result-and-metadata",
+            ),
+        )
 
     return dict(sorted(closures.items(), key=lambda item: item[0].encode("utf-8")))
 

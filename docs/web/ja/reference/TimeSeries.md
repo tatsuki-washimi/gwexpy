@@ -127,7 +127,7 @@ psd = ts.psd(fftlength=1.0)
 - **`arima(order=(p,d,q))`**
   ARIMA 時系列モデルを適合します。
 - **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
-  optional な Chronos-2 backend でゼロショット予測を行い、中央値を `ForecastResult.point`、分位系列を `ForecastResult.quantiles` に返します。`chronos-forecasting` package は基本インストールに含まれず、予定している `[chronos]` extra もまだ登録されていません。
+  optional な Chronos-2 backend（`pip install "gwexpy[chronos]"`）でゼロショット予測を行います。`horizon` は最終サンプルからの時間長（秒または Astropy 時間 `Quantity`、予測点数 `N_pred = floor(horizon / dt)`）で指定します。中央値（0.5 分位点）を本体とする `TimeSeries` を直接返し、不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.interval_levels`、Chronos-2 では `.estimate_mean is None`）を付与します。手動伝播や GWpy 連携には `.to_timeseriesdict()` で展開できます。
 - **`impute(method="interpolate")`**
   データ内の欠損値 (NaN) を処理します。
 - **`standardize(method="zscore")`**

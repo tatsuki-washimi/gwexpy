@@ -177,20 +177,30 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         amplitude-spectrum convention described in :meth:`_fft_transient`.
 
         """
-        if mode == "gwpy":
-            return self._fft_gwpy(nfft=nfft, **kwargs)
+        from gwexpy.types._uncertainty import (
+            suppress_uncertainty_drop_warning,
+            warn_uncertainty_dropped,
+        )
 
-        if mode == "transient":
-            self._check_regular("fft")
-            return self._fft_transient(
-                nfft=nfft,
-                pad_mode=pad_mode,
-                pad_left=pad_left,
-                pad_right=pad_right,
-                nfft_mode=nfft_mode,
-                other_length=other_length,
-                **kwargs,
-            )
+        has_unc = getattr(self, "_has_uncertainty", lambda: False)()
+        if has_unc:
+            warn_uncertainty_dropped("fft", stacklevel=2)
+
+        with suppress_uncertainty_drop_warning():
+            if mode == "gwpy":
+                return self._fft_gwpy(nfft=nfft, **kwargs)
+
+            if mode == "transient":
+                self._check_regular("fft")
+                return self._fft_transient(
+                    nfft=nfft,
+                    pad_mode=pad_mode,
+                    pad_left=pad_left,
+                    pad_right=pad_right,
+                    nfft_mode=nfft_mode,
+                    other_length=other_length,
+                    **kwargs,
+                )
 
         raise ValueError(f"Unknown mode: {mode}")
 
@@ -377,7 +387,15 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         """
         self._check_regular("rfft")
-        return self._super_ts().rfft(*args, **kwargs)
+        from gwexpy.types._uncertainty import (
+            suppress_uncertainty_drop_warning,
+            warn_uncertainty_dropped,
+        )
+
+        if getattr(self, "_has_uncertainty", lambda: False)():
+            warn_uncertainty_dropped("rfft", stacklevel=2)
+        with suppress_uncertainty_drop_warning():
+            return self._super_ts().rfft(*args, **kwargs)
 
     @inherits_time_reference
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
@@ -388,10 +406,18 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window and overlap are those of GWpy.  ``epoch`` and
         ``time_reference`` are those of this series.
         """
+        from gwexpy.types._uncertainty import (
+            suppress_uncertainty_drop_warning,
+            warn_uncertainty_dropped,
+        )
+
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
-        res = self._super_ts().psd(*args, **kwargs)
-        return self._restore_spectral_metadata(res.view(FrequencySeries))
+        if getattr(self, "_has_uncertainty", lambda: False)():
+            warn_uncertainty_dropped("psd", stacklevel=2)
+        with suppress_uncertainty_drop_warning():
+            res = self._super_ts().psd(*args, **kwargs)
+            return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     @inherits_time_reference
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
@@ -400,10 +426,18 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Same normalization as :meth:`psd`; ``epoch`` and ``time_reference``
         are those of this series.
         """
+        from gwexpy.types._uncertainty import (
+            suppress_uncertainty_drop_warning,
+            warn_uncertainty_dropped,
+        )
+
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
-        res = self._super_ts().asd(*args, **kwargs)
-        return self._restore_spectral_metadata(res.view(FrequencySeries))
+        if getattr(self, "_has_uncertainty", lambda: False)():
+            warn_uncertainty_dropped("asd", stacklevel=2)
+        with suppress_uncertainty_drop_warning():
+            res = self._super_ts().asd(*args, **kwargs)
+            return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     @inherits_time_reference
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:

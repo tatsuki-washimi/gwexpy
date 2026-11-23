@@ -38,6 +38,11 @@ class SignalAnalysisMixin:
 
         from astropy import units as u
 
+        from gwexpy.types._uncertainty import warn_uncertainty_dropped
+
+        if getattr(self, "_has_uncertainty", lambda: False)():
+            warn_uncertainty_dropped("smooth", stacklevel=2)
+
         h = cast(Any, self)
 
         # Determine value logic based on method

@@ -1,4 +1,4 @@
-"""Regression tests for forecast() time_reference preservation (#725, PR #927)."""
+"""Regression tests for forecast() time_reference preservation (#725, #758)."""
 
 from __future__ import annotations
 
@@ -40,18 +40,22 @@ def test_forecast_preserves_time_reference_for_series_and_dict(monkeypatch):
         np.arange(8.0), t0=1_400_000_000.0, dt=0.25, unit=u.m, name="abs"
     )
 
-    rel_fc = rel.forecast(horizon=4)
-    abs_fc = abs_ts.forecast(horizon=4)
+    rel_fc = rel.forecast(horizon=1.0)
+    abs_fc = abs_ts.forecast(horizon=1.0)
 
-    assert rel_fc.point.time_reference == "relative"
-    assert rel_fc.point.t0.to_value(u.s) == 2.0
+    assert len(rel_fc) == 4
+    assert rel_fc.time_reference == "relative"
+    assert rel_fc.t0.to_value(u.s) == 2.0
+    assert rel_fc.quantiles is not None
     assert all(q.time_reference == "relative" for q in rel_fc.quantiles.values())
 
-    assert abs_fc.point.time_reference == "absolute"
-    assert abs_fc.point.t0.to_value(u.s) == 1_400_000_002.0
+    assert len(abs_fc) == 4
+    assert abs_fc.time_reference == "absolute"
+    assert abs_fc.t0.to_value(u.s) == 1_400_000_002.0
+    assert abs_fc.quantiles is not None
     assert all(q.time_reference == "absolute" for q in abs_fc.quantiles.values())
 
     tsd = TimeSeriesDict({"rel": rel, "abs": abs_ts})
-    tsd_fc = tsd.forecast(horizon=4)
-    assert tsd_fc.point["rel"].time_reference == "relative"
-    assert tsd_fc.point["abs"].time_reference == "absolute"
+    tsd_fc = tsd.forecast(horizon=1.0)
+    assert tsd_fc["rel"].time_reference == "relative"
+    assert tsd_fc["abs"].time_reference == "absolute"

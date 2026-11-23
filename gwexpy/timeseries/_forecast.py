@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import math
+from collections.abc import Sequence
 from numbers import Real
 
 import numpy as np
 from astropy import units as u
 
 DEFAULT_QUANTILES = (0.1, 0.5, 0.9)
+_CHRONOS2_MODEL_ID = "amazon/chronos-2"
+_CHRONOS2_REVISION = "29ec3766d36d6f73f0696f85560a422f50e8498c"
+# Chronos-2 trained quantile range for amazon/chronos-2 at the pinned revision.
+# Used as a fallback if a pipeline instance does not expose `.quantiles`.
+_CHRONOS2_DEFAULT_QUANTILE_RANGE = (0.01, 0.99)
 
 
 def _normalize_quantiles(
@@ -44,6 +50,103 @@ def _normalize_quantiles(
     if 0.5 not in levels:
         raise ValueError("quantiles must include 0.5 so point uses the median")
     return tuple(levels)
+
+
+def _normalize_horizon_seconds(horizon: Real | u.Quantity) -> float:
+    """Validate time-span ``horizon`` and convert it to positive finite seconds."""
+    if isinstance(horizon, (bool, np.bool_)):
+        raise TypeError(
+            "horizon must be a positive real number (seconds) or time Quantity"
+        )
+    if isinstance(horizon, u.Quantity):
+        if horizon.ndim != 0:
+            raise ValueError("horizon must be a scalar time span")
+        raw = horizon.value
+        if isinstance(raw, (bool, np.bool_)) or np.iscomplexobj(raw):
+            raise TypeError(
+                "horizon must be a positive real number (seconds) or time Quantity"
+            )
+        try:
+            horizon_s = float(horizon.to_value(u.s))
+        except u.UnitConversionError as exc:
+            raise ValueError(
+                f"horizon Quantity must have time units convertible to seconds, got {horizon.unit!r}"
+            ) from exc
+    elif isinstance(horizon, (Real, np.integer, np.floating)):
+        horizon_s = float(horizon)
+    else:
+        raise TypeError(
+            "horizon must be a positive real number (seconds) or time Quantity"
+        )
+    if not np.isfinite(horizon_s) or horizon_s <= 0.0:
+        raise ValueError("horizon must be a positive finite time span")
+    return horizon_s
+
+
+def _horizon_to_steps(horizon_s: float, dt: u.Quantity) -> int:
+    """Compute ``N_pred = floor(T / dt)`` with floating-point undercounting guard.
+
+    Provisional reversible behavior (``asm-06`` / ``unk-004``): when
+    ``0 < horizon < dt`` so ``N_pred == 0``, raises ``ValueError``.
+    """
+    dt_s = float(dt.to_value(u.s))
+    ratio = horizon_s / dt_s
+    nearest = round(ratio)
+    if nearest >= 1 and math.isclose(ratio, nearest, rel_tol=1e-12, abs_tol=1e-12):
+        n_pred = int(nearest)
+    else:
+        n_pred = int(math.floor(ratio))
+    if n_pred <= 0:
+        raise ValueError(
+            f"horizon ({horizon_s:g} s) is shorter than one sample interval dt "
+            f"({dt_s:g} s), yielding N_pred = 0"
+        )
+    return n_pred
+
+
+def _validate_chronos_quantiles(levels: tuple[float, ...], pipeline: object) -> None:
+    """Reject quantile levels outside Chronos-2's supported quantile range.
+
+    Chronos-2 clamps out-of-range quantile requests to its boundary trained
+    quantiles rather than raising. Validating against the pipeline's trained
+    quantile bounds prevents silently returning e.g. Q10 under a Q05 key.
+    """
+    supported = getattr(pipeline, "quantiles", None)
+    if supported is None:
+        model = getattr(pipeline, "model", None)
+        config = getattr(model, "chronos_config", None)
+        supported = getattr(config, "quantiles", None)
+
+    if supported is not None:
+        try:
+            supported_vals = [float(q) for q in supported]
+        except TypeError:
+            supported_vals = []
+    else:
+        supported_vals = []
+
+    if supported_vals:
+        min_q = min(supported_vals)
+        max_q = max(supported_vals)
+    else:
+        min_q, max_q = _CHRONOS2_DEFAULT_QUANTILE_RANGE
+
+    out_of_range = [level for level in levels if level < min_q or level > max_q]
+    if out_of_range:
+        raise ValueError(
+            f"Requested quantile level(s) {out_of_range} are outside Chronos-2's "
+            f"supported quantile range [{min_q:g}, {max_q:g}]; silent clamping "
+            f"to boundary quantiles is not allowed."
+        )
+
+
+def _default_interval_levels(levels: tuple[float, ...]) -> tuple[float, float] | None:
+    """Select ``(low, high)`` interval levels from normalized quantile levels."""
+    if 0.1 in levels and 0.9 in levels:
+        return (0.1, 0.9)
+    if len(levels) >= 2:
+        return (min(levels), max(levels))
+    return None
 
 
 def _real_finite_values(series: TimeSeries) -> np.ndarray:
@@ -131,58 +234,23 @@ def _normalize_backend_output(
     return np.stack(normalized, axis=0)
 
 
-@dataclass
-class ForecastResult:
-    """Point forecast and requested quantile forecasts.
-
-    ``point`` is always the 0.5 quantile. For a single series, values are
-    ``TimeSeries`` objects; for a collection they are ``TimeSeriesDict``.
-    """
-
-    point: TimeSeries | TimeSeriesDict
-    quantiles: dict[float, TimeSeries | TimeSeriesDict]
-
-
-def forecast_series(
+def _build_forecast_series(
     series: TimeSeries,
+    quantile_matrix: np.ndarray,
     *,
-    horizon: int,
-    quantiles: tuple[float, ...] | list[float] | None,
-) -> ForecastResult:
-    """Forecast one series using the optional Chronos-2 backend."""
+    axis_kwargs: dict[str, object],
+    levels: tuple[float, ...],
+) -> TimeSeries:
+    """Build a direct ``TimeSeries`` forecast with uncertainty metadata attached.
+
+    Chronos-2 returns the 0.5 quantile (median) as its point estimate and does
+    not provide an independent predicted mean; therefore ``center_kind`` is
+    ``"median"`` and ``estimate_mean`` is explicitly ``None``.
+    """
+    from gwexpy.time._reference import inherit_time_reference
+
     from .timeseries import TimeSeries
 
-    if isinstance(horizon, bool) or not isinstance(horizon, (int, np.integer)):
-        raise TypeError("horizon must be a positive integer")
-    if horizon <= 0:
-        raise ValueError("horizon must be a positive integer")
-    levels = _normalize_quantiles(quantiles)
-    values = _real_finite_values(series)
-    axis_kwargs = _forecast_axis_kwargs(series)
-    try:
-        from chronos import Chronos2Pipeline
-    except ImportError as exc:
-        raise ImportError(
-            "Chronos forecasting requires the 'chronos-forecasting' package; "
-            "install it with `pip install 'gwexpy[chronos]'`."
-        ) from exc
-
-    pipeline = Chronos2Pipeline.from_pretrained(
-        "amazon/chronos-2", revision="29ec3766d36d6f73f0696f85560a422f50e8498c"
-    )
-    quantile_predictions, mean_predictions = pipeline.predict_quantiles(
-        [np.asarray(values)],
-        prediction_length=int(horizon),
-        quantile_levels=[float(level) for level in levels],
-        cross_learning=False,
-    )
-    quantile_values = _normalize_backend_output(
-        quantile_predictions,
-        mean_predictions,
-        batch_size=1,
-        horizon=int(horizon),
-        n_quantiles=len(levels),
-    )[0]
     output_kwargs = {
         **axis_kwargs,
         "unit": series.unit,
@@ -190,43 +258,38 @@ def forecast_series(
         "channel": series.channel,
     }
 
-    def make_output(data: np.ndarray) -> TimeSeries:
-        from gwexpy.time._reference import inherit_time_reference
-
+    def make_plain(data: np.ndarray) -> TimeSeries:
         return inherit_time_reference(TimeSeries(data, **output_kwargs), series)
 
-    outputs = {
-        float(level): make_output(quantile_values[:, i])
+    quantile_outputs = {
+        float(level): make_plain(quantile_matrix[:, i])
         for i, level in enumerate(levels)
     }
-    return ForecastResult(point=outputs[0.5], quantiles=outputs)
+    median_idx = levels.index(0.5)
+    result = make_plain(quantile_matrix[:, median_idx])
+    result._set_uncertainty(
+        quantiles=quantile_outputs,
+        estimate_mean=None,
+        center_kind="median",
+        uncertainty_kind="predictive",
+        interval_levels=_default_interval_levels(levels),
+    )
+    return result
 
 
-def forecast_collection(
-    collection: TimeSeriesDict,
+def forecast_series(
+    series: TimeSeries,
     *,
-    horizon: int,
+    horizon: Real | u.Quantity,
     quantiles: tuple[float, ...] | list[float] | None,
-) -> ForecastResult:
-    """Forecast collection members as independent univariate batch tasks."""
-    from .collections import TimeSeriesDict
-
-    items = list(collection.items())
-    if not items:
-        raise ValueError("Chronos forecast requires a non-empty TimeSeriesDict")
-    # A single pipeline call keeps this a backend batch while each item remains
-    # a distinct one-dimensional task with cross-learning disabled.
-    if isinstance(horizon, bool) or not isinstance(horizon, (int, np.integer)):
-        raise TypeError("horizon must be a positive integer")
-    if horizon <= 0:
-        raise ValueError("horizon must be a positive integer")
+) -> TimeSeries:
+    """Forecast one series using the optional Chronos-2 backend."""
+    horizon_s = _normalize_horizon_seconds(horizon)
     levels = _normalize_quantiles(quantiles)
-    values = []
-    axis_kwargs_by_key = {}
-    for key, series in items:
-        data = _real_finite_values(series)
-        axis_kwargs_by_key[key] = _forecast_axis_kwargs(series)
-        values.append(data)
+    values = _real_finite_values(series)
+    axis_kwargs = _forecast_axis_kwargs(series)
+    n_pred = _horizon_to_steps(horizon_s, axis_kwargs["dt"])  # type: ignore[arg-type]
+
     try:
         from chronos import Chronos2Pipeline
     except ImportError as exc:
@@ -234,49 +297,109 @@ def forecast_collection(
             "Chronos forecasting requires the 'chronos-forecasting' package; "
             "install it with `pip install 'gwexpy[chronos]'`."
         ) from exc
+
     pipeline = Chronos2Pipeline.from_pretrained(
-        "amazon/chronos-2", revision="29ec3766d36d6f73f0696f85560a422f50e8498c"
+        _CHRONOS2_MODEL_ID, revision=_CHRONOS2_REVISION
     )
+    _validate_chronos_quantiles(levels, pipeline)
     quantile_predictions, mean_predictions = pipeline.predict_quantiles(
-        values,
-        prediction_length=int(horizon),
+        [np.asarray(values)],
+        prediction_length=n_pred,
         quantile_levels=[float(level) for level in levels],
         cross_learning=False,
     )
     quantile_values = _normalize_backend_output(
         quantile_predictions,
         mean_predictions,
-        batch_size=len(items),
-        horizon=int(horizon),
+        batch_size=1,
+        horizon=n_pred,
         n_quantiles=len(levels),
+    )[0]
+    return _build_forecast_series(
+        series, quantile_values, axis_kwargs=axis_kwargs, levels=levels
     )
-    point_values = quantile_values[:, :, levels.index(0.5)]
 
-    from .timeseries import TimeSeries
 
-    def output_series(key: str, series: TimeSeries, data: np.ndarray) -> TimeSeries:
-        from gwexpy.time._reference import inherit_time_reference
+def forecast_collection(
+    collection: TimeSeriesDict,
+    *,
+    horizon: Real | u.Quantity,
+    quantiles: tuple[float, ...] | list[float] | None,
+    targets: Sequence[str] | None = None,
+) -> TimeSeriesDict:
+    """Forecast collection members as independent univariate batch tasks."""
+    from .collections import TimeSeriesDict
 
-        kwargs = {
-            **axis_kwargs_by_key[key],
-            "unit": series.unit,
-            "name": series.name,
-            "channel": series.channel,
-        }
-        return inherit_time_reference(TimeSeries(data, **kwargs), series)
-
-    point = TimeSeriesDict(
-        (key, output_series(key, series, point_values[i]))
-        for i, (key, series) in enumerate(items)
-    )
-    quantile_results = {
-        float(level): TimeSeriesDict(
-            (key, output_series(key, series, quantile_values[i, :, j]))
-            for i, (key, series) in enumerate(items)
+    if targets is not None:
+        raise NotImplementedError(
+            "Chronos-2 backend currently supports independent SISO batch "
+            "forecasting (targets=None) only; joint MISO/MIMO forecasting via "
+            "'targets' is not yet supported."
         )
-        for j, level in enumerate(levels)
-    }
-    return ForecastResult(point=point, quantiles=quantile_results)
+
+    items = list(collection.items())
+    if not items:
+        raise ValueError("Chronos forecast requires a non-empty TimeSeriesDict")
+    horizon_s = _normalize_horizon_seconds(horizon)
+    levels = _normalize_quantiles(quantiles)
+
+    values_by_key: dict[str, np.ndarray] = {}
+    axis_kwargs_by_key: dict[str, dict[str, object]] = {}
+    n_pred_by_key: dict[str, int] = {}
+    for key, series in items:
+        values_by_key[key] = _real_finite_values(series)
+        axis_kwargs = _forecast_axis_kwargs(series)
+        axis_kwargs_by_key[key] = axis_kwargs
+        n_pred_by_key[key] = _horizon_to_steps(
+            horizon_s,
+            axis_kwargs["dt"],  # type: ignore[arg-type]
+        )
+
+    try:
+        from chronos import Chronos2Pipeline
+    except ImportError as exc:
+        raise ImportError(
+            "Chronos forecasting requires the 'chronos-forecasting' package; "
+            "install it with `pip install 'gwexpy[chronos]'`."
+        ) from exc
+
+    pipeline = Chronos2Pipeline.from_pretrained(
+        _CHRONOS2_MODEL_ID, revision=_CHRONOS2_REVISION
+    )
+    _validate_chronos_quantiles(levels, pipeline)
+
+    # Group keys by prediction_length so equal-dt collections remain a single
+    # backend batch call while heterogeneous-dt collections compute exact spans.
+    groups: dict[int, list[str]] = {}
+    for key, _ in items:
+        groups.setdefault(n_pred_by_key[key], []).append(key)
+
+    series_by_key = dict(items)
+    forecasts_by_key: dict[str, TimeSeries] = {}
+    for n_pred, group_keys in groups.items():
+        batch_inputs = [values_by_key[k] for k in group_keys]
+        quantile_predictions, mean_predictions = pipeline.predict_quantiles(
+            batch_inputs,
+            prediction_length=n_pred,
+            quantile_levels=[float(level) for level in levels],
+            cross_learning=False,
+        )
+        quantile_values = _normalize_backend_output(
+            quantile_predictions,
+            mean_predictions,
+            batch_size=len(group_keys),
+            horizon=n_pred,
+            n_quantiles=len(levels),
+        )
+        for i, key in enumerate(group_keys):
+            forecasts_by_key[key] = _build_forecast_series(
+                series_by_key[key],
+                quantile_values[i],
+                axis_kwargs=axis_kwargs_by_key[key],
+                levels=levels,
+            )
+
+    return TimeSeriesDict((key, forecasts_by_key[key]) for key, _ in items)
 
 
 # Resolve public annotations at runtime after the package has defined these

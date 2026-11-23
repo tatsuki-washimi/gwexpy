@@ -51,9 +51,9 @@ Dictionary of TimeSeries objects.
 
 ## Methods
 
-### `forecast(backend="chronos", horizon=..., quantiles=...)`
+### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-Forecast each member as an independent univariate task batch. This does not share information between channels. The returned `ForecastResult.point` and each entry in `ForecastResult.quantiles` are `TimeSeriesDict` objects that preserve the input keys. The `chronos-forecasting` package is not included in the base install, and the planned `[chronos]` extra is not registered yet.
+Forecast each member as an independent univariate task batch (`targets=None`) using the optional Chronos-2 backend (`pip install "gwexpy[chronos]"`). `horizon` is a time span in seconds (or an Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeriesDict` preserving input keys where each member is an uncertainty-bearing `TimeSeries` (median values with `.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`). Non-`None` `targets` is reserved for future joint MISO/MIMO forecasting and currently raises `NotImplementedError`.
 
 ### `EntryClass`
 
