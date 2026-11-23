@@ -1006,6 +1006,27 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
         ),
     )
 
+    # UncertaintyMixin hooks (#758): pass through to GWpy unchanged when no
+    # uncertainty metadata is attached.
+    for cls_name, method_name in (
+        ("gwexpy.timeseries.timeseries.TimeSeries", "to"),
+        ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "copy"),
+        ("gwexpy.frequencyseries.frequencyseries.FrequencySeries", "to"),
+        ("gwexpy.types.series.Series", "copy"),
+        ("gwexpy.types.series.Series", "to"),
+    ):
+        register(
+            cls_name,
+            method_name,
+            _terminal_closure(
+                "no-finding",
+                f"uncertainty-absent-{method_name}",
+                "tests/timeseries/test_series_uncertainty.py::test_uncertainty_mixin_copy_and_to_match_gwpy",
+                issues=("#639", "#758"),
+                comparator="exact-result-and-metadata",
+            ),
+        )
+
     return dict(sorted(closures.items(), key=lambda item: item[0].encode("utf-8")))
 
 

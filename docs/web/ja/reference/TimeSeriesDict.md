@@ -51,9 +51,9 @@ TimeSeries オブジェクトの辞書。
 
 ## メソッド
 
-### `forecast(backend="chronos", horizon=..., quantiles=...)`
+### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-各キーの系列を独立した 1 次元予測タスクとして batch 処理します。チャンネル間の情報共有を行う multivariate 予測ではありません。戻り値の `ForecastResult.point` と `ForecastResult.quantiles` はキーを保った `TimeSeriesDict` です。`chronos-forecasting` package は基本インストールに含まれず、予定している `[chronos]` extra もまだ登録されていません。
+各キーの系列を独立した 1 次元予測タスクとして batch 処理します（`targets=None`）。optional な Chronos-2 backend（`pip install "gwexpy[chronos]"`）を使用し、`horizon` は時間長（秒または Astropy 時間 `Quantity`、`N_pred = floor(horizon / dt)`）で指定します。入力キーを保った `TimeSeriesDict` を直接返し、各要素は不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`）を持つ `TimeSeries` です。`targets` 指定による共同 MISO/MIMO 予測は将来拡張向けで、現在は `NotImplementedError` を送出します。
 
 ### `EntryClass`
 

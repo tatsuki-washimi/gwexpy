@@ -29,7 +29,7 @@ def _make_quantile_ts(
         quantiles={0.1: q10, 0.5: q50, 0.9: q90},
         estimate_mean=None,
         center_kind="median",
-        uncertainty_kind="quantile_interval",
+        uncertainty_kind="predictive",
         interval_levels=(0.1, 0.9),
     )
     return ts
@@ -59,6 +59,18 @@ def test_quantile_derived_and_independent_lower_upper() -> None:
     assert ts.lower is ts.quantiles[0.1]
     assert ts.upper is ts.quantiles[0.9]
     assert ts.estimate_mean is None
+
+    # Cannot overwrite .lower/.upper independently while quantile-derived bounds are active
+    with pytest.raises(ValueError, match="quantile-derived bounds"):
+        ts.lower = ts.copy()
+    with pytest.raises(ValueError, match="quantile-derived bounds"):
+        ts.upper = ts.copy()
+    with pytest.raises(ValueError, match="quantile-derived bounds"):
+        ts._set_uncertainty(
+            lower=ts.copy(),
+            quantiles={0.1: ts.copy(), 0.9: ts.copy()},
+            interval_levels=(0.1, 0.9),
+        )
 
     # Non-quantile independent lower/upper storage on FrequencySeries
     fs = FrequencySeries([10.0, 20.0, 30.0], df=1.0, unit="V")
@@ -261,3 +273,47 @@ def test_to_timeseriesdict_expands_independent_series_preserving_metadata() -> N
 
     no_q = ts.to_timeseriesdict(include_quantiles=False)
     assert list(no_q.keys()) == ["value", "lower", "upper"]
+
+    # When estimate_mean is present, to_timeseriesdict() includes it as an independent copy
+    mean_ts = TimeSeries(
+        vals + 0.5, t0_ns=epoch_ns, dt=10 * u.ns, unit="V", name="ch", channel="K1:CH"
+    )
+    ts.estimate_mean = mean_ts
+    with_mean = ts.to_timeseriesdict()
+    assert "estimate_mean" in with_mean
+    np.testing.assert_array_equal(with_mean["estimate_mean"].value, vals + 0.5)
+    assert not with_mean["estimate_mean"]._has_uncertainty()
+    with_mean["estimate_mean"][0] = -1.0 * u.V
+    assert ts.estimate_mean.value[0] == 10.5
+
+
+def test_uncertainty_mixin_copy_and_to_match_gwpy() -> None:
+    """Verify default copy() and to() match GWpy when uncertainty is absent."""
+    from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
+    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+    from gwpy.types.series import Series as GwpySeries
+
+    ts = TimeSeries([1.0, 2.0, 3.0], t0=100.0, dt=0.5 * u.s, unit="V", name="t")
+    gts = GwpyTimeSeries([1.0, 2.0, 3.0], t0=100.0, dt=0.5 * u.s, unit="V", name="t")
+    np.testing.assert_array_equal(ts.to("mV").value, gts.to("mV").value)
+    assert ts.to("mV").unit == gts.to("mV").unit
+    assert ts.to("mV").t0 == gts.to("mV").t0
+    assert ts.to("mV").dt == gts.to("mV").dt
+
+    fs = FrequencySeries([1.0, 2.0, 3.0], f0=10.0, df=2.0 * u.Hz, unit="V", name="f")
+    gfs = GwpyFrequencySeries(
+        [1.0, 2.0, 3.0], f0=10.0, df=2.0 * u.Hz, unit="V", name="f"
+    )
+    np.testing.assert_array_equal(fs.copy().value, gfs.copy().value)
+    assert fs.copy().unit == gfs.copy().unit
+    assert fs.copy().f0 == gfs.copy().f0
+    assert fs.copy().df == gfs.copy().df
+    np.testing.assert_array_equal(fs.to("mV").value, gfs.to("mV").value)
+    assert fs.to("mV").unit == gfs.to("mV").unit
+
+    s = Series([1.0, 2.0, 3.0], x0=0.0, dx=1.0, unit="V", name="s")
+    gs = GwpySeries([1.0, 2.0, 3.0], x0=0.0, dx=1.0, unit="V", name="s")
+    np.testing.assert_array_equal(s.copy().value, gs.copy().value)
+    assert s.copy().unit == gs.copy().unit
+    np.testing.assert_array_equal(s.to("mV").value, gs.to("mV").value)
+    assert s.to("mV").unit == gs.to("mV").unit

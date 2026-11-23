@@ -90,7 +90,7 @@ def test_single_series_forecast_returns_timeseries_with_uncertainty(
     assert result.t0_gps_ns == epoch_ns + 3 * 7
     np.testing.assert_array_equal(result.value, [4.0, 5.0])
     assert result.center_kind == "median"
-    assert result.uncertainty_kind == "quantile_interval"
+    assert result.uncertainty_kind == "predictive"
     assert result.interval_levels == (0.1, 0.9)
     assert result.estimate_mean is None
     assert result.quantiles is not None
@@ -392,3 +392,25 @@ def test_relative_axis_preserves_subnanosecond_forecast_start(
     result = series.forecast(horizon=0.5 * u.ns)
 
     assert result.x0.to_value(u.ns) == pytest.approx(0.5)
+
+
+def test_out_of_range_chronos_quantiles_raise_value_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_chronos(monkeypatch)
+    series = TimeSeries([1.0, 2.0, 3.0], dt=1.0 * u.s)
+
+    # Default Chronos-2 fallback range is [0.01, 0.99]
+    with pytest.raises(ValueError, match="supported quantile range"):
+        series.forecast(horizon=2.0, quantiles=(0.001, 0.5, 0.9))
+
+    # Pipeline-reported quantiles take precedence (e.g. [0.1, 0.5, 0.9] rejects 0.05)
+    monkeypatch.setattr(
+        MockChronosPipeline, "quantiles", [0.1, 0.5, 0.9], raising=False
+    )
+    with pytest.raises(ValueError, match="supported quantile range"):
+        series.forecast(horizon=2.0, quantiles=(0.05, 0.5, 0.9))
+
+    collection = TimeSeriesDict({"a": series})
+    with pytest.raises(ValueError, match="supported quantile range"):
+        collection.forecast(horizon=2.0, quantiles=(0.1, 0.5, 0.95))

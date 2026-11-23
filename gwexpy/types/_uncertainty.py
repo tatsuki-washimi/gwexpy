@@ -34,7 +34,7 @@ from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from numbers import Real
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
@@ -207,6 +207,16 @@ class UncertaintyMixin:
         """Atomically assign uncertainty metadata on this instance."""
         norm_quantiles = _validate_quantiles_mapping(quantiles)
         norm_levels = _validate_interval_levels(interval_levels)
+        if (
+            norm_quantiles is not None
+            and norm_levels is not None
+            and (lower is not None or upper is not None)
+        ):
+            raise ValueError(
+                "Cannot specify explicit lower/upper alongside quantile-derived "
+                "bounds (quantiles + interval_levels); lower/upper are derived "
+                "from quantiles[interval_levels]."
+            )
         self._clear_uncertainty()
         d = self.__dict__
         if lower is not None:
@@ -326,8 +336,17 @@ class UncertaintyMixin:
     def lower(self, value: Any) -> None:
         if value is None:
             self.__dict__.pop("_gwex_unc_lower", None)
-        else:
-            self.__dict__["_gwex_unc_lower"] = value
+            return
+        if (
+            self.__dict__.get("_gwex_unc_quantiles") is not None
+            and self.__dict__.get("_gwex_unc_interval_levels") is not None
+        ):
+            raise ValueError(
+                "Cannot overwrite .lower independently while quantile-derived "
+                "bounds (quantiles + interval_levels) are active; update "
+                ".quantiles or .interval_levels, or clear .quantiles first."
+            )
+        self.__dict__["_gwex_unc_lower"] = value
 
     @property
     def upper(self) -> Any:
@@ -345,8 +364,17 @@ class UncertaintyMixin:
     def upper(self, value: Any) -> None:
         if value is None:
             self.__dict__.pop("_gwex_unc_upper", None)
-        else:
-            self.__dict__["_gwex_unc_upper"] = value
+            return
+        if (
+            self.__dict__.get("_gwex_unc_quantiles") is not None
+            and self.__dict__.get("_gwex_unc_interval_levels") is not None
+        ):
+            raise ValueError(
+                "Cannot overwrite .upper independently while quantile-derived "
+                "bounds (quantiles + interval_levels) are active; update "
+                ".quantiles or .interval_levels, or clear .quantiles first."
+            )
+        self.__dict__["_gwex_unc_upper"] = value
 
     @property
     def quantiles(self) -> dict[float, Any] | None:
@@ -387,7 +415,7 @@ class UncertaintyMixin:
 
     @property
     def uncertainty_kind(self) -> str | None:
-        """Kind of uncertainty interval (e.g. ``'quantile_interval'``)."""
+        """Kind of uncertainty interval (e.g. ``'predictive'``)."""
         return self.__dict__.get("_gwex_unc_uncertainty_kind")
 
     @uncertainty_kind.setter
@@ -414,7 +442,7 @@ class UncertaintyMixin:
     # Propagation & warn-and-drop hooks
     # ------------------------------------------------------------------
 
-    def copy(self, order: str = "C") -> Any:
+    def copy(self, order: Literal["C", "F", "A", "K"] = "C") -> Any:
         """Copy this series and propagate any attached uncertainty metadata."""
         if not self._has_uncertainty():
             return super().copy(order=order)  # type: ignore[misc]

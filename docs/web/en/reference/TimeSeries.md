@@ -130,7 +130,7 @@ To choose an averaging method, use `spectrogram(stride=..., method='welch')`
 - **`arima(order=(p,d,q))`**
   Fit an ARIMA time-series model.
 - **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
-  Run zero-shot forecasting with the optional Chronos-2 backend. Returns a `ForecastResult`; `point` is the median `TimeSeries`, and `quantiles` maps requested levels to forecast series. The `chronos-forecasting` package is not included in the base install, and the planned `[chronos]` extra is not registered yet.
+  Run zero-shot forecasting with the optional Chronos-2 backend (`pip install "gwexpy[chronos]"`). `horizon` is a time span in seconds (numeric or Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeries` directly whose values are the 0.5 quantile (median, `.center_kind == "median"`, `.estimate_mean is None`), with uncertainty metadata (`.lower`, `.upper`, `.quantiles`, `.uncertainty_kind == "predictive"`, `.interval_levels`) attached; use `.to_timeseriesdict()` to expand into independent `TimeSeries` entries.
 - **`impute(method="interpolate")`**
   Handle missing values (NaNs) in the data.
 - **`standardize(method="zscore")`**

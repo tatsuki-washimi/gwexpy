@@ -1348,7 +1348,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         -------
         TimeSeriesDict
             Dictionary containing ``"value"`` and, when present, ``"lower"``,
-            ``"upper"``, and quantile entries.
+            ``"upper"``, ``"estimate_mean"``, and quantile entries.
 
         """
         from gwexpy.types._uncertainty import (
@@ -1373,6 +1373,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         upper = getattr(self, "upper", None)
         if upper is not None:
             result["upper"] = _plain_copy(upper)
+        estimate_mean = getattr(self, "estimate_mean", None)
+        if estimate_mean is not None:
+            result["estimate_mean"] = _plain_copy(estimate_mean)
         if include_quantiles:
             quantiles = getattr(self, "quantiles", None)
             if quantiles is not None:

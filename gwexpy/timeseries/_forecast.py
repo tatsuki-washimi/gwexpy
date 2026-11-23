@@ -12,6 +12,9 @@ from astropy import units as u
 DEFAULT_QUANTILES = (0.1, 0.5, 0.9)
 _CHRONOS2_MODEL_ID = "amazon/chronos-2"
 _CHRONOS2_REVISION = "29ec3766d36d6f73f0696f85560a422f50e8498c"
+# Chronos-2 trained quantile range for amazon/chronos-2 at the pinned revision.
+# Used as a fallback if a pipeline instance does not expose `.quantiles`.
+_CHRONOS2_DEFAULT_QUANTILE_RANGE = (0.01, 0.99)
 
 
 def _normalize_quantiles(
@@ -99,6 +102,42 @@ def _horizon_to_steps(horizon_s: float, dt: u.Quantity) -> int:
             f"({dt_s:g} s), yielding N_pred = 0"
         )
     return n_pred
+
+
+def _validate_chronos_quantiles(levels: tuple[float, ...], pipeline: object) -> None:
+    """Reject quantile levels outside Chronos-2's supported quantile range.
+
+    Chronos-2 clamps out-of-range quantile requests to its boundary trained
+    quantiles rather than raising. Validating against the pipeline's trained
+    quantile bounds prevents silently returning e.g. Q10 under a Q05 key.
+    """
+    supported = getattr(pipeline, "quantiles", None)
+    if supported is None:
+        model = getattr(pipeline, "model", None)
+        config = getattr(model, "chronos_config", None)
+        supported = getattr(config, "quantiles", None)
+
+    if supported is not None:
+        try:
+            supported_vals = [float(q) for q in supported]
+        except TypeError:
+            supported_vals = []
+    else:
+        supported_vals = []
+
+    if supported_vals:
+        min_q = min(supported_vals)
+        max_q = max(supported_vals)
+    else:
+        min_q, max_q = _CHRONOS2_DEFAULT_QUANTILE_RANGE
+
+    out_of_range = [level for level in levels if level < min_q or level > max_q]
+    if out_of_range:
+        raise ValueError(
+            f"Requested quantile level(s) {out_of_range} are outside Chronos-2's "
+            f"supported quantile range [{min_q:g}, {max_q:g}]; silent clamping "
+            f"to boundary quantiles is not allowed."
+        )
 
 
 def _default_interval_levels(levels: tuple[float, ...]) -> tuple[float, float] | None:
@@ -232,7 +271,7 @@ def _build_forecast_series(
         quantiles=quantile_outputs,
         estimate_mean=None,
         center_kind="median",
-        uncertainty_kind="quantile_interval",
+        uncertainty_kind="predictive",
         interval_levels=_default_interval_levels(levels),
     )
     return result
@@ -262,6 +301,7 @@ def forecast_series(
     pipeline = Chronos2Pipeline.from_pretrained(
         _CHRONOS2_MODEL_ID, revision=_CHRONOS2_REVISION
     )
+    _validate_chronos_quantiles(levels, pipeline)
     quantile_predictions, mean_predictions = pipeline.predict_quantiles(
         [np.asarray(values)],
         prediction_length=n_pred,
@@ -326,6 +366,7 @@ def forecast_collection(
     pipeline = Chronos2Pipeline.from_pretrained(
         _CHRONOS2_MODEL_ID, revision=_CHRONOS2_REVISION
     )
+    _validate_chronos_quantiles(levels, pipeline)
 
     # Group keys by prediction_length so equal-dt collections remain a single
     # backend batch call while heterogeneous-dt collections compute exact spans.
