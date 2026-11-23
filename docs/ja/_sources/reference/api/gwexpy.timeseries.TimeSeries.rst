@@ -227,6 +227,7 @@
       ~TimeSeries.to_tensorflow
       ~TimeSeries.to_tgraph
       ~TimeSeries.to_th1d
+      ~TimeSeries.to_timeseriesdict
       ~TimeSeries.to_torch
       ~TimeSeries.to_value
       ~TimeSeries.to_xarray
@@ -260,6 +261,7 @@
    
       ~TimeSeries.T
       ~TimeSeries.base
+      ~TimeSeries.center_kind
       ~TimeSeries.cgs
       ~TimeSeries.channel
       ~TimeSeries.ctypes
@@ -271,18 +273,22 @@
       ~TimeSeries.dx
       ~TimeSeries.epoch
       ~TimeSeries.equivalencies
+      ~TimeSeries.estimate_mean
       ~TimeSeries.flags
       ~TimeSeries.flat
       ~TimeSeries.get
       ~TimeSeries.imag
       ~TimeSeries.info
+      ~TimeSeries.interval_levels
       ~TimeSeries.is_regular
       ~TimeSeries.isscalar
       ~TimeSeries.itemsize
+      ~TimeSeries.lower
       ~TimeSeries.mT
       ~TimeSeries.name
       ~TimeSeries.nbytes
       ~TimeSeries.ndim
+      ~TimeSeries.quantiles
       ~TimeSeries.real
       ~TimeSeries.sample_rate
       ~TimeSeries.shape
@@ -294,7 +300,9 @@
       ~TimeSeries.t0_gps_ns
       ~TimeSeries.time_reference
       ~TimeSeries.times
+      ~TimeSeries.uncertainty_kind
       ~TimeSeries.unit
+      ~TimeSeries.upper
       ~TimeSeries.value
       ~TimeSeries.x0
       ~TimeSeries.xindex

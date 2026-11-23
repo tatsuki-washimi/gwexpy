@@ -563,7 +563,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/aca66f49006256814710b15ea84e373f3d5a49c2">aca66f49</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/8f0c029e64a89f8307ed97a4102c493ad38e9583">8f0c029e</a>
   · Intro examples tested with 0.2.4
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -580,7 +580,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.timeseries.TimeSeries">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Buffer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.15)"><span class="pre">complex</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.15)"><span class="pre">complex</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike1D</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detector.html#gwexpy.detector.Channel" title="gwexpy.detector.Channel"><span class="pre">Channel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0_ns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesInteropMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesResamplingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSignalMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSpectralMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeReferenceMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesCore</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesInteropMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesResamplingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSignalMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSpectralMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UncertaintyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeReferenceMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesCore</span></code></p>
 <p>A data array holding some metadata to represent a time-series.</p>
 <p><cite>TimeSeries</cite> is the primary object used to represent time-domain
 data in <cite>gwexpy</cite>. It extends the standard <cite>gwpy.timeseries.TimeSeries</cite>
@@ -1225,7 +1225,7 @@ Xarray, and Polars.</p>
 <td><p>Taper the ends of this <cite>TimeSeries</cite> smoothly to zero.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code>(unit[, equivalencies, copy])</p></td>
-<td><p>Return a new <cite>~astropy.units.Quantity</cite> object with the specified unit.</p></td>
+<td><p>Convert physical unit and propagate uncertainty on real-valued series.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_astropy_timeseries</span></code>([column, time_format])</p></td>
 <td><p>Convert to astropy.timeseries.TimeSeries.</p></td>
@@ -1305,70 +1305,73 @@ Xarray, and Polars.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_th1d</span></code>([error])</p></td>
 <td><p>Convert to ROOT TH1D.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_torch</span></code>([device, dtype, requires_grad, copy])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_timeseriesdict</span></code>([include_quantiles])</p></td>
+<td><p>Expand this series and its uncertainty metadata into a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_torch</span></code>([device, dtype, requires_grad, copy])</p></td>
 <td><p>Convert to torch.Tensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_value</span></code>([unit, equivalencies])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_value</span></code>([unit, equivalencies])</p></td>
 <td><p>The numerical value, possibly in a different unit.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_xarray</span></code>([time_coord])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_xarray</span></code>([time_coord])</p></td>
 <td><p>Convert to xarray.DataArray.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code>(store[, path])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code>(store[, path])</p></td>
 <td><p>Save to Zarr storage.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code>([order])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code>([order])</p></td>
 <td><p>Not implemented, use <code class="docutils literal notranslate"><span class="pre">.value.tobytes()</span></code> instead.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tofile</span></code>(fid[, sep, format])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tofile</span></code>(fid[, sep, format])</p></td>
 <td><p>Not implemented, use <code class="docutils literal notranslate"><span class="pre">.value.tofile()</span></code> instead.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tostring</span></code>([order])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tostring</span></code>([order])</p></td>
 <td><p>Not implemented, use <code class="docutils literal notranslate"><span class="pre">.value.tostring()</span></code> instead.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trace</span></code>([offset, axis1, axis2, dtype, out])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trace</span></code>([offset, axis1, axis2, dtype, out])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_function</span></code>(other[, fftlength, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_function</span></code>(other[, fftlength, ...])</p></td>
 <td><p>Compute the transfer function between this TimeSeries and another.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code>(*axes)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code>(*axes)</p></td>
 <td><p>Returns a view of the array with axes transposed.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_phase</span></code>([deg])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_phase</span></code>([deg])</p></td>
 <td><p>Alias for instantaneous_phase(unwrap=True).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(other, *[, inplace, gap, pad])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(other, *[, inplace, gap, pad])</p></td>
 <td><p>Update this series by appending new data like a buffer.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_at</span></code>(x)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_at</span></code>(x)</p></td>
 <td><p>Return the value of this <cite>Series</cite> at the given <cite>xindex</cite> value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code>([axis, dtype, out, ddof, keepdims, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code>([axis, dtype, out, ddof, keepdims, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
 <td><p>New view of array with the same data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">whiten</span></code>([fftlength, overlap, method, window, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">whiten</span></code>([fftlength, overlap, method, window, ...])</p></td>
 <td><p>Whiten this <cite>TimeSeries</cite> using inverse spectrum truncation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_epoch</span></code>(epoch)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_epoch</span></code>(epoch)</p></td>
 <td><p>Return a copy anchored at GPS <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.write" title="gwexpy.timeseries.TimeSeries.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a>(target, *args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.write" title="gwexpy.timeseries.TimeSeries.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a>(target, *args, **kwargs)</p></td>
 <td><p>Write a <cite>TimeSeries</cite> through the registered I/O handlers.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xcorr</span></code>(other, *[, maxlag, normalize, mode, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xcorr</span></code>(other, *[, maxlag, normalize, mode, ...])</p></td>
 <td><p>Compute the time-domain cross-correlation between two <cite>TimeSeries</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
 <td><p>Zip the <cite>xindex</cite> and <cite>value</cite> arrays of this <cite>Series</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, unit, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, unit, ...])</p></td>
 <td><p>Filter this <cite>TimeSeries</cite> by applying a digital zero-pole-gain filter.</p></td>
 </tr>
 </tbody>
@@ -1383,38 +1386,44 @@ Xarray, and Polars.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">base</span></code></p></td>
 <td><p>Base object if memory is from some other object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cgs</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">center_kind</span></code></p></td>
+<td><p>Kind of central representative value (e.g. <code class="docutils literal notranslate"><span class="pre">'median'</span></code>, <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cgs</span></code></p></td>
 <td><p>Returns a copy of the current <cite>Quantity</cite> instance with CGS units.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">channel</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">channel</span></code></p></td>
 <td><p>Instrumental channel associated with these data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctypes</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctypes</span></code></p></td>
 <td><p>An object to simplify the interaction of the array with the ctypes module.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
 <td><p>Python buffer object pointing to the start of the array's data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.dt" title="gwexpy.timeseries.TimeSeries.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.dt" title="gwexpy.timeseries.TimeSeries.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
 <td><p>GWpy-compatible cadence view synchronized with exact metadata.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
 <td><p>Data-type of the array's elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">duration</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">duration</span></code></p></td>
 <td><p>Duration of this series in seconds.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.dx" title="gwexpy.timeseries.TimeSeries.dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dx</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.dx" title="gwexpy.timeseries.TimeSeries.dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dx</span></code></a></p></td>
 <td><p>GWpy-compatible cadence alias synchronized with exact metadata.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.epoch" title="gwexpy.timeseries.TimeSeries.epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.epoch" title="gwexpy.timeseries.TimeSeries.epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">epoch</span></code></a></p></td>
 <td><p>GWpy-compatible GPS epoch view (<code class="docutils literal notranslate"><span class="pre">Time</span></code>), unchanged in <code class="docutils literal notranslate"><span class="pre">relative</span></code> state.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">equivalencies</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">equivalencies</span></code></p></td>
 <td><p>A list of equivalencies that will be applied by default during unit conversions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_mean</span></code></p></td>
+<td><p>Optional independent predicted mean Series (<code class="docutils literal notranslate"><span class="pre">None</span></code> if unavailable).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
 <td><p>Information about the memory layout of the array.</p></td>
@@ -1431,14 +1440,20 @@ Xarray, and Polars.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></p></td>
 <td><p>Container for meta information like name, description, format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_levels</span></code></p></td>
+<td><p>Probability levels <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> defining <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
 <td><p>Return True if this series has a regular grid (constant spacing).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isscalar</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isscalar</span></code></p></td>
 <td><p>True if the <cite>value</cite> of this quantity is a scalar, or False if it is an array-like object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
 <td><p>Length of one array element in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lower</span></code></p></td>
+<td><p>Lower bound series (derived from <code class="docutils literal notranslate"><span class="pre">quantiles</span></code> at <code class="docutils literal notranslate"><span class="pre">interval_levels[0]</span></code> when quantile-based).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
 <td><p>View of the matrix transposed array.</p></td>
@@ -1452,58 +1467,67 @@ Xarray, and Polars.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
 <td><p>Number of array dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantiles</span></code></p></td>
+<td><p>Optional mapping from quantile levels in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> to Series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
 <td><p>The real part of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_rate</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_rate</span></code></p></td>
 <td><p>Data rate for this <cite>TimeSeries</cite> in samples per second (Hertz).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
 <td><p>Tuple of array dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">si</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">si</span></code></p></td>
 <td><p>Returns a copy of the current <cite>Quantity</cite> instance with SI units.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
 <td><p>Number of elements in the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">span</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">span</span></code></p></td>
 <td><p>Time (seconds) spanned by this series.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
 <td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.t0" title="gwexpy.timeseries.TimeSeries.t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.t0" title="gwexpy.timeseries.TimeSeries.t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></a></p></td>
 <td><p>GWpy-compatible epoch view, synchronized with exact metadata.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.t0_gps_ns" title="gwexpy.timeseries.TimeSeries.t0_gps_ns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0_gps_ns</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.t0_gps_ns" title="gwexpy.timeseries.TimeSeries.t0_gps_ns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0_gps_ns</span></code></a></p></td>
 <td><p>GPS epoch as exact integer nanoseconds.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_reference</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_reference</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;absolute&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">t0</span></code> is a GPS time) or <code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code> (unknown).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
 <td><p>Array of GPS times for each sample.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">uncertainty_kind</span></code></p></td>
+<td><p>Kind of uncertainty interval (e.g. <code class="docutils literal notranslate"><span class="pre">'predictive'</span></code>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit</span></code></p></td>
 <td><p>The physical unit of these data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper</span></code></p></td>
+<td><p>Upper bound series (derived from <code class="docutils literal notranslate"><span class="pre">quantiles</span></code> at <code class="docutils literal notranslate"><span class="pre">interval_levels[1]</span></code> when quantile-based).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
 <td><p>The numerical value of this instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.x0" title="gwexpy.timeseries.TimeSeries.x0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries.x0" title="gwexpy.timeseries.TimeSeries.x0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></a></p></td>
 <td><p>GWpy-compatible axis-origin alias, synchronized with <code class="docutils literal notranslate"><span class="pre">t0_ns</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
 <td><p>Positions of the data on the x-axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
 <td><p>X-axis [low, high) segment encompassed by these data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
 <td><p>Unit of x-axis index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -1650,11 +1674,34 @@ GWpy projection (<code class="docutils literal notranslate"><span class="pre">Ti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.timeseries.TimeSeries.forecast">
-<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'chronos'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ForecastResult</span></span></span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries.forecast" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'chronos'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Quantity.html#astropy.units.Quantity" title="(in Astropy v8.0)"><span class="pre">Quantity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries.forecast" title="Link to this definition">#</a></dt>
 <dd><p>Forecast future samples with an optional pretrained backend.</p>
 <p>Chronos is loaded only when this method is called; it is not imported
-by importing <code class="xref py py-mod docutils literal notranslate"><span class="pre">gwexpy</span></code>. The returned <code class="docutils literal notranslate"><span class="pre">ForecastResult</span></code> stores the
-median in <code class="docutils literal notranslate"><span class="pre">point</span></code> and each requested level in <code class="docutils literal notranslate"><span class="pre">quantiles</span></code>.</p>
+by importing <code class="xref py py-mod docutils literal notranslate"><span class="pre">gwexpy</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>default=&quot;chronos&quot;</em>) – Pretrained forecasting backend name.</p></li>
+<li><p><strong>horizon</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, or </em><em>Quantity</em>) – Forecast time span from the last observed sample in seconds (or an
+Astropy time <code class="docutils literal notranslate"><span class="pre">Quantity</span></code>). The number of predicted samples is
+<code class="docutils literal notranslate"><span class="pre">N_pred</span> <span class="pre">=</span> <span class="pre">floor(horizon</span> <span class="pre">/</span> <span class="pre">dt)</span></code> (guarded against floating-point
+undercounting). Currently raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when
+<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">horizon</span> <span class="pre">&lt;</span> <span class="pre">dt</span></code> (<code class="docutils literal notranslate"><span class="pre">N_pred</span> <span class="pre">==</span> <span class="pre">0</span></code>).</p></li>
+<li><p><strong>quantiles</strong> (<em>sequence</em><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><em>optional</em>) – Quantile levels strictly in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> containing <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">(0.1,</span> <span class="pre">0.5,</span> <span class="pre">0.9)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Forecast series whose values are the 0.5 quantile (median), with
+uncertainty metadata (<code class="docutils literal notranslate"><span class="pre">.lower</span></code>, <code class="docutils literal notranslate"><span class="pre">.upper</span></code>, <code class="docutils literal notranslate"><span class="pre">.quantiles</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.center_kind</span></code>, <code class="docutils literal notranslate"><span class="pre">.uncertainty_kind</span></code>, <code class="docutils literal notranslate"><span class="pre">.interval_levels</span></code>)
+attached directly. For Chronos-2, <code class="docutils literal notranslate"><span class="pre">.estimate_mean</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>
+because the backend does not supply an independent predicted mean.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1689,13 +1736,6 @@ If <cite>auto=True</cite>, it uses <cite>pmdarima</cite> to automatically find t
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.timeseries.TimeSeries.ma">
-<span class="sig-name descname"><span class="pre">ma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries.ma" title="Link to this definition">#</a></dt>
-<dd><p>Fit a Moving Average MA(q) model.</p>
-<p>Shortcut for .arima(order=(0, 0, q)).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.timeseries.TimeSeries.smooth">
 <span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'amplitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries.smooth" title="Link to this definition">#</a></dt>
 <dd><p>Smooth the series.</p>
@@ -1714,6 +1754,13 @@ If <cite>auto=True</cite>, it uses <cite>pmdarima</cite> to automatically find t
 <dd class="field-odd"><p>Series</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.timeseries.TimeSeries.ma">
+<span class="sig-name descname"><span class="pre">ma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#gwexpy.timeseries.TimeSeries.ma" title="Link to this definition">#</a></dt>
+<dd><p>Fit a Moving Average MA(q) model.</p>
+<p>Shortcut for .arima(order=(0, 0, q)).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1793,8 +1840,8 @@ If <cite>auto=True</cite>, it uses <cite>pmdarima</cite> to automatically find t
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.forecast"><code class="docutils literal notranslate"><span class="pre">TimeSeries.forecast()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.arima"><code class="docutils literal notranslate"><span class="pre">TimeSeries.arima()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.ar"><code class="docutils literal notranslate"><span class="pre">TimeSeries.ar()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.ma"><code class="docutils literal notranslate"><span class="pre">TimeSeries.ma()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.smooth"><code class="docutils literal notranslate"><span class="pre">TimeSeries.smooth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.ma"><code class="docutils literal notranslate"><span class="pre">TimeSeries.ma()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.timeseries.TimeSeries.arma"><code class="docutils literal notranslate"><span class="pre">TimeSeries.arma()</span></code></a></li>
 </ul>
 </li>

@@ -174,6 +174,7 @@
    
       ~FrequencySeries.T
       ~FrequencySeries.base
+      ~FrequencySeries.center_kind
       ~FrequencySeries.cgs
       ~FrequencySeries.channel
       ~FrequencySeries.ctypes
@@ -184,26 +185,32 @@
       ~FrequencySeries.dx
       ~FrequencySeries.epoch
       ~FrequencySeries.equivalencies
+      ~FrequencySeries.estimate_mean
       ~FrequencySeries.f0
       ~FrequencySeries.flags
       ~FrequencySeries.flat
       ~FrequencySeries.frequencies
       ~FrequencySeries.imag
       ~FrequencySeries.info
+      ~FrequencySeries.interval_levels
       ~FrequencySeries.is_regular
       ~FrequencySeries.isscalar
       ~FrequencySeries.itemsize
+      ~FrequencySeries.lower
       ~FrequencySeries.mT
       ~FrequencySeries.name
       ~FrequencySeries.nbytes
       ~FrequencySeries.ndim
+      ~FrequencySeries.quantiles
       ~FrequencySeries.real
       ~FrequencySeries.shape
       ~FrequencySeries.si
       ~FrequencySeries.size
       ~FrequencySeries.strides
       ~FrequencySeries.time_reference
+      ~FrequencySeries.uncertainty_kind
       ~FrequencySeries.unit
+      ~FrequencySeries.upper
       ~FrequencySeries.value
       ~FrequencySeries.x0
       ~FrequencySeries.xindex
