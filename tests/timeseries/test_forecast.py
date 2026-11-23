@@ -269,7 +269,8 @@ def test_importing_timeseries_surface_does_not_import_chronos() -> None:
             "from gwexpy.timeseries import TimeSeries, TimeSeriesDict; "
             "get_type_hints(TimeSeries.forecast); "
             "get_type_hints(TimeSeriesDict.forecast); "
-            "assert 'chronos' not in sys.modules",
+            "assert 'chronos' not in sys.modules; "
+            "assert 'timesfm' not in sys.modules",
         ],
         check=True,
     )
@@ -414,3 +415,327 @@ def test_out_of_range_chronos_quantiles_raise_value_error(
     collection = TimeSeriesDict({"a": series})
     with pytest.raises(ValueError, match="supported quantile range"):
         collection.forecast(horizon=2.0, quantiles=(0.1, 0.5, 0.95))
+
+
+# ---------------------------------------------------------------------------
+# TimesFM 2.5 backend tests
+# ---------------------------------------------------------------------------
+
+
+class MockTimesFMForecastConfig:
+    def __init__(self, **kwargs: object) -> None:
+        self.kwargs = dict(kwargs)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
+class MockTimesFMModel:
+    loads: list[dict[str, object]] = []
+    compiles: list[MockTimesFMForecastConfig] = []
+    calls: list[dict[str, object]] = []
+
+    @classmethod
+    def from_pretrained(cls, model_id: str, **kwargs: object) -> MockTimesFMModel:
+        assert model_id == "google/timesfm-2.5-200m-pytorch"
+        assert kwargs["revision"] == "1d952420fba87f3c6dee4f240de0f1a0fbc790e3"
+        assert kwargs["torch_compile"] is False
+        cls.loads.append({"model_id": model_id, **kwargs})
+        return cls()
+
+    def compile(self, forecast_config: MockTimesFMForecastConfig) -> None:
+        self.compiles.append(forecast_config)
+        self._config = forecast_config
+
+    def forecast(
+        self, *, horizon: int, inputs: list[np.ndarray]
+    ) -> tuple[np.ndarray, np.ndarray]:
+        self.calls.append(
+            {
+                "horizon": horizon,
+                "inputs": [np.array(item, copy=True) for item in inputs],
+            }
+        )
+        # Simulate TimesFM's internal float32 conversion.
+        batch_points = []
+        batch_quantiles = []
+        for item in inputs:
+            arr32 = np.asarray(item, dtype=np.float32)
+            base = float(arr32[-1]) + np.linspace(
+                0.1, 0.1 * horizon, horizon, dtype=np.float32
+            )
+            # Column 0 is the independent point head (intentionally distinct
+            # to verify it is NOT leaked into .value or .estimate_mean).
+            # Columns 1..9 correspond to quantiles 0.1..0.9.
+            cols = [base + np.float32(999.0)]
+            for q_idx in range(1, 10):
+                q_level = q_idx / 10.0
+                cols.append(base + np.float32(q_level - 0.5))
+            q_mat = np.stack(cols, axis=-1)
+            batch_points.append(q_mat[:, 5])
+            batch_quantiles.append(q_mat)
+        return np.stack(batch_points, axis=0), np.stack(batch_quantiles, axis=0)
+
+
+def install_mock_timesfm(monkeypatch: pytest.MonkeyPatch) -> None:
+    MockTimesFMModel.loads.clear()
+    MockTimesFMModel.compiles.clear()
+    MockTimesFMModel.calls.clear()
+    module = types.ModuleType("timesfm")
+    module.TimesFM_2p5_200M_torch = MockTimesFMModel
+    module.ForecastConfig = MockTimesFMForecastConfig
+    monkeypatch.setitem(sys.modules, "timesfm", module)
+
+
+def test_timesfm_single_series_forecast_contract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(
+        [10.0, 20.0, 30.0, 40.0],
+        t0_ns=epoch_ns,
+        dt=5 * u.ns,
+        unit="V",
+        name="darm",
+        channel="K1:CAL-CS_PROC_DARM",
+    )
+
+    result = series.forecast(backend="timesfm", horizon=15 * u.ns)
+
+    assert isinstance(result, TimeSeries)
+    assert len(result) == 3
+    assert result.name == "darm"
+    assert result.channel == series.channel
+    assert result.unit == u.V
+    assert result.dt == 5 * u.ns
+    assert result.t0_gps_ns == epoch_ns + 4 * 5
+    assert result.center_kind == "median"
+    assert result.uncertainty_kind == "predictive"
+    assert result.interval_levels == (0.1, 0.9)
+    assert result.estimate_mean is None
+    assert result.quantiles is not None
+    assert tuple(result.quantiles) == (0.1, 0.5, 0.9)
+    np.testing.assert_array_equal(result.value, result.quantiles[0.5].value)
+    assert result.lower is result.quantiles[0.1]
+    assert result.upper is result.quantiles[0.9]
+    assert np.all(result.lower.value <= result.value)
+    assert np.all(result.value <= result.upper.value)
+    assert np.all(result.value < 500.0)  # index 0 (+999) must not leak
+
+    # Verify ForecastConfig defaults
+    assert len(MockTimesFMModel.compiles) == 1
+    cfg = MockTimesFMModel.compiles[0].kwargs
+    assert cfg["normalize_inputs"] is True
+    assert cfg["fix_quantile_crossing"] is True
+    assert cfg["force_flip_invariance"] is True
+    assert cfg["infer_is_positive"] is False
+    assert cfg["use_continuous_quantile_head"] is True
+    assert cfg["max_context"] == 32
+    assert cfg["max_horizon"] == 128
+    assert cfg["per_core_batch_size"] == 1
+
+    # to_timeseriesdict() works seamlessly
+    parts = result.to_timeseriesdict()
+    assert set(parts.keys()) >= {"value", "lower", "upper", "q0.1", "q0.5", "q0.9"}
+    assert "estimate_mean" not in parts
+
+
+@pytest.mark.parametrize("amplitude", [1.0, 1e-21, 1e18])
+def test_timesfm_float64_prescaling_restores_scale_and_order(
+    monkeypatch: pytest.MonkeyPatch,
+    amplitude: float,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    raw = amplitude * np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float64)
+    series = TimeSeries(raw, dt=0.5 * u.s, t0=100.0, unit="m")
+
+    result = series.forecast(backend="timesfm", horizon=2.0)
+
+    # Pre-scaled input passed to TimesFM must be O(1) regardless of physical scale.
+    passed = MockTimesFMModel.calls[0]["inputs"][0]
+    assert np.std(passed) == pytest.approx(1.0, rel=1e-12)
+    assert np.mean(passed) == pytest.approx(0.0, abs=1e-12)
+
+    # Restored outputs preserve original amplitude scale, unit, and quantile ordering.
+    assert result.unit == u.m
+    assert len(result) == 4
+    assert np.all(np.isfinite(result.value))
+    assert np.all(result.lower.value < result.value)
+    assert np.all(result.value < result.upper.value)
+    # Expected median in original scale: mu + scale * (z[-1] + 0.1 * k)
+    mu = float(np.mean(raw))
+    scale = float(np.std(raw))
+    z_last = (raw[-1] - mu) / scale
+    expected_median = mu + scale * (
+        z_last + np.array([0.1, 0.2, 0.3, 0.4], dtype=np.float64)
+    )
+    np.testing.assert_allclose(result.value, expected_median, rtol=1e-5)
+    np.testing.assert_allclose(
+        result.lower.value, expected_median - 0.4 * scale, rtol=1e-5
+    )
+    np.testing.assert_allclose(
+        result.upper.value, expected_median + 0.4 * scale, rtol=1e-5
+    )
+
+
+def test_timesfm_constant_series_prescaling_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    # Non-zero constant at strain scale (~1e-21): restored interval must stay
+    # proportional to abs(mu) instead of inflating to O(1).
+    tiny_const = 1e-21
+    tiny_series = TimeSeries([tiny_const] * 8, dt=1.0 * u.s, unit="m")
+    tiny_result = tiny_series.forecast(backend="timesfm", horizon=2.0)
+
+    passed_tiny = MockTimesFMModel.calls[0]["inputs"][0]
+    np.testing.assert_array_equal(passed_tiny, np.zeros(8))
+    assert tiny_result.unit == u.m
+    assert np.all(np.isfinite(tiny_result.value))
+    assert np.all(tiny_result.lower.value <= tiny_result.value)
+    assert np.all(tiny_result.value <= tiny_result.upper.value)
+    assert np.all(np.abs(tiny_result.value - tiny_const) < 1e-20)
+    assert np.all((tiny_result.upper.value - tiny_result.lower.value) < 1e-20)
+
+    # All-zero constant series falls back to scale=1.0 without division by zero.
+    zero_series = TimeSeries([0.0] * 8, dt=1.0 * u.s, unit="V")
+    zero_result = zero_series.forecast(backend="timesfm", horizon=2.0)
+    assert np.all(np.isfinite(zero_result.value))
+    assert np.all(zero_result.lower.value <= zero_result.value)
+    assert np.all(zero_result.value <= zero_result.upper.value)
+
+
+def test_timesfm_prescales_after_context_truncation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    # For len=16000 and N_pred=1024, max_context=15360; the leading 640 samples
+    # are outside TimesFM's context window and must NOT affect scaling.
+    tail = np.sin(np.linspace(0.0, 40.0, 15360, dtype=np.float64))
+    clean_prefix = np.ones(640, dtype=np.float64)
+    huge_prefix = np.full(640, 1e12, dtype=np.float64)
+
+    ts_clean = TimeSeries(np.concatenate([clean_prefix, tail]), dt=1.0 * u.s, unit="m")
+    ts_huge = TimeSeries(np.concatenate([huge_prefix, tail]), dt=1.0 * u.s, unit="m")
+
+    res_clean = ts_clean.forecast(backend="timesfm", horizon=1024.0)
+    res_huge = ts_huge.forecast(backend="timesfm", horizon=1024.0)
+
+    passed_clean = MockTimesFMModel.calls[0]["inputs"][0]
+    passed_huge = MockTimesFMModel.calls[1]["inputs"][0]
+    assert len(passed_clean) == 15360
+    assert len(passed_huge) == 15360
+    assert np.std(passed_huge) == pytest.approx(1.0, rel=1e-12)
+    np.testing.assert_array_equal(passed_clean, passed_huge)
+    np.testing.assert_array_equal(res_clean.value, res_huge.value)
+    np.testing.assert_array_equal(res_clean.lower.value, res_huge.lower.value)
+    np.testing.assert_array_equal(res_clean.upper.value, res_huge.upper.value)
+
+
+def test_timesfm_custom_quantiles_and_unsupported_quantiles_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    series = TimeSeries([1.0, 2.0, 3.0, 4.0], dt=1.0 * u.s)
+
+    result = series.forecast(backend="timesfm", horizon=2.0, quantiles=(0.2, 0.5, 0.8))
+    assert result.quantiles is not None
+    assert tuple(result.quantiles) == (0.2, 0.5, 0.8)
+    assert result.interval_levels == (0.2, 0.8)
+    assert result.lower is result.quantiles[0.2]
+    assert result.upper is result.quantiles[0.8]
+
+    MockTimesFMModel.loads.clear()
+    for bad_q in ((0.05, 0.5, 0.95), (0.25, 0.5, 0.75)):
+        with pytest.raises(ValueError, match="not supported by TimesFM 2.5"):
+            series.forecast(backend="timesfm", horizon=2.0, quantiles=bad_q)
+    assert MockTimesFMModel.loads == []
+
+
+def test_timesfm_horizon_1024_boundary_and_context_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    long_series = TimeSeries(np.linspace(0.0, 1.0, 16000), dt=1.0 * u.s)
+
+    # 1024 samples succeeds and caps max_context so max_context + max_horizon <= 16384.
+    ok = long_series.forecast(backend="timesfm", horizon=1024.0)
+    assert len(ok) == 1024
+    cfg = MockTimesFMModel.compiles[-1].kwargs
+    assert cfg["max_horizon"] == 1024
+    assert cfg["max_context"] == 15360
+    assert cfg["max_context"] + cfg["max_horizon"] == 16384
+
+    # 1025 samples raises ValueError before model load.
+    MockTimesFMModel.loads.clear()
+    with pytest.raises(ValueError, match="at most 1024"):
+        long_series.forecast(backend="timesfm", horizon=1025.0)
+    assert MockTimesFMModel.loads == []
+
+    # 0 < horizon < dt keeps provisional ValueError.
+    with pytest.raises(ValueError, match="N_pred = 0"):
+        long_series.forecast(backend="timesfm", horizon=0.5)
+    assert MockTimesFMModel.loads == []
+
+
+def test_timesfm_dict_forecast_siso_batches_and_targets_not_implemented(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_mock_timesfm(monkeypatch)
+    collection = TimeSeriesDict(
+        {
+            "fast1": TimeSeries([1.0, 2.0, 3.0], t0=10, dt=0.5, unit="m"),
+            "fast2": TimeSeries([10.0, 20.0, 30.0], t0=20, dt=0.5, unit="V"),
+            "slow": TimeSeries([1e-21, 2e-21, 3e-21], t0=30, dt=1.0),
+        }
+    )
+
+    result = collection.forecast(backend="timesfm", horizon=2.0)
+
+    assert isinstance(result, TimeSeriesDict)
+    assert tuple(result) == ("fast1", "fast2", "slow")
+    assert len(result["fast1"]) == 4
+    assert len(result["fast2"]) == 4
+    assert len(result["slow"]) == 2
+    assert result["fast1"].unit == u.m
+    assert result["fast2"].unit == u.V
+    assert result["slow"].estimate_mean is None
+    assert len(MockTimesFMModel.loads) == 1
+    assert len(MockTimesFMModel.calls) == 2  # grouped by n_pred: 4 and 2
+
+    MockTimesFMModel.loads.clear()
+    with pytest.raises(NotImplementedError, match="targets"):
+        collection.forecast(backend="timesfm", horizon=2.0, targets=["fast1"])
+    assert MockTimesFMModel.loads == []
+
+
+def test_missing_timesfm_and_missing_torch_raise_import_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    series = TimeSeries([1.0, 2.0, 3.0], dt=1.0 * u.s)
+
+    def _import_without_timesfm(name: str, *args: object, **kwargs: object) -> object:
+        if name == "timesfm":
+            raise ImportError("mock missing timesfm")
+        return _original_import(name, *args, **kwargs)
+
+    monkeypatch.delitem(sys.modules, "timesfm", raising=False)
+    monkeypatch.setattr("builtins.__import__", _import_without_timesfm)
+    with pytest.raises(ImportError, match=r"\[timesfm\]"):
+        series.forecast(backend="timesfm", horizon=1.0)
+
+    # Simulate timesfm installed without PyTorch extra (raises AttributeError on access)
+    monkeypatch.undo()
+    partial_timesfm = types.ModuleType("timesfm")
+    monkeypatch.setitem(sys.modules, "timesfm", partial_timesfm)
+    with pytest.raises(ImportError, match=r"\[timesfm\]"):
+        series.forecast(backend="timesfm", horizon=1.0)
+
+
+def test_unsupported_forecast_backend_raises_value_error() -> None:
+    series = TimeSeries([1.0, 2.0], dt=1.0 * u.s)
+    with pytest.raises(ValueError, match="Unsupported forecast backend"):
+        series.forecast(backend="unknown", horizon=1.0)
+    collection = TimeSeriesDict({"a": series})
+    with pytest.raises(ValueError, match="Unsupported forecast backend"):
+        collection.forecast(backend="unknown", horizon=1.0)

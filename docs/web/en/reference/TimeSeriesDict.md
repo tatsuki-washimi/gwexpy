@@ -53,7 +53,7 @@ Dictionary of TimeSeries objects.
 
 ### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-Forecast each member as an independent univariate task batch (`targets=None`) using the optional Chronos-2 backend (`pip install "gwexpy[chronos]"`). `horizon` is a time span in seconds (or an Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeriesDict` preserving input keys where each member is an uncertainty-bearing `TimeSeries` (median values with `.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`). Non-`None` `targets` is reserved for future joint MISO/MIMO forecasting and currently raises `NotImplementedError`.
+Forecast each member as an independent univariate task batch (`targets=None`) using an optional pretrained backend (`backend="chronos"` via `pip install "gwexpy[chronos]"` or `backend="timesfm"` via `pip install "gwexpy[timesfm]"`). `horizon` is a time span in seconds (or an Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeriesDict` preserving input keys where each member is an uncertainty-bearing `TimeSeries` (median values with `.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`). Non-`None` `targets` is reserved for future joint MISO/MIMO forecasting and currently raises `NotImplementedError`.
 
 ### `EntryClass`
 

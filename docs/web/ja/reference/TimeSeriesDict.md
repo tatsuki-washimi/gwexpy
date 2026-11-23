@@ -53,7 +53,7 @@ TimeSeries オブジェクトの辞書。
 
 ### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-各キーの系列を独立した 1 次元予測タスクとして batch 処理します（`targets=None`）。optional な Chronos-2 backend（`pip install "gwexpy[chronos]"`）を使用し、`horizon` は時間長（秒または Astropy 時間 `Quantity`、`N_pred = floor(horizon / dt)`）で指定します。入力キーを保った `TimeSeriesDict` を直接返し、各要素は不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`）を持つ `TimeSeries` です。`targets` 指定による共同 MISO/MIMO 予測は将来拡張向けで、現在は `NotImplementedError` を送出します。
+各キーの系列を独立した 1 次元予測タスクとして batch 処理します（`targets=None`）。optional な学習済みバックエンド（`backend="chronos"`: `pip install "gwexpy[chronos]"`、`backend="timesfm"`: `pip install "gwexpy[timesfm]"`）を使用し、`horizon` は時間長（秒または Astropy 時間 `Quantity`、`N_pred = floor(horizon / dt)`）で指定します。入力キーを保った `TimeSeriesDict` を直接返し、各要素は不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`）を持つ `TimeSeries` です。`targets` 指定による共同 MISO/MIMO 予測は将来拡張向けで、現在は `NotImplementedError` を送出します。
 
 ### `EntryClass`
 

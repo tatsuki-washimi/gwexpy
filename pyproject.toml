@@ -133,9 +133,12 @@ audio = [
   "tinytag>=1.10",
 ]
 
-# Zero-shot time-series forecasting (large optional ML runtime)
+# Zero-shot time-series forecasting (large optional ML runtimes)
 chronos = [
   "chronos-forecasting>=2.3.2,<3",
+]
+timesfm = [
+  "timesfm[torch]>=2.0.0,<4",
 ]
 
 # Geospatial Field I/O and coordinate transformations

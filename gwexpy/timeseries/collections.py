@@ -357,15 +357,17 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
         Parameters
         ----------
-        backend : str, default="chronos"
+        backend : {"chronos", "timesfm"}, default="chronos"
             Pretrained forecasting backend name.
         horizon : float, int, or Quantity
             Forecast time span from each series' last observed sample in
             seconds (or an Astropy time ``Quantity``), with
-            ``N_pred = floor(horizon / dt)``.
+            ``N_pred = floor(horizon / dt)``. For ``backend="timesfm"``, the
+            continuous quantile head supports at most 1024 predicted samples.
         quantiles : sequence of float, optional
             Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
-            Defaults to ``(0.1, 0.5, 0.9)``.
+            Defaults to ``(0.1, 0.5, 0.9)``. For ``backend="timesfm"``, levels
+            must be a subset of ``(0.1, 0.2, ..., 0.9)``.
         targets : sequence of str, optional
             Reserved for joint MISO/MIMO forecasting. Passing ``targets=None``
             (default) runs independent SISO batch forecasting; non-``None``
@@ -378,12 +380,17 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             forecast ``TimeSeries``.
 
         """
-        if backend != "chronos":
+        from ._forecast import SUPPORTED_BACKENDS, forecast_collection
+
+        if backend not in SUPPORTED_BACKENDS:
             raise ValueError(f"Unsupported forecast backend: {backend!r}")
-        from ._forecast import forecast_collection
 
         return forecast_collection(
-            self, horizon=horizon, quantiles=quantiles, targets=targets
+            self,
+            backend=backend,
+            horizon=horizon,
+            quantiles=quantiles,
+            targets=targets,
         )
 
     def plot(

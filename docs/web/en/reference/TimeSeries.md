@@ -130,7 +130,7 @@ To choose an averaging method, use `spectrogram(stride=..., method='welch')`
 - **`arima(order=(p,d,q))`**
   Fit an ARIMA time-series model.
 - **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
-  Run zero-shot forecasting with the optional Chronos-2 backend (`pip install "gwexpy[chronos]"`). `horizon` is a time span in seconds (numeric or Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeries` directly whose values are the 0.5 quantile (median, `.center_kind == "median"`, `.estimate_mean is None`), with uncertainty metadata (`.lower`, `.upper`, `.quantiles`, `.uncertainty_kind == "predictive"`, `.interval_levels`) attached; use `.to_timeseriesdict()` to expand into independent `TimeSeries` entries.
+  Run zero-shot forecasting with an optional pretrained backend (`backend="chronos"` via `pip install "gwexpy[chronos]"` or `backend="timesfm"` via `pip install "gwexpy[timesfm]"`). `horizon` is a time span in seconds (numeric or Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeries` directly whose values are the 0.5 quantile (median, `.center_kind == "median"`, `.estimate_mean is None`), with uncertainty metadata (`.lower`, `.upper`, `.quantiles`, `.uncertainty_kind == "predictive"`, `.interval_levels`) attached; use `.to_timeseriesdict()` to expand into independent `TimeSeries` entries. For `backend="timesfm"`, `quantiles` must be a subset of `(0.1, 0.2, ..., 0.9)` and `N_pred <= 1024`.
 - **`impute(method="interpolate")`**
   Handle missing values (NaNs) in the data.
 - **`standardize(method="zscore")`**

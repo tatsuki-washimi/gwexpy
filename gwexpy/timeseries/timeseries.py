@@ -864,22 +864,26 @@ class TimeSeries(
     ) -> TimeSeries:
         """Forecast future samples with an optional pretrained backend.
 
-        Chronos is loaded only when this method is called; it is not imported
-        by importing :mod:`gwexpy`.
+        Optional ML backends (``"chronos"``, ``"timesfm"``) are loaded only
+        when this method is called; they are not imported by importing
+        :mod:`gwexpy`.
 
         Parameters
         ----------
-        backend : str, default="chronos"
+        backend : {"chronos", "timesfm"}, default="chronos"
             Pretrained forecasting backend name.
         horizon : float, int, or Quantity
             Forecast time span from the last observed sample in seconds (or an
             Astropy time ``Quantity``). The number of predicted samples is
             ``N_pred = floor(horizon / dt)`` (guarded against floating-point
             undercounting). Currently raises ``ValueError`` when
-            ``0 < horizon < dt`` (``N_pred == 0``).
+            ``0 < horizon < dt`` (``N_pred == 0``). For ``backend="timesfm"``,
+            the continuous quantile head supports at most 1024 predicted
+            samples.
         quantiles : sequence of float, optional
             Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
-            Defaults to ``(0.1, 0.5, 0.9)``.
+            Defaults to ``(0.1, 0.5, 0.9)``. For ``backend="timesfm"``, levels
+            must be a subset of ``(0.1, 0.2, ..., 0.9)``.
 
         Returns
         -------
@@ -887,15 +891,18 @@ class TimeSeries(
             Forecast series whose values are the 0.5 quantile (median), with
             uncertainty metadata (``.lower``, ``.upper``, ``.quantiles``,
             ``.center_kind``, ``.uncertainty_kind``, ``.interval_levels``)
-            attached directly. For Chronos-2, ``.estimate_mean`` is ``None``
-            because the backend does not supply an independent predicted mean.
+            attached directly. ``.estimate_mean`` is ``None`` for both
+            Chronos-2 and the initial TimesFM 2.5 adapter.
 
         """
-        if backend != "chronos":
-            raise ValueError(f"Unsupported forecast backend: {backend!r}")
-        from ._forecast import forecast_series
+        from ._forecast import SUPPORTED_BACKENDS, forecast_series
 
-        return forecast_series(self, horizon=horizon, quantiles=quantiles)
+        if backend not in SUPPORTED_BACKENDS:
+            raise ValueError(f"Unsupported forecast backend: {backend!r}")
+
+        return forecast_series(
+            self, backend=backend, horizon=horizon, quantiles=quantiles
+        )
 
     def arima(
         self,
