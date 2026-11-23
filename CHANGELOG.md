@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
+
 ## [0.2.10] - 2026-11-14
 
 ### Changed
