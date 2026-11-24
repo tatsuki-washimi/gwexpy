@@ -351,6 +351,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         *,
         horizon: float | int | u.Quantity,
         quantiles: tuple[float, ...] | list[float] | None = None,
+        percentiles: tuple[float, ...] | list[float] | None = None,
         targets: Sequence[str] | None = None,
     ) -> TimeSeriesDict:
         """Forecast each member as an independent univariate task batch.
@@ -368,6 +369,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
             Defaults to ``(0.1, 0.5, 0.9)``. For ``backend="timesfm"``, levels
             must be a subset of ``(0.1, 0.2, ..., 0.9)``.
+        percentiles : sequence of float, optional
+            Percentile levels corresponding to quantiles multiplied by 100.
+            Cannot be supplied together with ``quantiles``.
         targets : sequence of str, optional
             Reserved for joint MISO/MIMO forecasting. Passing ``targets=None``
             (default) runs independent SISO batch forecasting; non-``None``
@@ -380,7 +384,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             forecast ``TimeSeries``.
 
         """
-        from ._forecast import SUPPORTED_BACKENDS, forecast_collection
+        from ._forecast import (
+            SUPPORTED_BACKENDS,
+            _resolve_percentiles,
+            forecast_collection,
+        )
 
         if backend not in SUPPORTED_BACKENDS:
             raise ValueError(f"Unsupported forecast backend: {backend!r}")
@@ -389,7 +397,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             self,
             backend=backend,
             horizon=horizon,
-            quantiles=quantiles,
+            quantiles=_resolve_percentiles(quantiles, percentiles),
             targets=targets,
         )
 
