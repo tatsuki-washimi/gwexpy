@@ -356,7 +356,7 @@ def test_collection_rejects_corrupt_uncertainty_sidecar(tmp_path, layout, corrup
         TimeSeriesDict.read(path, format="hdf5")
 
 
-@pytest.mark.parametrize("layout", ["gwpy", "dataset"])
+@pytest.mark.parametrize("layout", ["gwpy", "dataset", "group"])
 def test_independent_key_collides_with_attached_name(tmp_path, layout):
     path = tmp_path / "collision.h5"
     primary = TimeSeries([1.0, 2.0], t0=100, dt=1, unit="V", name="DARM")
@@ -368,6 +368,67 @@ def test_independent_key_collides_with_attached_name(tmp_path, layout):
     result = TimeSeriesDict.read(path, format="hdf5")
     np.testing.assert_array_equal(result["DARM.lower"].value, independent.value)
     assert result["DARM.lower_2"] is result["DARM"].lower
+
+
+def test_native_collection_preserves_relative_reference(tmp_path):
+    path = tmp_path / "relative.h5"
+    primary = TimeSeries([1.0, 2.0], t0=None, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    primary.write(path, path="DARM", format="hdf5")
+    result = TimeSeriesDict.read(path, format="hdf5")
+    assert result["DARM"].time_reference == "relative"
+    assert result["DARM"].lower.time_reference == "relative"
+    assert result["DARM.lower"] is result["DARM"].lower
+
+
+def test_native_collection_positional_window_preserves_uncertainty(tmp_path):
+    path = tmp_path / "window.h5"
+    primary = TimeSeries([1.0, 2.0, 3.0, 4.0], t0=100, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    primary.write(path, path="DARM", format="hdf5")
+    result = TimeSeriesDict.read(path, ["DARM"], 101, 103, format="hdf5")
+    np.testing.assert_array_equal(result["DARM"].value, [2.0, 3.0])
+    np.testing.assert_array_equal(result["DARM"].lower.value, [2.0, 3.0])
+
+
+@pytest.mark.parametrize("layout", ["gwpy", "dataset", "group"])
+def test_collection_positional_window_flat_aliases(tmp_path, layout):
+    path = tmp_path / "window.h5"
+    primary = TimeSeries([1.0, 2.0, 3.0, 4.0], t0=100, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    TimeSeriesDict({"DARM": primary}).write(path, format="hdf5", layout=layout)
+    result = TimeSeriesDict.read(path, ["DARM", "DARM.lower"], 101, 103, format="hdf5")
+    np.testing.assert_array_equal(result["DARM"].value, [2.0, 3.0])
+    assert result["DARM.lower"] is result["DARM"].lower
+    np.testing.assert_array_equal(result["DARM.lower"].value, [2.0, 3.0])
+
+
+@pytest.mark.parametrize("layout", ["gwpy", "dataset", "group"])
+def test_resave_keeps_flat_series_after_relationship_removed(tmp_path, layout):
+    path = tmp_path / "before.h5"
+    primary = TimeSeries([1.0, 2.0], t0=100, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    TimeSeriesDict({"DARM": primary}).write(path, format="hdf5", layout=layout)
+    result = TimeSeriesDict.read(path, format="hdf5")
+    result["DARM"].lower = None
+    result.write(tmp_path / "after.h5", format="hdf5", layout=layout)
+    restored = TimeSeriesDict.read(tmp_path / "after.h5", format="hdf5")
+    np.testing.assert_array_equal(restored["DARM.lower"].value, [1.0, 2.0])
+
+
+@pytest.mark.parametrize("layout", ["gwpy", "dataset", "group"])
+def test_resave_distinguishes_shared_series_roles(tmp_path, layout):
+    primary = TimeSeries([1.0, 2.0], t0=100, dt=1, unit="V")
+    bound = primary.copy()
+    primary._set_uncertainty(lower=bound, upper=bound)
+    path = tmp_path / "before.h5"
+    TimeSeriesDict({"DARM": primary}).write(path, format="hdf5", layout=layout)
+    result = TimeSeriesDict.read(path, format="hdf5")
+    result["DARM"].upper = result["DARM"].lower
+    result["DARM"].lower = None
+    result.write(tmp_path / "after.h5", format="hdf5", layout=layout)
+    restored = TimeSeriesDict.read(tmp_path / "after.h5", format="hdf5")
+    np.testing.assert_array_equal(restored["DARM.lower"].value, [1.0, 2.0])
 
 
 @pytest.mark.parametrize("open_handle", [False, True])

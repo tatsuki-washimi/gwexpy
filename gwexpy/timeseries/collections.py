@@ -149,7 +149,7 @@ def _gwexpy_hdf5_augmentation_attrs(source: Any) -> set[str]:
 
 
 def _restore_native_uncertainty(
-    source: Any, result: Any, kwargs: dict[str, Any]
+    source: Any, result: Any, args: tuple[Any, ...], kwargs: dict[str, Any]
 ) -> Any:
     """Attach labelled series while retaining the native dictionary keys."""
     import json
@@ -162,6 +162,7 @@ def _restore_native_uncertainty(
         else h5py.File(source, "r")
     )
     aliases: dict[str, str] = {}
+    alias_roles: dict[str, tuple[str, Any]] = {}
     with context as handle:
         if UNCERTAINTY_ATTRIBUTE not in handle.attrs:
             return result
@@ -179,9 +180,12 @@ def _restore_native_uncertainty(
                 path,
                 type(result[key]),
                 {
-                    name: kwargs[name]
-                    for name in ("start", "end")
-                    if kwargs.get(name) is not None
+                    name: value
+                    for name, value in (
+                        ("start", args[1] if len(args) > 1 else kwargs.get("start")),
+                        ("end", args[2] if len(args) > 2 else kwargs.get("end")),
+                    )
+                    if value is not None
                 },
             )
             for entry in record["series"]:
@@ -191,21 +195,18 @@ def _restore_native_uncertainty(
                 flat_key = flat_path[len(prefix) :]
                 if flat_key in result:
                     aliases[flat_key] = key
+                    alias_roles[flat_key] = (entry["role"], entry["level"])
                 role = entry["role"]
-                if role == "quantile" and flat_key in result:
-                    primary.quantiles[entry["level"]] = result[flat_key]
-                elif role in {"lower", "upper", "estimate_mean"} and flat_key in result:
-                    setattr(primary, role, result[flat_key])
-            for entry in record["series"]:
-                role = entry["role"]
-                if role in {"derived_lower", "derived_upper"}:
-                    flat_key = entry["path"][len(prefix) :]
-                    if flat_key in result:
-                        result[flat_key] = getattr(
-                            primary, role.removeprefix("derived_")
-                        )
+                if flat_key in result:
+                    value = (
+                        primary.quantiles[entry["level"]]
+                        if role == "quantile"
+                        else getattr(primary, role.removeprefix("derived_"))
+                    )
+                    result[flat_key] = value
             result[key] = primary
     result._gwexpy_uncertainty_aliases = aliases
+    result._gwexpy_uncertainty_alias_roles = alias_roles
     return result
 
 
@@ -222,6 +223,7 @@ def _restore_manifest_uncertainty(
         return result
     records = json.loads(raw)
     aliases: dict[str, str] = {}
+    alias_roles: dict[str, tuple[str, Any]] = {}
     for path, record in records.items():
         physical = path.lstrip("/")
         manifest_key = physical[:-5] if physical.endswith("/data") else physical
@@ -234,6 +236,12 @@ def _restore_manifest_uncertainty(
             if not flat_path.startswith(path + "."):
                 raise ValueError("invalid HDF5 uncertainty relationship")
             key = logical + flat_path[len(path) :]
+            if key in result:
+                base = key
+                index = 2
+                while key in result:
+                    key = f"{base}_{index}"
+                    index += 1
             role = entry["role"]
             if role == "quantile":
                 value = primary.quantiles[entry["level"]]
@@ -241,6 +249,7 @@ def _restore_manifest_uncertainty(
                 value = getattr(primary, role.removeprefix("derived_"))
             result[key] = value
             aliases[key] = logical
+            alias_roles[key] = (role, entry["level"])
     if names is not None:
         result = type(result)(
             (key, value) for key, value in result.items() if key in names
@@ -249,6 +258,9 @@ def _restore_manifest_uncertainty(
         key: parent
         for key, parent in aliases.items()
         if key in result and parent in result
+    }
+    result._gwexpy_uncertainty_alias_roles = {
+        key: alias_roles[key] for key in result._gwexpy_uncertainty_aliases
     }
     return result
 
@@ -779,7 +791,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     )
                 result = _normalize_native_hdf5_empty_selection(result, args, kwargs)
                 if "_gwexpy_uncertainty_json_v1" in augmentation_attrs:
-                    result = _restore_native_uncertainty(source, result, kwargs)
+                    result = _restore_native_uncertainty(source, result, args, kwargs)
                 return result
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
@@ -791,8 +803,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             # documented oracle.  Read out of ``kwargs`` rather than popped,
             # because the fall-through below hands the untouched kwargs to the
             # registry reader, which applies them itself.
-            start = kwargs.get("start")
-            end = kwargs.get("end")
+            start = args[1] if len(args) > 1 else kwargs.get("start")
+            end = args[2] if len(args) > 2 else kwargs.get("end")
 
             with h5py.File(source, "r") as h5f:
                 manifest_backed = has_hdf5_collection_manifest(h5f)
@@ -816,7 +828,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     skipped.report()
                     out = apply_time_selection(out, start, end)
                     return _restore_manifest_uncertainty(
-                        h5f, out, keymap, kwargs.get("names")
+                        h5f, out, keymap, args[0] if args else kwargs.get("names")
                     )
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
@@ -838,7 +850,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     skipped.report()
                     out = apply_time_selection(out, start, end)
                     return _restore_manifest_uncertainty(
-                        h5f, out, keymap, kwargs.get("names")
+                        h5f, out, keymap, args[0] if args else kwargs.get("names")
                     )
         if fmt in {"wav", "flac"} and kwargs.get("extract_metadata"):
             from gwexpy.io.utils import extract_audio_metadata, set_provenance
@@ -1351,8 +1363,36 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         fmt = kwargs.get("format")
         aliases = getattr(self, "_gwexpy_uncertainty_aliases", {})
         if fmt in ("hdf5", "h5", "hdf") and aliases:
+
+            def is_current_alias(key: Any, parent_key: Any) -> bool:
+                if key not in self or parent_key not in self:
+                    return False
+                parent = self[parent_key]
+                value = self[key]
+                roles = getattr(self, "_gwexpy_uncertainty_alias_roles", {})
+                role, level = roles.get(key, (None, None))
+                if role == "quantile":
+                    return value is (parent.quantiles or {}).get(level)
+                if role in {
+                    "lower",
+                    "upper",
+                    "estimate_mean",
+                    "derived_lower",
+                    "derived_upper",
+                }:
+                    return value is getattr(parent, role.removeprefix("derived_"))
+                return False
+
+            current_aliases = {
+                key for key, parent in aliases.items() if is_current_alias(key, parent)
+            }
+        else:
+            current_aliases = set()
+        if current_aliases:
             unique = type(self)(
-                (key, value) for key, value in self.items() if key not in aliases
+                (key, value)
+                for key, value in self.items()
+                if key not in current_aliases
             )
             return unique.write(target, *args, **kwargs)
         if (
