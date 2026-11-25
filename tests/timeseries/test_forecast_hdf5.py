@@ -233,6 +233,41 @@ def test_reject_uncertainty_with_mismatched_exact_metadata(tmp_path, mismatch):
         series.write(tmp_path / "mismatch.h5", path="signal")
 
 
+def test_reject_uncertainty_with_mismatched_time_reference_on_write(tmp_path):
+    primary = TimeSeries([1.0, 2.0], t0=0, dt=1, unit="V")
+    attached = TimeSeries([0.0, 1.0], t0=None, dt=1, unit="V")
+    assert primary.t0 == attached.t0
+    assert primary.time_reference != attached.time_reference
+    primary._set_uncertainty(lower=attached)
+    with pytest.raises(ValueError, match="uncertainty series metadata mismatch"):
+        primary.write(tmp_path / "mismatch.h5", path="signal")
+
+
+def test_reject_uncertainty_with_mismatched_time_reference_on_read(tmp_path):
+    path = tmp_path / "mismatch.h5"
+    primary = TimeSeries([1.0, 2.0], t0=0, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    primary.write(path, path="signal")
+    with h5py.File(path, "r+") as handle:
+        key = "_gwexpy_time_reference_v1"
+        references = json.loads(handle.attrs[key])
+        references["/signal.lower"] = "relative"
+        handle.attrs[key] = json.dumps(references)
+    with pytest.raises(ValueError, match="uncertainty sidecar"):
+        TimeSeries.read(path, path="signal")
+
+
+@pytest.mark.parametrize("t0", [None, 0])
+def test_uncertainty_matching_time_reference_roundtrip(tmp_path, t0):
+    path = tmp_path / "matched.h5"
+    primary = TimeSeries([1.0, 2.0], t0=t0, dt=1, unit="V")
+    primary._set_uncertainty(lower=primary.copy())
+    primary.write(path, path="signal")
+    restored = TimeSeries.read(path, path="signal")
+    assert restored.time_reference == primary.time_reference
+    assert restored.lower.time_reference == primary.time_reference
+
+
 def test_invalid_quantile_interval_in_sidecar_is_rejected(tmp_path):
     path = tmp_path / "forecast.h5"
     series = TimeSeries([1.0, 2.0], t0=100, dt=1, unit="V")

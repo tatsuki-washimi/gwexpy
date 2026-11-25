@@ -187,6 +187,7 @@ def _validate_uncertainty_alignment(primary: Any, attached: Any) -> None:
         len(attached) != len(primary)
         or attached.unit != primary.unit
         or attached.channel != primary.channel
+        or get_time_reference(attached) != get_time_reference(primary)
         or attached.t0 != primary.t0
         or attached.dt != primary.dt
         or (
