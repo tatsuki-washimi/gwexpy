@@ -5,6 +5,11 @@
 ### Added
 
 - ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
+- Persist `TimeSeries` forecast uncertainty in HDF5 and restore statistical relationships in `TimeSeriesDict`; accept `percentiles` as an alias for quantile requests and expose percentile-indexed results.
+
+### Compatibility
+
+- GWpy reads the stored numeric datasets independently. Its `TimeSeries.read` requires an explicit `path` for a multi-dataset file; GWpy does not restore GWexpy's uncertainty metadata.
 
 ## [0.2.10] - 2026-11-14
 

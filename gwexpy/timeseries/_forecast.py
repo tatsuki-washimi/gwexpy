@@ -645,3 +645,20 @@ def forecast_collection(
 # classes. This does not load the optional Chronos backend.
 from .collections import TimeSeriesDict  # noqa: E402
 from .timeseries import TimeSeries  # noqa: E402
+
+
+def _resolve_percentiles(
+    quantiles: tuple[float, ...] | list[float] | None,
+    percentiles: tuple[float, ...] | list[float] | None,
+) -> tuple[float, ...] | list[float] | None:
+    """Convert percentile requests to the canonical quantile representation."""
+    if quantiles is not None and percentiles is not None:
+        raise ValueError("Specify either quantiles or percentiles, not both")
+    if percentiles is not None:
+        if any(
+            isinstance(level, bool) or not isinstance(level, Real)
+            for level in percentiles
+        ):
+            raise ValueError("Percentile levels must be real numbers")
+        return [level / 100 for level in percentiles]
+    return quantiles

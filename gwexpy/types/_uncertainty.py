@@ -390,6 +390,14 @@ class UncertaintyMixin:
             self.__dict__["_gwex_unc_quantiles"] = normalized
 
     @property
+    def percentiles(self) -> dict[float, Any] | None:
+        """Quantile series indexed by percentile, derived from ``quantiles``."""
+        quantiles = self.quantiles
+        if quantiles is None:
+            return None
+        return {round(level * 100, 12): series for level, series in quantiles.items()}
+
+    @property
     def estimate_mean(self) -> Any:
         """Optional independent predicted mean Series (``None`` if unavailable)."""
         return self.__dict__.get("_gwex_unc_estimate_mean")
