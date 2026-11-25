@@ -495,6 +495,10 @@ def _run_additional_backend(
         result = quantiles[0, 0][:, indices]
     restored = _restore_scaled_forecast(result, mu, scale)
     _require_finite_forecast(restored, backend)
+    # Upstream clipping is disabled because the model sees centered data. Clip in
+    # physical coordinates only when the whole input is non-negative: a series
+    # that was ever negative is not treated as a non-negative quantity, even if
+    # the visible context window happens to be non-negative.
     if backend == "timestral" and np.all(values >= 0):
         restored = np.maximum(restored, 0.0)
     return restored
