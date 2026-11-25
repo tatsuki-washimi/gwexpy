@@ -10,7 +10,12 @@ import numpy as np
 from astropy import units as u
 
 DEFAULT_QUANTILES = (0.1, 0.5, 0.9)
-SUPPORTED_BACKENDS = ("chronos", "timesfm")
+SUPPORTED_BACKENDS = ("chronos", "timesfm", "chronos-bolt", "timestral")
+
+_BOLT_ID = "amazon/chronos-bolt-small"
+_BOLT_REVISION = "772f3d25d38aec6d914c8949dab4462e2d46f5d8"
+_TIMESTRAL_ID = "mistralai/Timestral-209M"
+_TIMESTRAL_REVISION = "9874d252ab0aae16f7f7c999f98f98d6ad7d8365"
 
 _CHRONOS2_MODEL_ID = "amazon/chronos-2"
 _CHRONOS2_REVISION = "29ec3766d36d6f73f0696f85560a422f50e8498c"
@@ -223,6 +228,24 @@ def _forecast_axis_kwargs(series: TimeSeries) -> dict[str, object]:
     return kwargs
 
 
+def _same_forecast_axis(first: TimeSeries, other: TimeSeries) -> bool:
+    """Compare regular axes without discarding an exact epoch."""
+    if len(first) != len(other) or first.dt != other.dt:
+        return False
+    first_exact = getattr(first, "_gwex_t0_gps_ns", None)
+    other_exact = getattr(other, "_gwex_t0_gps_ns", None)
+    if first_exact is None and other_exact is None:
+        return bool(first.x0 == other.x0)
+    from ._epoch import _integer_gps_ns
+
+    try:
+        first_ns = first_exact if first_exact is not None else _integer_gps_ns(first.x0)
+        other_ns = other_exact if other_exact is not None else _integer_gps_ns(other.x0)
+    except (TypeError, ValueError):
+        return False
+    return bool(first_ns == other_ns)
+
+
 def _normalize_backend_output(
     quantile_predictions: object,
     mean_predictions: object,
@@ -293,17 +316,42 @@ def _prescale_series_float64(values: np.ndarray) -> tuple[np.ndarray, float, flo
       because no positive physical scale can be inferred from the input.
     """
     arr = np.asarray(values, dtype=np.float64)
-    mu = float(np.mean(arr))
-    centered = arr - mu
+    magnitude = float(np.max(np.abs(arr)))
+    if magnitude == 0.0:
+        return np.zeros_like(arr), 0.0, 1.0
+    with np.errstate(over="ignore", invalid="ignore"):
+        ordinary_mu = float(np.mean(arr))
+        ordinary_centered = arr - ordinary_mu
+    if np.isfinite(ordinary_mu) and np.all(np.isfinite(ordinary_centered)):
+        max_abs = float(np.max(np.abs(ordinary_centered)))
+        if max_abs == 0.0:
+            return np.zeros_like(arr), ordinary_mu, abs(ordinary_mu) or 1.0
+        std = float(np.std(ordinary_centered / max_abs)) * max_abs
+        scale = std if np.isfinite(std) and std > 0.0 else max_abs
+        return ordinary_centered / scale, ordinary_mu, scale
+    normalized = arr / magnitude
+    normalized_mean = float(np.mean(normalized))
+    mu = normalized_mean * magnitude
+    centered = normalized - normalized_mean
     max_abs = float(np.max(np.abs(centered)))
-    if max_abs == 0.0 or not np.isfinite(max_abs):
-        fallback_scale = abs(mu) if (np.isfinite(mu) and abs(mu) > 0.0) else 1.0
-        return np.zeros_like(arr, dtype=np.float64), mu, fallback_scale
-    # Compute std in normalized coordinates to prevent float64 squaring
-    # underflow/overflow for extreme physical scales.
-    std = float(np.std(centered / max_abs)) * max_abs
-    scale = std if (np.isfinite(std) and std > 0.0) else max_abs
-    return centered / scale, mu, scale
+    if max_abs == 0.0:
+        return np.zeros_like(arr), mu, abs(mu)
+    normalized_std = float(np.std(centered / max_abs)) * max_abs
+    scale = normalized_std * magnitude
+    if not np.isfinite(scale) or scale == 0.0:
+        raise ValueError("input scale cannot be represented in float64")
+    return centered / normalized_std, mu, scale
+
+
+def _restore_scaled_forecast(values: np.ndarray, mu: float, scale: float) -> np.ndarray:
+    values = np.asarray(values, dtype=np.float64)
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = mu + scale * values
+        if np.any(~np.isfinite(result)):
+            magnitude = max(abs(mu), scale)
+            fallback = magnitude * (mu / magnitude + (scale / magnitude) * values)
+            result = np.where(np.isfinite(result), result, fallback)
+    return result
 
 
 def _compute_timesfm_compile_dims(
@@ -364,6 +412,83 @@ def _load_chronos_pipeline() -> object:
     return Chronos2Pipeline.from_pretrained(
         _CHRONOS2_MODEL_ID, revision=_CHRONOS2_REVISION
     )
+
+
+def _load_bolt_pipeline() -> object:
+    try:
+        from chronos import ChronosBoltPipeline
+    except ImportError as exc:
+        raise ImportError("Chronos-Bolt requires gwexpy[chronos]") from exc
+    return ChronosBoltPipeline.from_pretrained(_BOLT_ID, revision=_BOLT_REVISION)
+
+
+def _load_timestral_model() -> object:
+    try:
+        from timestral import TimestralForecaster
+    except ImportError as exc:
+        raise ImportError(
+            "Timestral requires Python >= 3.10 and the upstream package; install "
+            "it with `pip install git+https://github.com/mistralai/timestral.git`. "
+            "The model weights have separate license terms."
+        ) from exc
+    return TimestralForecaster.from_pretrained(
+        _TIMESTRAL_ID, revision=_TIMESTRAL_REVISION
+    )
+
+
+def _run_additional_backend(
+    model: object,
+    backend: str,
+    values: np.ndarray,
+    n_pred: int,
+    levels: tuple[float, ...],
+) -> np.ndarray:
+    context_limit = getattr(
+        model,
+        "model_context_length" if backend == "chronos-bolt" else "max_context",
+        None,
+    )
+    visible = values[-context_limit:] if context_limit is not None else values
+    scaled, mu, scale = _prescale_series_float64(visible)
+    if backend == "chronos-bolt":
+        import torch
+
+        supported = getattr(model, "quantiles", (0.1, 0.9))
+        if min(levels) < min(supported) or max(levels) > max(supported):
+            raise ValueError(
+                "Requested quantiles are outside Chronos-Bolt's supported range"
+            )
+        quantiles, point = model.predict_quantiles(  # type: ignore[attr-defined]
+            [torch.as_tensor(scaled, dtype=torch.float32)],
+            prediction_length=n_pred,
+            quantile_levels=list(levels),
+        )
+        quantiles = np.asarray(quantiles)
+        if quantiles.shape != (1, n_pred, len(levels)) or np.asarray(point).shape != (
+            1,
+            n_pred,
+        ):
+            raise ValueError(
+                "Chronos-Bolt backend returned an unexpected prediction shape"
+            )
+        result = quantiles[0]
+    else:
+        output = model.forecast(  # type: ignore[attr-defined]
+            scaled.reshape(1, 1, -1), prediction_length=n_pred, clip_nonnegative=False
+        )
+        supported = tuple(float(q) for q in output.quantile_levels)
+        if any(level not in supported for level in levels):
+            raise ValueError("Requested quantiles are not supported by Timestral")
+        quantiles = np.asarray(output.quantiles)
+        if quantiles.shape != (1, 1, n_pred, len(supported)):
+            raise ValueError(
+                "Timestral backend returned an unexpected prediction shape"
+            )
+        result = quantiles[0, 0][:, [supported.index(level) for level in levels]]
+    restored = _restore_scaled_forecast(result, mu, scale)
+    if backend == "timestral" and np.all(values >= 0):
+        restored = np.maximum(restored, 0.0)
+    return restored
 
 
 def _load_timesfm_model() -> tuple[object, object]:
@@ -440,7 +565,7 @@ def _run_timesfm_batch(
     )
     restored = np.empty_like(scaled_quantiles, dtype=np.float64)
     for i, (mu, scale) in enumerate(stats):
-        restored[i] = mu + scale * scaled_quantiles[i]
+        restored[i] = _restore_scaled_forecast(scaled_quantiles[i], mu, scale)
     return restored
 
 
@@ -505,6 +630,19 @@ def forecast_series(
     axis_kwargs = _forecast_axis_kwargs(series)
     n_pred = _horizon_to_steps(horizon_s, axis_kwargs["dt"])  # type: ignore[arg-type]
 
+    if backend in ("chronos-bolt", "timestral"):
+        model = (
+            _load_bolt_pipeline()
+            if backend == "chronos-bolt"
+            else _load_timestral_model()
+        )
+        quantile_values = _run_additional_backend(
+            model, backend, values, n_pred, levels
+        )
+        return _build_forecast_series(
+            series, quantile_values, axis_kwargs=axis_kwargs, levels=levels
+        )
+
     if backend == "timesfm":
         _validate_timesfm_horizon(n_pred)
         model, config_cls = _load_timesfm_model()
@@ -547,16 +685,20 @@ def forecast_collection(
     quantiles: tuple[float, ...] | list[float] | None,
     targets: Sequence[str] | None = None,
 ) -> TimeSeriesDict:
-    """Forecast collection members as independent univariate batch tasks."""
+    """Forecast collection members independently or jointly.
+
+    With ``targets=None`` every member is an independent univariate task. With
+    ``targets`` (Chronos-2 only) the selected members are forecast jointly and
+    the remaining members are passed as past-only covariates.
+    """
     from .collections import TimeSeriesDict
 
     if backend not in SUPPORTED_BACKENDS:
         raise ValueError(f"Unsupported forecast backend: {backend!r}")
 
-    if targets is not None:
-        backend_label = "TimesFM 2.5" if backend == "timesfm" else "Chronos-2"
+    if targets is not None and backend != "chronos":
         raise NotImplementedError(
-            f"{backend_label} backend currently supports independent SISO batch "
+            f"{backend} backend currently supports independent SISO batch "
             "forecasting (targets=None) only; joint MISO/MIMO forecasting via "
             "'targets' is not yet supported."
         )
@@ -584,6 +726,71 @@ def forecast_collection(
             _validate_timesfm_horizon(n_pred)
         n_pred_by_key[key] = n_pred
 
+    if targets is not None:
+        from gwexpy.time._reference import require_uniform_time_reference
+
+        if isinstance(targets, (str, bytes)):
+            raise ValueError("targets must be a non-empty sequence of keys")
+        selected = list(targets)
+        if not selected or len(set(selected)) != len(selected):
+            raise ValueError("targets must contain unique keys and must not be empty")
+        if any(key not in collection for key in selected):
+            raise ValueError("targets contains a key absent from the collection")
+        require_uniform_time_reference(series for _, series in items)
+        first = items[0][1]
+        for key, series in items[1:]:
+            if not _same_forecast_axis(first, series):
+                raise ValueError("joint forecasting requires identical time axes")
+        pipeline = _load_chronos_pipeline()
+        _validate_chronos_quantiles(levels, pipeline)
+        context_limit = getattr(pipeline, "model_context_length", None)
+        scaled_by_key = {}
+        scales_by_key = {}
+        for key, _ in items:
+            values = values_by_key[key]
+            visible = values[-context_limit:] if context_limit is not None else values
+            scaled, mu, scale = _prescale_series_float64(visible)
+            scaled_by_key[key] = scaled
+            scales_by_key[key] = (mu, scale)
+        context = {
+            "target": np.stack([scaled_by_key[key] for key in selected]),
+            "past_covariates": {
+                key: scaled_by_key[key] for key, _ in items if key not in selected
+            },
+        }
+        n_pred = n_pred_by_key[selected[0]]
+        predictions, means = pipeline.predict_quantiles(  # type: ignore[attr-defined]
+            [context],
+            prediction_length=n_pred,
+            quantile_levels=list(levels),
+            cross_learning=False,
+        )
+        if len(predictions) != 1 or len(means) != 1:
+            raise ValueError("Chronos backend returned an unexpected prediction batch")
+        predictions = np.asarray(predictions[0])
+        means = np.asarray(means[0])
+        if predictions.shape != (len(selected), n_pred, len(levels)) or means.shape != (
+            len(selected),
+            n_pred,
+        ):
+            raise ValueError("Chronos backend returned an unexpected prediction shape")
+        predictions = predictions.astype(np.float64)
+        for index, key in enumerate(selected):
+            mu, scale = scales_by_key[key]
+            predictions[index] = _restore_scaled_forecast(predictions[index], mu, scale)
+        return TimeSeriesDict(
+            (
+                key,
+                _build_forecast_series(
+                    collection[key],
+                    predictions[i],
+                    axis_kwargs=axis_kwargs_by_key[key],
+                    levels=levels,
+                ),
+            )
+            for i, key in enumerate(selected)
+        )
+
     # Group keys by prediction_length so equal-dt collections remain a single
     # backend batch call while heterogeneous-dt collections compute exact spans.
     groups: dict[int, list[str]] = {}
@@ -592,6 +799,27 @@ def forecast_collection(
 
     series_by_key = dict(items)
     forecasts_by_key: dict[str, TimeSeries] = {}
+
+    if backend in ("chronos-bolt", "timestral"):
+        model = (
+            _load_bolt_pipeline()
+            if backend == "chronos-bolt"
+            else _load_timestral_model()
+        )
+        return TimeSeriesDict(
+            (
+                key,
+                _build_forecast_series(
+                    series,
+                    _run_additional_backend(
+                        model, backend, values_by_key[key], n_pred_by_key[key], levels
+                    ),
+                    axis_kwargs=axis_kwargs_by_key[key],
+                    levels=levels,
+                ),
+            )
+            for key, series in items
+        )
 
     if backend == "timesfm":
         model, config_cls = _load_timesfm_model()

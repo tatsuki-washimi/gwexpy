@@ -865,14 +865,16 @@ class TimeSeries(
     ) -> TimeSeries:
         """Forecast future samples with an optional pretrained backend.
 
-        Optional ML backends (``"chronos"``, ``"timesfm"``) are loaded only
+        Optional ML backends are loaded only
         when this method is called; they are not imported by importing
         :mod:`gwexpy`.
 
         Parameters
         ----------
-        backend : {"chronos", "timesfm"}, default="chronos"
+        backend : {"chronos", "timesfm", "chronos-bolt", "timestral"}, default="chronos"
             Pretrained forecasting backend name.
+            Chronos-Bolt uses the ``chronos`` extra. Timestral requires its
+            separately installed upstream package and Python 3.10 or newer.
         horizon : float, int, or Quantity
             Forecast time span from the last observed sample in seconds (or an
             Astropy time ``Quantity``). The number of predicted samples is

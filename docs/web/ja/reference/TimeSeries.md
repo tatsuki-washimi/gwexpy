@@ -138,6 +138,8 @@ psd = ts.psd(fftlength=1.0)
   ARIMA 時系列モデルを適合します。
 - **`forecast(backend="chronos", horizon=..., quantiles=(0.1, 0.5, 0.9))`**
   optional な学習済みバックエンド（`backend="chronos"`: `pip install "gwexpy[chronos]"`、`backend="timesfm"`: `pip install "gwexpy[timesfm]"`）でゼロショット予測を行います。`horizon` は最終サンプルからの時間長（秒または Astropy 時間 `Quantity`、予測点数 `N_pred = floor(horizon / dt)`）で指定します。中央値（0.5 分位点）を本体とする `TimeSeries` を直接返し、不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.interval_levels`, `.estimate_mean is None`）を付与します。手動伝播や GWpy 連携には `.to_timeseriesdict()` で展開できます。`backend="timesfm"` では分位点は `(0.1, 0.2, ..., 0.9)` の部分集合、予測点数は `N_pred <= 1024` が上限です。
+
+  `backend="chronos-bolt"` は Chronos の extra を使用します。`backend="timestral"` は Python 3.10 以上が必要で、上流パッケージを `pip install git+https://github.com/mistralai/timestral.git` で導入します。Timestral のコードは Apache-2.0 ですが、モデル重みは利用制限付きの別ライセンス（Modified MIT）です。利用前に[固定モデルのライセンス](https://huggingface.co/mistralai/Timestral-209M/blob/9874d252ab0aae16f7f7c999f98f98d6ad7d8365/LICENSE)を確認してください。
 - **`impute(method="interpolate")`**
   データ内の欠損値 (NaN) を処理します。
 - **`standardize(method="zscore")`**
