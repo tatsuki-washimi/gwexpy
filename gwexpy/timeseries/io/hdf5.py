@@ -181,6 +181,27 @@ def _exact_epoch(array: Any) -> int | None:
     return value
 
 
+def _validate_uncertainty_alignment(primary: Any, attached: Any) -> None:
+    primary_ns, attached_ns = _exact_epoch(primary), _exact_epoch(attached)
+    if (
+        len(attached) != len(primary)
+        or attached.unit != primary.unit
+        or attached.channel != primary.channel
+        or attached.t0 != primary.t0
+        or attached.dt != primary.dt
+        or (
+            primary_ns is not None
+            and attached_ns is not None
+            and primary_ns != attached_ns
+        )
+        or (
+            (needs_explicit_axis(attached) or needs_explicit_axis(primary))
+            and not np.array_equal(attached.times.value, primary.times.value)
+        )
+    ):
+        raise ValueError("uncertainty series metadata mismatch")
+
+
 def _external_storage_requested(kwargs: dict[str, Any]) -> bool:
     external = kwargs.get("external")
     if external is None:
@@ -893,6 +914,7 @@ def _write_uncertainty_stage(
     for role, level, value in components:
         if value is None:
             continue
+        _validate_uncertainty_alignment(array, value)
         suffix = (
             f"P{level * 100:g}"
             if role == "quantile" and level is not None
@@ -2055,17 +2077,7 @@ def _restore_uncertainty(
             seen.add(key)
             seen_paths.add(path)
             attached = _read_open_container(dataset.file, path, target_class, {})
-            if (
-                len(attached) != len(result)
-                or attached.unit != result.unit
-                or attached.t0 != result.t0
-                or attached.dt != result.dt
-                or (
-                    (needs_explicit_axis(attached) or needs_explicit_axis(result))
-                    and not np.array_equal(attached.times.value, result.times.value)
-                )
-            ):
-                raise ValueError("uncertainty series metadata mismatch")
+            _validate_uncertainty_alignment(result, attached)
             if role == "quantile":
                 quantiles[level] = attached
             else:

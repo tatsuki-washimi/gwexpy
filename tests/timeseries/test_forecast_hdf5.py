@@ -215,6 +215,24 @@ def test_exact_epoch_and_channel_roundtrip(tmp_path):
     assert restored.lower.unit == restored.unit
 
 
+@pytest.mark.parametrize("mismatch", ["epoch", "channel"])
+def test_reject_uncertainty_with_mismatched_exact_metadata(tmp_path, mismatch):
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(
+        [1.0, 2.0], t0_ns=epoch_ns, sample_rate=4, unit="V", channel="X1:TEST"
+    )
+    attached = TimeSeries(
+        [0.0, 1.0],
+        t0_ns=epoch_ns + (mismatch == "epoch"),
+        sample_rate=4,
+        unit="V",
+        channel="X1:OTHER" if mismatch == "channel" else "X1:TEST",
+    )
+    series._set_uncertainty(lower=attached)
+    with pytest.raises(ValueError, match="uncertainty series metadata mismatch"):
+        series.write(tmp_path / "mismatch.h5", path="signal")
+
+
 def test_invalid_quantile_interval_in_sidecar_is_rejected(tmp_path):
     path = tmp_path / "forecast.h5"
     series = TimeSeries([1.0, 2.0], t0=100, dt=1, unit="V")
