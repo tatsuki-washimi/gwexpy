@@ -107,6 +107,7 @@ def _coerce_reader_result(cls, reader_result):
 _GWEXPY_EXACT_HDF5_ATTRS = {
     "_gwexpy_sidecar_json_v1",
     "_gwexpy_sidecar_json_v2",
+    "_gwexpy_uncertainty_json_v1",
 }
 _GWEXPY_COLLECTION_HDF5_ATTRS = {
     "gwexpy_keymap",
@@ -145,6 +146,111 @@ def _gwexpy_hdf5_augmentation_attrs(source: Any) -> set[str]:
                 source.seek(position)
             except (AttributeError, OSError, TypeError, ValueError):
                 pass
+
+
+def _restore_native_uncertainty(
+    source: Any, result: Any, kwargs: dict[str, Any]
+) -> Any:
+    """Attach labelled series while retaining the native dictionary keys."""
+    import json
+
+    from gwexpy.timeseries.io.hdf5 import UNCERTAINTY_ATTRIBUTE, _read_open_container
+
+    context = (
+        nullcontext(source.file)
+        if isinstance(source, h5py.HLObject)
+        else h5py.File(source, "r")
+    )
+    aliases: dict[str, str] = {}
+    with context as handle:
+        if UNCERTAINTY_ATTRIBUTE not in handle.attrs:
+            return result
+        records = json.loads(handle.attrs[UNCERTAINTY_ATTRIBUTE])
+        group = kwargs.get("group") or ""
+        prefix = "/" + str(group).strip("/") + "/" if group else "/"
+        for path, record in records.items():
+            if not path.startswith(prefix):
+                continue
+            key = path[len(prefix) :]
+            if key not in result:
+                continue
+            primary = _read_open_container(
+                handle,
+                path,
+                type(result[key]),
+                {
+                    name: kwargs[name]
+                    for name in ("start", "end")
+                    if kwargs.get(name) is not None
+                },
+            )
+            for entry in record["series"]:
+                flat_path = entry["path"]
+                if not flat_path.startswith(prefix):
+                    continue
+                flat_key = flat_path[len(prefix) :]
+                if flat_key in result:
+                    aliases[flat_key] = key
+                role = entry["role"]
+                if role == "quantile" and flat_key in result:
+                    primary.quantiles[entry["level"]] = result[flat_key]
+                elif role in {"lower", "upper", "estimate_mean"} and flat_key in result:
+                    setattr(primary, role, result[flat_key])
+            for entry in record["series"]:
+                role = entry["role"]
+                if role in {"derived_lower", "derived_upper"}:
+                    flat_key = entry["path"][len(prefix) :]
+                    if flat_key in result:
+                        result[flat_key] = getattr(
+                            primary, role.removeprefix("derived_")
+                        )
+            result[key] = primary
+    result._gwexpy_uncertainty_aliases = aliases
+    return result
+
+
+def _restore_manifest_uncertainty(
+    handle: h5py.File, result: Any, keymap: dict[str, str], names: Any
+) -> Any:
+    """Expose manifest-backed companion datasets with shared series objects."""
+    import json
+
+    from gwexpy.timeseries.io.hdf5 import UNCERTAINTY_ATTRIBUTE
+
+    raw = handle.attrs.get(UNCERTAINTY_ATTRIBUTE)
+    if raw is None:
+        return result
+    records = json.loads(raw)
+    aliases: dict[str, str] = {}
+    for path, record in records.items():
+        physical = path.lstrip("/")
+        manifest_key = physical[:-5] if physical.endswith("/data") else physical
+        logical = keymap.get(manifest_key, manifest_key)
+        if logical not in result:
+            continue
+        primary = result[logical]
+        for entry in record["series"]:
+            flat_path = entry["path"]
+            if not flat_path.startswith(path + "."):
+                raise ValueError("invalid HDF5 uncertainty relationship")
+            key = logical + flat_path[len(path) :]
+            role = entry["role"]
+            if role == "quantile":
+                value = primary.quantiles[entry["level"]]
+            else:
+                value = getattr(primary, role.removeprefix("derived_"))
+            result[key] = value
+            aliases[key] = logical
+    if names is not None:
+        result = type(result)(
+            (key, value) for key, value in result.items() if key in names
+        )
+    result._gwexpy_uncertainty_aliases = {
+        key: parent
+        for key, parent in aliases.items()
+        if key in result and parent in result
+    }
+    return result
 
 
 def _coerce_native_hdf5_result(cls, reader_result):
@@ -344,6 +450,30 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 channel=None)>}
 
     """
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        aliases = getattr(self, "_gwexpy_uncertainty_aliases", {})
+        parent_key = aliases.get(key)
+        broken = (
+            parent_key is not None
+            and parent_key in self
+            and key in self
+            and self[key] is not value
+        )
+        replaced_parent = (
+            key in self and self[key] is not value and key in aliases.values()
+        )
+        super().__setitem__(key, value)
+        if broken:
+            parent = self[parent_key]
+            parent._clear_uncertainty()
+            self._gwexpy_uncertainty_aliases = {
+                alias: owner for alias, owner in aliases.items() if owner != parent_key
+            }
+        elif replaced_parent:
+            self._gwexpy_uncertainty_aliases = {
+                alias: owner for alias, owner in aliases.items() if owner != key
+            }
 
     def forecast(
         self,
@@ -647,7 +777,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         result,
                         kwargs.get("group"),
                     )
-                return _normalize_native_hdf5_empty_selection(result, args, kwargs)
+                result = _normalize_native_hdf5_empty_selection(result, args, kwargs)
+                if "_gwexpy_uncertainty_json_v1" in augmentation_attrs:
+                    result = _restore_native_uncertainty(source, result, kwargs)
+                return result
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             # This branch reopens the file and re-reads each dataset itself
@@ -681,7 +814,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = ts
                     skipped.report()
-                    return apply_time_selection(out, start, end)
+                    out = apply_time_selection(out, start, end)
+                    return _restore_manifest_uncertainty(
+                        h5f, out, keymap, kwargs.get("names")
+                    )
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
                         grp = h5f[grp_name]
@@ -700,7 +836,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = ts
                     skipped.report()
-                    return apply_time_selection(out, start, end)
+                    out = apply_time_selection(out, start, end)
+                    return _restore_manifest_uncertainty(
+                        h5f, out, keymap, kwargs.get("names")
+                    )
         if fmt in {"wav", "flac"} and kwargs.get("extract_metadata"):
             from gwexpy.io.utils import extract_audio_metadata, set_provenance
 
@@ -1210,6 +1349,44 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         register_all()
 
         fmt = kwargs.get("format")
+        aliases = getattr(self, "_gwexpy_uncertainty_aliases", {})
+        if fmt in ("hdf5", "h5", "hdf") and aliases:
+            unique = type(self)(
+                (key, value) for key, value in self.items() if key not in aliases
+            )
+            return unique.write(target, *args, **kwargs)
+        if (
+            fmt in ("hdf5", "h5", "hdf")
+            and not getattr(self, "_gwex_hdf_ordered", False)
+            and any(
+                getattr(value, "_has_uncertainty", lambda: False)()
+                for value in self.values()
+            )
+        ):
+            entries = list(self.items())
+            needs_reorder = any(
+                getattr(series, "_has_uncertainty", lambda: False)()
+                and any(
+                    str(later_key).startswith(str(key) + ".")
+                    for later_key, _ in entries[index + 1 :]
+                )
+                for index, (key, series) in enumerate(entries)
+            )
+            if not needs_reorder:
+                entries = []
+            sorted_entries = sorted(
+                entries,
+                key=lambda item: (
+                    bool(getattr(item[1], "_has_uncertainty", lambda: False)()),
+                    -len(str(item[0]))
+                    if getattr(item[1], "_has_uncertainty", lambda: False)()
+                    else 0,
+                ),
+            )
+            if [key for key, _ in entries] != [key for key, _ in sorted_entries]:
+                output = type(self)(sorted_entries)
+                output._gwex_hdf_ordered = True
+                return output.write(target, *args, **kwargs)
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
 

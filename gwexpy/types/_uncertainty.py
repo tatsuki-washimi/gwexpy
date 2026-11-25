@@ -381,14 +381,6 @@ class UncertaintyMixin:
         """Optional mapping from quantile levels in ``(0, 1)`` to Series."""
         return self.__dict__.get("_gwex_unc_quantiles")
 
-    @property
-    def percentiles(self) -> dict[float, Any] | None:
-        """Quantile series indexed by percentile, derived from ``quantiles``."""
-        quantiles = self.quantiles
-        if quantiles is None:
-            return None
-        return {round(level * 100, 12): series for level, series in quantiles.items()}
-
     @quantiles.setter
     def quantiles(self, value: Mapping[float, Any] | None) -> None:
         normalized = _validate_quantiles_mapping(value)
@@ -396,6 +388,14 @@ class UncertaintyMixin:
             self.__dict__.pop("_gwex_unc_quantiles", None)
         else:
             self.__dict__["_gwex_unc_quantiles"] = normalized
+
+    @property
+    def percentiles(self) -> dict[float, Any] | None:
+        """Quantile series indexed by percentile, derived from ``quantiles``."""
+        quantiles = self.quantiles
+        if quantiles is None:
+            return None
+        return {round(level * 100, 12): series for level, series in quantiles.items()}
 
     @property
     def estimate_mean(self) -> Any:
