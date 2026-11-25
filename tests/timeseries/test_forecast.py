@@ -1046,6 +1046,61 @@ def test_joint_forecast_percentiles_roundtrip_hdf5(monkeypatch, tmp_path):
     assert restored["DARM"].uncertainty_kind == "predictive"
 
 
+def _timestral_model(levels, values=None):
+    class Timestral:
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            data = np.zeros((1, 1, prediction_length, len(levels)))
+            if values is not None:
+                data[...] = values
+            return types.SimpleNamespace(quantiles=data, quantile_levels=levels)
+
+    return Timestral()
+
+
+def test_timestral_matches_levels_within_tolerance(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    levels = (0.1, 0.15000000000000002, 0.5, 0.85, 0.9)
+    monkeypatch.setattr(
+        forecast, "_load_timestral_model", lambda: _timestral_model(levels)
+    )
+    result = TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+        backend="timestral", horizon=1.0, quantiles=(0.15, 0.5, 0.85)
+    )
+    assert list(result.quantiles) == [0.15, 0.5, 0.85]
+    with pytest.raises(ValueError, match="0.3 is not supported by Timestral"):
+        TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+            backend="timestral", horizon=1.0, quantiles=(0.3, 0.5)
+        )
+
+
+def test_additional_backend_rejects_non_finite_output(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    monkeypatch.setattr(
+        forecast,
+        "_load_timestral_model",
+        lambda: _timestral_model((0.1, 0.5, 0.9), values=np.nan),
+    )
+    with pytest.raises(ValueError, match="non-finite forecast"):
+        TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(backend="timestral", horizon=1.0)
+
+
+def test_joint_forecast_names_mismatched_member_and_bad_targets():
+    collection = TimeSeriesDict(
+        {
+            "a": TimeSeries([1.0, 2.0], dt=1.0),
+            "b": TimeSeries([1.0, 2.0, 3.0], dt=1.0),
+        }
+    )
+    with pytest.raises(ValueError, match="'b' differs from 'a'"):
+        collection.forecast(horizon=1.0, targets=["a"])
+    with pytest.raises(ValueError, match="absent from the collection"):
+        collection.forecast(horizon=1.0, targets=["missing"])
+    with pytest.raises(ValueError, match="hashable"):
+        collection.forecast(horizon=1.0, targets=[["a"]])
+
+
 def test_chronos_bolt_accepts_percentiles(monkeypatch):
     import gwexpy.timeseries._forecast as forecast
 

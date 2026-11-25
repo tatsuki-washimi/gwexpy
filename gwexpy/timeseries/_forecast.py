@@ -428,8 +428,9 @@ def _load_timestral_model() -> object:
     except ImportError as exc:
         raise ImportError(
             "Timestral requires Python >= 3.10 and the upstream package; install "
-            "it with `pip install git+https://github.com/mistralai/timestral.git`. "
-            "The model weights have separate license terms."
+            "it with `pip install git+https://github.com/mistralai/timestral.git` "
+            "(no gwexpy extra provides it). The model weights have separate "
+            "license terms."
         ) from exc
     return TimestralForecaster.from_pretrained(
         _TIMESTRAL_ID, revision=_TIMESTRAL_REVISION
@@ -448,7 +449,7 @@ def _run_additional_backend(
         "model_context_length" if backend == "chronos-bolt" else "max_context",
         None,
     )
-    visible = values[-context_limit:] if context_limit is not None else values
+    visible = values[-context_limit:] if context_limit else values
     scaled, mu, scale = _prescale_series_float64(visible)
     if backend == "chronos-bolt":
         import torch
@@ -476,19 +477,32 @@ def _run_additional_backend(
         output = model.forecast(  # type: ignore[attr-defined]
             scaled.reshape(1, 1, -1), prediction_length=n_pred, clip_nonnegative=False
         )
-        supported = tuple(float(q) for q in output.quantile_levels)
-        if any(level not in supported for level in levels):
-            raise ValueError("Requested quantiles are not supported by Timestral")
+        supported = np.asarray(output.quantile_levels, dtype=np.float64)
+        indices = []
+        for level in levels:
+            matches = np.flatnonzero(np.isclose(supported, level, rtol=0.0, atol=1e-9))
+            if matches.size != 1:
+                raise ValueError(
+                    f"Quantile level {level:g} is not supported by Timestral; "
+                    f"supported levels are {tuple(float(q) for q in supported)}"
+                )
+            indices.append(int(matches[0]))
         quantiles = np.asarray(output.quantiles)
         if quantiles.shape != (1, 1, n_pred, len(supported)):
             raise ValueError(
                 "Timestral backend returned an unexpected prediction shape"
             )
-        result = quantiles[0, 0][:, [supported.index(level) for level in levels]]
+        result = quantiles[0, 0][:, indices]
     restored = _restore_scaled_forecast(result, mu, scale)
+    _require_finite_forecast(restored, backend)
     if backend == "timestral" and np.all(values >= 0):
         restored = np.maximum(restored, 0.0)
     return restored
+
+
+def _require_finite_forecast(values: np.ndarray, backend: str) -> None:
+    if not np.all(np.isfinite(values)):
+        raise ValueError(f"{backend} backend returned a non-finite forecast")
 
 
 def _load_timesfm_model() -> tuple[object, object]:
@@ -732,15 +746,25 @@ def forecast_collection(
         if isinstance(targets, (str, bytes)):
             raise ValueError("targets must be a non-empty sequence of keys")
         selected = list(targets)
-        if not selected or len(set(selected)) != len(selected):
+        try:
+            unique = len(set(selected)) == len(selected)
+        except TypeError:
+            raise ValueError("targets must contain hashable collection keys") from None
+        if not selected or not unique:
             raise ValueError("targets must contain unique keys and must not be empty")
-        if any(key not in collection for key in selected):
-            raise ValueError("targets contains a key absent from the collection")
+        missing = [key for key in selected if key not in collection]
+        if missing:
+            raise ValueError(
+                f"targets contains keys absent from the collection: {missing}"
+            )
         require_uniform_time_reference(series for _, series in items)
-        first = items[0][1]
+        first_key, first = items[0]
         for key, series in items[1:]:
             if not _same_forecast_axis(first, series):
-                raise ValueError("joint forecasting requires identical time axes")
+                raise ValueError(
+                    "joint forecasting requires identical time axes; "
+                    f"{key!r} differs from {first_key!r}"
+                )
         pipeline = _load_chronos_pipeline()
         _validate_chronos_quantiles(levels, pipeline)
         context_limit = getattr(pipeline, "model_context_length", None)
@@ -748,7 +772,7 @@ def forecast_collection(
         scales_by_key = {}
         for key, _ in items:
             values = values_by_key[key]
-            visible = values[-context_limit:] if context_limit is not None else values
+            visible = values[-context_limit:] if context_limit else values
             scaled, mu, scale = _prescale_series_float64(visible)
             scaled_by_key[key] = scaled
             scales_by_key[key] = (mu, scale)
@@ -778,6 +802,7 @@ def forecast_collection(
         for index, key in enumerate(selected):
             mu, scale = scales_by_key[key]
             predictions[index] = _restore_scaled_forecast(predictions[index], mu, scale)
+        _require_finite_forecast(predictions, backend)
         return TimeSeriesDict(
             (
                 key,
