@@ -288,6 +288,7 @@
       ~TimeSeries.name
       ~TimeSeries.nbytes
       ~TimeSeries.ndim
+      ~TimeSeries.percentiles
       ~TimeSeries.quantiles
       ~TimeSeries.real
       ~TimeSeries.sample_rate

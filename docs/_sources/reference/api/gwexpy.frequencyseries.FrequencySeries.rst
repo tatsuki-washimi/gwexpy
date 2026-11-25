@@ -201,6 +201,7 @@
       ~FrequencySeries.name
       ~FrequencySeries.nbytes
       ~FrequencySeries.ndim
+      ~FrequencySeries.percentiles
       ~FrequencySeries.quantiles
       ~FrequencySeries.real
       ~FrequencySeries.shape
