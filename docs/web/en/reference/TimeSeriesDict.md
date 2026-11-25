@@ -8,6 +8,12 @@
 
 Use `TimeSeriesDict` to organize multiple `TimeSeries` objects while preserving per-channel metadata and enabling batch operations.
 
+## Forecast uncertainty and HDF5
+
+`forecast` accepts either quantiles in `(0, 1)` or percentiles in `(0, 100)`. For HDF5 files written with uncertainty, a restored primary and its flat companion keys share series objects immediately after reading. For example, `result["DARM.P90"] is result["DARM"].percentiles[90]`. Selecting a primary with `names=` also restores its uncertainty. Replacing a flat companion breaks its statistical association with the primary while retaining the replacement as a dictionary entry.
+
+GWpy reads the numeric datasets as flat keys and does not restore the GWexpy uncertainty relationships. Companion names such as `DARM.lower` and `DARM.P90` may receive a suffix when names collide.
+
 ## Representative Signatures
 
 ```python

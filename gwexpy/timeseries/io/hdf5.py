@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import json
 import math
 import os
 import shutil
@@ -64,6 +65,7 @@ from ._hdf5_exact_epoch import (
 
 SIDECAR_ATTRIBUTE_V1 = "_gwexpy_sidecar_json_v1"
 SIDECAR_ATTRIBUTE_V2 = "_gwexpy_sidecar_json_v2"
+UNCERTAINTY_ATTRIBUTE = "_gwexpy_uncertainty_json_v1"
 TIME_STATE_NS_KEY = "_gwex_t0_gps_ns"
 
 _MISSING = object()
@@ -177,6 +179,28 @@ def _exact_epoch(array: Any) -> int | None:
     if type(value) is not int:
         raise ValueError("authoritative TimeSeries epoch must be an integer")
     return value
+
+
+def _validate_uncertainty_alignment(primary: Any, attached: Any) -> None:
+    primary_ns, attached_ns = _exact_epoch(primary), _exact_epoch(attached)
+    if (
+        len(attached) != len(primary)
+        or attached.unit != primary.unit
+        or attached.channel != primary.channel
+        or get_time_reference(attached) != get_time_reference(primary)
+        or attached.t0 != primary.t0
+        or attached.dt != primary.dt
+        or (
+            primary_ns is not None
+            and attached_ns is not None
+            and primary_ns != attached_ns
+        )
+        or (
+            (needs_explicit_axis(attached) or needs_explicit_axis(primary))
+            and not np.array_equal(attached.times.value, primary.times.value)
+        )
+    ):
+        raise ValueError("uncertainty series metadata mismatch")
 
 
 def _external_storage_requested(kwargs: dict[str, Any]) -> bool:
@@ -834,7 +858,90 @@ def _write_disposable_stage(
         _read_v2_sidecar(h5file)
         coordinate, relative_path = _transaction_coordinate(array, h5file, path)
         _existing_dataset(coordinate, relative_path)
-        return _write_dataset_once(array, h5file, path, marker, kwargs)
+        dataset = _write_dataset_once(array, h5file, path, marker, kwargs)
+        _write_uncertainty_stage(array, h5file, dataset, kwargs)
+        return dataset
+
+
+def _write_uncertainty_stage(
+    array: Any, h5file: h5py.File, dataset: h5py.Dataset, kwargs: dict[str, Any]
+) -> None:
+    """Write labelled companion datasets in the disposable transaction image."""
+    if (
+        UNCERTAINTY_ATTRIBUTE not in h5file.attrs
+        and not getattr(array, "_has_uncertainty", lambda: False)()
+    ):
+        return
+    records = json.loads(h5file.attrs.get(UNCERTAINTY_ATTRIBUTE, "{}"))
+    primary = dataset.name
+    if any(
+        item["path"] == primary
+        for record in records.values()
+        for item in record["series"]
+    ):
+        raise ValueError("cannot overwrite an attached uncertainty dataset directly")
+    previous = records.pop(primary, None)
+    if previous is not None:
+        for item in previous["series"]:
+            companion = item["path"]
+            if not isinstance(companion, str) or not companion.startswith(
+                primary + "."
+            ):
+                raise ValueError("invalid HDF5 uncertainty sidecar")
+            if companion not in h5file:
+                raise ValueError("missing HDF5 uncertainty dataset")
+            del h5file[companion]
+        _apply_sidecar_payload(h5file, _build_v2_sidecar(h5file))
+    if not getattr(array, "_has_uncertainty", lambda: False)():
+        if records:
+            h5file.attrs[UNCERTAINTY_ATTRIBUTE] = json.dumps(records)
+        elif UNCERTAINTY_ATTRIBUTE in h5file.attrs:
+            del h5file.attrs[UNCERTAINTY_ATTRIBUTE]
+        return
+    series = []
+    components: list[tuple[str, float | None, Any]] = []
+    quantiles = array.quantiles or {}
+    if not (quantiles and array.interval_levels is not None):
+        components.extend(
+            (role, None, getattr(array, role)) for role in ("lower", "upper")
+        )
+    else:
+        components.extend(
+            (f"derived_{role}", None, getattr(array, role))
+            for role in ("lower", "upper")
+        )
+    components.extend(("quantile", level, value) for level, value in quantiles.items())
+    components.append(("estimate_mean", None, array.estimate_mean))
+    for role, level, value in components:
+        if value is None:
+            continue
+        _validate_uncertainty_alignment(array, value)
+        suffix = (
+            f"P{level * 100:g}"
+            if role == "quantile" and level is not None
+            else role.removeprefix("derived_")
+        )
+        candidate = f"{primary}.{suffix}"
+        unique = candidate
+        index = 2
+        while unique in h5file:
+            unique = f"{candidate}_{index}"
+            index += 1
+        child_kwargs = {
+            k: v for k, v in kwargs.items() if k not in {"append", "overwrite"}
+        }
+        child_marker = _validate_caller_write_metadata(
+            value, _exact_epoch(value), child_kwargs
+        )
+        _write_dataset_once(value, h5file, unique, child_marker, child_kwargs)
+        series.append({"path": unique, "role": role, "level": level})
+    records[primary] = {
+        "series": series,
+        "center_kind": array.center_kind,
+        "uncertainty_kind": array.uncertainty_kind,
+        "interval_levels": array.interval_levels,
+    }
+    h5file.attrs[UNCERTAINTY_ATTRIBUTE] = json.dumps(records)
 
 
 def _existing_dataset(
@@ -1207,6 +1314,76 @@ def _write_open_container(
             ) from rollback_errors[0]
         raise
     return dataset
+
+
+def _write_uncertainty_open_container(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: Any,
+    marker: EpochMarker | None,
+    kwargs: dict[str, Any],
+) -> h5py.Dataset:
+    """Protect primary, companions and root metadata during a handle write."""
+    h5file = container.file
+    primary = "/" + _native_object_path(array, container, path)
+    attrs = _sidecar_snapshot(h5file) + (
+        (
+            UNCERTAINTY_ATTRIBUTE,
+            UNCERTAINTY_ATTRIBUTE in h5file.attrs,
+            h5file.attrs.get(UNCERTAINTY_ATTRIBUTE, _MISSING),
+        ),
+    )
+    records = json.loads(h5file.attrs.get(UNCERTAINTY_ATTRIBUTE, "{}"))
+    previous = records.get(primary, {})
+    old_paths = [primary] + [item["path"] for item in previous.get("series", [])]
+    for companion in old_paths[1:]:
+        if not isinstance(companion, str) or not companion.startswith(primary + "."):
+            raise ValueError("invalid HDF5 uncertainty sidecar")
+        if not isinstance(h5file.get(companion), h5py.Dataset):
+            raise ValueError("missing HDF5 uncertainty dataset")
+    before: set[str] = set()
+    h5file.visititems(
+        lambda name, obj: (
+            before.add(obj.name) if isinstance(obj, h5py.Dataset) else None
+        )
+    )
+    recovery_path = _new_handle_recovery_path(h5file)
+    recovery = h5file.create_group(recovery_path)
+    try:
+        for index, old_path in enumerate(old_paths):
+            if old_path in h5file:
+                recovery[str(index)] = h5file[old_path]
+        h5file.flush()
+        result = _write_open_container(array, container, path, marker, kwargs)
+        _write_uncertainty_stage(array, h5file, result, kwargs)
+    except BaseException as exc:
+        try:
+            after: set[str] = set()
+            h5file.visititems(
+                lambda name, obj: (
+                    after.add(obj.name)
+                    if isinstance(obj, h5py.Dataset)
+                    and not obj.name.startswith(recovery_path + "/")
+                    else None
+                )
+            )
+            for new_path in after - before:
+                del h5file[new_path]
+            for index, old_path in enumerate(old_paths):
+                if str(index) in recovery:
+                    if old_path in h5file:
+                        del h5file[old_path]
+                    h5file[old_path] = recovery[str(index)]
+            for snapshot in attrs:
+                _restore_sidecar_attribute(h5file, snapshot)
+            del h5file[recovery_path]
+        except BaseException as rollback_error:
+            raise _RollbackError(
+                exc, (rollback_error,), recovery_path, state="indeterminate"
+            ) from rollback_error
+        raise
+    del h5file[recovery_path]
+    return result
 
 
 def _path_status(path: Path) -> tuple[bool, int | None]:
@@ -1791,6 +1968,34 @@ def _read_open_container(
     target_class: type[Any],
     kwargs: dict[str, Any],
 ) -> Any:
+    if (
+        path is None
+        and isinstance(source, (h5py.File, h5py.Group))
+        and UNCERTAINTY_ATTRIBUTE in source.file.attrs
+    ):
+        try:
+            records = json.loads(source.file.attrs[UNCERTAINTY_ATTRIBUTE])
+            if not isinstance(records, dict):
+                raise ValueError("uncertainty sidecar must be a mapping")
+            primary = [name for name in records if name in source.file]
+            if len(primary) == 1:
+                # Only auto-select when every public dataset belongs to this
+                # one record; otherwise preserve GWpy's ambiguity error.
+                allowed = {primary[0]} | {
+                    item["path"] for item in records[primary[0]]["series"]
+                }
+                paths = []
+                source.visititems(
+                    lambda name, obj: (
+                        paths.append(obj.name)
+                        if isinstance(obj, h5py.Dataset)
+                        else None
+                    )
+                )
+                if set(paths) == allowed:
+                    path = primary[0]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("invalid HDF5 uncertainty sidecar") from exc
     if path is not None:
         _native_path_components(source, path)
     dataset = _gwpy_io_hdf5.find_dataset(source, path=path)
@@ -1811,6 +2016,8 @@ def _read_open_container(
     if state is not None:
         set_time_reference(result, state)
 
+    _restore_uncertainty(dataset, result, target_class)
+
     explicit_axis = needs_explicit_axis(result)
     if (start is not None or end is not None) and not explicit_axis:
         bounds = result.span
@@ -1820,6 +2027,89 @@ def _read_open_container(
             end = min(end, bounds[1])
         result = result.crop(start, end)
     return mark_irregular_hdf5_read(result)
+
+
+def _restore_uncertainty(
+    dataset: h5py.Dataset, result: Any, target_class: type[Any]
+) -> None:
+    """Restore labelled companions before window selection."""
+    raw = dataset.file.attrs.get(UNCERTAINTY_ATTRIBUTE)
+    if raw is None:
+        return
+    try:
+        records = json.loads(raw)
+        if not isinstance(records, dict):
+            raise ValueError("uncertainty sidecar must be a mapping")
+        record = records.get(dataset.name)
+        if record is None:
+            return
+        quantiles = {}
+        attachments = {}
+        seen = set()
+        seen_paths = set()
+        for entry in record["series"]:
+            role, level, path = entry["role"], entry["level"], entry["path"]
+            if role not in {
+                "lower",
+                "upper",
+                "derived_lower",
+                "derived_upper",
+                "estimate_mean",
+                "quantile",
+            }:
+                raise ValueError("invalid uncertainty role")
+            if role == "quantile":
+                if (
+                    isinstance(level, bool)
+                    or not isinstance(level, (int, float))
+                    or not 0 < level < 1
+                ):
+                    raise ValueError("invalid uncertainty quantile level")
+            elif level is not None:
+                raise ValueError("unexpected uncertainty level")
+            key = (role, level)
+            if (
+                key in seen
+                or path in seen_paths
+                or path in records
+                or path not in dataset.file
+            ):
+                raise ValueError("invalid uncertainty relationship")
+            seen.add(key)
+            seen_paths.add(path)
+            attached = _read_open_container(dataset.file, path, target_class, {})
+            _validate_uncertainty_alignment(result, attached)
+            if role == "quantile":
+                quantiles[level] = attached
+            else:
+                attachments[role] = attached
+        levels = record["interval_levels"]
+        if (
+            quantiles
+            and levels is not None
+            and any(level not in quantiles for level in levels)
+        ):
+            raise ValueError("interval references an absent quantile")
+        for role, index in (("derived_lower", 0), ("derived_upper", 1)):
+            derived = attachments.pop(role, None)
+            if derived is not None and (
+                not quantiles
+                or levels is None
+                or levels[index] not in quantiles
+                or not np.array_equal(
+                    derived.value, quantiles[levels[index]].value, equal_nan=True
+                )
+            ):
+                raise ValueError("invalid derived uncertainty bound")
+        result._set_uncertainty(
+            quantiles=quantiles or None,
+            center_kind=record["center_kind"],
+            uncertainty_kind=record["uncertainty_kind"],
+            interval_levels=levels,
+            **attachments,
+        )
+    except (IndexError, KeyError, TypeError, ValueError, RecursionError) as exc:
+        raise ValueError("invalid HDF5 uncertainty sidecar") from exc
 
 
 def register_hdf5_exact_t0_io() -> None:
@@ -1906,6 +2196,10 @@ def register_hdf5_exact_t0_io() -> None:
                 preserve_existing=bool(write_kwargs.get("append", False)),
             )
             if _external_storage_requested(write_kwargs):
+                if getattr(array, "_has_uncertainty", lambda: False)():
+                    raise ValueError(
+                        "uncertainty HDF5 writes require transactional storage"
+                    )
                 if exact_epoch is not None:
                     raise ValueError(
                         "external HDF5 storage is incompatible with exact TimeSeries "
@@ -1933,6 +2227,13 @@ def register_hdf5_exact_t0_io() -> None:
             if path is not None:
                 _native_path_components(array, path)
             if isinstance(target, (h5py.File, h5py.Group)):
+                if (
+                    getattr(array, "_has_uncertainty", lambda: False)()
+                    or UNCERTAINTY_ATTRIBUTE in target.file.attrs
+                ):
+                    return _write_uncertainty_open_container(
+                        array, target, path, marker, write_kwargs
+                    )
                 return _write_open_container(
                     array,
                     target,

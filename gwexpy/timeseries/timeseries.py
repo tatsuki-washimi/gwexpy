@@ -861,6 +861,7 @@ class TimeSeries(
         *,
         horizon: float | int | u.Quantity,
         quantiles: tuple[float, ...] | list[float] | None = None,
+        percentiles: tuple[float, ...] | list[float] | None = None,
     ) -> TimeSeries:
         """Forecast future samples with an optional pretrained backend.
 
@@ -884,6 +885,9 @@ class TimeSeries(
             Quantile levels strictly in ``(0, 1)`` containing ``0.5``.
             Defaults to ``(0.1, 0.5, 0.9)``. For ``backend="timesfm"``, levels
             must be a subset of ``(0.1, 0.2, ..., 0.9)``.
+        percentiles : sequence of float, optional
+            Percentile levels corresponding to quantiles multiplied by 100.
+            Cannot be supplied together with ``quantiles``.
 
         Returns
         -------
@@ -895,13 +899,16 @@ class TimeSeries(
             Chronos-2 and the initial TimesFM 2.5 adapter.
 
         """
-        from ._forecast import SUPPORTED_BACKENDS, forecast_series
+        from ._forecast import SUPPORTED_BACKENDS, _resolve_percentiles, forecast_series
 
         if backend not in SUPPORTED_BACKENDS:
             raise ValueError(f"Unsupported forecast backend: {backend!r}")
 
         return forecast_series(
-            self, backend=backend, horizon=horizon, quantiles=quantiles
+            self,
+            backend=backend,
+            horizon=horizon,
+            quantiles=_resolve_percentiles(quantiles, percentiles),
         )
 
     def arima(

@@ -8,6 +8,16 @@
 
 Use `TimeSeries` for a single regularly sampled time-domain channel with GWexpy signal-processing, modeling, and interoperability extensions.
 
+## Forecast uncertainty and HDF5
+
+`forecast(..., percentiles=[10, 50, 90])` is equivalent to `quantiles=[0.1, 0.5, 0.9]`; supply only one of these arguments. The result exposes `result.percentiles[90]` and `result.quantiles[0.9]` as the same series.
+
+HDF5 stores the central series and its uncertainty as separate datasets, with a root sidecar describing their statistical roles. GWexpy restores these relationships on read, including for a selected time window. A missing or invalid referenced dataset raises an error. Files without the sidecar retain their ordinary read behavior. External modifications can invalidate the relationships; automatic repair is not supported.
+
+Update the primary series to replace its uncertainty. Directly overwriting an attached dataset through GWexpy raises an error so that the stored relationship does not become stale.
+
+For a file with one primary and its companions, GWexpy can select the primary automatically. GWpy's `TimeSeries.read` requires `path=` when the file contains multiple datasets; its `TimeSeriesDict.read` exposes the datasets as flat keys.
+
 ## Representative Signatures
 
 ```python
