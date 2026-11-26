@@ -1139,6 +1139,9 @@ msgstr ""
 msgid "Japanese WIN datasets"
 msgstr "国内 WIN データ"
 
+msgid "WIN header times require an explicit timezone because the format is timezone-naive. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`."
+msgstr "WIN ヘッダ時刻にはタイムゾーンがないため、明示指定が必要です。WIN packet 時刻は 1 秒ずつ連続する必要があり、重複・逆行・global gap は `ValueError` になります。"
+
 msgid "`TimeSeriesDict.read(..., format=\"win\", timezone=\"Asia/Tokyo\")`"
 msgstr "`TimeSeriesDict.read(..., format=\"win\", timezone=\"Asia/Tokyo\")`"
 

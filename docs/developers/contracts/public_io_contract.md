@@ -300,8 +300,8 @@ deprecation warning. Relative times require an absolute `epoch`.
   and validated. Malformed, truncated, or overlong payloads fail before an
   oversized read, and cumulative delta decoding does not wrap at int32 bounds.
 - Only a BCD year transition from `99` to `00` advances the supplied century.
-  WIN header time is interpreted as UTC and emits one warning per top-level
-  read, including a multi-file read.
+  WIN header time is localized using the required `timezone`, including a
+  multi-file read.
 - Reason: these formats are intentionally documented as collection-first and
   read-only.
 

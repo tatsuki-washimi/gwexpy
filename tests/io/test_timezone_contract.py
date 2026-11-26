@@ -35,7 +35,7 @@ EXPECTED_TIME_CONTRACT = {
     "sac": ("absolute", "override", "epoch_localize_only"),
     "gse2": ("absolute", "override", "epoch_localize_only"),
     "knet": ("absolute", "override", "epoch_localize_only"),
-    "win": ("fixed_zone", "none", "rejected"),
+    "win": ("naive_civil", "none", "required"),
     "ats": ("absolute", "override", "epoch_localize_only"),
     "ats.mth5": ("absolute", "none", "rejected"),
     "nc": ("absolute", "none", "not_accepted"),

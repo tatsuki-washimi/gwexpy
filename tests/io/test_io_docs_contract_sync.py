@@ -292,8 +292,8 @@ def test_docs_describe_machine_readable_time_contract() -> None:
     assert "At the gwexpy boundary, K-NET timestamps are absolute UTC" in en
     assert "gwexpy 境界で K-NET 時刻は absolute UTC" in ja
     assert "| `knet` | absolute | override | epoch localize only |" in contract_md
-    assert "WIN header times are interpreted as UTC" in en
-    assert "WIN ヘッダ時刻は timezone-naive のため UTC として解釈" in ja
+    assert "WIN header times require an explicit timezone" in en
+    assert "WIN ヘッダ時刻にはタイムゾーンがない" in ja
     assert "Ambiguous daylight-saving folds and nonexistent gaps" in en
     assert "曖昧な fold と存在しない gap" in ja
     assert "ambiguous daylight-saving fold or a nonexistent gap" in contract_md

@@ -194,7 +194,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
-| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win", timezone="Asia/Tokyo")` | Japanese WIN datasets | Explicit timezone required, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Supported narrow route; `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
@@ -208,7 +208,7 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
-win = TimeSeriesDict.read("data.cnt", format="win32")
+win = TimeSeriesDict.read("data.cnt", format="win32", timezone="Asia/Tokyo")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
@@ -217,8 +217,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   normalizes K-NET's JST header time to UTC and applies the logger correction,
   so gwexpy's `t0` is 15 seconds earlier than the K-NET header Record Time.
   At the gwexpy boundary, K-NET timestamps are absolute UTC.
-- **WIN header time is interpreted as UTC** because the format header is
-  timezone-naive; each top-level read reports that interpretation once.
+- **WIN header time requires an explicit timezone** because the format header
+  is timezone-naive.
 - **WIN packet times must advance by exactly one second.** Duplicate or
   backward packet times and global packet gaps raise `ValueError`.
 - **WIN channels may start late or end early.** Each channel keeps the `t0` of

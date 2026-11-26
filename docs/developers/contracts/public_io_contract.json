@@ -1263,9 +1263,9 @@
         {
             "name": "win",
             "canonical": "win",
-            "time_semantics": "fixed_zone",
+            "time_semantics": "naive_civil",
             "epoch_arg": "none",
-            "timezone_arg": "rejected",
+            "timezone_arg": "required",
             "aliases": [
                 "win32"
             ],
@@ -1290,7 +1290,7 @@
             "public_auto_identify": true,
             "registry_auto_identify": true,
             "required_args": {
-                "read": [],
+                "read": ["timezone"],
                 "write": []
             },
             "trusted_only": false,
@@ -1305,7 +1305,7 @@
             "notes": [
                 "Published WIN direct I/O is read-only and collection-first through TimeSeriesDict.",
                 "The alias 'win32' must remain equivalent to canonical 'win' at the public-contract level.",
-                "WIN header time is interpreted as UTC and reported with one warning per top-level read, including multi-file reads.",
+                "WIN header time is localized with the explicitly supplied timezone, including multi-file reads.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
             ],
             "optional_dependencies": [
