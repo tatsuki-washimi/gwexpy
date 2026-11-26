@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+
+- FrequencySeries collection fallback I/O now uses the GWpy default registry.
+  Formats registered only in Astropy's separate registry are no longer
+  reachable through that fallback; register them with the GWpy registry (#444).
+
 ### Added
 
 - ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
