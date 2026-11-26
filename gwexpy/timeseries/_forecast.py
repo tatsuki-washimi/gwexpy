@@ -1,4 +1,8 @@
-"""Optional pretrained forecast support (Chronos-2, TimesFM 2.5) for GWexpy."""
+"""Optional pretrained forecast support for GWexpy.
+
+Backends: Chronos-2 (including joint MISO/MIMO), TimesFM 2.5, Chronos-Bolt
+and Timestral.
+"""
 
 from __future__ import annotations
 
