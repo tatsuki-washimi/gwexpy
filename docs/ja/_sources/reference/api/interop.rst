@@ -51,6 +51,7 @@ Domain Specific Libraries
    :toctree:
    :nosignatures:
 
+   differometor_
    finesse_
    control_
    simpeg_

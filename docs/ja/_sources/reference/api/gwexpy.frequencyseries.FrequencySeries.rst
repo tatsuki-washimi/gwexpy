@@ -53,6 +53,8 @@
       ~FrequencySeries.flatten
       ~FrequencySeries.from_control_frd
       ~FrequencySeries.from_cupy
+      ~FrequencySeries.from_differometor_response
+      ~FrequencySeries.from_differometor_sensitivity
       ~FrequencySeries.from_finesse_frequency_response
       ~FrequencySeries.from_finesse_noise
       ~FrequencySeries.from_hdf5_dataset

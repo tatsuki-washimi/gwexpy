@@ -549,7 +549,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c6a874aff7c326900ed58ffe0e07de1cbca11ba7">c6a874af</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/628fe60ee72836dc76705e3c4b4eaa669e18c92c">628fe60e</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -576,11 +576,31 @@
 </section>
 <section id="use-a-library-specific-bridge">
 <h2>ライブラリに対応した変換機能の利用<a class="headerlink" href="#use-a-library-specific-bridge" title="Link to this heading">#</a></h2>
+<section id="differometor-arrays">
+<h3>Differometor arrays<a class="headerlink" href="#differometor-arrays" title="Link to this heading">#</a></h3>
+<p>Install <code class="docutils literal notranslate"><span class="pre">differometor</span></code> separately to run a model. Its frequency sweep is an
+input, and <code class="docutils literal notranslate"><span class="pre">run()</span></code> returns arrays without physical-unit metadata. Supply the
+unit appropriate for your model when converting the combined noise ASD:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span>
+
+<span class="c1"># frequencies and noise are arrays from the caller&#39;s Differometor run.</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_differometor_sensitivity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="n">budget</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">from_differometor_noise_budget</span><span class="p">(</span>
+    <span class="n">frequencies</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;thermal&quot;</span><span class="p">:</span> <span class="n">thermal</span><span class="p">,</span> <span class="s2">&quot;quantum&quot;</span><span class="p">:</span> <span class="n">quantum</span><span class="p">},</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The budget components must be supplied by the caller; the converter does not
+decompose Differometor's combined noise. <code class="docutils literal notranslate"><span class="pre">from_differometor_response</span></code> selects
+one or more named upper-sideband field rows, without deriving a calibrated
+transfer function or inferring an input channel. Establish the normalization and unit
+from the model before interpreting the result physically.</p>
 <p>Follow the <a class="reference internal" href="interop/intro_interop.html"><span class="std std-doc">interoperability tutorial</span></a> for worked
 pandas, xarray, and external-library conversions. Install the dependencies listed
 for the selected bridge and check which metadata survives the round trip.
 For migrating legacy ROOT macros (<code class="docutils literal notranslate"><span class="pre">TGraphErrors</span></code>, <code class="docutils literal notranslate"><span class="pre">TF1</span></code>) to pure Python without CERN ROOT dependencies, follow the <a class="reference internal" href="interop/root_to_python_migration.html"><span class="std std-doc">ROOT to Python Migration tutorial</span></a>.</p>
 <p>制御系のプロットには、入出力の単位が正しい、測定またはモデル化した<strong>複素伝達応答</strong>を使います。ASD と PSD はノイズの振幅やパワーを表します。コンテナを変換しても、これらがシステムの応答に変わるわけではありません。</p>
+</section>
 </section>
 <section id="detailed-capabilities">
 <h2>対応機能の詳細<a class="headerlink" href="#detailed-capabilities" title="Link to this heading">#</a></h2>
@@ -705,7 +725,10 @@ For migrating legacy ROOT macros (<code class="docutils literal notranslate"><sp
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-with-an-array">配列から始める</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-library-specific-bridge">ライブラリに対応した変換機能の利用</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-library-specific-bridge">ライブラリに対応した変換機能の利用</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#differometor-arrays">Differometor arrays</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-capabilities">対応機能の詳細</a></li>
 </ul>
   </nav></div>

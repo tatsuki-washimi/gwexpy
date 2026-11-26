@@ -452,6 +452,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.differometor_.html">gwexpy.interop.differometor_</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
@@ -561,7 +562,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c6a874aff7c326900ed58ffe0e07de1cbca11ba7">c6a874af</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/628fe60ee72836dc76705e3c4b4eaa669e18c92c">628fe60e</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -1142,6 +1143,28 @@ for MIMO systems.</p>
 <dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or TimeSeriesDict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_differometor_noise_budget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert named caller-supplied ASD components, without deriving them.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_differometor_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_index_map</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert named upper-sideband signal rows, without TF normalization.</p>
+<p><code class="docutils literal notranslate"><span class="pre">port_index_map</span></code> is the eighth element of <code class="docutils literal notranslate"><span class="pre">differometor.run</span></code>. A row
+represents a complex upper-sideband field; it is not necessarily a
+calibrated input-to-output transfer function. The caller must supply
+the unit and establish the physical interpretation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_differometor_sensitivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitivity</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert one ASD array; frequencies are in Hz and unit is caller supplied.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -3066,97 +3089,100 @@ the input as amplitude spectral density.</p></li>
 <h2>Domain Specific Libraries<a class="headerlink" href="#domain-specific-libraries" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.finesse_.html#module-gwexpy.interop.finesse_" title="gwexpy.interop.finesse_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finesse_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.differometor_.html#module-gwexpy.interop.differometor_" title="gwexpy.interop.differometor_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">differometor_</span></code></a></p></td>
+<td><p>Convert caller-supplied Differometor arrays without importing Differometor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.finesse_.html#module-gwexpy.interop.finesse_" title="gwexpy.interop.finesse_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finesse_</span></code></a></p></td>
 <td><p>Interoperate with the Finesse 3 interferometer simulation library.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.control_.html#module-gwexpy.interop.control_" title="gwexpy.interop.control_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.control_.html#module-gwexpy.interop.control_" title="gwexpy.interop.control_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_</span></code></a></p></td>
 <td><p>Provide interoperability with the <code class="docutils literal notranslate"><span class="pre">python-control</span></code> library.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.simpeg_.html#module-gwexpy.interop.simpeg_" title="gwexpy.interop.simpeg_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpeg_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.simpeg_.html#module-gwexpy.interop.simpeg_" title="gwexpy.interop.simpeg_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpeg_</span></code></a></p></td>
 <td><p>SimPEG interop helpers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.mt_.html#module-gwexpy.interop.mt_" title="gwexpy.interop.mt_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.mt_.html#module-gwexpy.interop.mt_" title="gwexpy.interop.mt_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt_</span></code></a></p></td>
 <td><p>Interoperate with the MTH5 magnetotelluric HDF5 format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.mne_.html#module-gwexpy.interop.mne_" title="gwexpy.interop.mne_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.mne_.html#module-gwexpy.interop.mne_" title="gwexpy.interop.mne_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.neo_.html#module-gwexpy.interop.neo_" title="gwexpy.interop.neo_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neo_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.neo_.html#module-gwexpy.interop.neo_" title="gwexpy.interop.neo_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neo_</span></code></a></p></td>
 <td><p>Neo interop helpers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.quantities_.html#module-gwexpy.interop.quantities_" title="gwexpy.interop.quantities_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantities_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.quantities_.html#module-gwexpy.interop.quantities_" title="gwexpy.interop.quantities_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantities_</span></code></a></p></td>
 <td><p>quantities interop helpers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pyroomacoustics_.html#module-gwexpy.interop.pyroomacoustics_" title="gwexpy.interop.pyroomacoustics_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyroomacoustics_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pyroomacoustics_.html#module-gwexpy.interop.pyroomacoustics_" title="gwexpy.interop.pyroomacoustics_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyroomacoustics_</span></code></a></p></td>
 <td><p>Interoperate with pyroomacoustics simulation results.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pydub_.html#module-gwexpy.interop.pydub_" title="gwexpy.interop.pydub_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pydub_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pydub_.html#module-gwexpy.interop.pydub_" title="gwexpy.interop.pydub_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pydub_</span></code></a></p></td>
 <td><p>Audio interop helpers for pydub and librosa-oriented exports.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.specutils_.html#module-gwexpy.interop.specutils_" title="gwexpy.interop.specutils_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">specutils_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.specutils_.html#module-gwexpy.interop.specutils_" title="gwexpy.interop.specutils_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">specutils_</span></code></a></p></td>
 <td><p>Interoperability with specutils.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pyspeckit_.html#module-gwexpy.interop.pyspeckit_" title="gwexpy.interop.pyspeckit_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspeckit_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pyspeckit_.html#module-gwexpy.interop.pyspeckit_" title="gwexpy.interop.pyspeckit_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspeckit_</span></code></a></p></td>
 <td><p>Interoperability with pyspeckit.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pyspice_.html#module-gwexpy.interop.pyspice_" title="gwexpy.interop.pyspice_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspice_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pyspice_.html#module-gwexpy.interop.pyspice_" title="gwexpy.interop.pyspice_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspice_</span></code></a></p></td>
 <td><p>Interoperate with PySpice circuit simulation results.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.skrf_.html#module-gwexpy.interop.skrf_" title="gwexpy.interop.skrf_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skrf_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.skrf_.html#module-gwexpy.interop.skrf_" title="gwexpy.interop.skrf_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skrf_</span></code></a></p></td>
 <td><p>Interoperability with scikit-rf for RF and microwave network analysis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pyoma_.html#module-gwexpy.interop.pyoma_" title="gwexpy.interop.pyoma_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyoma_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pyoma_.html#module-gwexpy.interop.pyoma_" title="gwexpy.interop.pyoma_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyoma_</span></code></a></p></td>
 <td><p>Interoperate with pyOMA operational modal analysis results.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.multitaper_.html#module-gwexpy.interop.multitaper_" title="gwexpy.interop.multitaper_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multitaper_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.multitaper_.html#module-gwexpy.interop.multitaper_" title="gwexpy.interop.multitaper_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multitaper_</span></code></a></p></td>
 <td><p>Interoperate with multitaper spectral estimation packages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.sdypy_.html#module-gwexpy.interop.sdypy_" title="gwexpy.interop.sdypy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdypy_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.sdypy_.html#module-gwexpy.interop.sdypy_" title="gwexpy.interop.sdypy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdypy_</span></code></a></p></td>
 <td><p>Interoperability with SDyPy and pyuff (Universal File Format).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.sdynpy_.html#module-gwexpy.interop.sdynpy_" title="gwexpy.interop.sdynpy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdynpy_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.sdynpy_.html#module-gwexpy.interop.sdynpy_" title="gwexpy.interop.sdynpy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdynpy_</span></code></a></p></td>
 <td><p>Interoperability with SDynPy (Structural Dynamics in Python).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.meep_.html#module-gwexpy.interop.meep_" title="gwexpy.interop.meep_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meep_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.meep_.html#module-gwexpy.interop.meep_" title="gwexpy.interop.meep_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meep_</span></code></a></p></td>
 <td><p>Interoperate with Meep FDTD simulation output files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.openems_.html#module-gwexpy.interop.openems_" title="gwexpy.interop.openems_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">openems_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.openems_.html#module-gwexpy.interop.openems_" title="gwexpy.interop.openems_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">openems_</span></code></a></p></td>
 <td><p>Interoperate with openEMS field dump HDF5 files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.emg3d_.html#module-gwexpy.interop.emg3d_" title="gwexpy.interop.emg3d_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emg3d_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.emg3d_.html#module-gwexpy.interop.emg3d_" title="gwexpy.interop.emg3d_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emg3d_</span></code></a></p></td>
 <td><p>Interoperate with emg3d electromagnetic modelling fields.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.meshio_.html#module-gwexpy.interop.meshio_" title="gwexpy.interop.meshio_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meshio_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.meshio_.html#module-gwexpy.interop.meshio_" title="gwexpy.interop.meshio_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meshio_</span></code></a></p></td>
 <td><p>Interoperate with meshio unstructured-mesh field data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.metpy_.html#module-gwexpy.interop.metpy_" title="gwexpy.interop.metpy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metpy_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.metpy_.html#module-gwexpy.interop.metpy_" title="gwexpy.interop.metpy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metpy_</span></code></a></p></td>
 <td><p>Interoperate with MetPy xarray data arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.wrf_.html#module-gwexpy.interop.wrf_" title="gwexpy.interop.wrf_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrf_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.wrf_.html#module-gwexpy.interop.wrf_" title="gwexpy.interop.wrf_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrf_</span></code></a></p></td>
 <td><p>Interoperability with <code class="docutils literal notranslate"><span class="pre">wrf.getvar()</span></code> output from wrf-python.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.harmonica_.html#module-gwexpy.interop.harmonica_" title="gwexpy.interop.harmonica_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">harmonica_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.harmonica_.html#module-gwexpy.interop.harmonica_" title="gwexpy.interop.harmonica_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">harmonica_</span></code></a></p></td>
 <td><p>Interoperate with Harmonica gravity and magnetic grids.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.exudyn_.html#module-gwexpy.interop.exudyn_" title="gwexpy.interop.exudyn_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exudyn_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.exudyn_.html#module-gwexpy.interop.exudyn_" title="gwexpy.interop.exudyn_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exudyn_</span></code></a></p></td>
 <td><p>Interoperate with Exudyn sensor output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.opensees_.html#module-gwexpy.interop.opensees_" title="gwexpy.interop.opensees_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">opensees_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.opensees_.html#module-gwexpy.interop.opensees_" title="gwexpy.interop.opensees_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">opensees_</span></code></a></p></td>
 <td><p>Interoperate with OpenSeesPy recorder output.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.obspy_.html#module-gwexpy.interop.obspy_" title="gwexpy.interop.obspy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">obspy_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.obspy_.html#module-gwexpy.interop.obspy_" title="gwexpy.interop.obspy_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">obspy_</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.lal_.html#module-gwexpy.interop.lal_" title="gwexpy.interop.lal_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lal_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.lal_.html#module-gwexpy.interop.lal_" title="gwexpy.interop.lal_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lal_</span></code></a></p></td>
 <td><p>Interoperate with LALSuite time and frequency series.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.gwinc_.html#module-gwexpy.interop.gwinc_" title="gwexpy.interop.gwinc_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinc_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.gwinc_.html#module-gwexpy.interop.gwinc_" title="gwexpy.interop.gwinc_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinc_</span></code></a></p></td>
 <td><p>Interoperate with pygwinc noise budgets.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.pycbc_.html#module-gwexpy.interop.pycbc_" title="gwexpy.interop.pycbc_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pycbc_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.pycbc_.html#module-gwexpy.interop.pycbc_" title="gwexpy.interop.pycbc_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pycbc_</span></code></a></p></td>
 <td><p>Interoperate with PyCBC time and frequency series.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.interop.root_.html#module-gwexpy.interop.root_" title="gwexpy.interop.root_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.interop.root_.html#module-gwexpy.interop.root_" title="gwexpy.interop.root_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
