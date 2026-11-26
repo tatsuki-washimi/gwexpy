@@ -1078,6 +1078,11 @@ def test_current_manifest_preserves_reviewed_compatibility_cases() -> None:
     added = new_cases.keys() - old_cases.keys()
     assert len(added) == 4
     assert all(new_cases[key]["state"] == "GWexpy-only" for key in added)
+    for oracle_version in SUPPORTED_GWPY:
+        old = historical["oracle_projections"][oracle_version]
+        new = current["oracle_projections"][oracle_version]
+        new_members = {item["member_id"]: item for item in new["members"]}
+        assert all(new_members.get(item["member_id"]) == item for item in old["members"])
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
