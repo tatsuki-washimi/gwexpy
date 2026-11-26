@@ -13,6 +13,223 @@ import gwexpy.timeseries as gwex_ts
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
+def test_missing_timestral_reports_install_command(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    monkeypatch.setitem(sys.modules, "timestral", None)
+    with pytest.raises(ImportError, match="github.com/mistralai/timestral"):
+        forecast._load_timestral_model()
+
+
+def test_joint_axis_compares_original_epoch():
+    from gwexpy.timeseries._forecast import _same_forecast_axis
+
+    legacy = TimeSeries([1.0, 2.0], t0=1.0, dt=1.0)
+    exact = TimeSeries([1.0, 2.0], t0_ns=1_000_000_000, dt=1.0)
+    assert _same_forecast_axis(legacy, exact)
+    first = TimeSeries([1.0, 2.0], x0=0.0, dt=1.0)
+    shifted = TimeSeries([1.0, 2.0], x0=1e-17, dt=1.0)
+    assert not _same_forecast_axis(first, shifted)
+
+
+def test_prescale_large_finite_constant():
+    from gwexpy.timeseries._forecast import _prescale_series_float64
+
+    scaled, center, scale = _prescale_series_float64(np.array([1e308, 1e308]))
+    np.testing.assert_array_equal(scaled, [0.0, 0.0])
+    assert center == 1e308
+    assert scale == 1e308
+
+
+def test_prescale_extreme_range():
+    from gwexpy.timeseries._forecast import (
+        _prescale_series_float64,
+        _restore_scaled_forecast,
+    )
+
+    scaled, center, scale = _prescale_series_float64(
+        np.array([-1.7e308, 1.7e308, 1.7e308])
+    )
+    assert np.all(np.isfinite(scaled))
+    assert np.isfinite(center) and np.isfinite(scale)
+    np.testing.assert_allclose(scaled, [-np.sqrt(2), 1 / np.sqrt(2), 1 / np.sqrt(2)])
+    np.testing.assert_allclose(
+        _restore_scaled_forecast(scaled, center, scale) / 1.7e308, [-1.0, 1.0, 1.0]
+    )
+
+
+@pytest.mark.parametrize("backend", ["chronos-bolt", "timestral"])
+def test_additional_backend_forecast_contract(monkeypatch, backend):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Bolt:
+        quantiles = [0.1, 0.5, 0.9]
+
+        def predict_quantiles(self, inputs, *, prediction_length, quantile_levels):
+            assert len(inputs) == 1
+            return np.ones((1, prediction_length, len(quantile_levels))), np.ones(
+                (1, prediction_length)
+            )
+
+    class Timestral:
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            assert inputs.shape == (1, 1, 3)
+            assert clip_nonnegative is False
+            return types.SimpleNamespace(
+                quantiles=np.ones((1, 1, prediction_length, 3)),
+                quantile_levels=(0.1, 0.5, 0.9),
+            )
+
+    monkeypatch.setattr(forecast, "_load_bolt_pipeline", lambda: Bolt())
+    monkeypatch.setattr(forecast, "_load_timestral_model", lambda: Timestral())
+    monkeypatch.setitem(
+        sys.modules,
+        "torch",
+        types.SimpleNamespace(
+            as_tensor=lambda values, dtype: np.asarray(values, dtype=dtype),
+            float32=np.float32,
+        ),
+    )
+    source = TimeSeries([1.0, 2.0, 3.0], dt=1.0, unit="V")
+    result = source.forecast(backend=backend, horizon=2.0)
+    assert len(result) == 2
+    assert result.unit == u.V
+    assert result.center_kind == "median"
+    assert list(result.quantiles) == [0.1, 0.5, 0.9]
+
+
+@pytest.mark.parametrize("backend", ["chronos-bolt", "timestral"])
+def test_additional_backend_scales_only_visible_context(monkeypatch, backend):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Model:
+        model_context_length = 3
+        max_context = 3
+        quantiles = [0.1, 0.5, 0.9]
+
+        def predict_quantiles(self, inputs, *, prediction_length, quantile_levels):
+            np.testing.assert_allclose(inputs[0], [-1.2247449, 0, 1.2247449])
+            return np.zeros((1, prediction_length, 3)), np.zeros((1, prediction_length))
+
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            np.testing.assert_allclose(inputs[0, 0], [-1.2247449, 0, 1.2247449])
+            return types.SimpleNamespace(
+                quantiles=np.zeros((1, 1, prediction_length, 3)),
+                quantile_levels=(0.1, 0.5, 0.9),
+            )
+
+    monkeypatch.setitem(
+        sys.modules,
+        "torch",
+        types.SimpleNamespace(
+            as_tensor=lambda values, dtype: np.asarray(values, dtype=dtype),
+            float32=np.float32,
+        ),
+    )
+    result = forecast._run_additional_backend(
+        Model(), backend, np.array([1e30, 1.0, 2.0, 3.0]), 1, (0.1, 0.5, 0.9)
+    )
+    np.testing.assert_allclose(result, 2.0)
+
+
+@pytest.mark.parametrize("backend", ["chronos-bolt", "timestral"])
+@pytest.mark.parametrize("scale", [1e-46, 1e40])
+def test_additional_backend_inverse_scaling_float32(monkeypatch, backend, scale):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Model:
+        quantiles = [0.1, 0.5, 0.9]
+
+        def predict_quantiles(self, inputs, **kwargs):
+            return np.ones((1, 1, 3), dtype=np.float32), np.ones(
+                (1, 1), dtype=np.float32
+            )
+
+        def forecast(self, inputs, **kwargs):
+            return types.SimpleNamespace(
+                quantiles=np.ones((1, 1, 1, 3), dtype=np.float32),
+                quantile_levels=(0.1, 0.5, 0.9),
+            )
+
+    monkeypatch.setitem(
+        sys.modules,
+        "torch",
+        types.SimpleNamespace(
+            as_tensor=lambda values, dtype: np.asarray(values, dtype=dtype),
+            float32=np.float32,
+        ),
+    )
+    result = forecast._run_additional_backend(
+        Model(), backend, np.array([-scale, scale]), 1, (0.1, 0.5, 0.9)
+    )
+    assert result.dtype == np.float64
+    np.testing.assert_allclose(result / scale, 1.0)
+
+
+@pytest.mark.parametrize(
+    ("values", "expected"), [([0.1, 2.0], 0.0), ([-2.0, -2.0], -6.0)]
+)
+def test_timestral_clips_in_original_coordinates(values, expected):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Model:
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            assert not clip_nonnegative
+            return types.SimpleNamespace(
+                quantiles=np.full((1, 1, 1, 1), -2.0), quantile_levels=(0.5,)
+            )
+
+    result = forecast._run_additional_backend(
+        Model(), "timestral", np.array(values), 1, (0.5,)
+    )
+    np.testing.assert_allclose(result, expected)
+
+
+def test_timestral_clipping_uses_full_input_when_context_is_truncated():
+    import gwexpy.timeseries._forecast as forecast
+
+    class Model:
+        max_context = 2
+
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            assert clip_nonnegative is False
+            return types.SimpleNamespace(
+                quantiles=np.full((1, 1, 1, 1), -2.0), quantile_levels=(0.5,)
+            )
+
+    result = forecast._run_additional_backend(
+        Model(), "timestral", np.array([-1.0, 0.1, 2.0]), 1, (0.5,)
+    )
+    assert result[0, 0] < 0
+
+
+@pytest.mark.parametrize("magnitude", [1e-46, 1e40])
+def test_joint_forecast_scales_targets_and_covariates(monkeypatch, magnitude):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Model:
+        model_context_length = 2
+
+        def predict_quantiles(self, inputs, **kwargs):
+            np.testing.assert_array_equal(inputs[0]["target"], [[-1.0, 1.0]])
+            np.testing.assert_array_equal(
+                inputs[0]["past_covariates"]["b"], [-1.0, 1.0]
+            )
+            return [np.ones((1, 1, 3), dtype=np.float32)], [
+                np.ones((1, 1), dtype=np.float32)
+            ]
+
+    monkeypatch.setattr(forecast, "_load_chronos_pipeline", lambda: Model())
+    collection = TimeSeriesDict(
+        {
+            "a": TimeSeries([1e50, -magnitude, magnitude], dt=1),
+            "b": TimeSeries([1e50, -2 * magnitude, 2 * magnitude], dt=1),
+        }
+    )
+    result = collection.forecast(horizon=1.0, targets=["a"])
+    np.testing.assert_allclose(result["a"].value / magnitude, [1.0])
+
+
 class MockChronosPipeline:
     calls: list[dict[str, object]] = []
     loads: list[dict[str, object]] = []
@@ -207,10 +424,20 @@ def test_dict_forecast_single_batch_for_equal_dt(
     assert len(result["b"]) == 3
 
 
-def test_dict_forecast_targets_not_supported_and_no_mode_arg(
+def test_dict_forecast_joint_targets(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    install_mock_chronos(monkeypatch)
+    import gwexpy.timeseries._forecast as forecast
+
+    class JointPipeline:
+        def predict_quantiles(
+            self, inputs, *, prediction_length, quantile_levels, cross_learning
+        ):
+            np.testing.assert_array_equal(inputs[0]["target"], [[-1, 1]])
+            np.testing.assert_array_equal(inputs[0]["past_covariates"]["b"], [-1, 1])
+            return [np.arange(6).reshape(1, 2, 3)], [np.zeros((1, 2))]
+
+    monkeypatch.setattr(forecast, "_load_chronos_pipeline", lambda: JointPipeline())
     sig = inspect.signature(TimeSeriesDict.forecast)
     assert "mode" not in sig.parameters
     assert "targets" in sig.parameters
@@ -218,10 +445,52 @@ def test_dict_forecast_targets_not_supported_and_no_mode_arg(
     collection = TimeSeriesDict(
         {"a": TimeSeries([1.0, 2.0], dt=1.0), "b": TimeSeries([3.0, 4.0], dt=1.0)}
     )
-    with pytest.raises(NotImplementedError, match="targets"):
+    result = collection.forecast(horizon=2.0, targets=["a"])
+    assert list(result) == ["a"]
+    np.testing.assert_array_equal(result["a"].value, [2, 3.5])
+    with pytest.raises(ValueError, match="unique"):
+        collection.forecast(horizon=2.0, targets=["a", "a"])
+    with pytest.raises(ValueError, match="absent"):
+        collection.forecast(horizon=2.0, targets=["missing"])
+    collection["b"] = TimeSeries([3.0, 4.0], dt=2.0)
+    with pytest.raises(ValueError, match="identical time axes"):
+        collection.forecast(horizon=2.0, targets=["a"])
+    from gwexpy.time._reference import set_time_reference
+
+    collection["b"] = TimeSeries([3.0, 4.0], dt=1.0)
+    set_time_reference(collection["b"], "relative")
+    with pytest.raises(ValueError, match="mixed time_reference"):
         collection.forecast(horizon=2.0, targets=["a"])
 
-    assert MockChronosPipeline.loads == []
+
+def test_joint_mimo_preserves_target_order(monkeypatch: pytest.MonkeyPatch) -> None:
+    import gwexpy.timeseries._forecast as forecast
+
+    class Pipeline:
+        def predict_quantiles(self, inputs, **kwargs):
+            np.testing.assert_array_equal(inputs[0]["target"], [[-1, 1], [-1, 1]])
+            assert inputs[0]["past_covariates"] == {}
+            return [np.arange(12).reshape(2, 2, 3)], [np.zeros((2, 2))]
+
+    monkeypatch.setattr(forecast, "_load_chronos_pipeline", lambda: Pipeline())
+    collection = TimeSeriesDict(
+        {
+            "a": TimeSeries([1.0, 2.0], dt=1.0, unit="V"),
+            "b": TimeSeries([3.0, 4.0], dt=1.0, unit="m"),
+        }
+    )
+    result = collection.forecast(horizon=2.0, targets=["b", "a"])
+    assert list(result) == ["b", "a"]
+    np.testing.assert_array_equal(result["b"].value, [4, 5.5])
+    np.testing.assert_array_equal(result["a"].value, [5, 6.5])
+    assert result["a"].unit == u.V
+    assert result["b"].unit == u.m
+    assert result["a"].center_kind == "median"
+    assert result["a"].uncertainty_kind == "predictive"
+    assert result["a"].interval_levels == (0.1, 0.9)
+    assert result["a"].estimate_mean is None
+    np.testing.assert_array_equal(result["a"].quantiles[0.1].value, [4.5, 6])
+    np.testing.assert_array_equal(result["a"].quantiles[0.9].value, [5.5, 7])
 
 
 def test_dict_series_changes_do_not_cross_channels(
@@ -739,3 +1008,124 @@ def test_unsupported_forecast_backend_raises_value_error() -> None:
     collection = TimeSeriesDict({"a": series})
     with pytest.raises(ValueError, match="Unsupported forecast backend"):
         collection.forecast(backend="unknown", horizon=1.0)
+
+
+def test_joint_forecast_percentiles_roundtrip_hdf5(monkeypatch, tmp_path):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Pipeline:
+        def predict_quantiles(self, inputs, *, quantile_levels, **kwargs):
+            assert quantile_levels == [0.1, 0.5, 0.9]
+            assert set(inputs[0]["past_covariates"]) == {"aux"}
+            return [np.arange(6, dtype=float).reshape(1, 2, 3)], [np.zeros((1, 2))]
+
+    monkeypatch.setattr(forecast, "_load_chronos_pipeline", lambda: Pipeline())
+    collection = TimeSeriesDict(
+        {
+            "DARM": TimeSeries([1.0, 2.0], t0=100, dt=1.0, unit="V", name="DARM"),
+            "aux": TimeSeries([3.0, 4.0], t0=100, dt=1.0, unit="m", name="aux"),
+        }
+    )
+    result = collection.forecast(
+        horizon=2.0, targets=["DARM"], percentiles=[10, 50, 90]
+    )
+    assert list(result) == ["DARM"]
+    assert result["DARM"].t0 == 102 * u.s
+    np.testing.assert_allclose(
+        result["DARM"].percentiles[90].value, result["DARM"].quantiles[0.9].value
+    )
+
+    path = tmp_path / "joint-forecast.h5"
+    result.write(path, format="hdf5")
+    restored = TimeSeriesDict.read(path, format="hdf5", names=["DARM"])
+    np.testing.assert_allclose(restored["DARM"].value, result["DARM"].value)
+    np.testing.assert_allclose(
+        restored["DARM"].percentiles[10].value, result["DARM"].percentiles[10].value
+    )
+    assert restored["DARM"].center_kind == "median"
+    assert restored["DARM"].uncertainty_kind == "predictive"
+
+
+def _timestral_model(levels, values=None):
+    class Timestral:
+        def forecast(self, inputs, *, prediction_length, clip_nonnegative):
+            data = np.zeros((1, 1, prediction_length, len(levels)))
+            if values is not None:
+                data[...] = values
+            return types.SimpleNamespace(quantiles=data, quantile_levels=levels)
+
+    return Timestral()
+
+
+def test_timestral_matches_levels_within_tolerance(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    levels = (0.1, 0.15000000000000002, 0.5, 0.85, 0.9)
+    monkeypatch.setattr(
+        forecast, "_load_timestral_model", lambda: _timestral_model(levels)
+    )
+    result = TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+        backend="timestral", horizon=1.0, quantiles=(0.15, 0.5, 0.85)
+    )
+    assert list(result.quantiles) == [0.15, 0.5, 0.85]
+    with pytest.raises(ValueError, match="0.3 is not supported by Timestral"):
+        TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+            backend="timestral", horizon=1.0, quantiles=(0.3, 0.5)
+        )
+
+
+def test_additional_backend_rejects_non_finite_output(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    monkeypatch.setattr(
+        forecast,
+        "_load_timestral_model",
+        lambda: _timestral_model((0.1, 0.5, 0.9), values=np.nan),
+    )
+    with pytest.raises(ValueError, match="non-finite forecast"):
+        TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(backend="timestral", horizon=1.0)
+
+
+def test_joint_forecast_names_mismatched_member_and_bad_targets():
+    collection = TimeSeriesDict(
+        {
+            "a": TimeSeries([1.0, 2.0], dt=1.0),
+            "b": TimeSeries([1.0, 2.0, 3.0], dt=1.0),
+        }
+    )
+    with pytest.raises(ValueError, match="'b' differs from 'a'"):
+        collection.forecast(horizon=1.0, targets=["a"])
+    with pytest.raises(ValueError, match="absent from the collection"):
+        collection.forecast(horizon=1.0, targets=["missing"])
+    with pytest.raises(ValueError, match="hashable"):
+        collection.forecast(horizon=1.0, targets=[["a"]])
+
+
+def test_chronos_bolt_accepts_percentiles(monkeypatch):
+    import gwexpy.timeseries._forecast as forecast
+
+    class Bolt:
+        quantiles = [0.1, 0.5, 0.9]
+
+        def predict_quantiles(self, inputs, *, prediction_length, quantile_levels):
+            assert quantile_levels == [0.1, 0.5, 0.9]
+            return np.zeros((1, prediction_length, 3)), np.zeros((1, prediction_length))
+
+    monkeypatch.setattr(forecast, "_load_bolt_pipeline", lambda: Bolt())
+    monkeypatch.setitem(
+        sys.modules,
+        "torch",
+        types.SimpleNamespace(
+            as_tensor=lambda values, dtype: np.asarray(values, dtype=dtype),
+            float32=np.float32,
+        ),
+    )
+    result = TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+        backend="chronos-bolt", horizon=1.0, percentiles=[10, 50, 90]
+    )
+    assert list(result.quantiles) == [0.1, 0.5, 0.9]
+    assert result.percentiles[90] is result.quantiles[0.9]
+    with pytest.raises(ValueError, match="outside Chronos-Bolt"):
+        TimeSeries([1.0, 2.0, 4.0], dt=1.0).forecast(
+            backend="chronos-bolt", horizon=1.0, percentiles=[5, 50, 95]
+        )

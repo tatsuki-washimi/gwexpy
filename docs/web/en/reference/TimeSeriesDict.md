@@ -59,7 +59,7 @@ Dictionary of TimeSeries objects.
 
 ### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-Forecast each member as an independent univariate task batch (`targets=None`) using an optional pretrained backend (`backend="chronos"` via `pip install "gwexpy[chronos]"` or `backend="timesfm"` via `pip install "gwexpy[timesfm]"`). `horizon` is a time span in seconds (or an Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). Returns a `TimeSeriesDict` preserving input keys where each member is an uncertainty-bearing `TimeSeries` (median values with `.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`). Non-`None` `targets` is reserved for future joint MISO/MIMO forecasting and currently raises `NotImplementedError`.
+With `targets=None`, forecast each member independently. For `backend="chronos"`, `targets` selects the series to forecast jointly; remaining series are past covariates, and all inputs must have identical time axes and time references. Other backends reject `targets`. `horizon` is a time span in seconds (or an Astropy time `Quantity`, with `N_pred = floor(horizon / dt)`). The returned `TimeSeriesDict` contains uncertainty-bearing median forecasts in target order. Install Chronos and Chronos-Bolt with `pip install "gwexpy[chronos]"`, or TimesFM with `pip install "gwexpy[timesfm]"`. Timestral requires its separately installed upstream package.
 
 ### `EntryClass`
 

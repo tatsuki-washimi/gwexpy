@@ -59,7 +59,7 @@ TimeSeries オブジェクトの辞書。
 
 ### `forecast(backend="chronos", horizon=..., quantiles=..., targets=None)`
 
-各キーの系列を独立した 1 次元予測タスクとして batch 処理します（`targets=None`）。optional な学習済みバックエンド（`backend="chronos"`: `pip install "gwexpy[chronos]"`、`backend="timesfm"`: `pip install "gwexpy[timesfm]"`）を使用し、`horizon` は時間長（秒または Astropy 時間 `Quantity`、`N_pred = floor(horizon / dt)`）で指定します。入力キーを保った `TimeSeriesDict` を直接返し、各要素は不確かさ属性（`.lower`, `.upper`, `.quantiles`, `.center_kind == "median"`, `.uncertainty_kind == "predictive"`, `.estimate_mean is None`）を持つ `TimeSeries` です。`targets` 指定による共同 MISO/MIMO 予測は将来拡張向けで、現在は `NotImplementedError` を送出します。
+`targets=None` では各系列を独立に予測します。`backend="chronos"` では `targets` で共同予測する系列を指定でき、残りの系列は過去共変量として使われます。全入力の時間軸と時間参照は一致する必要があります。他のバックエンドは `targets` を受け付けません。`horizon` は秒または Astropy 時間 `Quantity` で指定し、予測点数は `floor(horizon / dt)` です。結果は指定順のキーと不確かさ付き中央値を持つ `TimeSeriesDict` です。Chronos と Chronos-Bolt は `pip install "gwexpy[chronos]"`、TimesFM は `pip install "gwexpy[timesfm]"` で導入します。Timestral は上流パッケージの別途インストールが必要です。
 
 ### `EntryClass`
 

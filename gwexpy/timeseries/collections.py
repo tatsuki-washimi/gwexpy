@@ -496,11 +496,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         percentiles: tuple[float, ...] | list[float] | None = None,
         targets: Sequence[str] | None = None,
     ) -> TimeSeriesDict:
-        """Forecast each member as an independent univariate task batch.
+        """Forecast independently or jointly with the Chronos-2 backend.
 
         Parameters
         ----------
-        backend : {"chronos", "timesfm"}, default="chronos"
+        backend : {"chronos", "timesfm", "chronos-bolt", "timestral"}, default="chronos"
             Pretrained forecasting backend name.
         horizon : float, int, or Quantity
             Forecast time span from each series' last observed sample in
@@ -515,15 +515,16 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             Percentile levels corresponding to quantiles multiplied by 100.
             Cannot be supplied together with ``quantiles``.
         targets : sequence of str, optional
-            Reserved for joint MISO/MIMO forecasting. Passing ``targets=None``
-            (default) runs independent SISO batch forecasting; non-``None``
-            raises ``NotImplementedError`` on backends lacking joint support.
+            With ``None`` (default), forecast each member independently. For
+            Chronos-2, specify unique keys to forecast jointly, using remaining
+            members as past-only covariates. All members must have identical
+            time axes. Other backends reject joint forecasting.
 
         Returns
         -------
         TimeSeriesDict
-            Dictionary mapping each input key to its uncertainty-bearing
-            forecast ``TimeSeries``.
+            Dictionary mapping the selected keys (or all keys for independent
+            forecasting) to uncertainty-bearing forecast ``TimeSeries``.
 
         """
         from ._forecast import (
