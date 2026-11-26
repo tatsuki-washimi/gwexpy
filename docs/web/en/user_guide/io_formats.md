@@ -294,6 +294,7 @@ events = EventTable.read("events.root")
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
 - **Zarr** direct I/O now expects per-array timing metadata explicitly. `sample_rate` is the primary key, `dt` is accepted as a fallback, and reads raise `ValueError` if neither is present unless you intentionally recover a legacy store with `sample_rate_override=...` or `dt_override=...`.
+- Zarr and direct HDF5 collection reads accept `gap="raise"`, `"ignore"`, or `"pad"` and `pad=` for a requested `start`/`end` window. The same fill value is applied to retained uncertainty series when a collection is padded; it is a fill value, not a new uncertainty estimate.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O, which requires `uproot`.
 
 <a id="io-formats-en-d"></a>

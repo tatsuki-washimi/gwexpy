@@ -743,6 +743,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import _reject_timezone_reinterpretation, apply_unit
+            from gwexpy.timeseries.io.zarr_ import _apply_dict_gap_pad
 
             if fmt == "txt":
                 _reject_timezone_reinterpretation(
@@ -764,9 +765,14 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             # The per-file reader above is called without the bounds, so this
             # branch used to return every sample in the directory for a windowed
             # request (issue #611).
-            return apply_time_selection(out, kwargs.get("start"), kwargs.get("end"))
+            start, end = kwargs.get("start"), kwargs.get("end")
+            out = apply_time_selection(out, start, end)
+            return _apply_dict_gap_pad(
+                out, start=start, end=end, gap=kwargs.get("gap"), pad=kwargs.get("pad")
+            )
         if fmt in ("hdf5", "h5", "hdf"):
             from gwexpy.io.utils import _reject_timezone_reinterpretation
+            from gwexpy.timeseries.io.zarr_ import _apply_dict_gap_pad
 
             _reject_timezone_reinterpretation(
                 "hdf5", kwargs.pop("timezone", None), None
@@ -828,6 +834,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         out[orig_key] = ts
                     skipped.report()
                     out = apply_time_selection(out, start, end)
+                    out = _apply_dict_gap_pad(
+                        out,
+                        start=start,
+                        end=end,
+                        gap=kwargs.get("gap"),
+                        pad=kwargs.get("pad"),
+                    )
                     return _restore_manifest_uncertainty(
                         h5f, out, keymap, args[0] if args else kwargs.get("names")
                     )
@@ -850,6 +863,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         out[orig_key] = ts
                     skipped.report()
                     out = apply_time_selection(out, start, end)
+                    out = _apply_dict_gap_pad(
+                        out,
+                        start=start,
+                        end=end,
+                        gap=kwargs.get("gap"),
+                        pad=kwargs.get("pad"),
+                    )
                     return _restore_manifest_uncertainty(
                         h5f, out, keymap, args[0] if args else kwargs.get("names")
                     )

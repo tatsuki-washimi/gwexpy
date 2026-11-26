@@ -287,6 +287,7 @@ events = EventTable.read("events.root")
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。
 - **Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。
+- Zarr と直接 HDF5 コレクションの読み込みでは、`start` / `end` で指定した区間に対して `gap="raise"`、`"ignore"`、`"pad"` と `pad=` を指定できます。保持される不確かさ系列にも同じ補完値を使います。この値は新たな不確かさの推定値ではありません。
 - **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは `uproot` を必要とする EventTable の直 I/O のみ扱います。
 
 <a id="io-formats-ja-d"></a>
