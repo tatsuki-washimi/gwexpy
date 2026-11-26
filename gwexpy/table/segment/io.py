@@ -812,7 +812,7 @@ class _IOMixin:
         *,
         lazy: bool = True,
         path: str = "/",
-        allow_pickle: bool = True,
+        allow_pickle: bool = False,
     ) -> SegmentTable:
         if isinstance(source, h5py.Group):
             root = source if path == "/" else cast(h5py.Group, source[path])
