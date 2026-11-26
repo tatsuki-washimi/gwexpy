@@ -61,6 +61,17 @@ def test_response_selects_complex_upper_sideband_row():
         from_differometor_response(
             FrequencySeries, [1, 2], signal, {}, output="port", unit="m"
         )
+    matrix = FrequencySeries.from_differometor_response(
+        [1, 2], signal, {"first": 0, "second": 1}, outputs=["first", "second"], unit="m"
+    )
+    np.testing.assert_array_equal(matrix.value[:, 0, :], signal)
+    np.testing.assert_array_equal(matrix.frequencies.value, [1, 2])
+    assert all(unit == u.m for unit in matrix.units.flat)
+    np.testing.assert_array_equal(matrix.names[:, 0], ["first", "second"])
+    with pytest.raises(NotImplementedError):
+        FrequencySeries.from_differometor_response(
+            [1, 2], signal, {"first": 0}, output="first", inputs=["drive"], unit="m"
+        )
 
 
 def test_real_differometor_noise_when_fixture_supplied():

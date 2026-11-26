@@ -39,8 +39,8 @@ budget = FrequencySeriesDict.from_differometor_noise_budget(
 
 The budget components must be supplied by the caller; the converter does not
 decompose Differometor's combined noise. `from_differometor_response` selects
-one named upper-sideband field row, without deriving a calibrated transfer
-function or inferring an input channel. Establish the normalization and unit
+one or more named upper-sideband field rows, without deriving a calibrated
+transfer function or inferring an input channel. Establish the normalization and unit
 from the model before interpreting the result physically.
 
 Follow the [interoperability tutorial](interop/intro_interop.ipynb) for worked

@@ -1237,14 +1237,23 @@ class FrequencySeries(
         signal: Any,
         port_index_map: Any,
         *,
-        output: str,
+        output: str | None = None,
+        outputs: Any = None,
+        inputs: Any = None,
         unit: Any,
-    ) -> FrequencySeries:
-        """Convert a named upper-sideband field, without inferring a transfer function."""
+    ) -> Any:
+        """Convert upper-sideband fields without inferring a transfer function."""
         from gwexpy.interop import from_differometor_response
 
         return from_differometor_response(
-            cls, frequencies, signal, port_index_map, output=output, unit=unit
+            cls,
+            frequencies,
+            signal,
+            port_index_map,
+            output=output,
+            outputs=outputs,
+            inputs=inputs,
+            unit=unit,
         )
 
     # --- Finesse 3 Interop ---
