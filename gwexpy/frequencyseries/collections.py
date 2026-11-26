@@ -275,22 +275,22 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             fmt is None and _looks_like_dttxml(source)
         ):
             return read_frequencyseriesdict_dttxml(source, *args, **kwargs)
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.read(cls, source, *args, **kwargs)
+        return io_registry.read(cls, source, *args, **kwargs)
 
     def __reduce_ex__(self, protocol: SupportsIndex):
         return (dict, (dict(self),))
 
     def write(self, target, *args, **kwargs):
-        """Write the mapping through the Astropy I/O registry."""
+        """Write the mapping through the GWpy I/O registry."""
         from gwexpy._bootstrap import register_all
 
         register_all()
 
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.write(self, target, *args, **kwargs)
+        return io_registry.write(self, target, *args, **kwargs)
 
 
 @as_series_dict_class(FrequencySeries)
@@ -740,9 +740,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
                     order=order,
                 )
             return target
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.write(self, target, *args, **kwargs)
+        return io_registry.write(self, target, *args, **kwargs)
 
 
 class FrequencySeriesBaseList(PlotMixin, list[_FS]):
@@ -897,22 +897,22 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                         out_items.append(fs)
                     skipped.report()
                     return cls(out_items)
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.read(cls, source, *args, **kwargs)
+        return io_registry.read(cls, source, *args, **kwargs)
 
     def __reduce_ex__(self, protocol: SupportsIndex):
         return (list, (list(self),))
 
     def write(self, target, *args, **kwargs):
-        """Write the list through the Astropy I/O registry."""
+        """Write the list through the GWpy I/O registry."""
         from gwexpy._bootstrap import register_all
 
         register_all()
 
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.write(self, target, *args, **kwargs)
+        return io_registry.write(self, target, *args, **kwargs)
 
 
 class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
@@ -1166,6 +1166,6 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
                     order=order,
                 )
             return target
-        from astropy.io import registry
+        from gwpy.io.registry import default_registry as io_registry
 
-        return registry.write(self, target, *args, **kwargs)
+        return io_registry.write(self, target, *args, **kwargs)
