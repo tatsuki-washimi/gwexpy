@@ -239,7 +239,10 @@ class TestPicklePolicyAndRegistry:
         assert p.read_bytes() == b"sentinel"
 
         st.write(p, allow_pickle=True)
-        reloaded = SegmentTable.read(p)
+        with pytest.raises(ValueError, match="allow_pickle=False"):
+            SegmentTable.read(p)
+
+        reloaded = SegmentTable.read(p, allow_pickle=True)
         assert reloaded.row(0)["obj"] == {"k": [1, 2, 3]}
         assert reloaded.provenance["used_pickle"] is True
 
@@ -268,6 +271,16 @@ class TestPicklePolicyAndRegistry:
 
 
 class TestU4SchemaVersioningPolicy:
+    @pytest.mark.parametrize("version", [0, -1, 1.5, "1", True])
+    def test_rejects_invalid_schema_version(self, tmp_path, version):
+        path = tmp_path / "invalid_version.h5"
+        SegmentTable.from_segments([Segment(0, 1)]).write(path)
+        with h5py.File(path, "r+") as handle:
+            del handle.attrs["gwexpy_schema_version"]
+            handle.attrs["gwexpy_schema_version"] = version
+        with pytest.raises(ValueError, match="gwexpy_schema_version"):
+            SegmentTable.read(path)
+
     def test_rejects_newer_schema_version_with_details(self, tmp_path):
         st = SegmentTable.from_segments([Segment(0, 1)], snr=[1.0])
         p = tmp_path / "future.h5"

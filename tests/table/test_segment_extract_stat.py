@@ -60,7 +60,8 @@ def test_custom_callable_receives_payload_and_can_choose_output_name() -> None:
 
 
 @pytest.mark.parametrize("parallel", [False, True, 1, 2])
-def test_parallel_policy_keeps_row_order(parallel: bool | int) -> None:
+def test_parallel_policy_keeps_row_order(parallel: bool | int, monkeypatch) -> None:
+    monkeypatch.setattr("gwexpy.table.segment.stats.os.cpu_count", lambda: 2)
     table = _series_table()
     result = table.extract_stat("max", "signal", parallel=parallel)
     assert [result.row(i)["signal_max"] for i in range(2)] == [4.0, 8.0]

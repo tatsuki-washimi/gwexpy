@@ -11,7 +11,7 @@ def test_frame_defers_operations_and_keeps_source_unchanged():
     calls = []
     table = SegmentTable.from_segments([Segment(0, 1), Segment(1, 2)], snr=[1, 4])
     table.add_series_column(
-        "raw", loader=lambda i: lambda: calls.append(i) or TimeSeries([i])
+        "raw", loader=lambda segment: calls.append(segment) or TimeSeries([1])
     )
     frame = (
         table.frame().filter(col("snr") > 2, name="loud").define(double=col("snr") * 2)

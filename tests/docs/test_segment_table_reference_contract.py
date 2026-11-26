@@ -75,6 +75,13 @@ def test_public_api_and_standalone_container_contract() -> None:
         "from_table",
         "read_csv",
         "read",
+        "write",
+        "extract_stat",
+        "crop",
+        "asd",
+        "bandpass",
+        "resample",
+        "groupby",
         "plot",
         "scatter",
         "hist",
@@ -85,7 +92,6 @@ def test_public_api_and_standalone_container_contract() -> None:
     for method in methods:
         assert callable(getattr(SegmentTable, method, None))
 
-    assert not hasattr(SegmentTable, "write")
     assert not issubclass(SegmentTable, pd.DataFrame)
 
     from gwpy.table import Table
@@ -95,13 +101,30 @@ def test_public_api_and_standalone_container_contract() -> None:
     assert not hasattr(SegmentTable, "bar")
 
 
-def test_read_is_the_same_descriptor_as_read_csv() -> None:
-    assert inspect.getattr_static(SegmentTable, "read") is inspect.getattr_static(
+def test_read_is_format_dispatching_factory_and_roundtrips(tmp_path: Path) -> None:
+    assert inspect.getattr_static(SegmentTable, "read") is not inspect.getattr_static(
         SegmentTable, "read_csv"
     )
-    assert inspect.signature(SegmentTable.read) == inspect.signature(
-        SegmentTable.read_csv
-    )
+    read_sig = inspect.signature(SegmentTable.read)
+    assert list(read_sig.parameters)[:2] == ["source", "format"]
+
+    table = SegmentTable.from_segments([Segment(0, 1), Segment(2, 3)], snr=[4.0, 9.0])
+    h5_path = tmp_path / "roundtrip.h5"
+    table.write(h5_path)
+    loaded_h5 = SegmentTable.read(h5_path)
+    assert [loaded_h5.row(i)["span"] for i in range(2)] == [
+        Segment(0, 1),
+        Segment(2, 3),
+    ]
+    assert loaded_h5["snr"].to_list() == [4.0, 9.0]
+
+    csv_path = tmp_path / "roundtrip.csv"
+    table.write(csv_path)
+    loaded_csv = SegmentTable.read(csv_path)
+    assert [loaded_csv.row(i)["span"] for i in range(2)] == [
+        Segment(0.0, 1.0),
+        Segment(2.0, 3.0),
+    ]
 
 
 def test_reference_signatures_match_inspect_and_keep_kwargs() -> None:
@@ -111,6 +134,13 @@ def test_reference_signatures_match_inspect_and_keep_kwargs() -> None:
         "from_table",
         "read_csv",
         "read",
+        "write",
+        "extract_stat",
+        "crop",
+        "asd",
+        "bandpass",
+        "resample",
+        "groupby",
         "plot",
         "scatter",
         "hist",
@@ -128,6 +158,7 @@ def test_reference_signatures_match_inspect_and_keep_kwargs() -> None:
         "from_segments",
         "read_csv",
         "read",
+        "write",
         "plot",
         "scatter",
         "hist",
@@ -228,21 +259,22 @@ def test_constructors_require_segment_objects_as_documented() -> None:
     ]
 
 
-def test_reference_rejects_old_inheritance_and_write_claims() -> None:
+def test_reference_rejects_old_inheritance_and_stale_claims() -> None:
     documents = _read_docs()
     old_claims = (
         "**Inherits from:**",
         "**継承元:**",
         "extends the standard GWpy/Astropy Table",
         "GWpy / Astropy Table の機能を拡張",
-        "### `write`",
+        "has no `write` method",
+        "`write` メソッドはありません",
+        "an alias for `read_csv`",
+        "`read_csv` の別名です",
         "SegmentTable.step",
         "SegmentTable.bar",
     )
     for document in documents.values():
         assert {claim for claim in old_claims if claim in document} == set()
-    assert "has no `write` method" in documents["en"]
-    assert "`write` メソッドはありません" in documents["ja"]
 
 
 def test_english_and_japanese_cover_the_same_semantic_contract() -> None:
@@ -257,11 +289,14 @@ def test_english_and_japanese_cover_the_same_semantic_contract() -> None:
             "or a `gwpy.table.Table` subclass",
             "`gwpy.table.Table` のサブクラスでもありません",
         ),
-        "alias": (
-            "an alias for `read_csv`",
-            "`read_csv` の別名です",
+        "read_dispatch": (
+            "format-dispatching reader",
+            "フォーマットを自動判定するファクトリメソッド",
         ),
-        "no_write": ("has no `write` method", "`write` メソッドはありません"),
+        "write_hdf5": (
+            "`write` persists the table to HDF5",
+            "`write` は HDF5",
+        ),
         "span": ("[start ... end)", "[start ... end)"),
     }
     normalized = {

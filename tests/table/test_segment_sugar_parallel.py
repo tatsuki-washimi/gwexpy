@@ -27,6 +27,31 @@ def _table() -> SegmentTable:
     return table
 
 
+@pytest.mark.parametrize("parallel", [False, 2])
+def test_sugar_matches_direct_gwpy_results(parallel) -> None:
+    series = TimeSeries(np.arange(128, dtype=float), sample_rate=16, t0=100, unit="V")
+    table = SegmentTable.from_segments([Segment(101, 105)])
+    table.add_series_column("raw", data=[series])
+
+    cropped = table.crop("raw", parallel=parallel).row(0)["raw_cropped"]
+    expected_crop = series.crop(101, 105)
+    np.testing.assert_array_equal(cropped.value, expected_crop.value)
+    assert (cropped.t0, cropped.dt, cropped.unit) == (
+        expected_crop.t0,
+        expected_crop.dt,
+        expected_crop.unit,
+    )
+
+    spectrum = table.asd("raw", fftlength=2, parallel=parallel).row(0)["raw_asd"]
+    expected_asd = series.asd(fftlength=2)
+    np.testing.assert_array_equal(spectrum.value, expected_asd.value)
+    assert (spectrum.f0, spectrum.df, spectrum.unit) == (
+        expected_asd.f0,
+        expected_asd.df,
+        expected_asd.unit,
+    )
+
+
 @pytest.mark.parametrize("parallel", [False, True, 1, 2])
 def test_crop_parallel_keeps_values_axes_and_row_order(parallel, monkeypatch) -> None:
     if parallel is True:
@@ -116,7 +141,9 @@ def test_invalid_parallel_worker_count_fails_even_for_empty_table(method) -> Non
         getattr(table, method)("raw", parallel=0, **kwargs)
 
 
-@pytest.mark.parametrize("method", ["crop", "asd"])
+@pytest.mark.parametrize(
+    "method", ["crop", "asd", "bandpass", "resample", "extract_stat"]
+)
 def test_parallel_sugar_loads_only_required_payload_column(method) -> None:
     table = _table()
 
@@ -124,8 +151,15 @@ def test_parallel_sugar_loads_only_required_payload_column(method) -> None:
         raise AssertionError("unrelated payload loaded")
 
     table.add_series_column("unused", loader=unused_loader)
-    kwargs = {"fftlength": 2} if method == "asd" else {}
-    getattr(table, method)("raw", parallel=2, **kwargs)
+    if method == "extract_stat":
+        table.extract_stat("max", "raw", parallel=2)
+    elif method == "bandpass":
+        table.bandpass("raw", 1, 4, parallel=2)
+    elif method == "resample":
+        table.resample("raw", 8, parallel=2)
+    else:
+        kwargs = {"fftlength": 2} if method == "asd" else {}
+        getattr(table, method)("raw", parallel=2, **kwargs)
     assert all(cell.status == CellStatus.UNLOADED for cell in table._payload["unused"])
 
 

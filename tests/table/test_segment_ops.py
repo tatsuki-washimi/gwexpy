@@ -206,3 +206,79 @@ class TestSegmentLookups:
             Segment(10, 14),
             Segment(4, 12),
         ]
+
+
+class TestOpsEdgeCases:
+    def test_empty_table_and_negative_bounds(self):
+        empty = SegmentTable.from_segments([], snr=[])
+        assert len(empty.head(3)) == 0
+        assert len(empty.tail(3)) == 0
+        assert len(empty.overlapping(Segment(0, 10))) == 0
+        assert len(empty.within(Segment(0, 10))) == 0
+        assert len(empty.containing(5.0)) == 0
+        assert len(empty.before(5.0)) == 0
+        assert len(empty.after(5.0)) == 0
+        assert len(empty.nearest(5.0, n=2)) == 0
+
+        st = _make_ops_table()
+        assert len(st.head(-2)) == 3
+        assert len(st.tail(-2)) == 3
+        assert len(st.tail(0)) == 0
+        assert len(st.overlapping(Segment(5, 5))) == 0
+        assert len(st.within(Segment(5, 3))) == 0
+        assert len(st.before(4.0, inclusive=False)) == 0
+        assert len(st.after(20.0, inclusive=False)) == 1
+        assert len(st.nearest(10.0, n=0)) == 0
+        with pytest.raises(ValueError, match="non-negative"):
+            st.nearest(10.0, n=-1)
+
+    def test_sample_sort_dedup_column_errors_and_assign_variants(self):
+        st = _make_ops_table()
+        assert len(st.sample(frac=0.4, random_state=0)) == 2
+        with pytest.raises(ValueError, match="both"):
+            st.sample(n=1, frac=0.5)
+        with pytest.raises(ValueError, match="without replacement"):
+            st.sample(n=10, replace=False)
+
+        s_na_first = st.sort_values("snr", na_position="first")
+        assert np.isnan(s_na_first.row(0)["snr"])
+        with pytest.raises(ValueError, match="na_position"):
+            st.sort_values("snr", na_position="middle")
+        with pytest.raises(ValueError, match="at least one"):
+            st.sort_values([])
+        with pytest.raises(ValueError, match="ascending"):
+            st.sort_values(["label", "snr"], ascending=[True])
+
+        dedup_last = st.drop_duplicates(on="label", keep="last")
+        assert len(dedup_last) == 3
+        with pytest.raises(ValueError, match="keep"):
+            st.drop_duplicates(keep="invalid")
+
+        with pytest.raises(KeyError):
+            st.select_columns("missing_col")
+        with pytest.raises(KeyError):
+            st.drop_columns("missing_col")
+        with pytest.raises(ValueError, match="Duplicate"):
+            st.rename_columns({"snr": "label"})
+
+        # assign with callable, sequence, and payload ColumnRef copy
+        st.add_series_column(
+            "ts",
+            data=[TimeSeries(np.ones(4) * i, sample_rate=4) for i in range(5)],
+            kind="timeseries",
+        )
+        st2 = st.assign(
+            ts_copy=col("ts"),
+            doubled=lambda t: t["chi2"].to_numpy() * 2,
+            seq=[10, 20, 30, 40, 50],
+        )
+        assert "ts_copy" in st2._payload
+        assert st2["doubled"].to_list() == [20.0, 40.0, 60.0, 80.0, 100.0]
+        assert st2["seq"].to_list() == [10, 20, 30, 40, 50]
+
+    def test_nearest_window_expansion_many_segments(self):
+        segs = [Segment(i * 10, i * 10 + 2) for i in range(25)]
+        st = SegmentTable.from_segments(segs, idx=list(range(25)))
+        nr = st.nearest(120.5, n=5)
+        # [120,122)->0, [110,112)->8.5, [130,132)->9.5, [100,102)->18.5, [140,142)->19.5
+        assert [nr.row(i)["idx"] for i in range(5)] == [12, 11, 13, 10, 14]
