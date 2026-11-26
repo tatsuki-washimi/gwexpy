@@ -211,6 +211,21 @@ def test_arima():
     forecast, conf = res.forecast(steps=5)
     assert len(forecast) == 5
     assert forecast.t0.value == 100.0
+    baseline = res.res.get_forecast(steps=5)
+    np.testing.assert_allclose(forecast.value, baseline.predicted_mean)
+    np.testing.assert_allclose(conf["lower"].value, baseline.conf_int()[:, 0])
+    np.testing.assert_allclose(conf["upper"].value, baseline.conf_int()[:, 1])
+
+    by_time, intervals = res.forecast(horizon=5.9 * u.s)
+    np.testing.assert_allclose(by_time.value, forecast.value)
+    assert len(intervals["lower"]) == 5
+    assert len(res.forecast(horizon=5.0)[0]) == 5
+    with pytest.raises(ValueError, match="shorter than one sample"):
+        res.forecast(horizon=0.5)
+    with pytest.raises(ValueError, match="exactly one"):
+        res.forecast(steps=5, horizon=5)
+    with pytest.raises(ValueError, match="exactly one"):
+        res.forecast()
 
 
 # --- Hurst Tests ---
