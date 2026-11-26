@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+
+- FrequencySeries collection fallback I/O now uses the GWpy default registry.
+  Formats registered only in Astropy's separate registry are no longer
+  reachable through that fallback; register them with the GWpy registry (#444).
+
 ### Added
 
 - **SegmentTable workflow**: Add explicit cell status, expressions, row and column operations, table combination, and versioned HDF5 persistence with lazy payload restoration (#592, #355, #405, #408).
