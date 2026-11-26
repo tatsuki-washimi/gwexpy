@@ -4,6 +4,7 @@
 
 ### Added
 
+- ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
 - Persist `TimeSeries` forecast uncertainty in HDF5 and restore statistical relationships in `TimeSeriesDict`; accept `percentiles` as an alias for quantile requests and expose percentile-indexed results.
 - `TimeSeriesDict.forecast(targets=[...])` with the Chronos-2 backend forecasts the selected members jointly (MISO for one target, MIMO for several) and passes the remaining members as past-only covariates. All members must share the same time axis and time reference; other backends reject `targets`.
 - `forecast(backend="chronos-bolt")` (Chronos-Bolt, via the `chronos` extra) and `forecast(backend="timestral")` (Timestral, separately installed upstream package, Python 3.10 or newer) zero-shot backends at pinned model revisions. Both return the same uncertainty-bearing median `TimeSeries` as the other backends. The Timestral code is Apache-2.0, but its model weights use a separate "Modified MIT" license with usage restrictions.
