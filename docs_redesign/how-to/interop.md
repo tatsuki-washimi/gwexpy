@@ -21,6 +21,28 @@ array-to-container workflow without requiring GWpy knowledge.
 
 ## Use a library-specific bridge
 
+### Differometor arrays
+
+Install `differometor` separately to run a model. Its frequency sweep is an
+input, and `run()` returns arrays without physical-unit metadata. Supply the
+unit appropriate for your model when converting the combined noise ASD:
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+
+# frequencies and noise are arrays from the caller's Differometor run.
+asd = FrequencySeries.from_differometor_sensitivity(frequencies, noise, unit="m")
+budget = FrequencySeriesDict.from_differometor_noise_budget(
+    frequencies, {"thermal": thermal, "quantum": quantum}, unit="m"
+)
+```
+
+The budget components must be supplied by the caller; the converter does not
+decompose Differometor's combined noise. `from_differometor_response` selects
+one or more named upper-sideband field rows, without deriving a calibrated
+transfer function or inferring an input channel. Establish the normalization and unit
+from the model before interpreting the result physically.
+
 Follow the [interoperability tutorial](interop/intro_interop.ipynb) for worked
 pandas, xarray, and external-library conversions. Install the dependencies listed
 for the selected bridge and check which metadata survives the round trip.
