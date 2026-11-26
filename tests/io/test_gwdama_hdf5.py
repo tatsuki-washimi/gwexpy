@@ -600,10 +600,10 @@ def test_nested_key_conflict_is_rejected_before_opening_target(
 
 def test_gwdama_package_crosscheck(tmp_path: Path) -> None:
     """Cross-check against the optional ``gwdama`` package when installed."""
-    gwdama = pytest.importorskip("gwdama")
+    gwdama = pytest.importorskip("gwdama.io")
     p = tmp_path / "crosscheck.h5"
     data = np.linspace(0.0, 1.0, 16)
-    with gwdama.GwDataManager(str(p), mode="w") as dama:
+    with gwdama.GwDataManager(str(p), storage="disk", mode="w") as dama:
         dama.create_dataset("H1:X", data=data)
         dama["H1:X"].attrs["sample_rate"] = 8.0
         dama["H1:X"].attrs["t0"] = 1_000_000_000.0
@@ -613,3 +613,14 @@ def test_gwdama_package_crosscheck(tmp_path: Path) -> None:
     tsd = TimeSeriesDict.read(p)
     assert "H1:X" in tsd
     np.testing.assert_allclose(tsd["H1:X"].value, data)
+    assert tsd["H1:X"].sample_rate.value == 8.0
+    assert tsd["H1:X"].t0.value == 1_000_000_000.0
+    assert str(tsd["H1:X"].unit) == "m"
+
+    written = tmp_path / "gwexpy_output.h5"
+    tsd.write(written, format="hdf.gwdama")
+    with gwdama.GwDataManager(str(written), storage="disk", mode="r") as dama:
+        np.testing.assert_allclose(dama["H1:X"][()], data)
+        assert dama["H1:X"].attrs["sample_rate"] == 8.0
+        assert dama["H1:X"].attrs["t0"] == 1_000_000_000.0
+        assert dama["H1:X"].attrs["unit"] == "m"
