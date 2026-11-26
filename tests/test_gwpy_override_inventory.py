@@ -28,7 +28,7 @@ SCRIPT = ROOT / "scripts/audit_gwpy_overrides.py"
 MANIFEST = (
     ROOT
     / "docs/developers/plans/manifests/"
-    / "audit-manifest-v0.2.3-gwpy-overrides.json"
+    / "audit-manifest-v0.3.0-gwpy-overrides.json"
 )
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 SUPPORTED_GWPY = ("4.0.1", "4.0.2")
@@ -1059,6 +1059,25 @@ def test_manifest_matches_current_source_mro_population() -> None:
     assert len(current["public_roots"]) == 16
     assert len(current["members"]) == 671
     assert len(manifest["cases"]) == 1342
+
+
+def test_current_manifest_preserves_reviewed_compatibility_cases() -> None:
+    historical_path = MANIFEST.with_name("audit-manifest-v0.2.3-gwpy-overrides.json")
+    historical = json.loads(historical_path.read_text(encoding="utf-8"))
+    current = _load_manifest()
+
+    def reviewed_cases(manifest: dict[str, Any]) -> dict[str, Any]:
+        cases = copy.deepcopy(manifest["cases"])
+        for case in cases:
+            case["evidence"].pop("oracle_projection_digest")
+        return {case["case_key"]: case for case in cases}
+
+    assert reviewed_cases(current) == reviewed_cases(historical)
+    for oracle_version in SUPPORTED_GWPY:
+        old = historical["oracle_projections"][oracle_version]
+        new = current["oracle_projections"][oracle_version]
+        new_members = {item["member_id"]: item for item in new["members"]}
+        assert all(new_members.get(item["member_id"]) == item for item in old["members"])
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
