@@ -1219,6 +1219,43 @@ class FrequencySeries(
 
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
+    @classmethod
+    def from_differometor_sensitivity(
+        cls, frequencies: Any, sensitivity: Any, *, unit: Any, name: str | None = None
+    ) -> FrequencySeries:
+        """Convert an explicitly supplied Differometor noise ASD array."""
+        from gwexpy.interop import from_differometor_sensitivity
+
+        return from_differometor_sensitivity(
+            cls, frequencies, sensitivity, unit=unit, name=name
+        )
+
+    @classmethod
+    def from_differometor_response(
+        cls,
+        frequencies: Any,
+        signal: Any,
+        port_index_map: Any,
+        *,
+        output: str | None = None,
+        outputs: Any = None,
+        inputs: Any = None,
+        unit: Any,
+    ) -> Any:
+        """Convert upper-sideband fields without inferring a transfer function."""
+        from gwexpy.interop import from_differometor_response
+
+        return from_differometor_response(
+            cls,
+            frequencies,
+            signal,
+            port_index_map,
+            output=output,
+            outputs=outputs,
+            inputs=inputs,
+            unit=unit,
+        )
+
     # --- Finesse 3 Interop ---
 
     @classmethod
