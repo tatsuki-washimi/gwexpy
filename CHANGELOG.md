@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+
+- FrequencySeries collection fallback I/O now uses the GWpy default registry.
+  Formats registered only in Astropy's separate registry are no longer
+  reachable through that fallback; register them with the GWpy registry (#444).
+
 ### Added
 
 - **GWDama HDF5 I/O**: `TimeSeriesDict.read()` and `.write()` support
