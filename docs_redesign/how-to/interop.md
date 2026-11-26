@@ -25,6 +25,7 @@ Follow the [interoperability tutorial](interop/intro_interop.ipynb) for worked
 pandas, xarray, and external-library conversions. Install the dependencies listed
 for the selected bridge and check which metadata survives the round trip.
 For migrating legacy ROOT macros (`TGraphErrors`, `TF1`) to pure Python without CERN ROOT dependencies, follow the [ROOT to Python Migration tutorial](interop/root_to_python_migration.ipynb).
+For a separately installed spicypy, the [Welch ASD example](interop/spicypy_welch.ipynb) checks the values, axes, units, and input metadata of a GWexpy-to-spicypy workflow.
 
 For control-system plots, use a measured or modelled **complex transfer response**
 with the correct input/output units. An ASD or PSD describes noise amplitude or
