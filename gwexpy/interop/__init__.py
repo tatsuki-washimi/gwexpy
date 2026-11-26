@@ -21,6 +21,11 @@ from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
+from .differometor_ import (
+    from_differometor_noise_budget,
+    from_differometor_response,
+    from_differometor_sensitivity,
+)
 from .emg3d_ import from_emg3d_field, from_emg3d_h5, to_emg3d_field
 from .exudyn_ import from_exudyn_sensor
 from .finesse_ import from_finesse_frequency_response, from_finesse_noise
@@ -197,6 +202,9 @@ __all__ = [
     "to_control_frd",
     "from_control_frd",
     "from_control_response",
+    "from_differometor_noise_budget",
+    "from_differometor_response",
+    "from_differometor_sensitivity",
     # P1 - finesse
     "from_finesse_frequency_response",
     "from_finesse_noise",
