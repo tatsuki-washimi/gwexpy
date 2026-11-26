@@ -107,7 +107,7 @@ jobs:
         timeout-minutes: 12
         run: |
           python scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence \
-            --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json \
+            --manifest docs/developers/plans/manifests/audit-manifest-v0.3.0-gwpy-overrides.json \
             --oracle-python "$GWPY_VERSION=@current" \
             2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/inventory.log"
 

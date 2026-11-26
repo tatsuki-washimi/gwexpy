@@ -28,7 +28,7 @@ SCRIPT = ROOT / "scripts/audit_gwpy_overrides.py"
 MANIFEST = (
     ROOT
     / "docs/developers/plans/manifests/"
-    / "audit-manifest-v0.2.3-gwpy-overrides.json"
+    / "audit-manifest-v0.3.0-gwpy-overrides.json"
 )
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 SUPPORTED_GWPY = ("4.0.1", "4.0.2")
@@ -1021,15 +1021,15 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1342,
+        "cases": 1346,
         "constructors": 13,
-        "counterpart_absent_per_version": 516,
+        "counterpart_absent_per_version": 518,
         "counterpart_implementation_groups": 84,
         "counterpart_present_per_version": 155,
         "differential-required": 0,
         "fixed": 224,
-        "GWexpy-only": 1032,
-        "logical_members": 671,
+        "GWexpy-only": 1036,
+        "logical_members": 673,
         "no-finding": 86,
         "public_roots": 16,
         "GWpy-fails": 0,
@@ -1057,8 +1057,27 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 671
-    assert len(manifest["cases"]) == 1342
+    assert len(current["members"]) == 673
+    assert len(manifest["cases"]) == 1346
+
+
+def test_current_manifest_preserves_reviewed_compatibility_cases() -> None:
+    historical_path = MANIFEST.with_name("audit-manifest-v0.2.3-gwpy-overrides.json")
+    historical = json.loads(historical_path.read_text(encoding="utf-8"))
+    current = _load_manifest()
+
+    def reviewed_cases(manifest: dict[str, Any]) -> dict[str, Any]:
+        cases = copy.deepcopy(manifest["cases"])
+        for case in cases:
+            case["evidence"].pop("oracle_projection_digest")
+        return {case["case_key"]: case for case in cases}
+
+    old_cases = reviewed_cases(historical)
+    new_cases = reviewed_cases(current)
+    assert all(new_cases.get(key) == case for key, case in old_cases.items())
+    added = new_cases.keys() - old_cases.keys()
+    assert len(added) == 4
+    assert all(new_cases[key]["state"] == "GWexpy-only" for key in added)
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
