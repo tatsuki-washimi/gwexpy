@@ -4,6 +4,7 @@
 
 ### Added
 
+- ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.
 - Persist `TimeSeries` forecast uncertainty in HDF5 and restore statistical relationships in `TimeSeriesDict`; accept `percentiles` as an alias for quantile requests and expose percentile-indexed results.
 
 ### Compatibility

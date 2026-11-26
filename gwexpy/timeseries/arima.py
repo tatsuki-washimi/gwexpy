@@ -112,14 +112,19 @@ class ArimaResult:
         )
 
     def forecast(
-        self, steps: int, *, alpha: float = 0.05
+        self, steps: int | None = None, *, horizon=None, alpha: float = 0.05
     ) -> tuple[TimeSeries, dict[str, TimeSeries]]:
         """Out-of-sample forecasts.
 
         Parameters
         ----------
-        steps : int
-            Number of steps to forecast into the future.
+        steps : int, optional
+            Number of steps to forecast into the future. Mutually exclusive
+            with ``horizon``.
+        horizon : float or astropy.units.Quantity, optional
+            Forecast duration in seconds or a time quantity. The number of
+            samples is floor(horizon / dt). A duration shorter than one
+            sample interval raises ValueError.
         alpha : float, default=0.05
             Significance level (default 0.05 means 95% confidence intervals).
 
@@ -159,6 +164,16 @@ class ArimaResult:
 
         """
         from .timeseries import TimeSeries
+
+        if (steps is None) == (horizon is None):
+            raise ValueError("Specify exactly one of steps or horizon")
+        if horizon is not None:
+            from astropy import units as u
+
+            from ._forecast import _horizon_to_steps, _normalize_horizon_seconds
+
+            dt = u.Quantity(self.dt, u.s)
+            steps = _horizon_to_steps(_normalize_horizon_seconds(horizon), dt)
 
         # statsmodels get_forecast handles out-of-sample
         pred_res = self.res.get_forecast(steps=steps)
