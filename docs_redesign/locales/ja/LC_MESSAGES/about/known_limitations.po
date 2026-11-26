@@ -200,6 +200,12 @@ msgstr "実験 I/O における時刻解釈"
 msgid "WIN/WIN32"
 msgstr "WIN/WIN32"
 
+msgid "WIN/WIN32 calendar fields are timezone-naive at the file-format level. The reader requires an explicit `timezone=`. The recording timezone must be established from external information. Track [#632](https://github.com/tatsuki-washimi/gwexpy/issues/632)."
+msgstr "WIN/WIN32 の暦時刻にはタイムゾーンが含まれないため、読み込み時に `timezone=` を指定してください。記録時のタイムゾーンは外部情報で確認する必要があります。[#632](https://github.com/tatsuki-washimi/gwexpy/issues/632) を参照してください。"
+
+msgid "Numeric CSV timestamps support explicit `time_scale=` and `time_unit=`. Configured numeric time columns require a scale; auto-detection without one retains legacy GPS seconds with a deprecation warning. Do not infer a scale or unit from magnitude. Track [#634](https://github.com/tatsuki-washimi/gwexpy/issues/634)."
+msgstr "数値 CSV 時刻には `time_scale=` と `time_unit=` を指定できます。設定済み数値列では scale が必須です。自動検出で省略した場合は、非推奨警告を出して従来の GPS 秒として扱います。数値の大きさから scale や単位を推定しないでください。[#634](https://github.com/tatsuki-washimi/gwexpy/issues/634) を参照してください。"
+
 #: ../docs_redesign/about/known_limitations.md:87 b847bfd69db742b6a61453f9fa077ab8
 msgid ""
 "WIN/WIN32 calendar fields are timezone-naive at the file-format level. The "

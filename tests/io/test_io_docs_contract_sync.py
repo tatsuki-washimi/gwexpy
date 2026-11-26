@@ -123,7 +123,7 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
         assert "top-level single- or multi-file read" in source
 
 
-def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
+def test_docs_describe_numeric_csv_time_scale_contract() -> None:
     contract = _load_contract()
     contract_md = _read(CONTRACT_MD)
     en = _read(EN_GUIDE)
@@ -132,14 +132,12 @@ def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
     notes = " ".join(contract["csv"]["notes"])
 
     for source in (notes, contract_md, en, redesign_en):
-        assert "legacy GPS-second" in source
         assert "time_scale" in source
         assert "time_unit" in source
-        assert "v0.1.14" in source
-    assert "従来どおり GPS 秒" in ja
+        assert "GPS" in source
     assert "time_scale" in ja
     assert "time_unit" in ja
-    assert "v0.1.14" in ja
+    assert "GPS" in ja
 
 
 def test_docs_describe_native_hdf5_auto_identification_boundary() -> None:

@@ -159,8 +159,9 @@ An absolute float64 time axis is accepted only when both its rounding error and
 local spacing are strictly below half the cadence. A top-level single- or
 multi-file read is limited to 10,000,000 requested-channel resampled output
 values in total before allocation.
-Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
-not add `time_scale=` or `time_unit=`.
+Numeric CSV accepts `time_scale=` and `time_unit=`. Configured numeric columns
+require a scale; auto-detection without one retains legacy GPS seconds with a
+deprecation warning. Relative times require an absolute `epoch`.
 
 ### `hdf.ndscope`
 

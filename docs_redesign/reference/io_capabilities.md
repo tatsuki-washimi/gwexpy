@@ -191,7 +191,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
-| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win", timezone="Asia/Tokyo")` | Japanese WIN datasets | Explicit timezone required, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support; requires `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
@@ -205,7 +205,7 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
-win = TimeSeriesDict.read("data.cnt", format="win32")
+win = TimeSeriesDict.read("data.cnt", format="win32", timezone="Asia/Tokyo")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
@@ -268,9 +268,10 @@ events = EventTable.read("events.root")
   without it, the legacy one-second fallback remains. Component streams that
   cross a leap second without a representable `second=60` row fail closed as a
   missing sample.
-- Numeric CSV timestamps retain the legacy GPS-second interpretation.
-  v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales
-  before reading.
+- Numeric CSV timestamps support explicit `time_scale="gps"`, `"unix"`, or
+  `"relative"` and `time_unit=`. Relative times require an absolute `epoch`.
+  Configured numeric columns require a scale; unconfigured auto-detection
+  retains GPS seconds with a deprecation warning.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
