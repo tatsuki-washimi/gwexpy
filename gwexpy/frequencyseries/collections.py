@@ -543,6 +543,15 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         return to_tmultigraph(self, name=name)
 
+    @classmethod
+    def from_differometor_noise_budget(
+        cls, frequencies: Any, components: Any, *, unit: Any
+    ) -> FrequencySeriesDict:
+        """Convert caller-supplied named noise ASD components."""
+        from gwexpy.interop import from_differometor_noise_budget
+
+        return from_differometor_noise_budget(cls, frequencies, components, unit=unit)
+
     # ===============================
     # 7. Finesse 3 Interop
     # ===============================

@@ -588,6 +588,29 @@
             "unavailable_behavior": "raises_import_error"
         },
         {
+            "name": "differometor",
+            "module": "differometor_",
+            "status": "public",
+            "guide_api": [
+                "from_differometor_sensitivity",
+                "from_differometor_noise_budget",
+                "from_differometor_response"
+            ],
+            "row_match_en": "| [Differometor](",
+            "row_match_ja": "| [Differometor](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.differometor_.rst",
+            "details_link": "../reference/api/gwexpy.interop.differometor_.rst",
+            "notes": [
+                "Converters accept caller-supplied arrays; units are explicit and the producer package is not imported.",
+                "Response conversion selects a raw upper-sideband field and does not infer a calibrated transfer function."
+            ],
+            "optional_dependencies": [],
+            "source_dependencies": ["differometor"],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
+        },
+        {
             "name": "finesse",
             "module": "finesse_",
             "status": "public",
