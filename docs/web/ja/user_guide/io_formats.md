@@ -40,7 +40,7 @@ gwexpy の利用者向け I/O ガイドです。
 - **自動判別でよい**のは、拡張子から reader が一意に決まる場合です。
 - GWpy-backed の **`TimeSeries`** と **`TimeSeriesDict`** は、`.h5` / `.hdf5` の native HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な HDF5 ファミリ、または GWexpy-only のクラスでは **`format="hdf5"` を明示**してください。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
-- **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
+- **`timezone` を必ず指定する**のは、タイムゾーンを記録しない GBD と WIN/WIN32 の暦時刻です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
 - Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / `EventTable` を基準に考えてください。地形 Field は[地形 Field の入出力](#地形-field-の入出力)を参照してください。Field 全体の入出力契約は監査中です。
 
@@ -282,7 +282,8 @@ events = EventTable.read("events.root")
 - 絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。
 - 10,000,000個の上限は、top-level の単一または multi-file read 全体で、要求された channel の resampling 出力を allocation 前に合計します。
 - CSV の数値時刻は従来どおり GPS 秒として解釈します。
-- v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。
+- 数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と、`"ms"` などの `time_unit` を指定できます。相対時刻には絶対 `epoch` が必要です。設定済み数値列では scale が必須で、自動検出時の省略は非推奨警告付きで従来の GPS 秒として扱います。
+- WIN/WIN32 の暦ヘッダにはタイムゾーンがありません。読み込み時に `timezone="UTC"`、`"Asia/Tokyo"`、またはオフセットを指定してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。

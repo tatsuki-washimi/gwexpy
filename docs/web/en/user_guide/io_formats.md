@@ -40,7 +40,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 - **Auto-detect is fine** when the extension uniquely selects one reader.
 - GWpy-backed **`TimeSeries`** and **`TimeSeriesDict`** auto-identify native HDF5 for `.h5` / `.hdf5`; structurally identified NDScope files take precedence. Set **`format="hdf5"` explicitly** for other ambiguous or GWexpy-only HDF5 class families.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
-- **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
+- **Pass `timezone` explicitly** for GBD and WIN/WIN32, whose local calendar fields do not encode a timezone.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
 - For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. For terrain fields, see [Terrain Field I/O](#terrain-field-io); the broader Field I/O contract remains under audit.
 
@@ -287,9 +287,12 @@ events = EventTable.read("events.root")
   below half the cadence. The 10,000,000-value cap counts requested-channel
   resampled output across the complete top-level single- or multi-file read
   before allocation.
-- Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
-  does not add `time_scale=` or `time_unit=`; convert other scales before
-  reading.
+- Numeric CSV timestamps accept `time_scale="gps"`, `"unix"`, or `"relative"`
+  and an explicit `time_unit` such as `"ms"`. Relative timestamps require an
+  absolute `epoch`. Configured numeric columns require a scale; unconfigured
+  auto-detection retains legacy GPS seconds with a deprecation warning.
+- WIN/WIN32 calendar headers have no timezone. Pass `timezone="UTC"`,
+  `"Asia/Tokyo"`, or an explicit offset on every read.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
