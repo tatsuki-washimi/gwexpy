@@ -166,6 +166,13 @@ def to_pycbc_frequencyseries(
     pycbc.types.FrequencySeries
         PyCBC frequency series.
 
+    Raises
+    ------
+    ValueError
+        If the frequency axis is not uniform, or does not start at 0
+        (PyCBC frequency series have no ``f0``; their samples are
+        ``k * delta_f``).
+
     Examples
     --------
     >>> from gwexpy.frequencyseries import FrequencySeries
@@ -184,6 +191,14 @@ def to_pycbc_frequencyseries(
         raise ValueError(
             "Cannot convert FrequencySeries with an irregular or non-increasing "
             "frequency axis to PyCBC FrequencySeries (uniform delta_f required)."
+        )
+    # A PyCBC frequency series has no f0: its samples are k * delta_f from
+    # 0 Hz. Exporting f0 != 0 would move every sample down by f0.
+    if freqs.size and freqs[0] != 0:
+        raise ValueError(
+            "Cannot convert FrequencySeries with a nonzero initial frequency "
+            f"(f0={freqs[0]!r} {fs.xunit}) to PyCBC FrequencySeries, whose "
+            "frequencies start at 0 (no f0 field)."
         )
     df = float(freqs[1] - freqs[0]) if len(freqs) > 1 else 1.0
     epoch_val = getattr(fs, "epoch", None)

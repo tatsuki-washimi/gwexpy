@@ -249,9 +249,12 @@ below do not derive that spacing from the first interval of a non-uniform axis:
   coordinates are kept as an explicit axis unless `x0`/`dx` reproduce every
   sample exactly. A uniform axis whose values carry floating-point round-off
   keeps the same `x0`/`dx` metadata and its exact samples.
-- **GWexpy → LAL / PyCBC frequency series**: these formats store only `f0`
-  and `deltaF` (`delta_f`). An axis that is not uniform up to floating-point
-  round-off raises `ValueError`.
+- **GWexpy → LAL / PyCBC frequency series**: LAL stores only `f0` and
+  `deltaF`; PyCBC stores only `delta_f`, with frequencies starting at 0 Hz.
+  An axis that is not uniform up to floating-point round-off raises
+  `ValueError`, and so does PyCBC export of a series whose first frequency is
+  not 0 (it would otherwise be shifted down by `f0`). Uniform series starting
+  at 0 Hz are converted as before.
 - **ROOT histograms**: a histogram is defined by its bin edges. A uniform
   series maps to fixed-width bins, and fixed-width `TH1` input maps back to
   `x0`/`dx`. A non-uniform series gets variable-width bins whose centres are

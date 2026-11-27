@@ -7,6 +7,11 @@
 - FrequencySeries collection fallback I/O now uses the GWpy default registry.
   Formats registered only in Astropy's separate registry are no longer
   reachable through that fallback; register them with the GWpy registry (#444).
+- **PyCBC frequency export**: `to_pycbc_frequencyseries()` raises
+  `ValueError` for a `FrequencySeries` whose first frequency is not 0.
+  PyCBC frequency series have no `f0` and start at 0 Hz, so such data were
+  previously exported with every frequency shifted down by `f0`. Series
+  starting at 0 Hz are converted as before.
 - **Interop coordinate preservation** (#887 follow-up, U-7): converters no
   longer replace a non-uniform axis with an origin and cadence taken from its
   first interval. Control FRD, Polars, SimPEG and ROOT `TGraph` imports keep
