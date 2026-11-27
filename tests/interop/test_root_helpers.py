@@ -214,8 +214,8 @@ class TestRootScaleInvariance:
         # A non-uniform axis whose samples cannot all be bin centres is rejected
         # instead of being moved to midpoint-derived centres.
         sg = Spectrogram(
-            np.ones((3, 4)),
-            times=np.array([0.0, 1e-20, 1.5e-20]),
+            np.ones((4, 4)),
+            times=np.array([0.0, 1e-20, 11e-20, 12e-20]),
             frequencies=irr_x,
             name="sg_tiny",
         )
@@ -251,26 +251,55 @@ class TestRootScaleInvariance:
         ROOT.gROOT.SetBatch(True)
         ts = TimeSeries(np.ones(_JITTER_887.size), times=_JITTER_887, name="jit")
         assert ts.xindex.regular
-        with pytest.raises(ValueError, match="exact sample coordinates"):
-            ts.to_th1d()
+        # Not fixed-width bins from the first interval: variable bins centred
+        # on the jittered samples.
+        hist = ts.to_th1d()
+        axis = hist.GetXaxis()
+        assert axis.IsVariableBinSize()
+        centers = np.array([axis.GetBinCenter(i + 1) for i in range(_JITTER_887.size)])
+        np.testing.assert_allclose(centers, _JITTER_887, rtol=0, atol=1e-21)
         back = TimeSeries.from_root(ts.to_tgraph())
         np.testing.assert_array_equal(back.times.value, _JITTER_887)
 
-    def test_irregular_series_keeps_exact_variable_bin_centres(self):
+    @pytest.mark.parametrize(
+        "f",
+        [
+            np.geomspace(1, 1000, 100),
+            np.logspace(0, 3, 30),
+            np.geomspace(0.1, 1000, 30),
+            np.array([1.0, 1.5, 1.9, 2.4, 2.8, 3.3]),
+        ],
+        ids=["geomspace100", "logspace30", "geomspace30", "alternating"],
+    )
+    def test_irregular_series_keeps_variable_bin_centres(self, f):
         ROOT = pytest.importorskip("ROOT")
         from gwexpy.frequencyseries import FrequencySeries
+        from gwexpy.spectrogram import Spectrogram
 
         ROOT.gROOT.SetBatch(True)
-        f = np.geomspace(1, 1000, 100)
-        fs = FrequencySeries(np.arange(100.0), frequencies=f, name="log")
+        fs = FrequencySeries(np.arange(float(f.size)), frequencies=f, name="log")
         hist = fs.to_th1d()
         axis = hist.GetXaxis()
         assert axis.IsVariableBinSize()
         centers = np.array([axis.GetBinCenter(i + 1) for i in range(f.size)])
-        np.testing.assert_array_equal(centers, f)
-        np.testing.assert_array_equal(
-            FrequencySeries.from_root(hist).frequencies.value, f
-        )
+        # Centres are derived from stored edges: equal up to edge round-off.
+        np.testing.assert_allclose(centers, f, rtol=4 * np.finfo(float).eps, atol=0)
+        back = FrequencySeries.from_root(hist).frequencies.value
+        np.testing.assert_array_equal(back, centers)
+
+        spec = Spectrogram(np.ones((3, f.size)), times=[0.0, 1.0, 2.0], frequencies=f)
+        hist2 = spec.to_th2d()
+        ycent = np.array([hist2.GetYaxis().GetBinCenter(i + 1) for i in range(f.size)])
+        np.testing.assert_allclose(ycent, f, rtol=4 * np.finfo(float).eps, atol=0)
+
+    def test_series_without_centring_bins_raises(self):
+        ROOT = pytest.importorskip("ROOT")
+
+        ROOT.gROOT.SetBatch(True)
+        # Spacing 1 then 10 then 1: no increasing edges centre all four bins.
+        ts = TimeSeries(np.ones(4), times=[0.0, 1.0, 11.0, 12.0])
+        with pytest.raises(ValueError, match="no increasing bin edges"):
+            ts.to_th1d()
 
     def test_histogram_regularity_follows_bin_edges(self):
         ROOT = pytest.importorskip("ROOT")

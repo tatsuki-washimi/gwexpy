@@ -186,7 +186,10 @@ def from_simpeg(cls, data_obj, **kwargs):
         # numpy's default tolerances. Use t0/dt only when they rebuild every
         # time exactly; otherwise keep the explicit SimPEG times instead of
         # linearizing them.
-        if len(dt) > 0 and np.allclose(dt, dt[0]):
+        if len(dt) == 0:
+            # One sample has no cadence to infer: keep its explicit time.
+            return cls(dobs, times=times_arr)
+        if np.allclose(dt, dt[0]):
             if exactly_affine_axis(times_arr):
                 return cls(dobs, t0=float(times_arr[0]), dt=float(dt[0]))
             return cls(dobs, times=times_arr)

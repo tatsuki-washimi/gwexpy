@@ -170,6 +170,30 @@ class TestFromControlFrd:
         fs = from_control_frd(FrequencySeries, frd)
         np.testing.assert_array_equal(fs.frequencies.value, frd.omega / (2 * np.pi))
 
+    def test_uniform_frequencies_with_roundoff_keep_metadata_and_samples(self):
+        # omega / (2 pi) carries round-off: f0/df stay the same as before and the
+        # converted samples are kept exactly instead of being re-gridded.
+        freqs = 0.1 * np.arange(1, 1001)
+        frd = SimpleNamespace(
+            omega=freqs * 2 * np.pi,
+            frdata=np.ones((1, 1, freqs.size), dtype=complex),
+        )
+        fs = from_control_frd(FrequencySeries, frd)
+        expected = frd.omega / (2 * np.pi)
+        np.testing.assert_array_equal(fs.frequencies.value, expected)
+        assert fs.xindex.regular
+        assert fs.f0.value == expected[0]
+        assert fs.df.value == expected[1] - expected[0]
+
+    def test_gwpy_regular_jitter_frequencies_not_linearized(self):
+        freqs = np.arange(100) * 1e-6 + np.where(np.arange(100) % 2, 1e-9, 0.0)
+        frd = SimpleNamespace(
+            omega=freqs * 2 * np.pi,
+            frdata=np.ones((1, 1, freqs.size), dtype=complex),
+        )
+        fs = from_control_frd(FrequencySeries, frd)
+        np.testing.assert_array_equal(fs.frequencies.value, frd.omega / (2 * np.pi))
+
 
 class TestFromControlResponse:
     def _make_siso_response(self, n=10, dt=0.1, t0=0.0, label=None):
