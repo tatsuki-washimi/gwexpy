@@ -319,6 +319,8 @@ table.stack_spectra("asd", groupby=None, statistic="median",
 
 統計そのものは事実 10 の `gwexpy/types/_stats.py` Mixin（`ignore_nan` 付き）を再利用する。**`percentile` だけ同 Mixin に追加が必要。**
 
+**S-9 実装時の変更:** `stack_spectra()` は S-8 で実装済みの scalar quantile Reducer を周波数 bin ごとに再利用する。既存の状態別件数・単位・整数精度の扱いに合わせるためであり、この API の percentile に共通統計 Mixin の追加は必要ない。Mixin 自体に汎用 `percentile` を追加するかは別の API 課題とし、S-9 の受入条件から外す。
+
 ### 7. モジュール分割
 
 事実 13 のとおり `segment_table.py` は既に規約上限の 1.5 倍で、本設計を同一ファイルに足すと破綻する。**実装前にモジュール分割を済ませる。**
@@ -369,7 +371,7 @@ gwexpy/table/segment/
 | S-7 | `table`: `Reducer` protocol (initialize / update / merge / finalize) | S-4 |
 | #406 | Add `SegmentTable.extract_stat()`（**Reducer 上に再定義**） | S-7 |
 | S-8 | `table`: `groupby().aggregate()` and the `SummaryTable` result type | S-7 |
-| S-9 | `table`: `stack_spectra()` with frequency-axis `align` policy + `percentile` in `_stats.py` | S-7 |
+| S-9 | `table`: `stack_spectra()` with frequency-axis `align` policy and percentile via the existing quantile Reducer | S-7 |
 | #407 | Add `parallel=` execution policy（**`required_columns()` 導出を前提に再定義**） | S-3, S-7 |
 | S-10 | `table`: `SegmentFrame` lazy execution layer (`define` / `filter` / actions / `report()`) | S-8, #407 |
 | S-11 | `table`: reshape — `explode_channels()` / `expand_bands()` | S-4 |
