@@ -1139,6 +1139,9 @@ msgstr ""
 msgid "Japanese WIN datasets"
 msgstr "国内 WIN データ"
 
+msgid "Direct Zarr and HDF5 collection reads accept `gap=` and `pad=` for the requested time window. Padding uses the same fill value for retained uncertainty series; the fill is not an uncertainty estimate."
+msgstr "Zarr と HDF5 の直接コレクション読み込みでは、指定区間に `gap=` と `pad=` を使えます。保持される不確かさ系列にも同じ補完値を使いますが、その値は不確かさの推定値ではありません。"
+
 msgid "WIN header times require an explicit timezone because the format is timezone-naive. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`."
 msgstr "WIN ヘッダ時刻にはタイムゾーンがないため、明示指定が必要です。WIN packet 時刻は 1 秒ずつ連続する必要があり、重複・逆行・global gap は `ValueError` になります。"
 
