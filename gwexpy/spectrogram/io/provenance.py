@@ -1389,6 +1389,41 @@ def _populate_regular_axis_attrs(
     combined.setdefault(delta_key, getattr(array, delta_key).to(aunit).value)
 
 
+def _raise_for_spectrogram_attribute_limit(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: str | None,
+    exc: OSError,
+    *,
+    x_explicit: bool,
+    y_explicit: bool,
+) -> None:
+    """Explain an attribute-size failure naming the explicit spectrogram axes.
+
+    Delegates the cleanup and the 'earliest'-format check to
+    :func:`raise_for_attribute_limit`, then rewrites its message so that a
+    long frequency (y) axis is not reported as the time (x) axis.
+    """
+    try:
+        raise_for_attribute_limit(array, container, path, exc)
+    except OSError as diagnosed:
+        if diagnosed is exc:
+            raise
+        axes = []
+        if x_explicit:
+            axes.append(f"time (x) axis, {array.xindex.size} samples")
+        if y_explicit:
+            axes.append(f"frequency (y) axis, {array.yindex.size} samples")
+        msg = (
+            f"Cannot store the explicit {' and '.join(axes)} of "
+            f"{type(array).__name__} {array.name!r} in an HDF5 file opened "
+            "with the 'earliest' format bound, which limits an attribute to "
+            "64 KiB. Pass a file path, or open the file with "
+            f"h5py.File(..., libver={IRREGULAR_AXIS_LIBVER!r})."
+        )
+        raise OSError(msg) from exc
+
+
 def _write_spectrogram_any_axis(
     array: Any,
     container: h5py.Group | h5py.File,
@@ -1417,7 +1452,9 @@ def _write_spectrogram_any_axis(
     try:
         dataset = write_hdf5_array(array, container, path=path, **explicit_kwargs)
     except OSError as exc:
-        raise_for_attribute_limit(array, container, path, exc)
+        _raise_for_spectrogram_attribute_limit(
+            array, container, path, exc, x_explicit=x_explicit, y_explicit=y_explicit
+        )
         raise
 
     if x_explicit:

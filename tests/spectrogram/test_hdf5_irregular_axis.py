@@ -165,8 +165,18 @@ def test_long_irregular_axis_uses_dense_libver_and_diagnoses_earliest(tmp_path) 
     _assert_roundtrip_same(back, sg)
 
     with h5py.File(tmp_path / "earliest.h5", "w") as h5f:
-        with pytest.raises(OSError, match="irregular"):
+        with pytest.raises(OSError, match=r"time \(x\) axis, 10000 samples"):
             sg.write(h5f, format="hdf5")
+        assert list(h5f) == []
+
+
+def test_long_frequency_axis_diagnostic_names_y_axis(tmp_path) -> None:
+    freqs = np.geomspace(1.0, 100.0, 9000)
+    sg = Spectrogram(np.zeros((2, freqs.size)), t0=0, dt=1, frequencies=freqs, name="y")
+    with h5py.File(tmp_path / "earliest.h5", "w") as h5f:
+        with pytest.raises(OSError, match=r"frequency \(y\) axis, 9000 samples"):
+            sg.write(h5f, format="hdf5")
+        assert list(h5f) == []
 
 
 def test_conflicting_explicit_axis_attrs_rejected(tmp_path) -> None:
