@@ -563,7 +563,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/2ca3954023013bda325bf799adb77d82671dd596">2ca39540</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -1040,6 +1040,7 @@
 <li><p><strong>Pickle</strong> の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 形式としては扱いません。</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> はこのページでは <strong>TimeSeries 系の direct I/O</strong> としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> は <code class="docutils literal notranslate"><span class="pre">nc</span></code> の旧 format token alias であり、<code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> は公開された自動判定 extension alias ではありません。</p></li>
 <li><p><strong>Zarr</strong> の direct I/O では、配列ごとの timing metadata を明示的に要求します。<code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> を優先し、<code class="docutils literal notranslate"><span class="pre">dt</span></code> は fallback として受け付けます。どちらも無い場合は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を送出し、legacy store を意図的に救済したい場合だけ <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> または <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code> を指定してください。</p></li>
+<li><p>Zarr と HDF5 の直接コレクション読み込みでは、指定区間に <code class="docutils literal notranslate"><span class="pre">gap=</span></code> と <code class="docutils literal notranslate"><span class="pre">pad=</span></code> を使えます。保持される不確かさ系列にも同じ補完値を使いますが、その値は不確かさの推定値ではありません。</p></li>
 <li><p><strong>ROOT</strong> の object-level 変換はここでは扱いません。I/O ガイドでは <code class="docutils literal notranslate"><span class="pre">uproot</span></code> を必要とする EventTable の直 I/O のみ扱います。</p></li>
 </ul>
 <span id="io-formats-ja-d"></span><p><a id="io-formats-en-d"></a></p>

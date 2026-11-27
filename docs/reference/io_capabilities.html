@@ -562,7 +562,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/2ca3954023013bda325bf799adb77d82671dd596">2ca39540</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -1063,6 +1063,7 @@ retains GPS seconds with a deprecation warning.</p></li>
 <li><p><strong>Pickle</strong> portability notes still exist in class references, but Pickle is not a published direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> format on this page.</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop. For NetCDF, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> is a legacy format token alias for <code class="docutils literal notranslate"><span class="pre">nc</span></code>; <code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> is not a documented auto-identified extension alias.</p></li>
 <li><p><strong>Zarr</strong> direct I/O now expects per-array timing metadata explicitly. <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is the primary key, <code class="docutils literal notranslate"><span class="pre">dt</span></code> is accepted as a fallback, and reads raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if neither is present unless you intentionally recover a legacy store with <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> or <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code>.</p></li>
+<li><p>Direct Zarr and HDF5 collection reads accept <code class="docutils literal notranslate"><span class="pre">gap=</span></code> and <code class="docutils literal notranslate"><span class="pre">pad=</span></code> for the requested time window. Padding uses the same fill value for retained uncertainty series; the fill is not an uncertainty estimate.</p></li>
 <li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O, which requires <code class="docutils literal notranslate"><span class="pre">uproot</span></code>.</p></li>
 </ul>
 <span id="io-formats-ja-d"></span><p><a id="io-formats-en-d"></a></p>
