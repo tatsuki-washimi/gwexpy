@@ -273,6 +273,36 @@ class TestToPycbcFrequencySeries:
         freqs = fs.frequencies.value
         assert captured["fs"]["delta_f"] == freqs[1] - freqs[0]
 
+    @pytest.mark.parametrize(
+        "fs",
+        [
+            FrequencySeries(np.zeros(4), f0=1.0, df=1.0),
+            FrequencySeries(np.zeros(100), f0=10.0, df=0.25),
+            FrequencySeries(np.zeros(1), f0=20.0, df=1.0),
+        ],
+        ids=["f0=1", "cropped-f0=10", "single-sample"],
+    )
+    def test_nonzero_f0_raises_instead_of_shifting_frequencies(
+        self, pycbc_modules_mock, fs
+    ):
+        # PyCBC frequency series start at 0 Hz; exporting f0 != 0 would move
+        # every sample down by f0.
+        _, captured = pycbc_modules_mock
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="nonzero initial frequency"):
+                to_pycbc_frequencyseries(fs)
+        assert "fs" not in captured
+
+    def test_zero_f0_regular_export_unchanged(self, pycbc_modules_mock):
+        _, captured = pycbc_modules_mock
+        data = np.arange(9, dtype=complex)
+        fs = FrequencySeries(data, f0=0.0, df=0.5, epoch=1234567890.0)
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            to_pycbc_frequencyseries(fs)
+        np.testing.assert_array_equal(captured["fs"]["data"], data)
+        assert captured["fs"]["delta_f"] == 0.5
+        assert captured["fs"]["epoch"] == 1234567890.0
+
 
 # ---------------------------------------------------------------------------
 # Missing PyCBC (import error)
