@@ -150,22 +150,17 @@ def _convert_unix_decimals_to_gps(unix_times: list[Decimal]) -> list[Decimal]:
     wholes = [
         int(value.to_integral_value(rounding=ROUND_FLOOR)) for value in unix_times
     ]
-    unique_wholes = sorted(set(wholes))
-    gps_wholes = np.atleast_1d(
+    fractions = [
+        float(value - whole) for value, whole in zip(unix_times, wholes, strict=True)
+    ]
+    gps_values = np.atleast_1d(
         Time(
-            np.asarray(unique_wholes, dtype=np.int64),
-            np.zeros(len(unique_wholes), dtype=np.int64),
+            np.asarray(wholes, dtype=np.int64),
+            np.asarray(fractions, dtype=np.float64),
             format="unix",
         ).to_value("gps", "decimal")
     )
-    gps_by_whole = {
-        whole: Decimal(gps_val).quantize(_GPS_NANOSECOND, rounding=ROUND_HALF_EVEN)
-        for whole, gps_val in zip(unique_wholes, gps_wholes, strict=True)
-    }
-    return [
-        gps_by_whole[whole] + (unix_val - whole)
-        for unix_val, whole in zip(unix_times, wholes, strict=True)
-    ]
+    return [Decimal(value) for value in gps_values]
 
 
 def _epoch_needs_timezone(epoch: Any) -> bool:
@@ -1172,6 +1167,25 @@ def read_timeseriesdict_csv(
             if tz_str is not None:
                 _validate_and_warn_timezone_ignored(tz_str, timezone_warning_marker)
             gps_decimal_times = _convert_unix_decimals_to_gps(parsed_times)
+            if len(gps_decimal_times) > 1:
+                # Astropy's two-part JD conversion carries picosecond-scale
+                # floating noise. Validate at nanosecond resolution, but keep
+                # the unrounded values for the origin and returned axis.
+                validation_times = [
+                    value.quantize(_GPS_NANOSECOND, rounding=ROUND_HALF_EVEN)
+                    for value in gps_decimal_times
+                ]
+                deltas = sorted(
+                    right - left
+                    for left, right in zip(
+                        validation_times, validation_times[1:], strict=False
+                    )
+                )
+                validated_dt = _validate_regular_timestamps(
+                    validation_times,
+                    source="CSV Unix-converted GPS",
+                    expected_dt=deltas[len(deltas) // 2],
+                )
             origin = gps_decimal_times[0]
             rel = np.asarray(
                 [float(v - origin) for v in gps_decimal_times], dtype=float

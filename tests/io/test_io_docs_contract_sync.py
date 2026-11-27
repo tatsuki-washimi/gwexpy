@@ -135,9 +135,13 @@ def test_docs_describe_numeric_csv_time_scale_contract() -> None:
         assert "time_scale" in source
         assert "time_unit" in source
         assert "GPS" in source
+        normalized = " ".join(source.replace("`", "").split())
+        assert "relative without epoch" in normalized
+        assert "absolute when" in normalized
     assert "time_scale" in ja
     assert "time_unit" in ja
     assert "GPS" in ja
+    assert "`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります" in ja
 
 
 def test_docs_describe_native_hdf5_auto_identification_boundary() -> None:

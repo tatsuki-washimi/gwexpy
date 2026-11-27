@@ -8,7 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
 CSV_TIME_SCALE_CONTRACT = (
     'Numeric CSV timestamps support explicit `time_scale="gps"`, `"unix"`, or '
-    '`"relative"` and `time_unit=`. Relative times require an absolute `epoch`. '
+    '`"relative"` and `time_unit=`. Relative times stay relative without `epoch` '
+    "and become absolute when `epoch` is supplied. "
     "Configured numeric columns require a scale; unconfigured auto-detection "
     "retains GPS seconds with a deprecation warning."
 )
@@ -155,7 +156,7 @@ def test_numeric_csv_time_scale_contract_has_japanese_translation() -> None:
     assert translated is not None
     assert translated.string == (
         '数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と '
-        "`time_unit=` を指定できます。相対時刻には絶対 `epoch` が必要です。"
+        "`time_unit=` を指定できます。`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります。"
         "設定済み数値列では scale が必須です。自動検出時の省略は非推奨警告付きで"
         "従来の GPS 秒として扱います。"
     )

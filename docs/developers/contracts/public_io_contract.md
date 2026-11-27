@@ -161,7 +161,8 @@ multi-file read is limited to 10,000,000 requested-channel resampled output
 values in total before allocation.
 Numeric CSV accepts `time_scale=` and `time_unit=`. Configured numeric columns
 require a scale; auto-detection without one retains legacy GPS seconds with a
-deprecation warning. Relative times require an absolute `epoch`.
+deprecation warning. Relative times stay relative without `epoch` and become
+absolute when `epoch` is supplied.
 
 ### `hdf.ndscope`
 

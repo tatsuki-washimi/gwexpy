@@ -269,7 +269,8 @@ events = EventTable.read("events.root")
   cross a leap second without a representable `second=60` row fail closed as a
   missing sample.
 - Numeric CSV timestamps support explicit `time_scale="gps"`, `"unix"`, or
-  `"relative"` and `time_unit=`. Relative times require an absolute `epoch`.
+  `"relative"` and `time_unit=`. Relative times stay relative without `epoch`
+  and become absolute when `epoch` is supplied.
   Configured numeric columns require a scale; unconfigured auto-detection
   retains GPS seconds with a deprecation warning.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.

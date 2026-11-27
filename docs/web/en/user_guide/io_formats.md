@@ -288,8 +288,8 @@ events = EventTable.read("events.root")
   resampled output across the complete top-level single- or multi-file read
   before allocation.
 - Numeric CSV timestamps accept `time_scale="gps"`, `"unix"`, or `"relative"`
-  and an explicit `time_unit` such as `"ms"`. Relative timestamps require an
-  absolute `epoch`. Configured numeric columns require a scale; unconfigured
+  and an explicit `time_unit` such as `"ms"`. Relative timestamps remain relative
+  without `epoch` and become absolute when an `epoch` is supplied. Configured numeric columns require a scale; unconfigured
   auto-detection retains legacy GPS seconds with a deprecation warning.
 - WIN/WIN32 calendar headers have no timezone. Pass `timezone="UTC"`,
   `"Asia/Tokyo"`, or an explicit offset on every read.

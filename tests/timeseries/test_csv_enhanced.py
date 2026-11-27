@@ -487,6 +487,53 @@ class TestCSVNumericTimeScaleAndUnit:
             expected_2016 - 1483056000.0
         ) == pytest.approx(1.0)
 
+    def test_unix_fractional_seconds_use_astropy_conversion(self):
+        from decimal import Decimal
+
+        from astropy.time import Time
+
+        from gwexpy.timeseries.io.csv_enhanced import _convert_unix_decimals_to_gps
+
+        samples = [Decimal("1483228799.25"), Decimal("1700000000.123456789")]
+        converted = _convert_unix_decimals_to_gps(samples)
+        for sample, actual in zip(samples, converted, strict=True):
+            whole = int(sample)
+            expected = Time(whole, float(sample - whole), format="unix").to_value(
+                "gps", "decimal"
+            )
+            assert abs(actual - expected) < Decimal("0.000000001")
+
+    def test_unix_regular_fractional_grid_on_leap_day(self, tmp_path):
+        from astropy.time import Time
+
+        p = write_csv(
+            tmp_path,
+            "1483228798.25,1.0\n1483228798.50,2.0\n1483228798.75,3.0\n",
+        )
+        ts = read_timeseriesdict_csv(p, config=self._numeric_cfg(time_scale="unix"))[
+            "val"
+        ]
+        expected = Time(
+            [1483228798, 1483228798, 1483228798],
+            [0.25, 0.50, 0.75],
+            format="unix",
+        ).to_value("gps", "decimal")
+        assert float(ts.dt.value) == pytest.approx(
+            float((expected[-1] - expected[0]) / 2), rel=0, abs=2e-9
+        )
+        assert float(ts.t0.value) == pytest.approx(float(expected[0]), rel=0, abs=3e-7)
+
+    @pytest.mark.parametrize("resample", [None, 2.0])
+    def test_unix_leap_boundary_rejects_irregular_gps_grid(self, tmp_path, resample):
+        p = write_csv(
+            tmp_path,
+            "1483228799,1.0\n1483228800,2.0\n1483228801,3.0\n",
+        )
+        with pytest.raises(ValueError, match="regular|irregular|cadence"):
+            read_timeseriesdict_csv(
+                p, config=self._numeric_cfg(time_scale="unix"), resample=resample
+            )
+
     def test_relative_scale_with_and_without_epoch(self, tmp_path):
         import datetime as dt
 

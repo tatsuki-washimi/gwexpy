@@ -282,7 +282,7 @@ events = EventTable.read("events.root")
 - 絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。
 - 10,000,000個の上限は、top-level の単一または multi-file read 全体で、要求された channel の resampling 出力を allocation 前に合計します。
 - CSV の数値時刻は従来どおり GPS 秒として解釈します。
-- 数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と、`"ms"` などの `time_unit` を指定できます。相対時刻には絶対 `epoch` が必要です。設定済み数値列では scale が必須で、自動検出時の省略は非推奨警告付きで従来の GPS 秒として扱います。
+- 数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と、`"ms"` などの `time_unit` を指定できます。`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります。設定済み数値列では scale が必須で、自動検出時の省略は非推奨警告付きで従来の GPS 秒として扱います。
 - WIN/WIN32 の暦ヘッダにはタイムゾーンがありません。読み込み時に `timezone="UTC"`、`"Asia/Tokyo"`、またはオフセットを指定してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
