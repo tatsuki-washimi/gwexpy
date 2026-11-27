@@ -724,6 +724,14 @@ def read_timeseriesmatrix_zarr(
                 channel_names=list(tsd),
             )
             return apply_time_selection(matrix, start, end)
+        if native_explicit or any(needs_explicit_axis(ts) for ts in series):
+            # Alignment interpolates onto a uniform grid, which would silently
+            # replace the stored explicit coordinates.
+            raise ValueError(
+                "Native Zarr channels with explicit (irregular) time axes must "
+                "have identical xindex values to form a TimeSeriesMatrix; read "
+                "them as a TimeSeriesDict instead."
+            )
         from ..preprocess import align_timeseries_collection
 
         aligned, times, _ = align_timeseries_collection(series, how="intersection")

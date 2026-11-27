@@ -132,6 +132,29 @@ class TestMatrix:
         with pytest.raises(ValueError, match="xindex"):
             TimeSeriesMatrix.read(path, format="zarr")
 
+    @pytest.mark.parametrize(
+        "second",
+        [
+            TimeSeries(np.ones(5), times=[10.0, 11.0, 12.0, 15.0, 20.0], name="b"),
+            TimeSeries(np.ones(11), t0=10.0, dt=1.0, name="b"),
+        ],
+        ids=["other-irregular", "regular"],
+    )
+    def test_native_dict_with_mismatched_explicit_axes_is_not_resampled(
+        self, tmp_path, second
+    ):
+        # Reading such a dict as a matrix must not interpolate the explicit
+        # coordinates onto a uniform grid.
+        tsd = TimeSeriesDict(
+            {"a": TimeSeries(np.ones(5), times=_IRREGULAR, name="a"), "b": second}
+        )
+        path = tmp_path / "native_mismatch.zarr"
+        tsd.write(path, format="zarr")
+        with pytest.raises(ValueError, match="identical xindex"):
+            TimeSeriesMatrix.read(path, format="zarr")
+        back = TimeSeriesDict.read(path, format="zarr")
+        np.testing.assert_array_equal(back["a"].times.value, _IRREGULAR)
+
 
 class TestSelectionAndReference:
     def test_start_end_selects_explicit_coordinates(self, tmp_path):
