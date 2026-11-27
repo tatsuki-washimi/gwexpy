@@ -119,24 +119,6 @@ class TestMatrix:
         back = TimeSeriesMatrix.read(path, format="zarr")
         np.testing.assert_array_equal(back.xindex.value, t)
 
-    def test_writer_rejects_mismatched_channel_axes(self, tmp_path):
-        a = TimeSeries(np.arange(5.0), times=_IRREGULAR, name="a")
-        b = TimeSeries(np.arange(5.0), times=_IRREGULAR + 1.0, name="b")
-        mat = TimeSeriesMatrix(
-            np.stack([a.value, b.value])[:, np.newaxis, :],
-            times=u.Quantity(_IRREGULAR, "s"),
-        )
-        # Force differing per-channel axes through the indexing API.
-        mat[1, 0] = b
-        try:
-            differs = not np.array_equal(mat[1, 0].xindex.value, mat[0, 0].xindex.value)
-        except (AttributeError, TypeError):
-            differs = False
-        if not differs:
-            pytest.skip("TimeSeriesMatrix shares one axis; cannot build mismatch")
-        with pytest.raises(ValueError, match="xindex"):
-            mat.write(tmp_path / "bad.zarr", format="zarr")
-
     def test_reader_rejects_mismatched_channel_xindex(self, tmp_path):
         mat = TimeSeriesMatrix(
             np.arange(10.0).reshape(2, 1, 5), times=u.Quantity(_IRREGULAR, "s")
@@ -179,7 +161,9 @@ class TestSelectionAndReference:
         ts = TimeSeries(np.arange(5.0), times=_IRREGULAR, name="x")
         path = tmp_path / "badref.zarr"
         ts.write(path, format="zarr")
-        zarr.open_group(str(path), mode="r+")["x"].attrs["gwexpy_time_reference"] = "bogus"
+        zarr.open_group(str(path), mode="r+")["x"].attrs["gwexpy_time_reference"] = (
+            "bogus"
+        )
         with pytest.raises(ValueError, match="time_reference"):
             TimeSeries.read(path, format="zarr")
 

@@ -8,6 +8,10 @@
   Formats registered only in Astropy's separate registry are no longer
   reachable through that fallback; register them with the GWpy registry (#444).
 
+### Fixed
+
+- Zarr writers now preserve irregular and non-affine (GWpy-"regular" but not reproducible from `t0`/`dt`) time axes exactly. Such channels store `xindex`, `xunit` and `gwexpy_time_reference` and omit `sample_rate`/`dt`/`t0`; regular axes keep the existing layout unchanged. TimeSeriesMatrix writers and readers require identical `xindex` across channels, and a corrupt `xindex` length raises `ValueError` (U-7).
+
 ### Added
 
 - **GWDama HDF5 I/O**: `TimeSeriesDict.read()` and `.write()` support
