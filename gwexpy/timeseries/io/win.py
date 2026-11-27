@@ -21,19 +21,20 @@ We also provide regression tests using a sample WIN file under ``tests/sample-da
 
 from __future__ import annotations
 
+import datetime
 import struct
-import warnings
-from functools import partial
 from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
-    _consume_warning_state,
-    _make_warning_state,
-    _reject_timezone_reinterpretation,
+    _localize_naive_datetime,
+    _parse_timezone_for_format,
+    datetime_to_gps,
     ensure_dependency,
+    set_provenance,
 )
 from gwexpy.timeseries.io._multi import expand_multi_source, read_multi_dict
 from gwexpy.timeseries.io._registration import register_timeseries_format
@@ -52,14 +53,15 @@ except ImportError:
 
 from .. import TimeSeries, TimeSeriesDict
 
-_WIN_UTC_WARNING = "WIN header time is timezone-naive; interpreting as UTC (#632)"
 
-
-def _record_or_warn_utc_interpretation(marker: list[bool] | None) -> None:
-    if marker is None:
-        warnings.warn(_WIN_UTC_WARNING, UserWarning, stacklevel=3)
-    else:
-        marker[0] = True
+def _validate_win_timezone(timezone: Any) -> datetime.tzinfo:
+    """Validate required ``timezone=`` for WIN files and return a ``tzinfo``."""
+    if timezone is None or (isinstance(timezone, str) and not timezone.strip()):
+        raise ValueError(
+            "timezone is required for WIN files "
+            "(e.g., timezone='Asia/Tokyo' or timezone='UTC')"
+        )
+    return _parse_timezone_for_format("win", timezone)
 
 
 def s4(v):
@@ -132,7 +134,12 @@ def _cumsum_win_samples(
     return samples_array
 
 
-def _read_win_fixed(filename: str | Path, century="20"):
+def _read_win_fixed(
+    filename: str | Path,
+    century: str = "20",
+    *,
+    timezone: str | None = None,
+):
     """Read a WIN file and return a ``Stream`` object.
 
     Based on obspy.io.win.core._read_win but with patches applied.
@@ -143,8 +150,12 @@ def _read_win_fixed(filename: str | Path, century="20"):
         Path to the WIN file.
     century : str, optional
         Century prefix (default: "20").
+    timezone : str or tzinfo
+        Required timezone for the timezone-naive BCD timestamps in WIN headers
+        (e.g., ``"Asia/Tokyo"``, ``"+09:00"``, or ``"UTC"``).
 
     """
+    tzinfo = _validate_win_timezone(timezone)
     output: dict[str, list[int]] = {}
     srates: dict[str, int] = {}
     starts: dict[str, Any] = {}
@@ -189,7 +200,22 @@ def _read_win_fixed(filename: str | Path, century="20"):
             hh = f"{timestamp[3]:x}"
             mi = f"{timestamp[4]:x}"
             sec = f"{timestamp[5]:x}"
-            date = UTCDateTime(year, int(mm), int(dd), int(hh), int(mi), int(sec))
+            naive_dt = datetime.datetime(
+                year, int(mm), int(dd), int(hh), int(mi), int(sec)
+            )
+            aware_dt = _localize_naive_datetime(naive_dt, tzinfo)
+            utc_dt = aware_dt.astimezone(datetime.UTC)
+            if utc_dt.microsecond == 0:
+                date = UTCDateTime(
+                    utc_dt.year,
+                    utc_dt.month,
+                    utc_dt.day,
+                    utc_dt.hour,
+                    utc_dt.minute,
+                    utc_dt.second,
+                )
+            else:
+                date = UTCDateTime(utc_dt)
             packet_times.append(date)
 
             offset = 6
@@ -283,50 +309,48 @@ def _read_win_fixed(filename: str | Path, century="20"):
     return Stream(traces=traces)
 
 
-def read_win_file(source, **kwargs) -> TimeSeriesDict:
+def read_win_file(
+    source,
+    *,
+    timezone: str | None = None,
+    **kwargs,
+) -> TimeSeriesDict:
     """Read one or more WIN or WIN32 files with the patched ObsPy-based reader.
 
+    WIN packet headers store timezone-naive civil timestamps without zone
+    information, so ``timezone`` must be supplied explicitly (#632).
     When a list of paths is given, channels found in several files are
     concatenated along the time axis (gaps padded with NaN).
     """
-    warning_marker = _consume_warning_state(
-        kwargs,
-        "_utc_warning_state",
-        "_utc_warning_marker",
-    )
-    for key in ("start", "end"):
-        if kwargs.get(key) is None:
-            kwargs.pop(key, None)
-    timezone = kwargs.pop("timezone", None)
+    _validate_win_timezone(timezone)
+    start, end = pop_time_selection(kwargs)
+    gap = kwargs.pop("gap", None)
+    pad = kwargs.pop("pad", None)
+    if gap is not None and gap not in ("raise", "ignore", "pad"):
+        raise ValueError(f"gap must be 'raise', 'ignore', or 'pad', got {gap!r}")
     kwargs.pop("epoch", None)
-    _reject_timezone_reinterpretation("win", timezone, None)
 
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")
 
     multi = expand_multi_source(source)
     if multi is not None:
-        top_level_marker = [False]
         result = read_multi_dict(
-            partial(
-                read_win_file,
-                _utc_warning_state=_make_warning_state(top_level_marker),
-            ),
+            read_win_file,
             multi,
             "win",
+            pad=pad,
+            gap=gap,
+            timezone=timezone,
             **kwargs,
         )
-        if top_level_marker[0]:
-            _record_or_warn_utc_interpretation(warning_marker)
-        return result
-
-    _record_or_warn_utc_interpretation(warning_marker)
+        return apply_time_selection(result, start, end)
 
     stream_source = source
     source_name = getattr(source, "name", None)
     if not isinstance(source, (str, Path)) and isinstance(source_name, (str, Path)):
         stream_source = source_name
-    stream = _read_win_fixed(stream_source, **kwargs)
+    stream = _read_win_fixed(stream_source, timezone=timezone, **kwargs)
 
     # Merge if necessary (simple gap handling)
     stream.merge(method=1, fill_value=np.nan)
@@ -335,11 +359,6 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
     tsd = TimeSeriesDict()
     for tr in stream:
         # Convert ObsPy trace to TimeSeries
-        import datetime
-
-        from gwexpy.io.utils import datetime_to_gps
-
-        # Start time
         dt = tr.stats.starttime.datetime
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=datetime.UTC)
@@ -354,7 +373,15 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
         )
         tsd[tr.id] = ts
 
-    return tsd
+    set_provenance(
+        tsd,
+        {
+            "format": "win",
+            "timezone": str(timezone),
+            "epoch_source": "win_header_timezone",
+        },
+    )
+    return apply_time_selection(tsd, start, end)
 
 
 # -- Registration

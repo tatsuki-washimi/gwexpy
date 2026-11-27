@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import struct
+import warnings
 from datetime import UTC, datetime, timedelta
 
 import numpy as np
@@ -97,7 +98,7 @@ def test_win_rejects_nonconsecutive_global_packet_timestamps(tmp_path, seconds, 
     )
 
     with pytest.raises(ValueError, match=reason):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 @pytest.mark.parametrize(
@@ -117,7 +118,7 @@ def test_win_accepts_global_sequence_across_calendar_boundaries(tmp_path, start)
         _packet(start + timedelta(seconds=1), _channel_block(1, absolute=20)),
     )
 
-    stream = win_io._read_win_fixed(path)
+    stream = win_io._read_win_fixed(path, timezone="UTC")
 
     assert len(stream) == 1
     np.testing.assert_array_equal(stream[0].data, [10, 11, 20, 21])
@@ -136,7 +137,7 @@ def test_win_advances_century_only_at_bcd_99_to_00_rollover(tmp_path):
 
     traces = {
         trace.stats.channel: trace
-        for trace in win_io._read_win_fixed(path, century="19")
+        for trace in win_io._read_win_fixed(path, century="19", timezone="UTC")
     }
 
     assert traces["1201"].stats.starttime == win_io.UTCDateTime(start)
@@ -156,7 +157,7 @@ def test_win_keeps_supplied_century_before_bcd_year_99(tmp_path):
 
     traces = {
         trace.stats.channel: trace
-        for trace in win_io._read_win_fixed(path, century="19")
+        for trace in win_io._read_win_fixed(path, century="19", timezone="UTC")
     }
 
     assert traces["1201"].stats.starttime == win_io.UTCDateTime(start)
@@ -190,7 +191,7 @@ def test_win_validates_packet_cadence_with_exact_integer_timestamps(
     monkeypatch.setattr(win_io, "UTCDateTime", ExactTimestamp)
 
     with pytest.raises(ValueError, match="gap"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_allows_channel_late_start_and_early_end_and_sets_each_t0(tmp_path):
@@ -208,7 +209,10 @@ def test_win_allows_channel_late_start_and_early_end_and_sets_each_t0(tmp_path):
         _packet(origin + timedelta(seconds=2), _channel_block(2, absolute=40)),
     )
 
-    traces = {trace.stats.channel: trace for trace in win_io._read_win_fixed(path)}
+    traces = {
+        trace.stats.channel: trace
+        for trace in win_io._read_win_fixed(path, timezone="UTC")
+    }
 
     np.testing.assert_array_equal(traces["1201"].data, [10, 11, 20, 21])
     np.testing.assert_array_equal(traces["1202"].data, [30, 31, 40, 41])
@@ -246,7 +250,7 @@ def test_win_decodes_each_codec_at_signed_delta_bounds(tmp_path, width_code, del
         ),
     )
 
-    trace = win_io._read_win_fixed(path)[0]
+    trace = win_io._read_win_fixed(path, timezone="UTC")[0]
 
     np.testing.assert_array_equal(trace.data, [0, deltas[0], sum(deltas)])
     assert trace.stats.sampling_rate == 3.0
@@ -265,7 +269,7 @@ def test_win_decodes_rate_one_for_each_codec_width(tmp_path, width_code):
         ),
     )
 
-    trace = win_io._read_win_fixed(path)[0]
+    trace = win_io._read_win_fixed(path, timezone="UTC")[0]
 
     np.testing.assert_array_equal(trace.data, [-2_147_483_648])
     assert trace.stats.sampling_rate == 1.0
@@ -280,7 +284,7 @@ def test_win_preserves_inferred_integer_dtype_for_normal_samples(tmp_path):
         _packet(origin, _channel_block(1, absolute=100, deltas=(1,))),
     )
 
-    trace = win_io._read_win_fixed(path)[0]
+    trace = win_io._read_win_fixed(path, timezone="UTC")[0]
 
     assert trace.data.dtype == np.dtype(np.int64)
     np.testing.assert_array_equal(trace.data, [100, 101])
@@ -296,7 +300,7 @@ def test_win_does_not_wrap_cumulative_samples_above_int32_max(tmp_path):
         _packet(origin, _channel_block(1, absolute=int32_max, deltas=(1,))),
     )
 
-    trace = win_io._read_win_fixed(path)[0]
+    trace = win_io._read_win_fixed(path, timezone="UTC")[0]
 
     assert trace.data.dtype == np.dtype(np.int64)
     np.testing.assert_array_equal(trace.data, [int32_max, int32_max + 1])
@@ -320,7 +324,7 @@ def test_win_preserves_first_seen_channel_order_when_packet_order_changes(tmp_pa
         ),
     )
 
-    stream = win_io._read_win_fixed(path)
+    stream = win_io._read_win_fixed(path, timezone="UTC")
 
     assert [trace.stats.channel for trace in stream] == ["1202", "1201"]
     np.testing.assert_array_equal(stream[0].data, [20, 21, 40, 41])
@@ -330,7 +334,7 @@ def test_win_preserves_first_seen_channel_order_when_packet_order_changes(tmp_pa
 
 
 @pytest.mark.parametrize("reader", [TimeSeriesDict, TimeSeries])
-def test_win_public_readers_preserve_data_and_emit_one_utc_warning(tmp_path, reader):
+def test_win_public_readers_require_timezone_and_preserve_data(tmp_path, reader):
     pytest.importorskip("obspy")
     origin = datetime(2026, 1, 1, tzinfo=UTC)
     path = _write_packets(
@@ -345,10 +349,14 @@ def test_win_public_readers_preserve_data_and_emit_one_utc_warning(tmp_path, rea
         _packet(origin + timedelta(seconds=2), _channel_block(1, absolute=10)),
     )
 
-    with pytest.warns(UserWarning, match="#632") as caught:
-        result = reader.read(path, format="win")
+    with pytest.raises(ValueError, match="timezone is required for WIN files"):
+        reader.read(path, format="win")
 
-    assert len(caught) == 1
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = reader.read(path, format="win", timezone="UTC")
+
+    assert caught == []
     if reader is TimeSeriesDict:
         assert list(result) == ["...1201", "...1202"]
         np.testing.assert_array_equal(result["...1202"].value, [20, 21, 40, 41])
@@ -373,7 +381,7 @@ def test_win_rejects_channel_reappearance_after_an_internal_gap(tmp_path):
     )
 
     with pytest.raises(ValueError, match="channel 1201.*gap"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_duplicate_channel_block_within_packet(tmp_path):
@@ -386,7 +394,7 @@ def test_win_rejects_duplicate_channel_block_within_packet(tmp_path):
     )
 
     with pytest.raises(ValueError, match="channel 1201.*more than once"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_channel_sample_rate_change(tmp_path):
@@ -400,7 +408,7 @@ def test_win_rejects_channel_sample_rate_change(tmp_path):
     )
 
     with pytest.raises(ValueError, match="channel 1201.*sample rate"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_decoded_sample_count_mismatch(tmp_path, monkeypatch):
@@ -419,7 +427,7 @@ def test_win_rejects_decoded_sample_count_mismatch(tmp_path, monkeypatch):
     )
 
     with pytest.raises(ValueError, match="decoded sample count"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_truncated_packet_payload(tmp_path):
@@ -431,7 +439,7 @@ def test_win_rejects_truncated_packet_payload(tmp_path):
     path = _write_packets(tmp_path, "truncated.win", truncated)
 
     with pytest.raises(ValueError, match="truncated.*payload"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_huge_declared_length_before_oversized_read(tmp_path, monkeypatch):
@@ -466,7 +474,7 @@ def test_win_rejects_huge_declared_length_before_oversized_read(tmp_path, monkey
     )
 
     with pytest.raises(ValueError, match="truncated.*payload"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 @pytest.mark.parametrize(
@@ -481,7 +489,7 @@ def test_win_rejects_malformed_packet_length(tmp_path, payload):
     path = _write_packets(tmp_path, "malformed-length.win", payload)
 
     with pytest.raises(ValueError, match="packet length"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_zero_packet_length_even_with_trailing_record(tmp_path):
@@ -495,7 +503,7 @@ def test_win_rejects_zero_packet_length_even_with_trailing_record(tmp_path):
     )
 
     with pytest.raises(ValueError, match="invalid WIN packet length: 0"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")
 
 
 def test_win_rejects_overlong_packet_payload(tmp_path):
@@ -508,4 +516,4 @@ def test_win_rejects_overlong_packet_payload(tmp_path):
     )
 
     with pytest.raises(ValueError, match="overlong.*payload"):
-        win_io._read_win_fixed(path)
+        win_io._read_win_fixed(path, timezone="UTC")

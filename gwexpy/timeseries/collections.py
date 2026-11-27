@@ -1846,7 +1846,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if "copy" in kwargs:
             copy = kwargs.pop("copy")
 
-        return super().append(other, copy=copy, **kwargs)
+        was_empty_without_provenance = not self and not hasattr(self, "_gwexpy_io")
+        provenance = getattr(other, "_gwexpy_io", None)
+        result = super().append(other, copy=copy, **kwargs)
+        if was_empty_without_provenance and isinstance(provenance, dict):
+            self._gwexpy_io = {**provenance}
+        return result
 
     def prepend(self, other, **kwargs) -> TimeSeriesDict:
         """Prepend ``other`` to this mapping key by key.

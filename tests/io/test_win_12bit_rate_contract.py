@@ -67,7 +67,7 @@ def test_win_decodes_full_12bit_rates_and_preserves_packet_alignment(tmp_path):
     path = tmp_path / "rates-12bit.win"
     path.write_bytes(_golden_packet(5, 1) + _golden_packet(6, 2))
 
-    stream = _read_win_fixed(path)
+    stream = _read_win_fixed(path, timezone="UTC")
     traces = {trace.stats.channel: trace for trace in stream}
 
     assert set(traces) == {"1201", "1202", "1203", "1204"}
@@ -100,4 +100,4 @@ def test_win_zero_encoded_rate_fails_closed(tmp_path):
     path.write_bytes(struct.pack(">i", len(body) + 4) + body)
 
     with pytest.raises(ValueError, match="sample rate must be positive"):
-        _read_win_fixed(path)
+        _read_win_fixed(path, timezone="UTC")

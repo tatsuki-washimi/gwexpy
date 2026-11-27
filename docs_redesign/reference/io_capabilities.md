@@ -191,7 +191,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
-| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win", timezone="Asia/Tokyo")` | Japanese WIN datasets | Explicit timezone required, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support; requires `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
@@ -205,14 +205,14 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
-win = TimeSeriesDict.read("data.cnt", format="win32")
+win = TimeSeriesDict.read("data.cnt", format="win32", timezone="Asia/Tokyo")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
 - **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
 - **K-NET** and **WIN / WIN32** are intentionally read-only.
 - ObsPy normalizes the K-NET header time from JST to UTC and applies the logger correction, so `t0` is 15 seconds earlier than the K-NET header Record Time. At the gwexpy boundary, K-NET timestamps are absolute UTC.
-- WIN header times are interpreted as UTC because the format header is timezone-naive; each top-level read reports that interpretation once. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`.
+- WIN header times require an explicit timezone because the format is timezone-naive. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise `ValueError`.
 - WIN channels may start after the first packet or end before the last. Each channel keeps the `t0` of its first packet; internal gaps followed by reappearance, duplicate blocks in one packet, or sample-rate changes raise `ValueError`. Packet and channel payload lengths and decoded sample counts are bounded; cumulative deltas do not wrap at int32 bounds, and only a BCD year transition from `99` to `00` advances the century.
 - **ATS.MTH5** is the limited current direct path and requires `mth5>=0.6.8`. It uses `mth5.read_file(..., file_type="metronix")`, requires non-empty one-dimensional channel data and valid start/rate/component/unit metadata, preserves raw values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use `TimeSeries.read`; `TimeSeriesDict` is rejected. Source timing and units are authoritative, so reader overrides are rejected rather than ignored.
 - **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
@@ -268,9 +268,11 @@ events = EventTable.read("events.root")
   without it, the legacy one-second fallback remains. Component streams that
   cross a leap second without a representable `second=60` row fail closed as a
   missing sample.
-- Numeric CSV timestamps retain the legacy GPS-second interpretation.
-  v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales
-  before reading.
+- Numeric CSV timestamps support explicit `time_scale="gps"`, `"unix"`, or
+  `"relative"` and `time_unit=`. Relative times stay relative without `epoch`
+  and become absolute when `epoch` is supplied.
+  Configured numeric columns require a scale; unconfigured auto-detection
+  retains GPS seconds with a deprecation warning.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.

@@ -40,7 +40,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 - **Auto-detect is fine** when the extension uniquely selects one reader.
 - GWpy-backed **`TimeSeries`** and **`TimeSeriesDict`** auto-identify native HDF5 for `.h5` / `.hdf5`; structurally identified NDScope files take precedence. Set **`format="hdf5"` explicitly** for other ambiguous or GWexpy-only HDF5 class families.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
-- **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
+- **Pass `timezone` explicitly** for GBD and WIN/WIN32, whose local calendar fields do not encode a timezone.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
 - For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. For terrain fields, see [Terrain Field I/O](#terrain-field-io); the broader Field I/O contract remains under audit.
 
@@ -194,7 +194,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
-| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win", timezone="Asia/Tokyo")` | Japanese WIN datasets | Explicit timezone required, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Supported narrow route; `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
@@ -208,7 +208,7 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
-win = TimeSeriesDict.read("data.cnt", format="win32")
+win = TimeSeriesDict.read("data.cnt", format="win32", timezone="Asia/Tokyo")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
@@ -217,8 +217,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   normalizes K-NET's JST header time to UTC and applies the logger correction,
   so gwexpy's `t0` is 15 seconds earlier than the K-NET header Record Time.
   At the gwexpy boundary, K-NET timestamps are absolute UTC.
-- **WIN header time is interpreted as UTC** because the format header is
-  timezone-naive; each top-level read reports that interpretation once.
+- **WIN header time requires an explicit timezone** because the format header
+  is timezone-naive.
 - **WIN packet times must advance by exactly one second.** Duplicate or
   backward packet times and global packet gaps raise `ValueError`.
 - **WIN channels may start late or end early.** Each channel keeps the `t0` of
@@ -287,9 +287,12 @@ events = EventTable.read("events.root")
   below half the cadence. The 10,000,000-value cap counts requested-channel
   resampled output across the complete top-level single- or multi-file read
   before allocation.
-- Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
-  does not add `time_scale=` or `time_unit=`; convert other scales before
-  reading.
+- Numeric CSV timestamps accept `time_scale="gps"`, `"unix"`, or `"relative"`
+  and an explicit `time_unit` such as `"ms"`. Relative timestamps remain relative
+  without `epoch` and become absolute when an `epoch` is supplied. Configured numeric columns require a scale; unconfigured
+  auto-detection retains legacy GPS seconds with a deprecation warning.
+- WIN/WIN32 calendar headers have no timezone. Pass `timezone="UTC"`,
+  `"Asia/Tokyo"`, or an explicit offset on every read.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
