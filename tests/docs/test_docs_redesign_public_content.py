@@ -6,10 +6,12 @@ from babel.messages import pofile
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
-CSV_TIME_SCALE_LIMITATION = (
-    "Numeric CSV timestamps retain the legacy GPS-second interpretation. "
-    "v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales "
-    "before reading."
+CSV_TIME_SCALE_CONTRACT = (
+    'Numeric CSV timestamps support explicit `time_scale="gps"`, `"unix"`, or '
+    '`"relative"` and `time_unit=`. Relative times stay relative without `epoch` '
+    "and become absolute when `epoch` is supplied. "
+    "Configured numeric columns require a scale; unconfigured auto-detection "
+    "retains GPS seconds with a deprecation warning."
 )
 CSV_CADENCE_CONTRACT = (
     "CSV validates numeric and configured component-column cadence before "
@@ -143,19 +145,20 @@ def test_corrected_public_pages_have_complete_japanese_catalogs() -> None:
         assert not problems, relative_path
 
 
-def test_numeric_csv_time_scale_limitation_has_japanese_translation() -> None:
+def test_numeric_csv_time_scale_contract_has_japanese_translation() -> None:
     page = _read("reference/io_capabilities.md")
     catalog_path = DOCS / "locales/ja/LC_MESSAGES/reference/io_capabilities.po"
 
-    assert CSV_TIME_SCALE_LIMITATION in " ".join(page.split())
+    assert CSV_TIME_SCALE_CONTRACT in " ".join(page.split())
     with catalog_path.open(encoding="utf-8") as stream:
         catalog = pofile.read_po(stream, locale="ja")
-    translated = catalog.get(CSV_TIME_SCALE_LIMITATION)
+    translated = catalog.get(CSV_TIME_SCALE_CONTRACT)
     assert translated is not None
     assert translated.string == (
-        "CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では "
-        "`time_scale=` と `time_unit=` を追加しないため、他の time scale は"
-        "読み込み前に変換してください。"
+        '数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と '
+        "`time_unit=` を指定できます。`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります。"
+        "設定済み数値列では scale が必須です。自動検出時の省略は非推奨警告付きで"
+        "従来の GPS 秒として扱います。"
     )
     assert "fuzzy" not in translated.flags
 

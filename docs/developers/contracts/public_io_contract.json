@@ -409,7 +409,7 @@
                 "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains.",
                 "resample must be a finite positive target rate; output values are evaluated on the exact target-cadence grid for requested channels without relabelling source samples.",
                 "Absolute float64 time-axis rounding error and spacing must each be strictly below half the cadence; resampling is limited to 10000000 requested-channel output values across the complete top-level single- or multi-file read before allocation.",
-                "Numeric timestamps retain the legacy GPS-second interpretation; time_scale and time_unit are not part of the v0.1.14 contract.",
+                "Numeric CSV accepts time_scale and time_unit; configured numeric columns require a scale, while auto-detection without one retains legacy GPS seconds with a deprecation warning. Relative times stay relative without epoch and become absolute when epoch is supplied.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
             ],
             "optional_dependencies": [],
@@ -1263,9 +1263,9 @@
         {
             "name": "win",
             "canonical": "win",
-            "time_semantics": "fixed_zone",
+            "time_semantics": "naive_civil",
             "epoch_arg": "none",
-            "timezone_arg": "rejected",
+            "timezone_arg": "required",
             "aliases": [
                 "win32"
             ],
@@ -1290,7 +1290,7 @@
             "public_auto_identify": true,
             "registry_auto_identify": true,
             "required_args": {
-                "read": [],
+                "read": ["timezone"],
                 "write": []
             },
             "trusted_only": false,
@@ -1305,7 +1305,7 @@
             "notes": [
                 "Published WIN direct I/O is read-only and collection-first through TimeSeriesDict.",
                 "The alias 'win32' must remain equivalent to canonical 'win' at the public-contract level.",
-                "WIN header time is interpreted as UTC and reported with one warning per top-level read, including multi-file reads.",
+                "WIN header time is localized with the explicitly supplied timezone, including multi-file reads.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
             ],
             "optional_dependencies": [
