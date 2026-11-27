@@ -23,6 +23,7 @@ import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
 
+from ._axis import affine_representable_axis
 from ._optional import require_optional
 
 if TYPE_CHECKING:
@@ -212,6 +213,12 @@ def to_lal_frequencyseries(
 
     create_fn = find_typed_function(lal_type, "Create", "FrequencySeries")
     freqs = np.asarray(fs.frequencies.value)
+    # LAL stores only f0 and deltaF: refuse to linearize a non-uniform axis.
+    if len(freqs) > 1 and not affine_representable_axis(freqs):
+        raise ValueError(
+            "Cannot convert FrequencySeries with an irregular or non-increasing "
+            "frequency axis to LAL FrequencySeries (uniform deltaF required)."
+        )
     f0 = float(freqs[0]) if len(freqs) > 0 else 0.0
     df = float(freqs[1] - freqs[0]) if len(freqs) > 1 else 1.0
     epoch_val = getattr(fs, "epoch", None)

@@ -120,7 +120,9 @@ def from_polars_dataframe(
     # Convert the whole time axis to GPS seconds once (handles datetime/unix/gps).
     times_gps_arr = np.asarray(to_gps(times.to_list()), dtype=float)
     diffs = np.diff(times_gps_arr)
-    is_regular = len(diffs) < 1 or np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
+    from ._axis import exactly_affine_axis
+
+    is_regular = len(diffs) < 1 or exactly_affine_axis(times_gps_arr)
 
     final_name = resolve_meta(name, cols[0])
 

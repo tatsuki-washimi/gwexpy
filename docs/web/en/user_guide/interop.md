@@ -239,6 +239,27 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | Exudyn | `from_exudyn_sensor()` | Public | mainly import | [API](../reference/api/gwexpy.interop.exudyn_.rst) |
 | OpenSees | `from_opensees_recorder()` | Public | mainly import | [API](../reference/api/gwexpy.interop.opensees_.rst) |
 
+(interop-en-axis-coordinates)=
+## Non-Uniform Axis Coordinates
+
+Some targets describe an axis only by an origin and a spacing. The converters
+below do not derive that spacing from the first interval of a non-uniform axis:
+
+- **Control FRD, Polars, SimPEG, ROOT `TGraph` → GWexpy**: the original
+  coordinates are kept as an explicit axis unless `x0`/`dx` reproduce every
+  sample exactly. A uniform axis whose values carry floating-point round-off
+  keeps the same `x0`/`dx` metadata and its exact samples.
+- **GWexpy → LAL / PyCBC frequency series**: these formats store only `f0`
+  and `deltaF` (`delta_f`). An axis that is not uniform up to floating-point
+  round-off raises `ValueError`.
+- **ROOT histograms**: a histogram is defined by its bin edges. A uniform
+  series maps to fixed-width bins, and fixed-width `TH1` input maps back to
+  `x0`/`dx`. A non-uniform series gets variable-width bins whose centres are
+  its samples (up to the round-off of the stored edges); if no increasing bin
+  edges can do that, `to_th1d()` and `to_th2d()` raise `ValueError`. Use
+  `to_tgraph()`, which stores the points themselves, for such one-dimensional
+  data. Variable-width `TH1` input maps to explicit bin-centre coordinates.
+
 (interop-en-priorities)=
 ## What to Prioritize First
 

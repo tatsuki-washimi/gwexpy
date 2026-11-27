@@ -240,6 +240,56 @@ class TestToLalFrequencySeries:
 
         np.testing.assert_allclose(result.data.data, data)
 
+    @pytest.mark.parametrize(
+        "freqs",
+        [
+            np.geomspace(1.0, 10.0, 16),
+            np.array([0.0, 1e-20, 3e-20, 6e-20]),
+            np.array([3.0, 2.0, 1.0]),
+        ],
+    )
+    def test_irregular_or_non_increasing_frequency_axis_raises(
+        self, lal_utils_mock, freqs
+    ):
+        fs = FrequencySeries(np.zeros(len(freqs)), frequencies=freqs)
+        with patch("gwexpy.interop.lal_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular|non-increasing"):
+                to_lal_frequencyseries(fs)
+
+    def test_near_regular_frequency_axis_rejects_lossy_export(self, lal_utils_mock):
+        freqs = np.array([0.0, 1.0, 2.0 + 1e-7, 3.0 + 2e-7])
+        fs = FrequencySeries(np.zeros(freqs.size), frequencies=freqs)
+        with patch("gwexpy.interop.lal_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular"):
+                to_lal_frequencyseries(fs)
+
+    def test_gwpy_regular_jitter_axis_rejects_lossy_export(self, lal_utils_mock):
+        # GWpy's absolute 1e-8 tolerance calls this axis regular (#887).
+        freqs = np.arange(100) * 1e-6 + np.where(np.arange(100) % 2, 1e-9, 0.0)
+        fs = FrequencySeries(np.zeros(freqs.size), frequencies=freqs)
+        assert fs.xindex.regular
+        with patch("gwexpy.interop.lal_.require_optional", return_value=MagicMock()):
+            with pytest.raises(ValueError, match="irregular"):
+                to_lal_frequencyseries(fs)
+
+    @pytest.mark.parametrize(
+        "fs",
+        [
+            FrequencySeries(np.zeros(300), f0=10.0, df=1 / 3),
+            FrequencySeries(np.zeros(1000), frequencies=np.linspace(1, 10, 1000)),
+        ],
+        ids=["define-1/3", "linspace"],
+    )
+    def test_uniform_axis_with_float_roundoff_is_exported(self, lal_utils_mock, fs):
+        create = MagicMock()
+        create.return_value.data = SimpleNamespace(data=np.zeros(len(fs)))
+        lal_utils_mock.find_typed_function.return_value = create
+        with patch("gwexpy.interop.lal_.require_optional", return_value=MagicMock()):
+            to_lal_frequencyseries(fs)
+        freqs = fs.frequencies.value
+        _, _, f0, df, _, length = create.call_args.args
+        assert (f0, df, length) == (freqs[0], freqs[1] - freqs[0], len(fs))
+
 
 # ---------------------------------------------------------------------------
 # Missing LAL (import error)

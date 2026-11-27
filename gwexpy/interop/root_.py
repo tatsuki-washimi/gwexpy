@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 import numpy as np
 
+from ._axis import affine_representable_axis, exactly_affine_axis
 from ._optional import require_optional
 from .base import to_plain_array
 
@@ -46,6 +47,90 @@ def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     if unit_str:
         return f"{name} [{unit_str}]"
     return str(name)
+
+
+_CENTER_ROUNDOFF_ULPS = 2.0
+
+
+def _centers_match(actual: np.ndarray, centers: np.ndarray, edges: np.ndarray) -> bool:
+    """Return whether bin centres equal *centers* up to edge round-off.
+
+    A histogram stores edges; each centre is derived from two of them in
+    floating point, so it can differ from the sample by a few ULPs of the
+    neighbouring edges. Anything larger means the sample was moved.
+    """
+    scale = np.maximum(np.abs(edges[:-1]), np.abs(edges[1:]))
+    tolerance = _CENTER_ROUNDOFF_ULPS * np.spacing(scale)
+    return bool(np.all(np.abs(np.asarray(actual) - centers) <= tolerance))
+
+
+def _edges_for_exact_centers(centers: np.ndarray) -> np.ndarray:
+    """Build increasing bin edges whose centres are the given *centers*.
+
+    Requiring ``(e[k] + e[k+1]) / 2 == c[k]`` fixes every edge once the first
+    edge ``e0`` is chosen: ``e[k] = s[k] + (-1)**k * e0`` with
+    ``s[k+1] = 2 c[k] - s[k]``. The widths are positive exactly when
+    ``c[k] > e[k]`` for every ``k``, which bounds ``e0`` to an open interval.
+    The conventional half-interval first edge is used when it lies in that
+    interval, otherwise its midpoint. ``ValueError`` is raised when the
+    interval is empty, i.e. no increasing edges can centre a bin on every
+    sample.
+    """
+    values = np.asarray(centers, dtype=float)
+    n = values.size
+    if n == 1:
+        return np.array([values[0] - 0.5, values[0] + 0.5])
+    partial = np.empty(n + 1, dtype=float)
+    partial[0] = 0.0
+    for index, center in enumerate(values):
+        partial[index + 1] = 2.0 * center - partial[index]
+    upper = float(np.min(values[0::2] - partial[0:n:2]))
+    lower = float(np.max(partial[1:n:2] - values[1::2]))
+    conventional = float(values[0] - (values[1] - values[0]) / 2.0)
+    if lower < conventional < upper:
+        first = conventional
+    else:
+        first = 0.5 * (lower + upper)
+
+    edges = np.empty(n + 1, dtype=float)
+    edges[0] = first
+    for index, center in enumerate(values):
+        edges[index + 1] = 2.0 * center - edges[index]
+    if (
+        not lower < upper
+        or not np.all(np.isfinite(edges))
+        or not np.all(np.diff(edges) > 0)
+        or not _centers_match(edges[:-1] + 0.5 * np.diff(edges), values, edges)
+    ):
+        raise ValueError(
+            "ROOT histogram bin edges cannot preserve the exact sample coordinates "
+            "(no increasing bin edges centre a bin on every sample); "
+            "use a TGraph for one-dimensional data"
+        )
+    return edges
+
+
+def _histogram_binning(centers: np.ndarray) -> tuple[np.ndarray, bool]:
+    """Return ``(edges, uniform)`` for histogram bins centred on *centers*.
+
+    A ROOT histogram is defined by its bin edges; series samples become bin
+    centres. When the samples form a uniform grid (up to floating-point
+    round-off), uniform binning is the faithful representation and ROOT
+    derives the centres from the edges. Otherwise variable bins are built so
+    that every centre equals its sample up to edge round-off, or
+    ``ValueError`` is raised instead of moving the samples to
+    midpoint-derived centres.
+    """
+    values = np.asarray(centers, dtype=float)
+    if values.size == 1:
+        return np.array([values[0] - 0.5, values[0] + 0.5]), True
+    if affine_representable_axis(values):
+        step = values[1] - values[0]
+        edges = np.linspace(
+            values[0] - step / 2, values[-1] + step / 2, values.size + 1
+        )
+        return edges, True
+    return _edges_for_exact_centers(values), False
 
 
 def _root_axis_unit(axis: Any) -> str | None:
@@ -210,30 +295,26 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
     if n < 2:
         raise ValueError("Series must have at least 2 points for TH1D")
 
-    # Determine binning
-    # TH1D requires bin edges. Series usually represents bin centers or samples.
-    # We assume regular if possible, or use variable bins.
-
-    dx_vals = np.diff(x)
-    is_regular = np.allclose(dx_vals, dx_vals[0])
+    # TH1D is defined by bin edges and the series samples become bin centres.
+    # A uniform sample grid maps to fixed-width binning; any other grid must
+    # keep each sample as the exact centre of its variable-width bin.
+    edges, uniform = _histogram_binning(x)
 
     name = str(series.name or "hist")
     title = name
 
-    if is_regular:
-        dx = dx_vals[0]
-        xlow = x[0] - dx / 2.0
-        xup = x[-1] + dx / 2.0
-        hist = ROOT.TH1D(name, title, n, xlow, xup)
+    if uniform:
+        hist = ROOT.TH1D(name, title, n, float(edges[0]), float(edges[-1]))
     else:
-        # Variable bin widths
-        # We construct edges halfway between centers
-        edges = np.zeros(n + 1)
-        edges[1:-1] = (x[:-1] + x[1:]) / 2.0
-        # Extrapolate edges for first and last
-        edges[0] = x[0] - (edges[1] - x[0])
-        edges[-1] = x[-1] + (x[-1] - edges[-2])
         hist = ROOT.TH1D(name, title, n, edges)
+        actual_centers = np.array(
+            [hist.GetXaxis().GetBinCenter(i + 1) for i in range(n)]
+        )
+        if not _centers_match(actual_centers, x, edges):
+            raise ValueError(
+                "ROOT TH1D cannot preserve the exact sample coordinates; "
+                "use to_tgraph()"
+            )
 
     # Fill bins (vectorized)
     # TH1 has n+2 bins (0=underflow, n+1=overflow)
@@ -268,26 +349,22 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
     nt = len(times)
     nf = len(freqs)
 
-    # helper for edges
-    def _get_edges(arr):
-        if len(arr) < 2:
-            return np.array([arr[0] - 0.5, arr[0] + 0.5])
-        dx = np.diff(arr)
-        if np.allclose(dx, dx[0]):
-            step = dx[0]
-            return np.linspace(arr[0] - step / 2, arr[-1] + step / 2, len(arr) + 1)
-        else:
-            edges = np.zeros(len(arr) + 1)
-            edges[1:-1] = (arr[:-1] + arr[1:]) / 2.0
-            edges[0] = arr[0] - (edges[1] - arr[0])
-            edges[-1] = arr[-1] + (arr[-1] - edges[-2])
-            return edges
-
-    t_edges = _get_edges(times)
-    f_edges = _get_edges(freqs)
+    # Uniform axes use uniform bin edges; other axes keep exact bin centres
+    # (see ``_histogram_binning``).
+    t_edges, t_uniform = _histogram_binning(times)
+    f_edges, f_uniform = _histogram_binning(freqs)
 
     name = str(spec.name or "spectrogram")
     hist = ROOT.TH2D(name, name, nt, t_edges, nf, f_edges)
+    for axis, centers, axis_edges, uniform in (
+        (hist.GetXaxis(), times, t_edges, t_uniform),
+        (hist.GetYaxis(), freqs, f_edges, f_uniform),
+    ):
+        if uniform:
+            continue
+        actual = np.array([axis.GetBinCenter(i + 1) for i in range(len(centers))])
+        if not _centers_match(actual, centers, axis_edges):
+            raise ValueError("ROOT TH2D cannot preserve the exact sample coordinates")
 
     # Fill (vectorized)
     # ROOT stores data as linearized array with index = x + (nx+2)*y
@@ -515,7 +592,16 @@ def from_root(
             "unit": unit,
             "name": name,
         }
-        if n > 0 and np.allclose(bin_widths, bin_widths[0]):
+        # A histogram's coordinates are defined by its bin edges. Fixed-width
+        # binning is uniform by construction, so the series keeps the affine
+        # origin and cadence. With variable binning, the bin centres become
+        # explicit coordinates unless an origin and cadence rebuild every
+        # centre exactly.
+        uniform_binning = n > 0 and (
+            not axis.IsVariableBinSize()
+            or exactly_affine_axis(x, step=float(bin_widths[0]))
+        )
+        if uniform_binning:
             origin_name = "f0" if is_frequencyseries_cls else "x0"
             interval_name = "df" if is_frequencyseries_cls else "dt"
             series_kwargs[origin_name] = x[0]
@@ -568,8 +654,10 @@ def from_root(
                 "TGraph can only be converted to TimeSeries or FrequencySeries."
             )
         if n > 1:
+            # Graph points are the coordinates themselves: keep them unless an
+            # origin and cadence rebuild every point exactly.
             dx_vals = np.diff(x)
-            if np.allclose(dx_vals, dx_vals[0]):
+            if exactly_affine_axis(x):
                 res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
             else:
                 if is_frequencyseries_cls:
