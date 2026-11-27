@@ -196,3 +196,26 @@ def test_spectrogram_collections_preserve_irregular_axes(tmp_path) -> None:
     sgl_back = SpectrogramList().read(list_path, format="hdf5")
     _assert_roundtrip_same(sgl_back[0], sg1)
     _assert_roundtrip_same(sgl_back[1], sg2)
+
+
+def test_887_jitter_on_both_axes_is_not_linearized(tmp_path) -> None:
+    """Reproduce #887 inventory §2.5: GWpy-regular, non-affine axes."""
+    times = np.arange(100) * 1e-6 + np.where(np.arange(100) % 2, 1e-9, 0.0)
+    freqs = np.linspace(0.0, 100.0, 10) + np.where(np.arange(10) % 2, 1e-9, 0.0)
+    sg = Spectrogram(
+        np.ones((times.size, freqs.size)), times=times, frequencies=freqs, name="jit"
+    )
+    assert sg._xindex.regular and sg._yindex.regular
+
+    target = tmp_path / "jitter.h5"
+    sg.write(target, format="hdf5")
+    with h5py.File(target, "r") as h5f:
+        attrs = dict(h5f["jit"].attrs)
+    assert {"xindex", "yindex"} <= set(attrs)
+    assert not {"dx", "dy", "x0", "y0"} & set(attrs)
+
+    back = Spectrogram.read(target, format="hdf5")
+    _assert_roundtrip_same(back, sg)
+    gw = GwpySpectrogram.read(target, format="hdf5")
+    np.testing.assert_array_equal(gw.times.value, times)
+    np.testing.assert_array_equal(gw.frequencies.value, freqs)

@@ -8,6 +8,17 @@
   Formats registered only in Astropy's separate registry are no longer
   reachable through that fallback; register them with the GWpy registry (#444).
 
+### Fixed
+
+- **Spectrogram HDF5 coordinate preservation** (#887 follow-up, U-7):
+  `Spectrogram.write(format="hdf5")` (also through `SpectrogramDict` and
+  `SpectrogramList`) stores the exact time and/or frequency coordinates in the
+  existing `xindex`/`yindex` attributes, without `x0`/`dx` or `y0`/`dy`, when
+  the affine layout would not reproduce every sample exactly (irregular axes,
+  and axes GWpy's absolute tolerance calls regular). Previously such axes were
+  written as `x0`/`dx` from the first interval and read back linearized.
+  Exactly affine axes keep the existing layout; GWpy reads both layouts.
+
 ### Added
 
 - **GWDama HDF5 I/O**: `TimeSeriesDict.read()` and `.write()` support
