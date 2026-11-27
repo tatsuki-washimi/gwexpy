@@ -22,12 +22,21 @@ from collections import OrderedDict
 
 import numpy as np
 
-from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
+from gwexpy.io.hdf5_series import needs_explicit_axis
+from gwexpy.io.time_selection import (
+    _normalize_bound,
+    apply_time_selection,
+    pop_time_selection,
+)
 from gwexpy.io.utils import (
     apply_unit,
+    check_pad_dtype_compatible,
     ensure_dependency,
+    maybe_pad_timeseries,
     set_provenance,
 )
+from gwexpy.time._reference import get_time_reference, set_time_reference
+from gwexpy.types._uncertainty import suppress_uncertainty_drop_warning
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from ._multi import expand_multi_source, read_multi_dict
@@ -163,6 +172,129 @@ def _coerce_sample_rate_from_attrs_or_override(
     )
 
 
+def _validate_gap_arg(gap: object) -> None:
+    if gap is not None and gap not in ("raise", "ignore", "pad"):
+        raise ValueError(f"gap must be 'raise', 'ignore', or 'pad', got {gap!r}")
+
+
+def _apply_dict_gap_pad(
+    tsd: TimeSeriesDict,
+    *,
+    start: object = None,
+    end: object = None,
+    gap: str | None = None,
+    pad: object = None,
+) -> TimeSeriesDict:
+    """Apply GWpy-consistent outer-window ``gap=`` / ``pad=`` semantics to a dict."""
+    _validate_gap_arg(gap)
+    if gap is None and pad is None:
+        return tsd
+    start_bound = _normalize_bound(start)
+    end_bound = _normalize_bound(end)
+    if start_bound is None and end_bound is None:
+        return tsd
+
+    eff_gap = gap if gap is not None else "pad"
+    if eff_gap == "ignore":
+        return tsd
+    pad_val = np.nan if pad is None else pad
+
+    out = type(tsd)()
+    for key, ts in tsd.items():
+        if len(ts) == 0:
+            if eff_gap == "raise":
+                raise ValueError(
+                    f"{type(ts).__name__} '{key}' does not cover requested "
+                    f"interval ({start_bound}, {end_bound})"
+                )
+            if (
+                start_bound is not None
+                and end_bound is not None
+                and end_bound > start_bound
+            ):
+                if needs_explicit_axis(ts):
+                    raise ValueError(
+                        f"Cannot pad irregular-axis channel '{key}' that has no "
+                        f"samples in ({start_bound}, {end_bound})"
+                    )
+                check_pad_dtype_compatible(ts.dtype, pad_val)
+                rate = float(ts.sample_rate.value)
+                n_samples = max(
+                    0, int(np.ceil((end_bound - start_bound) * rate - 1e-12))
+                )
+                padded = TimeSeries(
+                    np.full(n_samples, pad_val, dtype=ts.dtype),
+                    t0=start_bound,
+                    sample_rate=rate,
+                    unit=ts.unit,
+                    name=ts.name,
+                    channel=ts.channel,
+                )
+                set_time_reference(padded, get_time_reference(ts))
+                out[key] = padded
+            else:
+                out[key] = ts
+            continue
+
+        lo, hi = float(ts.span[0]), float(ts.span[1])
+        needs_left = start_bound is not None and start_bound < lo
+        needs_right = end_bound is not None and end_bound > hi
+        if (needs_left or needs_right) and needs_explicit_axis(ts):
+            if eff_gap == "raise":
+                raise ValueError(
+                    f"{type(ts).__name__} '{key}' with span {ts.span} does not "
+                    f"cover requested interval ({start_bound}, {end_bound})"
+                )
+            raise ValueError(
+                f"Irregular-axis {type(ts).__name__} '{key}' cannot be padded "
+                f"outside its recorded span {ts.span}"
+            )
+
+        with suppress_uncertainty_drop_warning():
+            padded = maybe_pad_timeseries(
+                ts,
+                pad_value=pad_val,
+                start=start_bound,
+                end=end_bound,
+                gap=eff_gap,
+            )
+        if padded is not ts and ts._has_uncertainty():
+            snapshot = ts._uncertainty_snapshot()
+
+            def pad_attachment(value):
+                if value is None:
+                    return None
+                return maybe_pad_timeseries(
+                    value,
+                    pad_value=pad_val,
+                    start=start_bound,
+                    end=end_bound,
+                    gap=eff_gap,
+                )
+
+            quantiles = snapshot.get("_gwex_unc_quantiles")
+            padded._set_uncertainty(
+                lower=pad_attachment(snapshot.get("_gwex_unc_lower")),
+                upper=pad_attachment(snapshot.get("_gwex_unc_upper")),
+                estimate_mean=pad_attachment(snapshot.get("_gwex_unc_estimate_mean")),
+                quantiles=(
+                    {key: pad_attachment(value) for key, value in quantiles.items()}
+                    if quantiles is not None
+                    else None
+                ),
+                center_kind=snapshot.get("_gwex_unc_center_kind"),
+                uncertainty_kind=snapshot.get("_gwex_unc_uncertainty_kind"),
+                interval_levels=snapshot.get("_gwex_unc_interval_levels"),
+            )
+        set_time_reference(padded, get_time_reference(ts))
+        out[key] = padded
+
+    provenance = getattr(tsd, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        set_provenance(out, {**provenance})
+    return out
+
+
 def _series_from_zarr_array(
     key,
     arr,
@@ -272,14 +404,19 @@ def read_timeseriesdict_zarr(
     # which rejects them with a TypeError naming a function the caller never
     # invoked.  Cropping happens once, on the merged result.
     start, end = pop_time_selection(kwargs)
+    gap = kwargs.pop("gap", None)
+    pad = kwargs.pop("pad", None)
+    _validate_gap_arg(gap)
 
     multi = expand_multi_source(source)
     if multi is not None:
-        return apply_time_selection(
+        result = apply_time_selection(
             read_multi_dict(
                 read_timeseriesdict_zarr,
                 multi,
                 "zarr",
+                gap=gap,
+                pad=pad,
                 channels=channels,
                 unit=unit,
                 sample_rate_override=sample_rate_override,
@@ -290,6 +427,7 @@ def read_timeseriesdict_zarr(
             start,
             end,
         )
+        return _apply_dict_gap_pad(result, start=start, end=end, gap=gap, pad=pad)
 
     zarr = _import_zarr()
 
@@ -324,7 +462,8 @@ def read_timeseriesdict_zarr(
             "unit_source": "override" if unit else "file",
         },
     )
-    return apply_time_selection(tsd, start, end)
+    result = apply_time_selection(tsd, start, end)
+    return _apply_dict_gap_pad(result, start=start, end=end, gap=gap, pad=pad)
 
 
 def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
