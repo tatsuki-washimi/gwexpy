@@ -6,14 +6,33 @@ from importlib import import_module as _import_module
 import gwpy.table
 
 # gwexpy-native additions
-from gwexpy.table.segment_cell import SegmentCell as SegmentCell
-from gwexpy.table.segment_table import RowProxy as RowProxy
-from gwexpy.table.segment_table import SegmentTable as SegmentTable
+from gwexpy.table.segment.cell import CellStatus as CellStatus
+from gwexpy.table.segment.cell import SegmentCell as SegmentCell
+from gwexpy.table.segment.core import RowProxy as RowProxy
+from gwexpy.table.segment.core import SegmentTable as SegmentTable
+from gwexpy.table.segment.exceptions import CellLoadError as CellLoadError
+from gwexpy.table.segment.expr import SegmentColumn as SegmentColumn
+from gwexpy.table.segment.expr import col as col
+from gwexpy.table.segment.frame import SegmentFrame as SegmentFrame
+from gwexpy.table.segment.summary import SummaryTable as SummaryTable
 
 _gwpy_all = [name for name in dir(gwpy.table) if not name.startswith("_")]
 _CURATED_PROXY_MODULES = {"filter", "table"}
 
-__all__ = sorted(set(_gwpy_all) | {"SegmentCell", "SegmentTable", "RowProxy"})
+__all__ = sorted(
+    set(_gwpy_all)
+    | {
+        "CellLoadError",
+        "CellStatus",
+        "RowProxy",
+        "SegmentCell",
+        "SegmentColumn",
+        "SegmentFrame",
+        "SegmentTable",
+        "SummaryTable",
+        "col",
+    }
+)
 
 
 def __getattr__(name: str):
