@@ -10,9 +10,7 @@
 
 ### Fixed
 
-<<<<<<< HEAD
 - Zarr writers now preserve irregular and non-affine (GWpy-"regular" but not reproducible from `t0`/`dt`) time axes exactly. Such channels store `xindex`, `xunit` and `gwexpy_time_reference` and omit `sample_rate`/`dt`/`t0`; regular axes keep the existing layout unchanged. TimeSeriesMatrix writers and readers require identical `xindex` across channels instead of interpolating channels onto a common uniform grid, and a corrupt `xindex` length raises `ValueError` (#887 follow-up, U-7).
-=======
 - **Spectrogram HDF5 coordinate preservation** (#887 follow-up, U-7):
   `Spectrogram.write(format="hdf5")` (also through `SpectrogramDict` and
   `SpectrogramList`) stores the exact time and/or frequency coordinates in the
@@ -21,7 +19,6 @@
   and axes GWpy's absolute tolerance calls regular). Previously such axes were
   written as `x0`/`dx` from the first interval and read back linearized.
   Exactly affine axes keep the existing layout; GWpy reads both layouts.
->>>>>>> origin/main
 
 ### Added
 
