@@ -23,12 +23,19 @@ from typing import TYPE_CHECKING, Any
 
 import h5py
 import numpy as np
+from astropy import units as u
 from gwpy.io import hdf5 as gwpy_hdf5
 from gwpy.io.hdf5 import identify_hdf5
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
+from gwpy.types.io.hdf5 import write_hdf5_array
 
 from gwexpy.io import hdf5_time_reference as timing_hdf5
+from gwexpy.io.hdf5_series import (
+    IRREGULAR_AXIS_LIBVER,
+    needs_explicit_axis,
+    raise_for_attribute_limit,
+)
 from gwexpy.time._reference import get_time_reference, set_time_reference
 
 from ..provenance import (
@@ -1197,7 +1204,12 @@ def _write_anonymous_stream(
             else:
                 mode = "w"
             stage.seek(0)
-            with h5py.File(stage, mode) as handle:
+            libver = (
+                IRREGULAR_AXIS_LIBVER
+                if mode == "w" and _spectrogram_needs_explicit_axes(array)
+                else None
+            )
+            with h5py.File(stage, mode, libver=libver) as handle:
                 result = _write_to_open_container(array, handle, path, writer, kwargs)
             stage.seek(0)
             try:
@@ -1270,7 +1282,10 @@ def _write_path_transaction(
     )
     os.close(descriptor)
     try:
-        with h5py.File(temporary_name, "w") as h5file:
+        libver = (
+            IRREGULAR_AXIS_LIBVER if _spectrogram_needs_explicit_axes(array) else None
+        )
+        with h5py.File(temporary_name, "w", libver=libver) as h5file:
             result = _write_to_open_container(array, h5file, path, writer, kwargs)
         if target_mode is not None:
             os.chmod(temporary_name, target_mode)
@@ -1281,10 +1296,192 @@ def _write_path_transaction(
             os.unlink(temporary_name)
 
 
+def _index_needs_explicit(index: Any) -> bool:
+    """Return whether an axis index needs explicit coordinate storage."""
+    if index is None:
+        return False
+    if not index.regular:
+        return True
+    try:
+        start = index[0]
+        step = index[1] - start
+        reconstructed = type(index).define(start, step, index.size)
+    except (AttributeError, IndexError, TypeError, ValueError):
+        return True
+    return not np.array_equal(reconstructed.value, index.value)
+
+
+def _needs_explicit_y_axis(array: Any) -> bool:
+    """Return whether the spectrogram y-axis needs explicit coordinates."""
+    return _index_needs_explicit(getattr(array, "_yindex", None))
+
+
+def _spectrogram_needs_explicit_axes(array: Any) -> bool:
+    """Return whether either spectrogram axis needs explicit coordinates."""
+    return needs_explicit_axis(array) or _needs_explicit_y_axis(array)
+
+
+def _validate_and_build_explicit_axis_attrs(
+    array: Any,
+    axis: str,
+    combined: dict[str, Any],
+) -> None:
+    """Populate explicit axis attrs for *axis* ('x' or 'y') and validate conflicts."""
+    index = getattr(array, f"{axis}index")
+    unit_attr = getattr(array, f"{axis}unit")
+    index_key = f"{axis}index"
+    unit_key = f"{axis}unit"
+    origin_key = f"{axis}0"
+    delta_key = f"d{axis}"
+    index_values = np.asarray(index.value)
+
+    if delta_key in combined:
+        raise ValueError(
+            f"attrs[{delta_key!r}] cannot describe an explicit HDF5 {index_key}"
+        )
+    if index_key in combined and not np.array_equal(
+        np.asarray(combined[index_key]), index_values
+    ):
+        raise ValueError(
+            f"attrs[{index_key!r}] conflicts with the spectrogram coordinates"
+        )
+    if unit_key in combined:
+        try:
+            supplied_unit = u.Unit(combined[unit_key])
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"attrs[{unit_key!r}] must match the spectrogram axis unit"
+            ) from exc
+        if supplied_unit != unit_attr:
+            raise ValueError(
+                f"attrs[{unit_key!r}] conflicts with the spectrogram axis unit"
+            )
+    if origin_key in combined:
+        supplied_origin = combined[origin_key]
+        try:
+            if hasattr(supplied_origin, "to_value"):
+                supplied_origin = supplied_origin.to_value(unit_attr)
+            if float(supplied_origin) != float(index_values[0]):
+                raise ValueError(
+                    f"attrs[{origin_key!r}] conflicts with the spectrogram coordinates"
+                )
+        except (TypeError, u.UnitConversionError) as exc:
+            raise ValueError(
+                f"attrs[{origin_key!r}] conflicts with the spectrogram coordinates"
+            ) from exc
+
+    combined[unit_key] = str(unit_attr)
+    combined[index_key] = index_values
+
+
+def _populate_regular_axis_attrs(
+    array: Any,
+    axis: str,
+    combined: dict[str, Any],
+) -> None:
+    """Populate regular affine attrs for *axis* ('x' or 'y') if not overridden."""
+    unit_key = f"{axis}unit"
+    origin_key = f"{axis}0"
+    delta_key = f"d{axis}"
+    aunit = getattr(array, unit_key)
+    combined.setdefault(unit_key, str(aunit))
+    combined.setdefault(origin_key, getattr(array, origin_key).to(aunit).value)
+    combined.setdefault(delta_key, getattr(array, delta_key).to(aunit).value)
+
+
+def _raise_for_spectrogram_attribute_limit(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: str | None,
+    exc: OSError,
+    *,
+    x_explicit: bool,
+    y_explicit: bool,
+) -> None:
+    """Explain an attribute-size failure naming the explicit spectrogram axes.
+
+    Delegates the cleanup and the 'earliest'-format check to
+    :func:`raise_for_attribute_limit`, then rewrites its message so that a
+    long frequency (y) axis is not reported as the time (x) axis.
+    """
+    try:
+        raise_for_attribute_limit(array, container, path, exc)
+    except OSError as diagnosed:
+        if diagnosed is exc:
+            raise
+        axes = []
+        if x_explicit:
+            axes.append(f"time (x) axis, {array.xindex.size} samples")
+        if y_explicit:
+            axes.append(f"frequency (y) axis, {array.yindex.size} samples")
+        msg = (
+            f"Cannot store the explicit {' and '.join(axes)} of "
+            f"{type(array).__name__} {array.name!r} in an HDF5 file opened "
+            "with the 'earliest' format bound, which limits an attribute to "
+            "64 KiB. Pass a file path, or open the file with "
+            f"h5py.File(..., libver={IRREGULAR_AXIS_LIBVER!r})."
+        )
+        raise OSError(msg) from exc
+
+
+def _write_spectrogram_any_axis(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: str | None = None,
+    *,
+    base_writer: Callable[..., h5py.Dataset],
+    **kwargs: Any,
+) -> h5py.Dataset:
+    """Write a Spectrogram preserving exact coordinates for irregular axes."""
+    x_explicit = needs_explicit_axis(array)
+    y_explicit = _needs_explicit_y_axis(array)
+    if not x_explicit and not y_explicit:
+        return base_writer(array, container, path=path, **kwargs)
+
+    combined = dict(kwargs.get("attrs") or {})
+    if x_explicit:
+        _validate_and_build_explicit_axis_attrs(array, "x", combined)
+    else:
+        _populate_regular_axis_attrs(array, "x", combined)
+    if y_explicit:
+        _validate_and_build_explicit_axis_attrs(array, "y", combined)
+    else:
+        _populate_regular_axis_attrs(array, "y", combined)
+
+    explicit_kwargs = {**kwargs, "attrs": combined}
+    try:
+        dataset = write_hdf5_array(array, container, path=path, **explicit_kwargs)
+    except OSError as exc:
+        _raise_for_spectrogram_attribute_limit(
+            array, container, path, exc, x_explicit=x_explicit, y_explicit=y_explicit
+        )
+        raise
+
+    if x_explicit:
+        for attr in ("dx", "x0"):
+            if attr in dataset.attrs:
+                del dataset.attrs[attr]
+    if y_explicit:
+        for attr in ("dy", "y0"):
+            if attr in dataset.attrs:
+                del dataset.attrs[attr]
+    return dataset
+
+
 def register_hdf5_provenance_io(cls: type[Any]) -> None:
     """Register HDF5 provenance hooks while retaining GWpy descriptors."""
     base_reader = io_registry.get_reader("hdf5", BaseSpectrogram)
     base_writer = io_registry.get_writer("hdf5", BaseSpectrogram)
+
+    def write_hdf5_spectrogram_any_axis(
+        array: Any,
+        container: h5py.Group | h5py.File,
+        path: str | None = None,
+        **kwargs: Any,
+    ) -> h5py.Dataset:
+        return _write_spectrogram_any_axis(
+            array, container, path=path, base_writer=base_writer, **kwargs
+        )
 
     def read_hdf5_spectrogram(
         source: Any, path: str | None = None, **kwargs: Any
@@ -1325,21 +1522,30 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
         if isinstance(target, (str, Path)):
             _path_replacement_preflight(Path(target))
             with _file_transaction(target):
-                return _write_path_transaction(array, target, path, base_writer, kwargs)
+                return _write_path_transaction(
+                    array, target, path, write_hdf5_spectrogram_any_axis, kwargs
+                )
         if isinstance(target, (h5py.File, h5py.Group)):
             with _file_transaction(target):
                 return _write_to_open_container(
-                    array, target, path, base_writer, kwargs
+                    array, target, path, write_hdf5_spectrogram_any_axis, kwargs
                 )
         target_name = getattr(target, "name", None)
         if isinstance(target_name, (str, Path)):
             with _file_transaction(target_name):
                 mode = "a" if kwargs.get("append", False) else "w"
-                with h5py.File(target, mode) as handle:
+                libver = (
+                    IRREGULAR_AXIS_LIBVER
+                    if mode == "w" and _spectrogram_needs_explicit_axes(array)
+                    else None
+                )
+                with h5py.File(target, mode, libver=libver) as handle:
                     return _write_to_open_container(
-                        array, handle, path, base_writer, kwargs
+                        array, handle, path, write_hdf5_spectrogram_any_axis, kwargs
                     )
-        return _write_anonymous_stream(array, target, path, base_writer, kwargs)
+        return _write_anonymous_stream(
+            array, target, path, write_hdf5_spectrogram_any_axis, kwargs
+        )
 
     io_registry.register_reader("hdf5", cls, read_hdf5_spectrogram, force=True)
     io_registry.register_writer("hdf5", cls, write_hdf5_spectrogram, force=True)
