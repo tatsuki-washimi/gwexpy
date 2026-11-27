@@ -9,6 +9,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **LIGO Frame** | `.gwf` | `tests/timeseries/test_io_gwf_*.py` | FrameCPP/LALFrame | 重力波解析標準 |
 | **ndscope HDF5** | `.h5` | `tests/timeseries/test_io_ndscope_hdf5.py` | `h5py` | KAGRA/ndscope |
+| **GWDama HDF5** | `.h5`, `.hdf5` | `tests/io/test_gwdama_hdf5.py` | `h5py` | 階層化された GWDama 時系列。`format="hdf.gwdama"` を明示 |
 | **ATS Binary** | `.ats` | `tests/io/test_ats_reader.py` | - | ADC Raw 形式 |
 | **WIN Binary** | `.win` | `tests/io/test_win_reader.py` | - | 地震計データ |
 | **Zarr** | `.zarr` | `tests/interop/test_zarr.py` | `zarr` | 高並列・クラウド対応 |

@@ -15,6 +15,21 @@ data = TimeSeriesDict.read("measurement.h5", format="hdf.ndscope")
 Follow the [Commissioner tutorial](../tutorials/commissioner.md) for a downloadable
 sample, interval selection, ASD/coherence, and saved analysis conditions.
 
+## Read and write GWDama HDF5
+
+```python
+from gwexpy.timeseries import TimeSeriesDict
+
+data = TimeSeriesDict.read("archive.h5", format="hdf.gwdama", group="run1")
+data.write("copy.h5", format="hdf.gwdama", group="run1", overwrite=True)
+```
+
+Specifying the format is recommended because `.h5` and `.hdf5` are shared with other HDF5
+schemas. The reader scans nested groups when `group` is omitted. GWDama dataset
+attributes such as `sample_rate`, `t0`, `channel`, and `unit` are restored; other
+HDF5 attributes are retained for a read/write round trip. This support uses
+`h5py` and does not require the `gwdama` package.
+
 ## Read DiagGUI time-series products
 
 ```python

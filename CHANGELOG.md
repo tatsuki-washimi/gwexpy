@@ -10,6 +10,9 @@
 
 ### Added
 
+- **GWDama HDF5 I/O**: `TimeSeriesDict.read()` and `.write()` support
+  `format="hdf.gwdama"` using `h5py` alone. Nested groups and unknown HDF5
+  attributes round-trip; missing sampling metadata fails explicitly (#607).
 - **SegmentTable workflow**: Add explicit cell status, expressions, row and column operations, table combination, and versioned HDF5 persistence with lazy payload restoration (#592, #355, #405, #408).
 - **SegmentTable reducers**: Define the `Reducer` state protocol and a streaming eager batch runner for later per-segment and grouped statistics (#592, S-7).
 - ARIMA forecasts accept a time-span `horizon` in seconds or a time Quantity, in addition to the existing `steps` argument. A span shorter than one sample interval raises `ValueError`.

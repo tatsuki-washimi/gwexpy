@@ -109,6 +109,7 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | 行列系まで含む direct I/O |
 | **HDF5** | `TimeSeries`, `FrequencySeries` など | `TimeSeriesDict` など | `Spectrogram`, `Histogram`, `EventTable` を含む主保存先 |
 | **hdf.ndscope** | - | `TimeSeriesDict` | ndscope 互換スキーマ。alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.gwdama** | - | `TimeSeriesDict` | GWDama 階層 HDF5。alias: `gwdama`, `gwdama-hdf5`。基本依存の `h5py` のみ使用 |
 | **xml.diaggui** | - | `TimeSeriesDict` | `products` 必須。旧 alias: `dttxml` |
 | **NDS2 / GWOSC** | `TimeSeries` | - | `fetch()` / `fetch_open_data()` を使う |
 | **ATS.MTH5** | `TimeSeries` | - | 一部対応の単一路 |
@@ -154,6 +155,7 @@ GW 系の標準保存・交換・取得経路です。
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | LIGO/KAGRA の標準交換 | 標準形式。gwpy 経由 |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`。その他のクラスは `format="hdf5"` を使用 | 長期保存、メタデータ保持 | native time-series HDF5 は自動判別。その他のファミリは明示を推奨 |
 | **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope 互換 | `TimeSeriesDict` 限定。writer は `rate_hz` を使用し、reader は外部データの `sample_rate` も受理します。データを持つ group にどちらの属性もない場合は、黙って読み飛ばさず group 名を含む `ValueError` を送出します。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.gwdama** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.gwdama", group="run1")`, `.write(..., format="hdf.gwdama")` | GWDama 階層 HDF5 | HDF5 拡張子を共有するため `format` を明示します。入れ子の group に対応し、標本化情報がなければ `ValueError`、`t0` がなければ警告して 0.0 を使用します。未知の属性も再保存できます。`gwdama` パッケージは不要です。 |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT 出力 | `products` 必須。旧 alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | 検出器データサーバ取得 | ネットワーク経由 |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | オープンデータ取得 | ネットワーク経由 |
@@ -347,6 +349,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 | 形式 | 状態 | 補足 |
 |---|---|---|
 | `hdf.ndscope` | 実装済み（未掲載） | `TimeSeriesDict` 限定の HDF5 スキーマ。旧 alias は `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| `hdf.gwdama` | 実装済み（形式を明示） | `TimeSeriesDict` の GWDama HDF5 読み書き。入れ子の group と `group=` 選択に対応。alias は `gwdama`, `gwdama-hdf5` |
 | `ATS.MTH5` | 実装済み（一部対応） | MTH5 経由の current public direct path |
 | `MTH5 standalone` | 対応中 | 専用 `format="mth5"` は未整備。public direct-I/O としては未公開 |
 

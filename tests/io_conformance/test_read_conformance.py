@@ -15,7 +15,7 @@ gwexpy.register_all()
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from tests.io_conformance.contract import load_public_io_contract
-from tests.io_conformance.generators import audio, gwf, hdf5, hdf_ndscope
+from tests.io_conformance.generators import audio, gwdama, gwf, hdf5, hdf_ndscope
 from tests.io_conformance.validators import (
     assert_timeseries_close,
     assert_timeseriesdict_close,
@@ -236,6 +236,28 @@ def test_hdf_ndscope_explicit_and_auto_identify(ndscope_case: DictCase) -> None:
         ndscope_case.values_by_key,
         sample_rate=ndscope_case.sample_rate,
         t0=ndscope_case.t0,
+    )
+
+
+@pytest.mark.parametrize("fmt", ("hdf.gwdama", *_contract_aliases("hdf.gwdama")))
+def test_gwdama_external_fixture_read(tmp_path: Path, fmt: str) -> None:
+    path = gwdama.generate(tmp_path)["hdf"]
+    actual = TimeSeriesDict.read(path, format=fmt)
+    rng = np.random.default_rng(60_701)
+    expected = {
+        "H1:CONFORMANCE-GWDAMA": rng.normal(loc=0.0, scale=0.1, size=32),
+        "nested/L1:CONFORMANCE-GWDAMA": rng.normal(loc=1.0, scale=0.1, size=32),
+    }
+    assert_timeseriesdict_close(
+        actual,
+        expected,
+        sample_rate=16.0,
+        t0=1_000_000_000.0,
+        unit_by_key={key: "m" for key in expected},
+        check_channel=False,
+    )
+    assert str(actual["nested/L1:CONFORMANCE-GWDAMA"].channel) == (
+        "L1:CONFORMANCE-GWDAMA"
     )
 
 

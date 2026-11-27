@@ -19,6 +19,7 @@ CONTRACT_PATH = ROOT / "docs/developers/contracts/public_io_contract.json"
 EXPECTED_TIME_CONTRACT = {
     "gwf": ("absolute", "none", "not_accepted"),
     "hdf.ndscope": ("absolute", "none", "not_accepted"),
+    "hdf.gwdama": ("absolute", "none", "not_accepted"),
     "hdf5": ("absolute", "none", "not_accepted"),
     "xml.diaggui": ("absolute", "override", "epoch_localize_only"),
     "csv": ("absolute", "none", "component_localize"),
@@ -53,6 +54,8 @@ EXPECTED_TIME_ALIASES = {
     "ndscope-hdf5": "hdf.ndscope",
     "ndscope_hdf5": "hdf.ndscope",
     "ndscopehdf5": "hdf.ndscope",
+    "gwdama": "hdf.gwdama",
+    "gwdama-hdf5": "hdf.gwdama",
     "dttxml": "xml.diaggui",
     "miniseed": "mseed",
     "win32": "win",

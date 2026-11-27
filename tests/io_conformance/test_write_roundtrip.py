@@ -109,6 +109,17 @@ def test_hdf_ndscope_timeseriesdict_roundtrip(tmp_path: Path) -> None:
     _assert_series_close(actual["H1:NDSCOPE"], expected["H1:NDSCOPE"])
 
 
+@pytest.mark.parametrize("fmt", ("hdf.gwdama", *_contract_aliases("hdf.gwdama")))
+def test_gwdama_timeseriesdict_roundtrip(tmp_path: Path, fmt: str) -> None:
+    expected = TimeSeriesDict({"run1/H1:GWDAMA": _make_series(name="H1:GWDAMA")})
+    path = tmp_path / "gwdama.h5"
+    expected.write(path, format=fmt)
+    actual = TimeSeriesDict.read(path, format="hdf.gwdama")
+
+    assert list(actual) == list(expected)
+    _assert_series_close(actual["run1/H1:GWDAMA"], expected["run1/H1:GWDAMA"])
+
+
 @pytest.mark.parametrize("alias", _contract_aliases("gwf"), ids=str)
 def test_gwf_alias_write_roundtrip(tmp_path: Path, alias: str) -> None:
     expected = TimeSeriesDict({"K1:GWF": _make_series(name="K1:GWF")})

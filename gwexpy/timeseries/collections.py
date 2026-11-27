@@ -104,6 +104,18 @@ def _coerce_reader_result(cls, reader_result):
     return result
 
 
+def _is_gwdama_source(source: Any) -> bool:
+    """Identify GWDama HDF5 before the registry discards reader provenance."""
+    from gwexpy.timeseries.io.gwdama_hdf5 import identify_gwdama_hdf5
+
+    path = (
+        source
+        if isinstance(source, (str, Path, h5py.File))
+        else getattr(source, "name", None)
+    )
+    return path is not None and identify_gwdama_hdf5(TimeSeriesDict, path, source)
+
+
 _GWEXPY_EXACT_HDF5_ATTRS = {
     "_gwexpy_sidecar_json_v1",
     "_gwexpy_sidecar_json_v2",
@@ -601,6 +613,25 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         register_all()
 
         fmt = kwargs.get("format")
+        if fmt in {"hdf.gwdama", "gwdama", "gwdama-hdf5"} or (
+            fmt is None and _is_gwdama_source(source)
+        ):
+            from gwexpy.timeseries.io.gwdama_hdf5 import (
+                read_timeseriesdict_gwdama_hdf5,
+            )
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            if args:
+                if len(args) != 1 or "channels" in reader_kwargs:
+                    raise TypeError(
+                        "GWDama TimeSeriesDict.read accepts at most one positional "
+                        "channels argument"
+                    )
+                reader_kwargs["channels"] = args[0]
+            return _coerce_reader_result(
+                cls, read_timeseriesdict_gwdama_hdf5(source, **reader_kwargs)
+            )
         if fmt in {"nc", "netcdf4"}:
             from gwexpy.timeseries.io.netcdf4_ import read_timeseriesdict_netcdf4
 

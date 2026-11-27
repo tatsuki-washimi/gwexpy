@@ -35,6 +35,14 @@ msgstr ""
 msgid "Read an ndscope file"
 msgstr "ndscope ファイルの読み込み"
 
+#: ../docs_redesign/how-to/io_formats.md
+msgid "Read and write GWDama HDF5"
+msgstr "GWDama HDF5 の読み書き"
+
+#: ../docs_redesign/how-to/io_formats.md
+msgid "Specifying the format is recommended because `.h5` and `.hdf5` are shared with other HDF5 schemas. The reader scans nested groups when `group` is omitted. GWDama dataset attributes such as `sample_rate`, `t0`, `channel`, and `unit` are restored; other HDF5 attributes are retained for a read/write round trip. This support uses `h5py` and does not require the `gwdama` package."
+msgstr "`.h5` と `.hdf5` は他の HDF5 スキーマと共用するため、形式の明示を推奨します。`group` を省略すると入れ子のグループを走査します。`sample_rate`、`t0`、`channel`、`unit` などの GWDama データセット属性を復元し、その他の HDF5 属性も再保存のために保持します。この機能は `h5py` を使い、`gwdama` パッケージを必要としません。"
+
 #: ../docs_redesign/how-to/io_formats.md:15 ae47705e16f14c6a95bc0d6bd41035f2
 msgid ""
 "Follow the [Commissioner tutorial](../tutorials/commissioner.md) for a downloadable sample, "
