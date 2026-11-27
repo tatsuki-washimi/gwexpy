@@ -615,5 +615,7 @@ class TestWinMultiSource:
         pytest.importorskip("obspy")
         from gwexpy.timeseries.io.win import read_win_file
 
-        with pytest.raises(ValueError, match="no win files provided"):
+        with pytest.raises(ValueError, match="timezone is required"):
             read_win_file([])
+        with pytest.raises(ValueError, match="no win files provided"):
+            read_win_file([], timezone="UTC")

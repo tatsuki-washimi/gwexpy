@@ -35,7 +35,7 @@ EXPECTED_TIME_CONTRACT = {
     "sac": ("absolute", "override", "epoch_localize_only"),
     "gse2": ("absolute", "override", "epoch_localize_only"),
     "knet": ("absolute", "override", "epoch_localize_only"),
-    "win": ("fixed_zone", "none", "rejected"),
+    "win": ("naive_civil", "none", "required"),
     "ats": ("absolute", "override", "epoch_localize_only"),
     "ats.mth5": ("absolute", "none", "rejected"),
     "nc": ("absolute", "none", "not_accepted"),
@@ -548,7 +548,7 @@ def _win_stream(win_io, channel: str):
     return win_io.Stream(traces=[trace])
 
 
-def test_win_warns_once_for_single_and_multi_source(monkeypatch) -> None:
+def test_win_requires_timezone_for_single_and_multi_source(monkeypatch) -> None:
     pytest.importorskip("obspy")
     from gwexpy.timeseries.io import win as win_io
 
@@ -557,20 +557,23 @@ def test_win_warns_once_for_single_and_multi_source(monkeypatch) -> None:
         "_read_win_fixed",
         lambda source, **kwargs: _win_stream(win_io, Path(source).stem),
     )
-    expected = "WIN header time is timezone-naive; interpreting as UTC (#632)"
 
-    with pytest.warns(UserWarning, match=r"WIN header time.*#632") as single:
+    with pytest.raises(ValueError, match="timezone is required for WIN files"):
         win_io.read_win_file("one.win")
-    assert len(single) == 1
-    assert str(single[0].message) == expected
 
-    with pytest.warns(UserWarning, match=r"WIN header time.*#632") as multi:
-        result = win_io.read_win_file(["one.win", "two.win"])
-    assert len(multi) == 1
+    with pytest.raises(ValueError, match="timezone is required for WIN files"):
+        win_io.read_win_file(["one.win", "two.win"])
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = win_io.read_win_file(["one.win", "two.win"], timezone="Asia/Tokyo")
+    assert caught == []
     assert len(result) == 2
+    assert result._gwexpy_io["timezone"] == "Asia/Tokyo"
+    assert result._gwexpy_io["epoch_source"] == "win_header_timezone"
 
 
-def test_forged_win_warning_marker_cannot_suppress_warning(monkeypatch) -> None:
+def test_forged_win_warning_marker_cannot_bypass_required_timezone(monkeypatch) -> None:
     pytest.importorskip("obspy")
     from gwexpy.timeseries.io import win as win_io
 
@@ -580,10 +583,8 @@ def test_forged_win_warning_marker_cannot_suppress_warning(monkeypatch) -> None:
         lambda source, **kwargs: _win_stream(win_io, "forged"),
     )
 
-    with pytest.warns(UserWarning, match=r"WIN header time.*#632") as caught:
+    with pytest.raises(ValueError, match="timezone is required for WIN files"):
         win_io.read_win_file("unused.win", _utc_warning_marker=[True])
-
-    assert len(caught) == 1
 
 
 def test_win_invalid_timezone_precedes_reader_even_with_dummy_epoch(
@@ -621,7 +622,9 @@ def test_csv_numeric_timezone_warning_once_across_multi_source(tmp_path) -> None
     _write_numeric_csv(second, 2.0)
 
     with pytest.warns(UserWarning, match="timezone.*ignored.*CSV") as caught:
-        result = read_timeseriesdict_csv([first, second], timezone="Asia/Tokyo")
+        result = read_timeseriesdict_csv(
+            [first, second], timezone="Asia/Tokyo", time_scale="gps"
+        )
 
     assert len(caught) == 1
     assert len(result["ch1"]) == 4
@@ -805,6 +808,7 @@ def test_forged_csv_warning_marker_cannot_suppress_warning(tmp_path) -> None:
         read_timeseriesdict_csv(
             path,
             timezone="UTC",
+            time_scale="gps",
             _timezone_warning_marker=[True],
         )
 
