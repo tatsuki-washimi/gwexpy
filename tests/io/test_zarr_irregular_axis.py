@@ -165,6 +165,21 @@ class TestSelectionAndReference:
         np.testing.assert_array_equal(back["sel"].times.value, [10.5, 12.0])
         np.testing.assert_array_equal(back["sel"].value, [1.0, 2.0])
 
+    @pytest.mark.parametrize(
+        "override",
+        [{"t0_override": 5.0}, {"sample_rate_override": 4.0}, {"dt_override": 0.25}],
+    )
+    def test_timing_overrides_do_not_silently_apply_to_explicit_axis(
+        self, tmp_path, override
+    ):
+        ts = TimeSeries(np.arange(5.0), times=_IRREGULAR, name="ov")
+        path = tmp_path / "ov.zarr"
+        ts.write(path, format="zarr")
+        name = next(iter(override))
+        with pytest.warns(UserWarning, match=f"{name} is ignored"):
+            back = TimeSeriesDict.read(path, format="zarr", **override)
+        np.testing.assert_array_equal(back["ov"].times.value, _IRREGULAR)
+
     def test_time_reference_roundtrip_explicit_axis(self, tmp_path):
         rel = TimeSeries([1.0, 2.0, 3.0], times=[0.0, 1.0, 3.5], t0=None, name="rel")
         absolute = TimeSeries(np.arange(5.0), times=_IRREGULAR + 1.4e9, name="abs")

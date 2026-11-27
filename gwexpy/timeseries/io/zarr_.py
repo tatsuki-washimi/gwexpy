@@ -354,6 +354,22 @@ def _series_from_zarr_array(
     arr_unit = unit or attrs.get("unit") or attrs.get("units")
 
     if "xindex" in attrs:
+        ignored = [
+            name
+            for name, value in (
+                ("sample_rate_override", sample_rate_override),
+                ("dt_override", dt_override),
+                ("t0_override", t0_override),
+            )
+            if value is not None
+        ]
+        if ignored:
+            warnings.warn(
+                f"Zarr channel '{key}' stores explicit time coordinates "
+                f"(xindex); {', '.join(ignored)} is ignored for it.",
+                UserWarning,
+                stacklevel=2,
+            )
         return _series_from_explicit_axis(key, arr, attrs, arr_unit)
 
     if "t0" in attrs:
