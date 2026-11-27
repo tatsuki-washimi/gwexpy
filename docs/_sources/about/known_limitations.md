@@ -84,17 +84,16 @@ bin and uncertainty metadata is intentional. The safety hardening was recorded i
 
 ### WIN/WIN32
 
-WIN/WIN32 calendar fields are timezone-naive at the file-format level. The current
-reader interprets them as UTC with an explicit warning; there is no public
-`timezone=` contract yet. Data recorded in another civil timezone therefore requires
-external knowledge and care. Track
+WIN/WIN32 calendar fields are timezone-naive at the file-format level. The reader
+requires an explicit `timezone=`. The recording timezone must be established from
+external information. Track
 [#632](https://github.com/tatsuki-washimi/gwexpy/issues/632).
 
 ### Numeric CSV timestamps
 
-Numeric CSV timestamps retain the legacy GPS-seconds interpretation. The proposed
-explicit `time_scale=` / `time_unit=` contract for GPS, Unix, and relative timestamps
-is not implemented. Do not infer a different epoch or unit from numeric magnitude.
+Numeric CSV timestamps support explicit `time_scale=` and `time_unit=`. Configured
+numeric time columns require a scale; auto-detection without one retains legacy GPS
+seconds with a deprecation warning. Do not infer a scale or unit from magnitude.
 Track [#634](https://github.com/tatsuki-washimi/gwexpy/issues/634).
 
 ### Broadcast Wave timestamps

@@ -562,7 +562,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bb00517436bc2896d3b10f21e584efb8e714ae1f">bb005174</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
   · Intro examples tested with 0.2.4
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -925,9 +925,9 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 </tr>
 <tr class="row-even"><td><p><strong>WIN / WIN32</strong> (<code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;win&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;win32&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;win&quot;,</span> <span class="pre">timezone=&quot;Asia/Tokyo&quot;)</span></code></p></td>
 <td><p>Japanese WIN datasets</p></td>
-<td><p>Improved parser, read-only</p></td>
+<td><p>Explicit timezone required, read-only</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>ATS</strong> (<code class="docutils literal notranslate"><span class="pre">.ats</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
@@ -959,7 +959,7 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
-<span class="n">win</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">)</span>
+<span class="n">win</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
 <span class="n">ats</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.atss&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ats.mth5&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -967,7 +967,7 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 <li><p><strong>MiniSEED</strong> pads gaps with <code class="docutils literal notranslate"><span class="pre">NaN</span></code> by default. Use <code class="docutils literal notranslate"><span class="pre">gap=&quot;raise&quot;</span></code> if you want failures instead.</p></li>
 <li><p><strong>K-NET</strong> and <strong>WIN / WIN32</strong> are intentionally read-only.</p></li>
 <li><p>ObsPy normalizes the K-NET header time from JST to UTC and applies the logger correction, so <code class="docutils literal notranslate"><span class="pre">t0</span></code> is 15 seconds earlier than the K-NET header Record Time. At the gwexpy boundary, K-NET timestamps are absolute UTC.</p></li>
-<li><p>WIN header times are interpreted as UTC because the format header is timezone-naive; each top-level read reports that interpretation once. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p>WIN header times require an explicit timezone because the format is timezone-naive. WIN packet times must advance by exactly one second; duplicate or backward packet times and global gaps raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
 <li><p>WIN channels may start after the first packet or end before the last. Each channel keeps the <code class="docutils literal notranslate"><span class="pre">t0</span></code> of its first packet; internal gaps followed by reappearance, duplicate blocks in one packet, or sample-rate changes raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. Packet and channel payload lengths and decoded sample counts are bounded; cumulative deltas do not wrap at int32 bounds, and only a BCD year transition from <code class="docutils literal notranslate"><span class="pre">99</span></code> to <code class="docutils literal notranslate"><span class="pre">00</span></code> advances the century.</p></li>
 <li><p><strong>ATS.MTH5</strong> is the limited current direct path and requires <code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code>. It uses <code class="docutils literal notranslate"><span class="pre">mth5.read_file(...,</span> <span class="pre">file_type=&quot;metronix&quot;)</span></code>, requires non-empty one-dimensional channel data and valid start/rate/component/unit metadata, preserves raw values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>; <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> is rejected. Source timing and units are authoritative, so reader overrides are rejected rather than ignored.</p></li>
 <li><p><strong>MTH5 standalone</strong> is still in design/publication cleanup. Read this as <strong>“<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> has partial support”</strong>, not as <strong>“MTH5 direct I/O is generally complete.”</strong></p></li>
@@ -1054,9 +1054,11 @@ or multi-file read before allocation.</p></li>
 without it, the legacy one-second fallback remains. Component streams that
 cross a leap second without a representable <code class="docutils literal notranslate"><span class="pre">second=60</span></code> row fail closed as a
 missing sample.</p></li>
-<li><p>Numeric CSV timestamps retain the legacy GPS-second interpretation.
-v0.1.14 does not add <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> or <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code>; convert other scales
-before reading.</p></li>
+<li><p>Numeric CSV timestamps support explicit <code class="docutils literal notranslate"><span class="pre">time_scale=&quot;gps&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;unix&quot;</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code>. Relative times stay relative without <code class="docutils literal notranslate"><span class="pre">epoch</span></code>
+and become absolute when <code class="docutils literal notranslate"><span class="pre">epoch</span></code> is supplied.
+Configured numeric columns require a scale; unconfigured auto-detection
+retains GPS seconds with a deprecation warning.</p></li>
 <li><p><strong>TXT</strong> direct I/O is more limited: single-series paths are explicit <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code>, and multi-channel paths use collection directories.</p></li>
 <li><p><strong>Pickle</strong> portability notes still exist in class references, but Pickle is not a published direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> format on this page.</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop. For NetCDF, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> is a legacy format token alias for <code class="docutils literal notranslate"><span class="pre">nc</span></code>; <code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> is not a documented auto-identified extension alias.</p></li>

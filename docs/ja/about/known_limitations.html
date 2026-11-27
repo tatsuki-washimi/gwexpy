@@ -446,7 +446,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bb00517436bc2896d3b10f21e584efb8e714ae1f">bb005174</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
   · 入門例の検証対象 0.2.4
   · <a href="documentation_version.html">版情報</a>
   · <a href="#">既知の制限</a>
@@ -490,11 +490,11 @@
 <span id="time-interpretation-in-experimental-io"></span><h2>実験 I/O における時刻解釈<a class="headerlink" href="#time-interpretation-in-experimental-i-o" title="Link to this heading">#</a></h2>
 <section id="win-win32">
 <span id="winwin32"></span><h3>WIN/WIN32<a class="headerlink" href="#win-win32" title="Link to this heading">#</a></h3>
-<p>WIN/WIN32 の calendar field はファイルフォーマット上 timezone-naive です。現在の reader は明示的な warning を出したうえで UTC として解釈しますが、public <code class="docutils literal notranslate"><span class="pre">timezone=</span></code> 契約はまだありません。そのため、別の civil timezone で記録されたデータを扱うには外部情報と注意が必要です。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/632">#632</a> で追跡しています。</p>
+<p>WIN/WIN32 の暦時刻にはタイムゾーンが含まれないため、読み込み時に <code class="docutils literal notranslate"><span class="pre">timezone=</span></code> を指定してください。記録時のタイムゾーンは外部情報で確認する必要があります。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/632">#632</a> を参照してください。</p>
 </section>
 <section id="numeric-csv-timestamps">
 <h3>数値 CSV timestamp<a class="headerlink" href="#numeric-csv-timestamps" title="Link to this heading">#</a></h3>
-<p>数値 CSV timestamp は従来どおり GPS 秒として解釈されます。GPS、Unix、relative timestamp を明示する <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> / <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code> 契約はまだ実装されていません。数値の大きさだけから別の epoch や unit を推定しないでください。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/634">#634</a> で追跡しています。</p>
+<p>数値 CSV 時刻には <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> と <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code> を指定できます。設定済み数値列では scale が必須です。自動検出で省略した場合は、非推奨警告を出して従来の GPS 秒として扱います。数値の大きさから scale や単位を推定しないでください。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/634">#634</a> を参照してください。</p>
 </section>
 <section id="broadcast-wave-timestamps">
 <h3>Broadcast Wave timestamp<a class="headerlink" href="#broadcast-wave-timestamps" title="Link to this heading">#</a></h3>

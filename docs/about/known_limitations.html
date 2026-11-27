@@ -445,7 +445,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bb00517436bc2896d3b10f21e584efb8e714ae1f">bb005174</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
   · Intro examples tested with 0.2.4
   · <a href="documentation_version.html">Version details</a>
   · <a href="#">Known limitations</a>
@@ -531,17 +531,16 @@ bin and uncertainty metadata is intentional. The safety hardening was recorded i
 <span id="time-interpretation-in-experimental-io"></span><h2>Time interpretation in experimental I/O<a class="headerlink" href="#time-interpretation-in-experimental-i-o" title="Link to this heading">#</a></h2>
 <section id="win-win32">
 <span id="winwin32"></span><h3>WIN/WIN32<a class="headerlink" href="#win-win32" title="Link to this heading">#</a></h3>
-<p>WIN/WIN32 calendar fields are timezone-naive at the file-format level. The current
-reader interprets them as UTC with an explicit warning; there is no public
-<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> contract yet. Data recorded in another civil timezone therefore requires
-external knowledge and care. Track
+<p>WIN/WIN32 calendar fields are timezone-naive at the file-format level. The reader
+requires an explicit <code class="docutils literal notranslate"><span class="pre">timezone=</span></code>. The recording timezone must be established from
+external information. Track
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/632">#632</a>.</p>
 </section>
 <section id="numeric-csv-timestamps">
 <h3>Numeric CSV timestamps<a class="headerlink" href="#numeric-csv-timestamps" title="Link to this heading">#</a></h3>
-<p>Numeric CSV timestamps retain the legacy GPS-seconds interpretation. The proposed
-explicit <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> / <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code> contract for GPS, Unix, and relative timestamps
-is not implemented. Do not infer a different epoch or unit from numeric magnitude.
+<p>Numeric CSV timestamps support explicit <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> and <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code>. Configured
+numeric time columns require a scale; auto-detection without one retains legacy GPS
+seconds with a deprecation warning. Do not infer a scale or unit from magnitude.
 Track <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/634">#634</a>.</p>
 </section>
 <section id="broadcast-wave-timestamps">

@@ -552,7 +552,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.10</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bb00517436bc2896d3b10f21e584efb8e714ae1f">bb005174</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/147581e26512a2c0dfa1c0d9ad74ef48cb95a65d">147581e2</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -1088,9 +1088,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- HDF5 Dataset Info ---
 Shape: (1000,), Dtype: float64
 Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#39;, &#39;t0&#39;: np.float64(1234567890.0), &#39;unit&#39;: &#39;V&#39;}
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
            unit: V,
            t0: 1234567890.0 s,
@@ -1877,14 +1875,16 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-27T02:19:37.468943+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmpxupyb7g4.h5 in mode a</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-27T08:08:48.885549+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmpmvuyznuz.h5 in mode a</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-27T02:19:37.702297+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpxupyb7g4.h5</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-27T08:08:49.060249+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpmvuyznuz.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to temporary MTH5 file
-<span class=" -Color -Color-Bold">2026-11-27T02:19:37.746728+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpxupyb7g4.h5</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-11-27T08:08:49.102700+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpmvuyznuz.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from MTH5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
@@ -2302,9 +2302,9 @@ Value at centre ≈ 0.500
 cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#39;, &#39;ci_upper&#39;]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5681/297830298.py:17: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeries&#39; (&lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; -&gt; &lt;class &#39;__main__._FS&#39;&gt;)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_5390/297830298.py:17: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeries&#39; (&lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; -&gt; &lt;class &#39;__main__._FS&#39;&gt;)
   ConverterRegistry.register_constructor(&quot;FrequencySeries&quot;, _FS)
-/tmp/ipykernel_5681/297830298.py:18: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeriesDict&#39; (&lt;class &#39;gwexpy.frequencyseries.collections.FrequencySeriesDict&#39;&gt; -&gt; &lt;class &#39;__main__._FSD&#39;&gt;)
+/tmp/ipykernel_5390/297830298.py:18: UserWarning: ConverterRegistry: overwriting constructor &#39;FrequencySeriesDict&#39; (&lt;class &#39;gwexpy.frequencyseries.collections.FrequencySeriesDict&#39;&gt; -&gt; &lt;class &#39;__main__._FSD&#39;&gt;)
   ConverterRegistry.register_constructor(&quot;FrequencySeriesDict&quot;, _FSD)
 </pre></div>
 </div>
