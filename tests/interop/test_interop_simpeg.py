@@ -119,13 +119,24 @@ class TestSimpegScaleInvarianceMocked:
         fake_simpeg.data.Data = FakeData
         return fake_simpeg, FakeData(np.ones(len(times)), survey)
 
-    def test_small_scale_non_uniform_tdem_raises(self, monkeypatch):
+    def test_non_uniform_tdem_raises(self, monkeypatch):
         from gwexpy.interop import simpeg_ as simpeg_mod
 
-        fake_simpeg, data_obj = self._mock_tdem_data([0.0, 1e-20, 3e-20, 6e-20])
+        fake_simpeg, data_obj = self._mock_tdem_data([0.0, 1.0, 3.0, 6.0])
         monkeypatch.setattr(simpeg_mod, "require_optional", lambda name: fake_simpeg)
         with pytest.raises(ValueError, match="non-uniform"):
             simpeg_mod.from_simpeg(TimeSeries, data_obj)
+
+    def test_small_scale_non_uniform_tdem_is_not_linearized(self, monkeypatch):
+        # numpy's default absolute tolerance accepts this axis as before, but
+        # its first interval would move the later samples: keep them explicit.
+        from gwexpy.interop import simpeg_ as simpeg_mod
+
+        times = np.array([0.0, 1e-20, 3e-20, 6e-20])
+        fake_simpeg, data_obj = self._mock_tdem_data(times)
+        monkeypatch.setattr(simpeg_mod, "require_optional", lambda name: fake_simpeg)
+        ts = simpeg_mod.from_simpeg(TimeSeries, data_obj)
+        np.testing.assert_array_equal(ts.times.value, times)
 
     def test_small_scale_uniform_tdem_succeeds(self, monkeypatch):
         from gwexpy.interop import simpeg_ as simpeg_mod

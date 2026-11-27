@@ -248,11 +248,30 @@ class TestToPycbcFrequencySeries:
             with pytest.raises(ValueError, match="irregular"):
                 to_pycbc_frequencyseries(fs)
 
-    def test_nonzero_f0_rejects_lossy_export(self, pycbc_modules_mock):
-        fs = FrequencySeries(np.zeros(4), f0=1.0, df=1.0)
+    def test_gwpy_regular_jitter_axis_rejects_lossy_export(self, pycbc_modules_mock):
+        # GWpy's absolute 1e-8 tolerance calls this axis regular (#887); its
+        # first interval would misplace every odd sample by 1 ns.
+        freqs = np.arange(100) * 1e-6 + np.where(np.arange(100) % 2, 1e-9, 0.0)
+        fs = FrequencySeries(np.zeros(freqs.size), frequencies=freqs)
+        assert fs.xindex.regular
         with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
-            with pytest.raises(ValueError, match="nonzero initial frequency"):
+            with pytest.raises(ValueError, match="irregular"):
                 to_pycbc_frequencyseries(fs)
+
+    @pytest.mark.parametrize(
+        "fs",
+        [
+            FrequencySeries(np.zeros(300), f0=0.0, df=1 / 3),
+            FrequencySeries(np.zeros(1000), frequencies=np.linspace(0, 10, 1000)),
+        ],
+        ids=["define-1/3", "linspace"],
+    )
+    def test_uniform_axis_with_float_roundoff_is_exported(self, pycbc_modules_mock, fs):
+        _, captured = pycbc_modules_mock
+        with patch("gwexpy.interop.pycbc_.require_optional", return_value=MagicMock()):
+            to_pycbc_frequencyseries(fs)
+        freqs = fs.frequencies.value
+        assert captured["fs"]["delta_f"] == freqs[1] - freqs[0]
 
 
 # ---------------------------------------------------------------------------

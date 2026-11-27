@@ -7,6 +7,17 @@
 - FrequencySeries collection fallback I/O now uses the GWpy default registry.
   Formats registered only in Astropy's separate registry are no longer
   reachable through that fallback; register them with the GWpy registry (#444).
+- **Interop coordinate preservation** (#887 follow-up, U-7): converters no
+  longer replace a non-uniform axis with an origin and cadence taken from its
+  first interval. Control FRD, Polars, SimPEG and ROOT `TGraph` imports keep
+  the original coordinates unless `x0`/`dx` rebuild every sample exactly;
+  SimPEG accepts the same time channels as before. LAL and PyCBC frequency
+  exports raise `ValueError` for an axis that is not uniform up to
+  floating-point round-off. ROOT histograms are handled by bin edges: a
+  uniform series still maps to fixed-width bins (and fixed-width `TH1` input
+  to `x0`/`dx`), while a non-uniform series gets variable bins centred exactly
+  on its samples, or `ValueError` when no such bins exist; use `to_tgraph()`
+  for those data. Uniform data are converted as before.
 
 ### Added
 
@@ -23,17 +34,6 @@
 ### Compatibility
 
 - GWpy reads the stored numeric datasets independently. Its `TimeSeries.read` requires an explicit `path` for a multi-dataset file; GWpy does not restore GWexpy's uncertainty metadata.
-
-### Changed
-
-- **Interop coordinate preservation**: Control FRD and Polars imports retain
-  explicit coordinates when origin/cadence would change any sample. SimPEG
-  time imports retain explicit near-uniform samples. LAL and PyCBC frequency
-  exports reject axes their affine-only formats cannot represent; PyCBC also
-  rejects a nonzero initial frequency. ROOT histogram exports use bin edges
-  that retain exact sample centers where possible and raise `ValueError` when
-  ROOT cannot represent them; use `to_tgraph()` for such 1-D data. This
-  replaces earlier tolerant regularity checks that could silently move samples.
 
 ## [0.2.10] - 2026-11-14
 

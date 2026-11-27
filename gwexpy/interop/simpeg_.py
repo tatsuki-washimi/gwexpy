@@ -178,26 +178,21 @@ def from_simpeg(cls, data_obj, **kwargs):
         # Reconstruct TimeSeries
         times = survey.source_list[0].receiver_list[0].times
 
-        # The target carries only t0/dt; reject coordinates it cannot rebuild.
         from ._axis import exactly_affine_axis
 
         times_arr = np.asarray(times, dtype=float)
         dt = np.diff(times_arr)
-        if len(dt) > 0 and exactly_affine_axis(times_arr):
-            val_dt = float(dt[0])
-            t0 = float(times_arr[0])
-            return cls(dobs, t0=t0, dt=val_dt)
-        if (
-            len(dt) > 0
-            and np.all(np.isfinite(times_arr))
-            and dt[0] > 0
-            and np.allclose(dt, dt[0], rtol=1e-5, atol=0.0)
-        ):
+        # The accepted set of time channels is unchanged: near-uniform within
+        # numpy's default tolerances. Use t0/dt only when they rebuild every
+        # time exactly; otherwise keep the explicit SimPEG times instead of
+        # linearizing them.
+        if len(dt) > 0 and np.allclose(dt, dt[0]):
+            if exactly_affine_axis(times_arr):
+                return cls(dobs, t0=float(times_arr[0]), dt=float(dt[0]))
             return cls(dobs, times=times_arr)
-        else:
-            raise ValueError(
-                "SimPEG time channels are non-uniform, cannot map directly to uniform TimeSeries."
-            )
+        raise ValueError(
+            "SimPEG time channels are non-uniform, cannot map directly to uniform TimeSeries."
+        )
 
     elif is_fdem:
         # Reconstruct FrequencySeries

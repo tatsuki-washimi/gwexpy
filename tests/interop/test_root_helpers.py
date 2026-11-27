@@ -185,15 +185,12 @@ class TestExtractErrorArray:
         assert result.shape == (10,)
 
 
+#: 1 ns alternating jitter on a 1 us grid: GWpy's absolute tolerance calls it
+#: regular (#887), but its first interval misplaces every odd sample.
+_JITTER_887 = np.arange(100) * 1e-6 + np.where(np.arange(100) % 2, 1e-9, 0.0)
+
+
 class TestRootScaleInvariance:
-    def test_is_regular_spacing_handles_1e_20_scale(self):
-        from gwexpy.interop.root_ import _is_regular_spacing
-
-        assert _is_regular_spacing(np.diff(np.array([1e-20, 2e-20, 3e-20, 4e-20])))
-        assert not _is_regular_spacing(np.diff(np.array([1e-20, 2e-20, 4e-20, 8e-20])))
-        assert not _is_regular_spacing(np.array([0.0, 0.0]))
-        assert not _is_regular_spacing(np.array([1.0, np.nan]))
-
     def test_root_roundtrip_1e_20_irregular_and_regular_axes(self):
         ROOT = pytest.importorskip("ROOT")
         from gwexpy.frequencyseries import FrequencySeries
@@ -201,34 +198,97 @@ class TestRootScaleInvariance:
 
         ROOT.gROOT.SetBatch(True)
 
-        # Some tiny axes cannot be represented by ROOT bin centers exactly.
+        # TGraph preserves exact irregular 1e-20 coordinates without linearization
         irr_x = np.array([1e-20, 2e-20, 4e-20, 8e-20])
         fs_irr = FrequencySeries(np.arange(1.0, 5.0), frequencies=irr_x, name="fs_irr")
-        with pytest.raises(ValueError, match="exact sample coordinates"):
-            fs_irr.to_th1d()
+        fs_g_back = FrequencySeries.from_root(fs_irr.to_tgraph())
+        np.testing.assert_array_equal(fs_g_back.frequencies.value, irr_x)
 
-        # TGraph preserves exact irregular 1e-20 coordinates without linearization
-        g_irr = fs_irr.to_tgraph()
-        fs_g_back = FrequencySeries.from_root(g_irr)
-        np.testing.assert_allclose(
-            fs_g_back.frequencies.value, irr_x, rtol=1e-12, atol=0.0
-        )
-
-        # Even apparently regular 1e-20 spacing can lose an ULP in ROOT bins.
+        # A uniform 1e-20 axis uses fixed-width bins, at any scale.
         reg_x = np.array([1e-20, 2e-20, 3e-20, 4e-20])
         fs_reg = FrequencySeries(np.arange(1.0, 5.0), frequencies=reg_x, name="fs_reg")
-        with pytest.raises(ValueError, match="exact sample coordinates"):
-            fs_reg.to_th1d()
+        hist = fs_reg.to_th1d()
+        assert not hist.GetXaxis().IsVariableBinSize()
+        assert hist.GetXaxis().GetBinWidth(1) == pytest.approx(1e-20, rel=1e-12)
 
-        # Spectrogram to_th2d with 1e-20 irregular frequency axis
+        # A non-uniform axis whose samples cannot all be bin centres is rejected
+        # instead of being moved to midpoint-derived centres.
         sg = Spectrogram(
             np.ones((3, 4)),
-            times=np.array([0.0, 1e-20, 3e-20]),
+            times=np.array([0.0, 1e-20, 1.5e-20]),
             frequencies=irr_x,
             name="sg_tiny",
         )
         with pytest.raises(ValueError, match="exact sample coordinates"):
             sg.to_th2d()
+
+    def test_uniform_series_keeps_fixed_width_binning(self):
+        ROOT = pytest.importorskip("ROOT")
+        from gwexpy.frequencyseries import FrequencySeries
+
+        ROOT.gROOT.SetBatch(True)
+        cases = [
+            TimeSeries(np.arange(4096.0), t0=1264316116, sample_rate=4096),
+            TimeSeries(np.arange(50.0), t0=0.1, dt=0.1),
+            FrequencySeries(np.arange(300.0), f0=10, df=1 / 3),
+            FrequencySeries(np.arange(1000.0), frequencies=np.linspace(1, 10, 1000)),
+        ]
+        for series in cases:
+            hist = series.to_th1d()
+            axis = hist.GetXaxis()
+            assert not axis.IsVariableBinSize()
+            x = series.xindex.value
+            centers = np.array([axis.GetBinCenter(i + 1) for i in range(x.size)])
+            # Uniform bins are defined by their edges; ROOT derives centres.
+            np.testing.assert_allclose(centers, x, rtol=0, atol=1e-12 * abs(x).max())
+            back = type(series).from_root(hist)
+            assert back.xindex.regular
+            assert back.dx.value == pytest.approx(series.dx.value, rel=1e-12)
+
+    def test_gwpy_regular_nonaffine_axis_is_not_linearized(self):
+        ROOT = pytest.importorskip("ROOT")
+
+        ROOT.gROOT.SetBatch(True)
+        ts = TimeSeries(np.ones(_JITTER_887.size), times=_JITTER_887, name="jit")
+        assert ts.xindex.regular
+        with pytest.raises(ValueError, match="exact sample coordinates"):
+            ts.to_th1d()
+        back = TimeSeries.from_root(ts.to_tgraph())
+        np.testing.assert_array_equal(back.times.value, _JITTER_887)
+
+    def test_irregular_series_keeps_exact_variable_bin_centres(self):
+        ROOT = pytest.importorskip("ROOT")
+        from gwexpy.frequencyseries import FrequencySeries
+
+        ROOT.gROOT.SetBatch(True)
+        f = np.geomspace(1, 1000, 100)
+        fs = FrequencySeries(np.arange(100.0), frequencies=f, name="log")
+        hist = fs.to_th1d()
+        axis = hist.GetXaxis()
+        assert axis.IsVariableBinSize()
+        centers = np.array([axis.GetBinCenter(i + 1) for i in range(f.size)])
+        np.testing.assert_array_equal(centers, f)
+        np.testing.assert_array_equal(
+            FrequencySeries.from_root(hist).frequencies.value, f
+        )
+
+    def test_histogram_regularity_follows_bin_edges(self):
+        ROOT = pytest.importorskip("ROOT")
+
+        ROOT.gROOT.SetBatch(True)
+        # Fixed-width binning: affine series even where ROOT's derived centres
+        # differ from x0 + i * dx by round-off.
+        fixed = ROOT.TH1D("u7_fixed", "", 1000, -3.3, 7.7)
+        ts = TimeSeries.from_root(fixed)
+        assert ts.x0.value == fixed.GetXaxis().GetBinCenter(1)
+        assert ts.dt.value == fixed.GetXaxis().GetBinWidth(1)
+        assert ts.xindex.size == 1000
+
+        # Variable-width binning: the bin centres are the explicit coordinates.
+        edges = np.array([0.0, 1.0, 3.0, 7.0, 15.0])
+        variable = ROOT.TH1D("u7_variable", "", 4, edges)
+        ts_var = TimeSeries.from_root(variable)
+        np.testing.assert_array_equal(ts_var.times.value, [0.5, 2.0, 5.0, 11.0])
 
     def test_near_regular_root_bins_preserve_exact_centers(self):
         ROOT = pytest.importorskip("ROOT")

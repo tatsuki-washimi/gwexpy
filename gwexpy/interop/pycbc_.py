@@ -16,7 +16,7 @@ import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
 
-from ._axis import exactly_affine_axis
+from ._axis import affine_representable_axis
 from ._optional import require_optional
 
 __all__ = [
@@ -179,15 +179,11 @@ def to_pycbc_frequencyseries(
 
     data = np.asarray(fs.value)
     freqs = np.asarray(fs.frequencies.value)
-    if len(freqs) > 1 and not exactly_affine_axis(freqs):
+    # PyCBC stores only delta_f: refuse to linearize a non-uniform axis.
+    if len(freqs) > 1 and not affine_representable_axis(freqs):
         raise ValueError(
             "Cannot convert FrequencySeries with an irregular or non-increasing "
             "frequency axis to PyCBC FrequencySeries (uniform delta_f required)."
-        )
-    if freqs.size and freqs[0] != 0:
-        raise ValueError(
-            "Cannot convert FrequencySeries with a nonzero initial frequency "
-            "to PyCBC FrequencySeries (no f0 field)."
         )
     df = float(freqs[1] - freqs[0]) if len(freqs) > 1 else 1.0
     epoch_val = getattr(fs, "epoch", None)
