@@ -40,7 +40,7 @@ gwexpy の利用者向け I/O ガイドです。
 - **自動判別でよい**のは、拡張子から reader が一意に決まる場合です。
 - GWpy-backed の **`TimeSeries`** と **`TimeSeriesDict`** は、`.h5` / `.hdf5` の native HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な HDF5 ファミリ、または GWexpy-only のクラスでは **`format="hdf5"` を明示**してください。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
-- **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
+- **`timezone` を必ず指定する**のは、タイムゾーンを記録しない GBD と WIN/WIN32 の暦時刻です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
 - Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / `EventTable` を基準に考えてください。地形 Field は[地形 Field の入出力](#地形-field-の入出力)を参照してください。Field 全体の入出力契約は監査中です。
 
@@ -195,7 +195,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | 地震波形解析 | ObsPy 経由 |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | 地震波形交換 | ObsPy 経由 |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | K-NET 強震記録 | 読み込み専用 |
-| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | 国内 WIN データ | 改良版 parser、読み込み専用 |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win", timezone="Asia/Tokyo")` | 国内 WIN データ | タイムゾーンの明示が必要、読み込み専用 |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix 観測データ | ネイティブ binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | MTH5 経由の単一路 | 対応済みの限定 route。`mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | 対応中 | 専用 `format="mth5"` は未整備 | 今後の汎用 MTH5 direct I/O | **現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ |
@@ -209,7 +209,7 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
-win = TimeSeriesDict.read("data.cnt", format="win32")
+win = TimeSeriesDict.read("data.cnt", format="win32", timezone="Asia/Tokyo")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
@@ -218,8 +218,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   ObsPy がヘッダの JST を UTC へ正規化し logger correction も適用済みのため、
   gwexpy の `t0` は K-NET ヘッダの Record Time より 15 秒早い値です。
   gwexpy 境界で K-NET の時刻は absolute UTC です。
-- **WIN ヘッダ時刻は UTC として解釈**します。
-  ヘッダ自体は timezone-naive なので、この解釈をトップレベルの read ごとに1回警告します。
+- **WIN ヘッダ時刻にはタイムゾーンの明示が必要です。**
+  ヘッダ自体は timezone-naive です。
 - **WIN packet の時刻は1秒ずつ連続する必要があります。**
   packet 時刻の重複、逆行、global gap は `ValueError` になります。
 - **WIN channel は先頭packetより遅く始まることも、最終packetより早く終わることもできます。**
@@ -284,7 +284,8 @@ events = EventTable.read("events.root")
 - 絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。
 - 10,000,000個の上限は、top-level の単一または multi-file read 全体で、要求された channel の resampling 出力を allocation 前に合計します。
 - CSV の数値時刻は従来どおり GPS 秒として解釈します。
-- v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。
+- 数値 CSV 時刻には `time_scale="gps"`、`"unix"`、`"relative"` と、`"ms"` などの `time_unit` を指定できます。`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります。設定済み数値列では scale が必須で、自動検出時の省略は非推奨警告付きで従来の GPS 秒として扱います。
+- WIN/WIN32 の暦ヘッダにはタイムゾーンがありません。読み込み時に `timezone="UTC"`、`"Asia/Tokyo"`、またはオフセットを指定してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。

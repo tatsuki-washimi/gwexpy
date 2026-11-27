@@ -123,7 +123,7 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
         assert "top-level single- or multi-file read" in source
 
 
-def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
+def test_docs_describe_numeric_csv_time_scale_contract() -> None:
     contract = _load_contract()
     contract_md = _read(CONTRACT_MD)
     en = _read(EN_GUIDE)
@@ -132,14 +132,16 @@ def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
     notes = " ".join(contract["csv"]["notes"])
 
     for source in (notes, contract_md, en, redesign_en):
-        assert "legacy GPS-second" in source
         assert "time_scale" in source
         assert "time_unit" in source
-        assert "v0.1.14" in source
-    assert "従来どおり GPS 秒" in ja
+        assert "GPS" in source
+        normalized = " ".join(source.replace("`", "").split())
+        assert "relative without epoch" in normalized
+        assert "absolute when" in normalized
     assert "time_scale" in ja
     assert "time_unit" in ja
-    assert "v0.1.14" in ja
+    assert "GPS" in ja
+    assert "`epoch` を省略すると相対時刻のまま、指定すると絶対時刻になります" in ja
 
 
 def test_docs_describe_native_hdf5_auto_identification_boundary() -> None:
@@ -294,8 +296,8 @@ def test_docs_describe_machine_readable_time_contract() -> None:
     assert "At the gwexpy boundary, K-NET timestamps are absolute UTC" in en
     assert "gwexpy 境界で K-NET 時刻は absolute UTC" in ja
     assert "| `knet` | absolute | override | epoch localize only |" in contract_md
-    assert "WIN header times are interpreted as UTC" in en
-    assert "WIN ヘッダ時刻は timezone-naive のため UTC として解釈" in ja
+    assert "WIN header times require an explicit timezone" in en
+    assert "WIN ヘッダ時刻にはタイムゾーンがない" in ja
     assert "Ambiguous daylight-saving folds and nonexistent gaps" in en
     assert "曖昧な fold と存在しない gap" in ja
     assert "ambiguous daylight-saving fold or a nonexistent gap" in contract_md

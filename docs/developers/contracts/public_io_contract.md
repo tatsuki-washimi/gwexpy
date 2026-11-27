@@ -160,8 +160,10 @@ An absolute float64 time axis is accepted only when both its rounding error and
 local spacing are strictly below half the cadence. A top-level single- or
 multi-file read is limited to 10,000,000 requested-channel resampled output
 values in total before allocation.
-Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
-not add `time_scale=` or `time_unit=`.
+Numeric CSV accepts `time_scale=` and `time_unit=`. Configured numeric columns
+require a scale; auto-detection without one retains legacy GPS seconds with a
+deprecation warning. Relative times stay relative without `epoch` and become
+absolute when `epoch` is supplied.
 
 ### `hdf.ndscope`
 
@@ -318,8 +320,8 @@ not add `time_scale=` or `time_unit=`.
   and validated. Malformed, truncated, or overlong payloads fail before an
   oversized read, and cumulative delta decoding does not wrap at int32 bounds.
 - Only a BCD year transition from `99` to `00` advances the supplied century.
-  WIN header time is interpreted as UTC and emits one warning per top-level
-  read, including a multi-file read.
+  WIN header time is localized using the required `timezone`, including a
+  multi-file read.
 - Reason: these formats are intentionally documented as collection-first and
   read-only.
 
