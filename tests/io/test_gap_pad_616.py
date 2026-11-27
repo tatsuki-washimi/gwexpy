@@ -75,3 +75,20 @@ def test_hdf5_fully_disjoint_padding_does_not_invent_uncertainty(tmp_path):
     TimeSeriesDict({"A": series}).write(path, format="hdf5", layout="group")
     result = TimeSeriesDict.read(path, format="h5", start=14, end=16, pad=0.0)
     assert not result["A"]._has_uncertainty()
+
+
+def test_hdf5_fully_disjoint_padding_skips_absent_quantile_aliases(tmp_path):
+    series = TimeSeries([1.0, 2.0], t0=10, dt=1, unit="m")
+    series._set_uncertainty(
+        quantiles={0.1: series.copy(), 0.9: series.copy()},
+        interval_levels=(0.1, 0.9),
+        uncertainty_kind="predictive",
+    )
+    path = tmp_path / "disjoint_quantiles.h5"
+    TimeSeriesDict({"A": series}).write(path, format="hdf5", layout="group")
+
+    result = TimeSeriesDict.read(path, format="h5", start=14, end=16, pad=0.0)
+
+    assert list(result) == ["A"]
+    assert result["A"].value.tolist() == [0.0, 0.0]
+    assert not result["A"]._has_uncertainty()

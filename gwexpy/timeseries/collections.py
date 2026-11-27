@@ -236,17 +236,25 @@ def _restore_manifest_uncertainty(
             if not flat_path.startswith(path + "."):
                 raise ValueError("invalid HDF5 uncertainty relationship")
             key = logical + flat_path[len(path) :]
+            role = entry["role"]
+            if role == "quantile":
+                quantiles = primary.quantiles
+                value = quantiles.get(entry["level"]) if quantiles is not None else None
+            else:
+                value = getattr(primary, role.removeprefix("derived_"), None)
+            if value is None:
+                # Out-of-range padding can remove the primary's uncertainty
+                # while the HDF5 manifest still lists its former companions.
+                # Discard any empty placeholder and do not restore a stale alias.
+                if key in result and result[key] is None:
+                    del result[key]
+                continue
             if key in result:
                 base = key
                 index = 2
                 while key in result:
                     key = f"{base}_{index}"
                     index += 1
-            role = entry["role"]
-            if role == "quantile":
-                value = primary.quantiles[entry["level"]]
-            else:
-                value = getattr(primary, role.removeprefix("derived_"))
             result[key] = value
             aliases[key] = logical
             alias_roles[key] = (role, entry["level"])
