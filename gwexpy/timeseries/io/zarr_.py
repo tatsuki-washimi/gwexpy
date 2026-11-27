@@ -10,6 +10,16 @@ clear error instead of silently assuming 1 Hz.
 
 Directory stores, zip stores, and any other backend supported by the
 ``zarr`` library can be used as *source* / *target*.
+
+Irregular and non-affine time axes
+----------------------------------
+When ``x0``/``dx`` cannot reproduce the stored coordinates exactly
+(:func:`gwexpy.io.hdf5_series.needs_explicit_axis`), the writer stores the
+coordinates in an ``xindex`` attribute (float64 list) together with ``xunit``
+and ``gwexpy_time_reference``, and omits ``sample_rate``/``dt``/``t0`` so that
+a reader unaware of ``xindex`` fails on the missing timing metadata instead of
+silently resampling the axis onto a uniform grid. Regular axes keep the
+``sample_rate``/``t0``/``dt`` layout unchanged.
 """
 
 from __future__ import annotations
@@ -35,7 +45,12 @@ from gwexpy.io.utils import (
     maybe_pad_timeseries,
     set_provenance,
 )
-from gwexpy.time._reference import get_time_reference, set_time_reference
+from gwexpy.time._reference import (
+    TIME_REFERENCE_ABSOLUTE,
+    TIME_REFERENCE_RELATIVE,
+    get_time_reference,
+    set_time_reference,
+)
 from gwexpy.types._uncertainty import suppress_uncertainty_drop_warning
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
@@ -295,6 +310,37 @@ def _apply_dict_gap_pad(
     return out
 
 
+def _series_from_explicit_axis(key, arr, attrs, arr_unit) -> TimeSeries:
+    """Rebuild a series from the explicit ``xindex`` layout (exact coordinates)."""
+    time_ref = attrs.get("gwexpy_time_reference")
+    if time_ref is not None and time_ref not in (
+        TIME_REFERENCE_RELATIVE,
+        TIME_REFERENCE_ABSOLUTE,
+    ):
+        raise ValueError(
+            f"Zarr channel '{key}' has invalid gwexpy_time_reference={time_ref!r}"
+        )
+    xindex = np.asarray(attrs["xindex"], dtype=np.float64)
+    data = _zarr_numeric_data(arr[:])
+    if xindex.ndim != 1 or len(xindex) != len(data):
+        raise ValueError(
+            f"Zarr channel '{key}' xindex length ({xindex.size}) does not "
+            f"match data length ({len(data)}) or is not one-dimensional"
+        )
+    ts = TimeSeries(
+        data,
+        times=xindex,
+        xunit=attrs.get("xunit") or "s",
+        name=str(key),
+        channel=str(key),
+    )
+    if arr_unit:
+        ts = apply_unit(ts, arr_unit)
+    if time_ref is not None:
+        set_time_reference(ts, time_ref)
+    return ts
+
+
 def _series_from_zarr_array(
     key,
     arr,
@@ -305,6 +351,27 @@ def _series_from_zarr_array(
     t0_override=None,
 ) -> TimeSeries:
     attrs = dict(arr.attrs)
+    arr_unit = unit or attrs.get("unit") or attrs.get("units")
+
+    if "xindex" in attrs:
+        ignored = [
+            name
+            for name, value in (
+                ("sample_rate_override", sample_rate_override),
+                ("dt_override", dt_override),
+                ("t0_override", t0_override),
+            )
+            if value is not None
+        ]
+        if ignored:
+            warnings.warn(
+                f"Zarr channel '{key}' stores explicit time coordinates "
+                f"(xindex); {', '.join(ignored)} is ignored for it.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return _series_from_explicit_axis(key, arr, attrs, arr_unit)
+
     if "t0" in attrs:
         t0 = float(attrs["t0"])
     elif t0_override is not None:
@@ -330,8 +397,6 @@ def _series_from_zarr_array(
         sample_rate_override=sample_rate_override,
         dt_override=dt_override,
     )
-
-    arr_unit = unit or attrs.get("unit") or attrs.get("units")
 
     ts = TimeSeries(
         _zarr_numeric_data(arr[:]),
@@ -595,14 +660,23 @@ def read_timeseriesmatrix_zarr(
         )
         if len(tsd) == 1:
             key, ts = next(iter(tsd.items()))
-            matrix = TimeSeriesMatrix(
-                _zarr_numeric_data(ts.value)[np.newaxis, np.newaxis, :],
-                x0=ts.x0,
-                dt=ts.dt,
-                xunit=ts.xunit,
-                unit=ts.unit,
-                channel_names=[key],
-            )
+            if needs_explicit_axis(ts):
+                matrix = TimeSeriesMatrix(
+                    _zarr_numeric_data(ts.value)[np.newaxis, np.newaxis, :],
+                    times=ts.xindex,
+                    unit=ts.unit,
+                    channel_names=[key],
+                )
+                set_time_reference(matrix, get_time_reference(ts))
+            else:
+                matrix = TimeSeriesMatrix(
+                    _zarr_numeric_data(ts.value)[np.newaxis, np.newaxis, :],
+                    x0=ts.x0,
+                    dt=ts.dt,
+                    xunit=ts.xunit,
+                    unit=ts.unit,
+                    channel_names=[key],
+                )
             return apply_time_selection(matrix, start, end)
         series = list(tsd.values())
         payloads = [np.asarray(ts.value) for ts in series]
@@ -612,8 +686,12 @@ def read_timeseriesmatrix_zarr(
             for array in payloads
         )
         native_first = series[0]
-        native_first_t0 = float(native_first.t0.value)
-        native_first_dt = float(native_first.dt.value)
+        native_explicit = needs_explicit_axis(native_first)
+        if native_explicit:
+            native_first_xindex = np.asarray(native_first.xindex.value)
+        else:
+            native_first_t0 = float(native_first.t0.value)
+            native_first_dt = float(native_first.dt.value)
         native_first_unit = str(native_first.unit)
         if any(array.dtype != payloads[0].dtype for array in payloads[1:]):
             raise ValueError(
@@ -622,18 +700,37 @@ def read_timeseriesmatrix_zarr(
             )
         if any(str(ts.unit) != native_first_unit for ts in series[1:]):
             raise ValueError("Native Zarr matrix channels must have matching units.")
-        matching_axis = all(
-            len(ts) == len(native_first)
-            and float(ts.t0.value).hex() == native_first_t0.hex()
-            and float(ts.dt.value).hex() == native_first_dt.hex()
-            for ts in series[1:]
-        )
+        if native_explicit:
+            matching_axis = all(
+                len(ts) == len(native_first)
+                and needs_explicit_axis(ts)
+                and ts.xunit == native_first.xunit
+                and np.array_equal(np.asarray(ts.xindex.value), native_first_xindex)
+                for ts in series[1:]
+            )
+        else:
+            matching_axis = all(
+                not needs_explicit_axis(ts)
+                and len(ts) == len(native_first)
+                and float(ts.t0.value).hex() == native_first_t0.hex()
+                and float(ts.dt.value).hex() == native_first_dt.hex()
+                for ts in series[1:]
+            )
         if preserve_exact_dtype and not matching_axis:
             raise ValueError(
                 "Native Zarr matrix channels with 64-bit integer or complex "
                 "data must have matching sample counts and time axes to "
                 "preserve values exactly."
             )
+        if matching_axis and native_explicit:
+            matrix = TimeSeriesMatrix(
+                np.stack(payloads)[:, np.newaxis, :],
+                times=native_first.xindex,
+                unit=native_first.unit,
+                channel_names=list(tsd),
+            )
+            set_time_reference(matrix, get_time_reference(native_first))
+            return apply_time_selection(matrix, start, end)
         if matching_axis:
             matrix = TimeSeriesMatrix(
                 np.stack(payloads)[:, np.newaxis, :],
@@ -643,6 +740,14 @@ def read_timeseriesmatrix_zarr(
                 channel_names=list(tsd),
             )
             return apply_time_selection(matrix, start, end)
+        if native_explicit or any(needs_explicit_axis(ts) for ts in series):
+            # Alignment interpolates onto a uniform grid, which would silently
+            # replace the stored explicit coordinates.
+            raise ValueError(
+                "Native Zarr channels with explicit (irregular) time axes must "
+                "have identical xindex values to form a TimeSeriesMatrix; read "
+                "them as a TimeSeriesDict instead."
+            )
         from ..preprocess import align_timeseries_collection
 
         aligned, times, _ = align_timeseries_collection(series, how="intersection")
@@ -697,8 +802,12 @@ def read_timeseriesmatrix_zarr(
     first_source_unit = matrix_entries[0][4]
     first = matrix_entries[0][5]
     n_samples = len(first)
-    first_t0 = float(first.t0.value)
-    first_sample_rate = float(first.sample_rate.value)
+    first_explicit = needs_explicit_axis(first)
+    if first_explicit:
+        first_xindex = np.asarray(first.xindex.value, dtype=np.float64)
+    else:
+        first_t0 = float(first.t0.value)
+        first_sample_rate = float(first.sample_rate.value)
     first_unit = str(first_source_unit) if first_source_unit is not None else None
 
     data = np.empty(
@@ -711,12 +820,28 @@ def read_timeseriesmatrix_zarr(
     for row_key, col_key, _, _, source_unit, ts in matrix_entries:
         if len(ts) != n_samples:
             raise ValueError("Zarr matrix channels must have matching sample counts")
-        if float(ts.t0.value).hex() != first_t0.hex():
-            raise ValueError("Zarr matrix channels must have matching t0 values")
-        if float(ts.sample_rate.value).hex() != first_sample_rate.hex():
-            raise ValueError(
-                "Zarr matrix channels must have matching sample_rate values"
-            )
+        if first_explicit:
+            if (
+                not needs_explicit_axis(ts)
+                or ts.xunit != first.xunit
+                or not np.array_equal(
+                    np.asarray(ts.xindex.value, dtype=np.float64), first_xindex
+                )
+            ):
+                raise ValueError(
+                    "Zarr matrix channels must have matching xindex values"
+                )
+        else:
+            if needs_explicit_axis(ts):
+                raise ValueError(
+                    "Zarr matrix channels must have matching xindex values"
+                )
+            if float(ts.t0.value).hex() != first_t0.hex():
+                raise ValueError("Zarr matrix channels must have matching t0 values")
+            if float(ts.sample_rate.value).hex() != first_sample_rate.hex():
+                raise ValueError(
+                    "Zarr matrix channels must have matching sample_rate values"
+                )
         ts_unit = str(source_unit) if source_unit is not None else None
         if ts_unit != first_unit:
             raise ValueError("Zarr matrix channels must have matching units")
@@ -730,12 +855,16 @@ def read_timeseriesmatrix_zarr(
         j = col_to_index[col_key]
         data[i, j, :] = channel_data
 
-    matrix = TimeSeriesMatrix(
-        data,
-        t0=first_t0,
-        sample_rate=first_sample_rate,
-        unit=first.unit,
-    )
+    if first_explicit:
+        matrix = TimeSeriesMatrix(data, times=first.xindex, unit=first.unit)
+        set_time_reference(matrix, get_time_reference(first))
+    else:
+        matrix = TimeSeriesMatrix(
+            data,
+            t0=first_t0,
+            sample_rate=first_sample_rate,
+            unit=first.unit,
+        )
     if row_keys != list(matrix.row_keys()) or col_keys != list(matrix.col_keys()):
         from gwexpy.types.metadata import MetaData, MetaDataDict
 
@@ -755,11 +884,34 @@ def read_timeseriesmatrix_zarr(
 # -- Writer --------------------------------------------------------------------
 
 
+def _write_zarr_series_attrs(arr, ts) -> None:
+    """Write timing and unit attributes for one Zarr array.
+
+    Regular axes keep the legacy ``sample_rate``/``t0``/``dt`` layout with no
+    additional attributes. Axes that ``x0``/``dx`` cannot reproduce exactly get
+    ``xindex``/``xunit``/``gwexpy_time_reference`` instead; ``sample_rate``,
+    ``dt`` and ``t0`` are deliberately omitted so that a reader unaware of
+    ``xindex`` fails on missing timing metadata rather than equalising the axis.
+    """
+    if needs_explicit_axis(ts):
+        arr.attrs["xindex"] = np.asarray(ts.xindex.value, dtype=np.float64).tolist()
+        arr.attrs["xunit"] = str(ts.xunit)
+        arr.attrs["gwexpy_time_reference"] = get_time_reference(ts)
+    else:
+        arr.attrs["sample_rate"] = float(ts.sample_rate.value)
+        arr.attrs["t0"] = float(ts.t0.value)
+        arr.attrs["dt"] = float(ts.dt.value)
+    if ts.unit is not None:
+        arr.attrs["unit"] = str(ts.unit)
+
+
 def write_timeseriesdict_zarr(tsd, target, **kwargs):
     """Write a TimeSeriesDict to a Zarr store.
 
     Each channel is written as an array in the root group with
-    ``sample_rate``, ``t0``, and ``unit`` stored as attributes.
+    ``sample_rate``, ``t0``, and ``unit`` stored as attributes. Channels whose
+    time axis ``t0``/``dt`` cannot reproduce exactly (irregular, or GWpy-regular
+    but non-affine) store the exact ``xindex`` and ``xunit`` instead.
     """
     zarr = _import_zarr()
 
@@ -783,11 +935,7 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
         # zarr<3 has create_dataset; fall back for compatibility.
         creator = getattr(store, "create_array", None) or store.create_dataset
         arr = creator(_encode_zarr_array_name(key), data=data, overwrite=True)
-        arr.attrs["sample_rate"] = float(ts.sample_rate.value)
-        arr.attrs["t0"] = float(ts.t0.value)
-        arr.attrs["dt"] = float(ts.dt.value)
-        if ts.unit is not None:
-            arr.attrs["unit"] = str(ts.unit)
+        _write_zarr_series_attrs(arr, ts)
         if isinstance(key, tuple) and len(key) == 2:
             arr.attrs["gwexpy_row_key"] = json.dumps(_to_json_native(key[0]))
             arr.attrs["gwexpy_col_key"] = json.dumps(_to_json_native(key[1]))
@@ -819,9 +967,13 @@ def write_timeseriesmatrix_zarr(tsm, target, **kwargs):
     creator = getattr(store, "create_array", None) or store.create_dataset
     first = tsm[0, 0]
     n_samples = len(first)
-    first_t0 = float(first.t0.value)
-    first_sample_rate = float(first.sample_rate.value)
+    first_explicit = needs_explicit_axis(first)
     first_unit = str(first.unit) if first.unit is not None else None
+    if first_explicit:
+        first_xindex = np.asarray(first.xindex.value, dtype=np.float64)
+    else:
+        first_t0 = float(first.t0.value)
+        first_sample_rate = float(first.sample_rate.value)
 
     for i, row_key in enumerate(row_keys):
         for j, col_key in enumerate(col_keys):
@@ -830,28 +982,39 @@ def write_timeseriesmatrix_zarr(tsm, target, **kwargs):
                 raise ValueError(
                     "Zarr matrix channels must have matching sample counts"
                 )
-            if not np.isclose(float(ts.t0.value), first_t0, rtol=1e-12, atol=1e-12):
-                raise ValueError("Zarr matrix channels must have matching t0 values")
-            if not np.isclose(
-                float(ts.sample_rate.value),
-                first_sample_rate,
-                rtol=1e-12,
-                atol=1e-12,
-            ):
-                raise ValueError(
-                    "Zarr matrix channels must have matching sample_rate values"
-                )
+            if first_explicit:
+                # Exact coordinate comparison: no tolerance for explicit axes.
+                if ts.xunit != first.xunit or not np.array_equal(
+                    np.asarray(ts.xindex.value, dtype=np.float64), first_xindex
+                ):
+                    raise ValueError(
+                        "Zarr matrix channels must have matching xindex values"
+                    )
+            else:
+                if needs_explicit_axis(ts):
+                    raise ValueError(
+                        "Zarr matrix channels must have matching xindex values"
+                    )
+                if not np.isclose(float(ts.t0.value), first_t0, rtol=1e-12, atol=1e-12):
+                    raise ValueError(
+                        "Zarr matrix channels must have matching t0 values"
+                    )
+                if not np.isclose(
+                    float(ts.sample_rate.value),
+                    first_sample_rate,
+                    rtol=1e-12,
+                    atol=1e-12,
+                ):
+                    raise ValueError(
+                        "Zarr matrix channels must have matching sample_rate values"
+                    )
             ts_unit = str(ts.unit) if ts.unit is not None else None
             if ts_unit != first_unit:
                 raise ValueError("Zarr matrix channels must have matching units")
             data = _zarr_numeric_data(ts.value)
             array_key = (row_key, col_key)
             arr = creator(_encode_zarr_array_name(array_key), data=data, overwrite=True)
-            arr.attrs["sample_rate"] = float(ts.sample_rate.value)
-            arr.attrs["t0"] = float(ts.t0.value)
-            arr.attrs["dt"] = float(ts.dt.value)
-            if ts.unit is not None:
-                arr.attrs["unit"] = str(ts.unit)
+            _write_zarr_series_attrs(arr, ts)
             arr.attrs["gwexpy_row_key"] = json.dumps(_to_json_native(row_key))
             arr.attrs["gwexpy_col_key"] = json.dumps(_to_json_native(col_key))
             arr.attrs["gwexpy_key_format"] = "json"
