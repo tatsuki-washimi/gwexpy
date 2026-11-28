@@ -1,8 +1,8 @@
 {
   "schema": "gwexpy-post-release-v1",
   "version": "0.2.6",
-  "recorded_at_utc": "2026-10-28T07:29:17Z",
-  "post_release_status": "pending_review",
+  "recorded_at_utc": "2026-11-28T15:43:31Z",
+  "post_release_status": "pending_external",
   "release": {
     "tag": "v0.2.6",
     "version": "0.2.6",
@@ -103,6 +103,12 @@
           "sha256": null,
           "observed_at_utc": "2026-10-28T07:29:17Z",
           "observation": "Release Owner GitHub record confirms v0.2.6 Zenodo metadata-only correction to publication_date 2026-10-27, same DOI 10.5281/zenodo.23680359 and unchanged archive. Owner reaffirmed acceptance of this published date on 2026-10-28. No candidate/tag/Zenodo payload change requested."
+        },
+        {
+          "url": "https://zenodo.org/api/records?q=conceptrecid%3A19059422&all_versions=true&size=25",
+          "sha256": "e06df0f017cf61aed046c0a3abb0b846a583d71729816e59f03e4453af30a808",
+          "observed_at_utc": "2026-11-18T15:51:27Z",
+          "observation": "{\"reason\": \"Transport failure: TimeoutError\"}"
         }
       ],
       "pending_reason": "",
@@ -119,7 +125,7 @@
       }
     },
     "conda": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe feedstock and actual channel package",
       "evidence": [
@@ -128,15 +134,27 @@
           "sha256": "f206105161aea6388977bd87d717a1972ce64539a9f131df91b4ed2f2a6e0cef",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"components\": {\"conda_feedstock\": \"pending_review\", \"conda_package\": \"pending_external\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "2d607a0df09470a532ab682142564999619f2f20f6e0bfdf10fb07e62a1d86f2",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"complete\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "636cd727a35b5d9670600323a68d8e55aa26165337620271511f81e5f61812fb",
+          "observed_at_utc": "2026-11-07T13:21:46Z",
+          "observation": "{\"components\": {\"conda_feedstock\": \"complete\", \"conda_package\": \"retryable_failure\"}, \"reason\": \"See separate feedstock PR and actual channel-package states\"}"
         }
       ],
-      "pending_reason": "See separate feedstock PR and actual channel-package states",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda",
       "readback_succeeded": false,
       "components": {
-        "conda_feedstock": "pending_review",
-        "conda_package": "pending_external"
+        "conda_feedstock": "complete",
+        "conda_package": "complete"
       }
     },
     "docs": {
@@ -155,6 +173,126 @@
           "sha256": "1364c3ae046407d517ba08727cf3d64a997a405d029e74bec43ec4086542f4e5",
           "observed_at_utc": "2026-10-27T14:52:35Z",
           "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 840, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/840\"}, \"page_sha256\": {\"about/changelog.html\": \"66d2e6adaa3e97fbfbde685f259a8a883915897f32e1c056a25f4efcf5895da7\", \"ja/about/changelog.html\": \"b926cbc7e9137b708910a471a573c6b218a464f38eae5c3932283dbe05674653\"}, \"pages_workflow_run_attempt\": 2, \"pages_workflow_run_id\": 40517480396, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40517480396\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f5f532ced76e14b2583d55f6322caaa718e31981\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "12370b360caf361152ba45d203a85c82443ab45d52231cc132bf24763d12c491",
+          "observed_at_utc": "2026-10-29T13:25:19Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 847, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/847\"}, \"page_sha256\": {\"about/changelog.html\": \"5eab5199e1842e3b7f9ee4a7f19d8e056a249d8ac352b545c18b83184884c283\", \"ja/about/changelog.html\": \"d513148b4b1179218f74760779517546affffd406c7864a02e3829f79720ecb5\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40824552341, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40824552341\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"12b7626161c3f452643a8119c84975411c6d07ef\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "773d319133eace594a822f8ed0f97e4001c6cfcca7b0653dddc394cee0fa0e56",
+          "observed_at_utc": "2026-10-31T12:52:16Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 853, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/853\"}, \"page_sha256\": {\"about/changelog.html\": \"629f97efae40b030ac021d2a1871fc2f3e6283be54070b8c5b73c161bae17a94\", \"ja/about/changelog.html\": \"b6acd6ff921a4ca8f973e14e5deb79e6adc23f01e7c7c17c5cc46b5f80128549\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41178707613, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"029ea550c37e2a7b36a1932cd3dfa3634b4f05a8\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
+          "observed_at_utc": "2026-11-01T13:39:54Z",
+          "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "6a578ee07648b46b46ec67a4d311a06ec7f3b7d950d935c09463610f6f9c0de0",
+          "observed_at_utc": "2026-11-02T16:22:40Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "424196b57db62853a945786c5f2b714845725fed9687a4581b9a0e52eb4522ce",
+          "observed_at_utc": "2026-11-04T14:44:23Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 862, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/862\"}, \"page_sha256\": {\"about/changelog.html\": \"5c20f5f203156176389f39a177dca2a54c9bb8df352e8753f24d85ba19b576b3\", \"ja/about/changelog.html\": \"58ef94cbdc3bbce7b7c7064a44a5c77e2b73b6c0b5cf67c68ce0b7e6f70e9c60\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41775330354, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41775330354\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"617059f77e85c32edfea4a6de5b124ddc3a2f672\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "f0bb3370845cd80cf9587f4b90aae1680eb8a776ce05b6859a951a10480c4829",
+          "observed_at_utc": "2026-11-05T14:50:45Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 869, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/869\"}, \"page_sha256\": {\"about/changelog.html\": \"cfd0355bbf3c5b5de1f21ffee13e996cb5679436fbed01be33a3190c799c0139\", \"ja/about/changelog.html\": \"e70013a8f0364c5f58d08eee8dd6449c93e0756c4ed6496a326ef9c51640a1bf\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41990459005, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41990459005\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"020c7201b94cf0ae7297240607e0824f1078f66f\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "f1dc6028b9af6f4c945ebd5ec29a3af5bb39f8cb8fe007af764a739741213332",
+          "observed_at_utc": "2026-11-07T13:22:38Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 878, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/878\"}, \"page_sha256\": {\"about/changelog.html\": \"5fe1f1a87387df015911c8af7559bb87064a04b8f72c8cd010e299e70ca8a37e\", \"ja/about/changelog.html\": \"9e92338dc2599b8aeb30bc0597390726122874bf04a80b4f82850eac4b9196ba\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 42353215802, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/42353215802\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"64ca17399b07e2026cede7b9cbda1ac93c272eee\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "e3e7aa5595d6276c0b5fd5722a20fc5aba0e017cfc4968ab9c998e243edd4163",
+          "observed_at_utc": "2026-11-12T15:28:17Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 885, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/885\"}, \"page_sha256\": {\"about/changelog.html\": \"6d6f9f804ebc880509945ee2333dc47db9cccc31645d98b6454160d3eec92c20\", \"ja/about/changelog.html\": \"353864b36c9e11439fe7e961c0ba0a25c8e173e2b1b97555b09223c3ff501bd7\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43221239233, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43221239233\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"6251e74e13f48d02c87c51067437f6ca9dfe9245\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "c65d79f822bf58f1905455e4a3a94117a51e7f8aed62e64424b56aa8c98b91a4",
+          "observed_at_utc": "2026-11-13T14:45:21Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 905, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/905\"}, \"page_sha256\": {\"about/changelog.html\": \"0c24bf4eabdf0c72fe8d82adcc2301320207e6012bbe072f3716225ae0be4ade\", \"ja/about/changelog.html\": \"d08575d342a3595021089d1c0bd80721202ebfd3b86310e1cbf5e194592a7780\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43436242834, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43436242834\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"071cbfcbacb66430f271b052c18232415c8f589a\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "609810ee2234596be48054c109f49b5779be3184b383fbd02aca863b52563514",
+          "observed_at_utc": "2026-11-14T13:42:14Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 907, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/907\"}, \"page_sha256\": {\"about/changelog.html\": \"09bafd636fd08a2bd3ac1c2de9c1894da6fd14915ca3aeed2a2d2e19fced15b7\", \"ja/about/changelog.html\": \"6ad9f557be640d3251699e74cae6adf79c9fc56b1ad13286daa97533cfa20187\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43598510780, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43598510780\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f3273e94c4d32ff989c02fd06768d10171317034\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "6e7b46751154f66b1822427ae774073ab09cdd54e1b540fbbc0ceda2849ea7a1",
+          "observed_at_utc": "2026-11-15T14:10:14Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "aeac7aa34aa1837aae73e4fcd373aed3b7cd373024427c0318130c1a8f4da845",
+          "observed_at_utc": "2026-11-16T16:11:50Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 925, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/925\"}, \"page_sha256\": {\"about/changelog.html\": \"aadfcbadd74a1b0956c70096497083d722e203350dd77cb80096cfd01b774d0a\", \"ja/about/changelog.html\": \"14cdf296fd73fd14435d1235cd21144d67d28f55dc4fe3ddd3d21b333a5200f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43877236788, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43877236788\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3bffd19835e7f7e92fd53e0fcdfa372a2be21a22\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "e033f9aa7077fd4a010d6f77eba6cc9c02611365411fbd5b8b65cf2a4ce878ee",
+          "observed_at_utc": "2026-11-17T16:18:09Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 926, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/926\"}, \"page_sha256\": {\"about/changelog.html\": \"71e470e2eaf48d5782c4003bda93874b167d18cd67c66edd239239420356619f\", \"ja/about/changelog.html\": \"bae97cc8f12584046945bcce69b4f2041420e41d495e0ea29d8dd99e8c5ad0f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44006854815, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44006854815\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"5f1686d50a6de4f4c03be71c0d2b1a7304397068\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "1085c2b91593ae215aa1cb7882529969fd90d637f821337686ba25c674d7d0ff",
+          "observed_at_utc": "2026-11-18T15:52:28Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 928, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/928\"}, \"page_sha256\": {\"about/changelog.html\": \"fcfad4e4a49c2a5dd99e7f2a5d4e64b094b9bd779205faa7ed8a73223e16607a\", \"ja/about/changelog.html\": \"2d9016bbe2bce8c294924a6388af4428b5b9b56eabada6fea7460b01e52ab198\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44242768375, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44242768375\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"a31268ad44adc1c201ce298e48e31868dd10de61\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "893b5eebba484dd923216ca9996904bc959388644bb1a6663c0d859e634d2107",
+          "observed_at_utc": "2026-11-20T15:39:11Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 929, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/929\"}, \"page_sha256\": {\"about/changelog.html\": \"57ad013a141e02f88d07dffc9db7ca4dc1bc61feabeb83c967e76ec545c79a20\", \"ja/about/changelog.html\": \"b83f3cacc3e6eba44aa36d736d58a17193a19be733f8d3bc14f475e6b5fa87ab\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44706610685, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44706610685\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"86426e299988a9eff87669c197d063cc5dce9791\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "e967787326a007c05e4b30fd36548b3ce4f05ccb1596d5921e1cddab7945acb4",
+          "observed_at_utc": "2026-11-21T14:50:23Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 933, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/933\"}, \"page_sha256\": {\"about/changelog.html\": \"37a0e432f249327d5b68bf9ecb810ede0b0d83bf1f94848a079656183baf4a21\", \"ja/about/changelog.html\": \"a5f998a930ad659a7f1696cde0a59a848e221951032f5675c9ef5fda035a5c43\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44852051905, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44852051905\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"aca66f49006256814710b15ea84e373f3d5a49c2\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "50f1497b13755f653ff32a1682bfc5fc44ff2eff832698cf970fa345fb80d987",
+          "observed_at_utc": "2026-11-23T18:32:30Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 936, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/936\"}, \"page_sha256\": {\"about/changelog.html\": \"c06ba77d4ede5d2de93fdb62e58525155f4a02120f2cd2e08256150dc583d0a5\", \"ja/about/changelog.html\": \"7da9574a05f375f0628843d240ac298c542e74b73d40209a3836bf0f690440f7\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 45198328997, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/45198328997\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"41f8a0688f4a4e226046385ec59eccc4c95bb567\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "da168dbd3d98c34e464b8851c16739911318e56e5ee65b562004fedcd7fdd9d6",
+          "observed_at_utc": "2026-11-26T17:09:19Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 939, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/939\"}, \"page_sha256\": {\"about/changelog.html\": \"7f762e016cd38816597614dfb44ea33b9a449354c18c2b546ce299d23a05b8b6\", \"ja/about/changelog.html\": \"bb84a42a2b47736b38243d6cea51f9f09ba7b3a0c89cd30bf92bb82ddace2978\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 45794886995, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/45794886995\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"2450a50a19ec7c9cfd30a81695e0366b78fc2203\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "4920677f75e1b76377d646b2b06421f3db097ec0fd994d00fdb4e65d3436ef81",
+          "observed_at_utc": "2026-11-27T16:51:47Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 950, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/950\"}, \"page_sha256\": {\"about/changelog.html\": \"22abdd30e9cdbe951ab16565a51f5acbe618ecf5dd80b2a8994ccb77a88d405c\", \"ja/about/changelog.html\": \"99ba7f8dd223f12018fab6645060818b50bc24e8496e80d7e5506e32c30e5547\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 46023263511, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/46023263511\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"64a0930e3c9fc684dd225963944762d2bf09e044\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html",
+          "sha256": "b04946157a23124ca131b928844b8cf2fe539511f79aed52b1dc410f61fe80d3",
+          "observed_at_utc": "2026-11-28T15:43:31Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 951, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/951\"}, \"page_sha256\": {\"about/changelog.html\": \"fe00261d457e4dc1b1deed6f61233b448b89470950b8ceb725d30d399b17f0bc\", \"ja/about/changelog.html\": \"cda7ee93577416927b358faeda5f65639736c28ba9871d896ff6cac2ee4edb37\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 46038415358, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/46038415358\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"ff3eeeb4a2b5271f1a78ab2ff6a50105bd06f2ca\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -178,6 +316,126 @@
           "sha256": "1364c3ae046407d517ba08727cf3d64a997a405d029e74bec43ec4086542f4e5",
           "observed_at_utc": "2026-10-27T14:52:35Z",
           "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 840, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/840\"}, \"page_sha256\": {\"about/changelog.html\": \"66d2e6adaa3e97fbfbde685f259a8a883915897f32e1c056a25f4efcf5895da7\", \"ja/about/changelog.html\": \"b926cbc7e9137b708910a471a573c6b218a464f38eae5c3932283dbe05674653\"}, \"pages_workflow_run_attempt\": 2, \"pages_workflow_run_id\": 40517480396, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40517480396\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f5f532ced76e14b2583d55f6322caaa718e31981\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "12370b360caf361152ba45d203a85c82443ab45d52231cc132bf24763d12c491",
+          "observed_at_utc": "2026-10-29T13:25:19Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 847, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/847\"}, \"page_sha256\": {\"about/changelog.html\": \"5eab5199e1842e3b7f9ee4a7f19d8e056a249d8ac352b545c18b83184884c283\", \"ja/about/changelog.html\": \"d513148b4b1179218f74760779517546affffd406c7864a02e3829f79720ecb5\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 40824552341, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/40824552341\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"12b7626161c3f452643a8119c84975411c6d07ef\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "773d319133eace594a822f8ed0f97e4001c6cfcca7b0653dddc394cee0fa0e56",
+          "observed_at_utc": "2026-10-31T12:52:16Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 853, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/853\"}, \"page_sha256\": {\"about/changelog.html\": \"629f97efae40b030ac021d2a1871fc2f3e6283be54070b8c5b73c161bae17a94\", \"ja/about/changelog.html\": \"b6acd6ff921a4ca8f973e14e5deb79e6adc23f01e7c7c17c5cc46b5f80128549\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41178707613, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41178707613\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"029ea550c37e2a7b36a1932cd3dfa3634b4f05a8\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "d021064887011b008c94c5608751ca8b1b5093090747da140e05488c38f9537e",
+          "observed_at_utc": "2026-11-01T13:39:54Z",
+          "observation": "{\"docs_status\": \"pending_review\", \"reason\": \"Matching Docs Pages workflow is still running or not observed\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "6a578ee07648b46b46ec67a4d311a06ec7f3b7d950d935c09463610f6f9c0de0",
+          "observed_at_utc": "2026-11-02T16:22:40Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 859, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/859\"}, \"page_sha256\": {\"about/changelog.html\": \"cd8600c5df8ad0c365b14136f33e62a2c3b4e9425a390260dc2a9c3797f059bb\", \"ja/about/changelog.html\": \"6da5587af916d332d936b294e95a77f52a555e8e87d833f60abfb1af35cc2ebc\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41310192034, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41310192034\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"8484af72bd6d67ddb39f3dd87143287b2df2180f\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "424196b57db62853a945786c5f2b714845725fed9687a4581b9a0e52eb4522ce",
+          "observed_at_utc": "2026-11-04T14:44:23Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 862, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/862\"}, \"page_sha256\": {\"about/changelog.html\": \"5c20f5f203156176389f39a177dca2a54c9bb8df352e8753f24d85ba19b576b3\", \"ja/about/changelog.html\": \"58ef94cbdc3bbce7b7c7064a44a5c77e2b73b6c0b5cf67c68ce0b7e6f70e9c60\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41775330354, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41775330354\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"617059f77e85c32edfea4a6de5b124ddc3a2f672\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "f0bb3370845cd80cf9587f4b90aae1680eb8a776ce05b6859a951a10480c4829",
+          "observed_at_utc": "2026-11-05T14:50:45Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 869, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/869\"}, \"page_sha256\": {\"about/changelog.html\": \"cfd0355bbf3c5b5de1f21ffee13e996cb5679436fbed01be33a3190c799c0139\", \"ja/about/changelog.html\": \"e70013a8f0364c5f58d08eee8dd6449c93e0756c4ed6496a326ef9c51640a1bf\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 41990459005, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/41990459005\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"020c7201b94cf0ae7297240607e0824f1078f66f\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "f1dc6028b9af6f4c945ebd5ec29a3af5bb39f8cb8fe007af764a739741213332",
+          "observed_at_utc": "2026-11-07T13:22:38Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 878, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/878\"}, \"page_sha256\": {\"about/changelog.html\": \"5fe1f1a87387df015911c8af7559bb87064a04b8f72c8cd010e299e70ca8a37e\", \"ja/about/changelog.html\": \"9e92338dc2599b8aeb30bc0597390726122874bf04a80b4f82850eac4b9196ba\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 42353215802, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/42353215802\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"64ca17399b07e2026cede7b9cbda1ac93c272eee\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "e3e7aa5595d6276c0b5fd5722a20fc5aba0e017cfc4968ab9c998e243edd4163",
+          "observed_at_utc": "2026-11-12T15:28:17Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 885, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/885\"}, \"page_sha256\": {\"about/changelog.html\": \"6d6f9f804ebc880509945ee2333dc47db9cccc31645d98b6454160d3eec92c20\", \"ja/about/changelog.html\": \"353864b36c9e11439fe7e961c0ba0a25c8e173e2b1b97555b09223c3ff501bd7\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43221239233, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43221239233\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"6251e74e13f48d02c87c51067437f6ca9dfe9245\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "c65d79f822bf58f1905455e4a3a94117a51e7f8aed62e64424b56aa8c98b91a4",
+          "observed_at_utc": "2026-11-13T14:45:21Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 905, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/905\"}, \"page_sha256\": {\"about/changelog.html\": \"0c24bf4eabdf0c72fe8d82adcc2301320207e6012bbe072f3716225ae0be4ade\", \"ja/about/changelog.html\": \"d08575d342a3595021089d1c0bd80721202ebfd3b86310e1cbf5e194592a7780\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43436242834, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43436242834\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"071cbfcbacb66430f271b052c18232415c8f589a\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "609810ee2234596be48054c109f49b5779be3184b383fbd02aca863b52563514",
+          "observed_at_utc": "2026-11-14T13:42:14Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 907, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/907\"}, \"page_sha256\": {\"about/changelog.html\": \"09bafd636fd08a2bd3ac1c2de9c1894da6fd14915ca3aeed2a2d2e19fced15b7\", \"ja/about/changelog.html\": \"6ad9f557be640d3251699e74cae6adf79c9fc56b1ad13286daa97533cfa20187\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43598510780, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43598510780\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"f3273e94c4d32ff989c02fd06768d10171317034\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "6e7b46751154f66b1822427ae774073ab09cdd54e1b540fbbc0ceda2849ea7a1",
+          "observed_at_utc": "2026-11-15T14:10:14Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 920, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/920\"}, \"page_sha256\": {\"about/changelog.html\": \"581e344a083025ca55dea6eaadbabd02662d954400abda2caae1cb55c10d7d41\", \"ja/about/changelog.html\": \"53fd3982f382f0808aa1763dd674b196892739bed666f59edd65b08004a94448\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43625321597, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43625321597\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3fe4b4d535bf9ec47fbe48a82166869ceb8d4f9e\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "aeac7aa34aa1837aae73e4fcd373aed3b7cd373024427c0318130c1a8f4da845",
+          "observed_at_utc": "2026-11-16T16:11:50Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 925, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/925\"}, \"page_sha256\": {\"about/changelog.html\": \"aadfcbadd74a1b0956c70096497083d722e203350dd77cb80096cfd01b774d0a\", \"ja/about/changelog.html\": \"14cdf296fd73fd14435d1235cd21144d67d28f55dc4fe3ddd3d21b333a5200f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 43877236788, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/43877236788\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"3bffd19835e7f7e92fd53e0fcdfa372a2be21a22\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "e033f9aa7077fd4a010d6f77eba6cc9c02611365411fbd5b8b65cf2a4ce878ee",
+          "observed_at_utc": "2026-11-17T16:18:09Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 926, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/926\"}, \"page_sha256\": {\"about/changelog.html\": \"71e470e2eaf48d5782c4003bda93874b167d18cd67c66edd239239420356619f\", \"ja/about/changelog.html\": \"bae97cc8f12584046945bcce69b4f2041420e41d495e0ea29d8dd99e8c5ad0f4\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44006854815, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44006854815\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"5f1686d50a6de4f4c03be71c0d2b1a7304397068\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "1085c2b91593ae215aa1cb7882529969fd90d637f821337686ba25c674d7d0ff",
+          "observed_at_utc": "2026-11-18T15:52:28Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 928, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/928\"}, \"page_sha256\": {\"about/changelog.html\": \"fcfad4e4a49c2a5dd99e7f2a5d4e64b094b9bd779205faa7ed8a73223e16607a\", \"ja/about/changelog.html\": \"2d9016bbe2bce8c294924a6388af4428b5b9b56eabada6fea7460b01e52ab198\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44242768375, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44242768375\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"a31268ad44adc1c201ce298e48e31868dd10de61\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "893b5eebba484dd923216ca9996904bc959388644bb1a6663c0d859e634d2107",
+          "observed_at_utc": "2026-11-20T15:39:11Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 929, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/929\"}, \"page_sha256\": {\"about/changelog.html\": \"57ad013a141e02f88d07dffc9db7ca4dc1bc61feabeb83c967e76ec545c79a20\", \"ja/about/changelog.html\": \"b83f3cacc3e6eba44aa36d736d58a17193a19be733f8d3bc14f475e6b5fa87ab\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44706610685, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44706610685\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"86426e299988a9eff87669c197d063cc5dce9791\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "e967787326a007c05e4b30fd36548b3ce4f05ccb1596d5921e1cddab7945acb4",
+          "observed_at_utc": "2026-11-21T14:50:23Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 933, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/933\"}, \"page_sha256\": {\"about/changelog.html\": \"37a0e432f249327d5b68bf9ecb810ede0b0d83bf1f94848a079656183baf4a21\", \"ja/about/changelog.html\": \"a5f998a930ad659a7f1696cde0a59a848e221951032f5675c9ef5fda035a5c43\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 44852051905, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/44852051905\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"aca66f49006256814710b15ea84e373f3d5a49c2\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "50f1497b13755f653ff32a1682bfc5fc44ff2eff832698cf970fa345fb80d987",
+          "observed_at_utc": "2026-11-23T18:32:30Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 936, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/936\"}, \"page_sha256\": {\"about/changelog.html\": \"c06ba77d4ede5d2de93fdb62e58525155f4a02120f2cd2e08256150dc583d0a5\", \"ja/about/changelog.html\": \"7da9574a05f375f0628843d240ac298c542e74b73d40209a3836bf0f690440f7\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 45198328997, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/45198328997\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"41f8a0688f4a4e226046385ec59eccc4c95bb567\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "da168dbd3d98c34e464b8851c16739911318e56e5ee65b562004fedcd7fdd9d6",
+          "observed_at_utc": "2026-11-26T17:09:19Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 939, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/939\"}, \"page_sha256\": {\"about/changelog.html\": \"7f762e016cd38816597614dfb44ea33b9a449354c18c2b546ce299d23a05b8b6\", \"ja/about/changelog.html\": \"bb84a42a2b47736b38243d6cea51f9f09ba7b3a0c89cd30bf92bb82ddace2978\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 45794886995, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/45794886995\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"2450a50a19ec7c9cfd30a81695e0366b78fc2203\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "4920677f75e1b76377d646b2b06421f3db097ec0fd994d00fdb4e65d3436ef81",
+          "observed_at_utc": "2026-11-27T16:51:47Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 950, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/950\"}, \"page_sha256\": {\"about/changelog.html\": \"22abdd30e9cdbe951ab16565a51f5acbe618ecf5dd80b2a8994ccb77a88d405c\", \"ja/about/changelog.html\": \"99ba7f8dd223f12018fab6645060818b50bc24e8496e80d7e5506e32c30e5547\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 46023263511, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/46023263511\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"64a0930e3c9fc684dd225963944762d2bf09e044\", \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+          "sha256": "b04946157a23124ca131b928844b8cf2fe539511f79aed52b1dc410f61fe80d3",
+          "observed_at_utc": "2026-11-28T15:43:31Z",
+          "observation": "{\"artifact_manifest_readback\": \"success\", \"asset_sha256\": {\"docs_redesign/_static/downloads/development-activity-v0.2.6-weekly.csv\": \"a1e0f56593545c6aa0f8e5916b681edabc6f1b85cb640fbc08811be8932fbe26\", \"docs_redesign/_static/images/development-activity-v0.2.6-ja.svg\": \"39fa0e5835474fb3cf0cef1db98c16b9db57f6185439f2e1e58b860de7f5da31\", \"docs_redesign/_static/images/development-activity-v0.2.6.svg\": \"a132ad4e53a647fafc5c8eb85b13b4ff6b5b3e58715938f51449e53fab25abac\"}, \"docs_status\": \"complete\", \"merged_pull_request\": {\"number\": 951, \"url\": \"https://github.com/tatsuki-washimi/gwexpy/pull/951\"}, \"page_sha256\": {\"about/changelog.html\": \"fe00261d457e4dc1b1deed6f61233b448b89470950b8ceb725d30d399b17f0bc\", \"ja/about/changelog.html\": \"cda7ee93577416927b358faeda5f65639736c28ba9871d896ff6cac2ee4edb37\"}, \"pages_workflow_run_attempt\": 1, \"pages_workflow_run_id\": 46038415358, \"pages_workflow_run_url\": \"https://github.com/tatsuki-washimi/gwexpy/actions/runs/46038415358\", \"readback_succeeded\": true, \"reason\": \"Bilingual Pages, release assets and workflow readback verified\", \"source_revision\": \"ff3eeeb4a2b5271f1a78ab2ff6a50105bd06f2ca\", \"status\": \"complete\"}"
         }
       ],
       "pending_reason": "",
@@ -209,7 +467,7 @@
       "resume_condition": "Supply maintainer local-host assessment"
     },
     "conda_feedstock": {
-      "status": "pending_review",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_feedstock",
       "evidence": [
@@ -218,15 +476,21 @@
           "sha256": "6f6e659195abdd7e0a218fc5802a5a6ecfe748742c44dd6547bf6ef5dc25e3fe",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"author\": \"regro-cf-autotick-bot\", \"head_branch\": \"0.2.6_h34e406\", \"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"merged_at\": null, \"number\": 16, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/16\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"b0d8b4be34c72893930abea2a9e5f6dc68c6783df39f8dc6068974353a3de5d8\", \"source_sha256\": \"b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.6.tar.gz\", \"version\": \"0.2.6\"}, \"status\": \"pending_review\", \"updated_at\": \"2026-10-27T03:34:08Z\"}"
+        },
+        {
+          "url": "https://api.github.com/repos/conda-forge/gwexpy-feedstock/pulls",
+          "sha256": "af451ce7ec4f3c13207b258bc90d898735975c1267979d3993f7f817f2ac1560",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"author\": \"regro-cf-autotick-bot\", \"head_branch\": \"0.2.6_h34e406\", \"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"merged_at\": \"2026-10-28T07:17:06Z\", \"number\": 16, \"pull_url\": \"https://github.com/conda-forge/gwexpy-feedstock/pull/16\", \"reason\": \"Feedstock maintainer review outstanding\", \"recipe\": {\"head_sha\": \"acc46dfd0c79eb2c3c5bf8a9bea975063ca4c97c\", \"path\": \"recipe/recipe.yaml\", \"recipe_sha256\": \"b0d8b4be34c72893930abea2a9e5f6dc68c6783df39f8dc6068974353a3de5d8\", \"source_sha256\": \"b67f0335e7fa60fa9af8305912dec136ad1cd6d3cea6db0adb8c438837f9a783\", \"source_url\": \"https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.6.tar.gz\", \"version\": \"0.2.6\"}, \"status\": \"complete\", \"updated_at\": \"2026-10-28T07:18:41Z\"}"
         }
       ],
-      "pending_reason": "Feedstock maintainer review outstanding",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_feedstock",
       "readback_succeeded": false
     },
     "conda_package": {
-      "status": "pending_external",
+      "status": "complete",
       "actor": "GitHub Actions",
       "objective": "Observe conda_package",
       "evidence": [
@@ -235,12 +499,36 @@
           "sha256": "779a41aabdbb234411a3856e5ded68787158ddea314ad2522491218a01baab70",
           "observed_at_utc": "2026-10-27T12:09:00Z",
           "observation": "{\"inventory_files\": [], \"missing_from_repodata\": [], \"reason\": \"Exact build absent from final conda-forge repodata\", \"status\": \"pending_external\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "c863894992f5072a01968421e5d3ae0c64e10e54b2dd48d3a609d30a26b47cb9",
+          "observed_at_utc": "2026-10-28T13:17:44Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"download_url\": \"//api.anaconda.org/download/conda-forge/gwexpy/0.2.6/noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"md5\": \"42657601907346e53b3ed37e842414cf\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120, \"subdir\": \"noarch\", \"timestamp\": 1793171883468, \"version\": \"0.2.6\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "0f4ff4aa3ad3a40562bd035bb3e06c75657faef7928831638da3469242252582",
+          "observed_at_utc": "2026-10-29T13:25:09Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"download_url\": \"//api.anaconda.org/download/conda-forge/gwexpy/0.2.6/noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"license_family\": \"MIT\", \"md5\": \"42657601907346e53b3ed37e842414cf\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120, \"subdir\": \"noarch\", \"timestamp\": 1793171883468, \"version\": \"0.2.6\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "13dc70a6cdaf4b2708c601804a324d3828abbc3f198074987f233833f7ffcb67",
+          "observed_at_utc": "2026-10-30T13:14:59Z",
+          "observation": "{\"files\": [{\"basename\": \"noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"download_url\": \"//conda.anaconda.org/conda-forge/noarch/gwexpy-0.2.6-pyhc364b38_0.conda\", \"labels\": [\"main\"], \"repodata\": {\"build\": \"pyhc364b38_0\", \"build_number\": 0, \"depends\": [\"python >=3.11\", \"numpy >=1.23.2,<3.0.0\", \"scipy >=1.10.0\", \"astropy-base >=5.0\", \"gwpy >=4.0.0,<5.0.0\", \"pandas >=1.5.0\", \"matplotlib-base >=3.5.0\", \"typing-extensions\", \"bottleneck\", \"h5py >=3.0,<4\", \"igwn-segments\", \"ligotimegps\", \"gpstime\", \"python\"], \"license\": \"MIT\", \"license_family\": \"MIT\", \"md5\": \"42657601907346e53b3ed37e842414cf\", \"name\": \"gwexpy\", \"noarch\": \"python\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120, \"subdir\": \"noarch\", \"timestamp\": 1793171883468, \"version\": \"0.2.6\"}, \"repodata_url\": \"https://conda.anaconda.org/conda-forge/noarch/repodata.json\", \"sha256\": \"7b2b88cae955e6c48af4498f3d1bbf6d9981ec1cd67c0815a0a6425df1549560\", \"size\": 667120}], \"missing_from_repodata\": [], \"readback_succeeded\": true, \"status\": \"complete\"}"
+        },
+        {
+          "url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+          "sha256": "e06df0f017cf61aed046c0a3abb0b846a583d71729816e59f03e4453af30a808",
+          "observed_at_utc": "2026-11-07T13:21:46Z",
+          "observation": "{\"reason\": \"Transport failure: TimeoutError\"}"
         }
       ],
-      "pending_reason": "Exact build absent from final conda-forge repodata",
-      "resume_condition": "Re-observe same immutable identity; owner resolves blocked/review decisions",
+      "pending_reason": "",
+      "resume_condition": "",
       "observer": "conda_package",
-      "readback_succeeded": false
+      "readback_succeeded": true
     }
   }
 }
